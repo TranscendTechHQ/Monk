@@ -51,6 +51,7 @@ init(
         session.init(), # initializes session features
         emailpassword.init(),
         dashboard.init(),
+        userroles.init(),
     ],
     mode='asgi' # use wsgi if you are running using gunicorn
 )
