@@ -29,15 +29,19 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       var GOOGLE_CLIENT_ID =
-          "337392647778-0gs7jthc40jl31vjvmljo4mjq0pni19n.apps.googleusercontent.com";
+          "337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com";
+      var BACKEND_CLIENT_ID =
+          "337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com";
+      print("Here 1\n");
+      print(GOOGLE_CLIENT_ID);
       googleSignIn = GoogleSignIn(
         clientId: GOOGLE_CLIENT_ID,
-        //serverClientId:
-        //   "337392647778-0gs7jthc40jl31vjvmljo4mjq0pni19n.apps.googleusercontent.com",
+        serverClientId: BACKEND_CLIENT_ID,
         scopes: [
           'email',
         ],
       );
+      print("Here 2\n");
     }
 
     if (googleSignIn.currentUser != null) {
@@ -46,12 +50,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
+      print("Here 2.5\n");
+      print(googleSignIn.clientId);
       GoogleSignInAccount? account = await googleSignIn.signIn();
-
+      print("Here 3\n");
       if (account == null) {
         print("Google sign in was aborted");
         return;
       }
+      print("Here 4\n");
 
       String? authCode = account.serverAuthCode;
 
@@ -59,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print("Google sign in did not return a server auth code");
         return;
       }
+      print("Here 5\n");
 
       var result = await NetworkManager.instance.client.post(
         "/auth/signinup",
@@ -72,14 +80,17 @@ class _LoginScreenState extends State<LoginScreen> {
           },
         },
       );
+      print("Here 6\n");
 
       if (result.statusCode == 200) {
         Future.delayed(Duration.zero, () {
           Navigator.of(context).pushReplacementNamed("/home");
+          print("Here 7\n");
         });
       }
     } on DioException {
       print("Google sign in failed");
+      print("Here 8\n");
     }
   }
 

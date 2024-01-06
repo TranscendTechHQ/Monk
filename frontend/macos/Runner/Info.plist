@@ -23,16 +23,12 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>monk_frontend</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.337392647778-0gs7jthc40jl31vjvmljo4mjq0pni19n</string>
+				<string>com.googleusercontent.apps.337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56</string>
 			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array/>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
