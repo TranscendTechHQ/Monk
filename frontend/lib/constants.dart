@@ -1,1 +1,1 @@
-const apiDomain = "http://localhost:8000";
+const apiDomain = "http://0.0.0.0:8000";

@@ -29,8 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       googleSignIn = GoogleSignIn(
-        clientId: "GOOGLE_IOS_CLIENT_ID",
-        serverClientId: "GOOGLE_WEB_CLIENT_ID",
+        clientId:
+            "1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
+        //serverClientId:
+        //   "337392647778-0gs7jthc40jl31vjvmljo4mjq0pni19n.apps.googleusercontent.com",
         scopes: [
           'email',
         ],
