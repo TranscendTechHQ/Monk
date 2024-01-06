@@ -167,31 +167,15 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextButton(
+            IconButton(
+              icon: Image.asset(
+                "lib/images/google_signin_logo.png",
+                width: 100,
+              ),
               onPressed: () {
                 loginWithGoogle();
               },
-              child: const Text("Continue with Google"),
             ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () {
-                loginWithGithub();
-              },
-              child: const Text("Continue with Github"),
-            ),
-            const SizedBox(height: 12),
-            /*Platform.isIOS
-                ? TextButton(
-                    onPressed: () {
-                      loginWithApple();
-                    },
-                    child: const Text("Continue with Apple"),
-                  )
-                : const SizedBox(
-                    height: 0,
-                    width: 0,
-                  ),*/
           ],
         ),
       ),
