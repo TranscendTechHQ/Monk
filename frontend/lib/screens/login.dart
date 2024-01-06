@@ -169,8 +169,8 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             IconButton(
               icon: Image.asset(
-                "lib/images/google_signin_logo.png",
-                width: 100,
+                "assets/signin_with_google_small.png",
+                //width: 100,
               ),
               onPressed: () {
                 loginWithGoogle();
