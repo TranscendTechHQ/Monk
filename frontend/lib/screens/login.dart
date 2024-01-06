@@ -28,9 +28,10 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       );
     } else {
+      var GOOGLE_CLIENT_ID =
+          "337392647778-0gs7jthc40jl31vjvmljo4mjq0pni19n.apps.googleusercontent.com";
       googleSignIn = GoogleSignIn(
-        clientId:
-            "1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
+        clientId: GOOGLE_CLIENT_ID,
         //serverClientId:
         //   "337392647778-0gs7jthc40jl31vjvmljo4mjq0pni19n.apps.googleusercontent.com",
         scopes: [

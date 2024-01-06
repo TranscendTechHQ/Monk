@@ -4,6 +4,9 @@ import os
 
 load_dotenv()
 
+CLIENT_ID="337392647778-0gs7jthc40jl31vjvmljo4mjq0pni19n.apps.googleusercontent.com"
+CLIENT_SECRET="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"
+
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE") == "True"
@@ -70,8 +73,8 @@ thirdparty.init(
                 third_party_id="google",
                 clients=[
                     ProviderClientConfig(
-                        client_id="1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
-                        client_secret="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",
+                        client_id=CLIENT_ID,
+                        client_secret=CLIENT_SECRET,
                     ),
                 ],
             ),
