@@ -11,6 +11,11 @@ from routes.tasks.routers import router as tasks_router
 
 from contextlib import asynccontextmanager
 
+from supertokens_python.recipe.session.framework.fastapi import verify_session
+from supertokens_python.recipe.session import SessionContainer
+from fastapi import Depends
+
+    
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Code to be executed before the application starts up
@@ -23,7 +28,15 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(get_middleware())
 
-# TODO: Add APIs
+@app.get("/sessioninfo")
+async def secure_api(s: SessionContainer = Depends(verify_session())):
+    return {
+        "sessionHandle": s.get_handle(),
+        "userId": s.get_user_id(),
+        "accessTokenPayload": s.get_access_token_payload(),
+    }
+
+
 
 app.add_middleware(
     CORSMiddleware,

@@ -4,11 +4,17 @@ from fastapi.encoders import jsonable_encoder
 
 from .models import TaskModel, UpdateTaskModel
 
+from supertokens_python.recipe.session.framework.fastapi import verify_session
+from supertokens_python.recipe.session import SessionContainer
+from fastapi import Depends
+
 router = APIRouter()
 
 
 @router.post("/", response_description="Create a new task")
-async def create_task(request: Request, task: TaskModel = Body(...)):
+async def create_task(request: Request, task: TaskModel = Body(...),
+                      session: SessionContainer = Depends(verify_session())):
+    user_id = session.get_user_id()
     task = jsonable_encoder(task)
     new_task = await request.app.mongodb["tasks"].insert_one(task)
     created_task = await request.app.mongodb["tasks"].find_one(
