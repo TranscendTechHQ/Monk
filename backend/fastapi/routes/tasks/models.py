@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Union
 import uuid
 from pydantic import BaseModel, Field
 from uuid import UUID
@@ -25,7 +25,9 @@ class TaskModel(BaseModel):
 class UpdateTaskModel(BaseModel):
     #name: Optional[str] = Field(nullable=True)
 
-    
+    ## we have to use SkipJsonSchema to indicate openapi schema generation 
+    ## to skip the optional 'None' of 'null' type, because openapi does not
+    ## support it.
     name: Union[str, SkipJsonSchema[None]] = None
     goal: Union[str, SkipJsonSchema[None]] = None
     completed: Union[bool, SkipJsonSchema[None]] = None

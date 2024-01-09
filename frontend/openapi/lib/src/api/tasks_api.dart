@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/json_object.dart';
 import 'package:openapi/src/api_util.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
@@ -202,9 +203,9 @@ class TasksApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [JsonObject] as data
+  /// Returns a [Future] containing a [Response] with a [BuiltList<TaskModel>] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<JsonObject>> listTasksTaskGet({ 
+  Future<Response<BuiltList<TaskModel>>> listTasksTaskGet({ 
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -233,14 +234,14 @@ class TasksApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    JsonObject? _responseData;
+    BuiltList<TaskModel>? _responseData;
 
     try {
       final rawResponse = _response.data;
       _responseData = rawResponse == null ? null : _serializers.deserialize(
         rawResponse,
-        specifiedType: const FullType(JsonObject),
-      ) as JsonObject;
+        specifiedType: const FullType(BuiltList, [FullType(TaskModel)]),
+      ) as BuiltList<TaskModel>;
 
     } catch (error, stackTrace) {
       throw DioException(
@@ -252,7 +253,7 @@ class TasksApi {
       );
     }
 
-    return Response<JsonObject>(
+    return Response<BuiltList<TaskModel>>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

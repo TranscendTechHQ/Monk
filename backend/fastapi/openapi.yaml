@@ -24,7 +24,11 @@ paths:
           description: Get all tasks
           content:
             application/json:
-              schema: {}
+              schema:
+                items:
+                  $ref: '#/components/schemas/TaskModel'
+                type: array
+                title: Response List Tasks Task  Get
     post:
       tags:
       - tasks

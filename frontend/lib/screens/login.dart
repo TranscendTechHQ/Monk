@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
+
 import 'package:google_sign_in/google_sign_in.dart';
 /*import 'package:sign_in_with_apple/sign_in_with_apple.dart'
     hide AuthorizationRequest;*/
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(context).pushReplacementNamed("/home");
         });
       }
-    } on DioException {
+    } on DioExceptionType catch (e) {
       print("Google sign in failed");
     }
   }

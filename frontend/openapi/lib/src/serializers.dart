@@ -28,6 +28,10 @@ part 'serializers.g.dart';
   ValidationError,
 ])
 Serializers serializers = (_$serializers.toBuilder()
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(TaskModel)]),
+        () => ListBuilder<TaskModel>(),
+      )
       ..add(const OneOfSerializer())
       ..add(const AnyOfSerializer())
       ..add(const DateSerializer())

@@ -23,7 +23,7 @@ void main() {
 
     // List Tasks
     //
-    //Future<JsonObject> listTasksTaskGet() async
+    //Future<BuiltList<TaskModel>> listTasksTaskGet() async
     test('test listTasksTaskGet', () async {
       // TODO
     });

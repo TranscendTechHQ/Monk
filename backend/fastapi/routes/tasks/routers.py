@@ -24,8 +24,12 @@ async def create_task(request: Request, task: TaskModel = Body(...),
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_task)
 
 
-@router.get("/", response_description="Get all tasks")
-async def list_tasks(request: Request):
+@router.get("/", response_description="Get all tasks", 
+            response_model=list[TaskModel],
+            )
+async def list_tasks(request: Request,
+                      session: SessionContainer = Depends(verify_session())):
+    session.get_user_id()
     tasks = []
     for doc in await request.app.mongodb["tasks"].find().to_list(length=100):
         tasks.append(doc)
