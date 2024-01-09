@@ -39,7 +39,7 @@ dependencies:
   flutter_appauth: ^6.0.2
   google_sign_in: ^6.1.1
   openapi:
-    path: /Users/yksoni/code/misc/openapi
+    path: openapi
   #sign_in_with_apple: ^5.0.0
 
 dev_dependencies:

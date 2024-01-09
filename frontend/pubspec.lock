@@ -267,8 +267,8 @@ packages:
   openapi:
     dependency: "direct main"
     description:
-      path: "/Users/yksoni/code/misc/openapi"
-      relative: false
+      path: openapi
+      relative: true
     source: path
     version: "1.0.0"
   path:

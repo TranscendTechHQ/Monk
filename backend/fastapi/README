@@ -1,0 +1,2 @@
+## Extract openapi.yaml from the FastAPI app
+python extract-openapi.py main:app
