@@ -30,6 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> testOpenApi() async {
+    //final api = Openapi().getPetApi();
+    final taskApi = await NetworkManager.instance.openApi.getTasksApi();
+    taskApi.listTasksTaskGet().then((value) {
+      print(value);
+    });
+  }
+
   Future<void> callAPI() async {
     try {
       var response = await NetworkManager.instance.client.get(
@@ -111,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 onPressed: () {
                   callAPI();
+                  testOpenApi();
                 },
                 child: const Text("Call API"),
               ),

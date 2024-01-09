@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'constants.dart';
 import 'package:supertokens_flutter/dio.dart';
+import 'package:openapi/openapi.dart';
 
 class NetworkManager {
   // Step 1: Define a private constructor
@@ -20,11 +21,25 @@ class NetworkManager {
   }
 
   late Dio client;
+  List<Interceptor> interceptors() {
+    return [
+      SuperTokensInterceptorWrapper(client: client),
+    ];
+  }
+
+  late Openapi openApi;
 
   void _initClient() {
     client = Dio(BaseOptions(
       baseUrl: apiDomain,
     ));
-    client.addSupertokensInterceptor();
+    //client.addSupertokensInterceptor();
+    client.interceptors
+        .add(SuperTokensInterceptorWrapper(client: client)); //same as above
+    openApi = Openapi(
+      dio: client,
+      basePathOverride: apiDomain,
+      interceptors: interceptors(),
+    );
   }
 }
