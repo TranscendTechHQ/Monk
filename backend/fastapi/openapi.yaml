@@ -45,7 +45,8 @@ paths:
           description: Create a new task
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/TaskModel'
         '422':
           description: Validation Error
           content:
@@ -70,7 +71,8 @@ paths:
           description: Get a single task
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/TaskModel'
         '422':
           description: Validation Error
           content:
@@ -100,7 +102,8 @@ paths:
           description: Update a task
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/TaskModel'
         '422':
           description: Validation Error
           content:

@@ -30,6 +30,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // get user name
+  Future<String> getUserId() async {
+    return await SuperTokens.getUserId();
+  }
+
+  // refresh session
+  Future<void> manualRefresh() async {
+    // Returns true if session was refreshed, false if session is expired
+    var success = await SuperTokens.attemptRefreshingSession();
+  }
+
   Future<void> testOpenApi() async {
     //final api = Openapi().getPetApi();
     final taskApi = await NetworkManager.instance.openApi.getTasksApi();
@@ -169,8 +180,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor:
                         MaterialStateProperty.all(Color(0xFFff9933)),
                   ),
-                  onPressed: () {
-                    signOut();
+                  onPressed: () async {
+                    await signOut();
                   },
                   child: const Text("Sign out"),
                 ),

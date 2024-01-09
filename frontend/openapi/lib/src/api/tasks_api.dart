@@ -34,9 +34,9 @@ class TasksApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [JsonObject] as data
+  /// Returns a [Future] containing a [Response] with a [TaskModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<JsonObject>> createTaskTaskPost({ 
+  Future<Response<TaskModel>> createTaskTaskPost({ 
     required TaskModel taskModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -86,14 +86,14 @@ class TasksApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    JsonObject? _responseData;
+    TaskModel? _responseData;
 
     try {
       final rawResponse = _response.data;
       _responseData = rawResponse == null ? null : _serializers.deserialize(
         rawResponse,
-        specifiedType: const FullType(JsonObject),
-      ) as JsonObject;
+        specifiedType: const FullType(TaskModel),
+      ) as TaskModel;
 
     } catch (error, stackTrace) {
       throw DioException(
@@ -105,7 +105,7 @@ class TasksApi {
       );
     }
 
-    return Response<JsonObject>(
+    return Response<TaskModel>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -132,7 +132,7 @@ class TasksApi {
   /// Returns a [Future] containing a [Response] with a [JsonObject] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<JsonObject>> deleteTaskTaskIdDelete({ 
-    required JsonObject id,
+    required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -140,7 +140,7 @@ class TasksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(JsonObject)).toString());
+    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
     final _options = Options(
       method: r'DELETE',
       headers: <String, dynamic>{
@@ -277,10 +277,10 @@ class TasksApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [JsonObject] as data
+  /// Returns a [Future] containing a [Response] with a [TaskModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<JsonObject>> showTaskTaskIdGet({ 
-    required JsonObject id,
+  Future<Response<TaskModel>> showTaskTaskIdGet({ 
+    required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -288,7 +288,7 @@ class TasksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(JsonObject)).toString());
+    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{
@@ -309,14 +309,14 @@ class TasksApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    JsonObject? _responseData;
+    TaskModel? _responseData;
 
     try {
       final rawResponse = _response.data;
       _responseData = rawResponse == null ? null : _serializers.deserialize(
         rawResponse,
-        specifiedType: const FullType(JsonObject),
-      ) as JsonObject;
+        specifiedType: const FullType(TaskModel),
+      ) as TaskModel;
 
     } catch (error, stackTrace) {
       throw DioException(
@@ -328,7 +328,7 @@ class TasksApi {
       );
     }
 
-    return Response<JsonObject>(
+    return Response<TaskModel>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -353,10 +353,10 @@ class TasksApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [JsonObject] as data
+  /// Returns a [Future] containing a [Response] with a [TaskModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<JsonObject>> updateTaskTaskIdPut({ 
-    required JsonObject id,
+  Future<Response<TaskModel>> updateTaskTaskIdPut({ 
+    required String id,
     required UpdateTaskModel updateTaskModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -365,7 +365,7 @@ class TasksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(JsonObject)).toString());
+    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
     final _options = Options(
       method: r'PUT',
       headers: <String, dynamic>{
@@ -406,14 +406,14 @@ class TasksApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    JsonObject? _responseData;
+    TaskModel? _responseData;
 
     try {
       final rawResponse = _response.data;
       _responseData = rawResponse == null ? null : _serializers.deserialize(
         rawResponse,
-        specifiedType: const FullType(JsonObject),
-      ) as JsonObject;
+        specifiedType: const FullType(TaskModel),
+      ) as TaskModel;
 
     } catch (error, stackTrace) {
       throw DioException(
@@ -425,7 +425,7 @@ class TasksApi {
       );
     }
 
-    return Response<JsonObject>(
+    return Response<TaskModel>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

@@ -17,7 +17,7 @@ Method | HTTP request | Description
 
 
 # **createTaskTaskPost**
-> JsonObject createTaskTaskPost(taskModel)
+> TaskModel createTaskTaskPost(taskModel)
 
 Create Task
 
@@ -44,7 +44,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**JsonObject**](JsonObject.md)
+[**TaskModel**](TaskModel.md)
 
 ### Authorization
 
@@ -67,7 +67,7 @@ Delete Task
 import 'package:openapi/api.dart';
 
 final api = Openapi().getTasksApi();
-final JsonObject id = ; // JsonObject | 
+final String id = id_example; // String | 
 
 try {
     final response = api.deleteTaskTaskIdDelete(id);
@@ -81,7 +81,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | [**JsonObject**](.md)|  | 
+ **id** | **String**|  | 
 
 ### Return type
 
@@ -136,7 +136,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **showTaskTaskIdGet**
-> JsonObject showTaskTaskIdGet(id)
+> TaskModel showTaskTaskIdGet(id)
 
 Show Task
 
@@ -145,7 +145,7 @@ Show Task
 import 'package:openapi/api.dart';
 
 final api = Openapi().getTasksApi();
-final JsonObject id = ; // JsonObject | 
+final String id = id_example; // String | 
 
 try {
     final response = api.showTaskTaskIdGet(id);
@@ -159,11 +159,11 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | [**JsonObject**](.md)|  | 
+ **id** | **String**|  | 
 
 ### Return type
 
-[**JsonObject**](JsonObject.md)
+[**TaskModel**](TaskModel.md)
 
 ### Authorization
 
@@ -177,7 +177,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateTaskTaskIdPut**
-> JsonObject updateTaskTaskIdPut(id, updateTaskModel)
+> TaskModel updateTaskTaskIdPut(id, updateTaskModel)
 
 Update Task
 
@@ -186,7 +186,7 @@ Update Task
 import 'package:openapi/api.dart';
 
 final api = Openapi().getTasksApi();
-final JsonObject id = ; // JsonObject | 
+final String id = id_example; // String | 
 final UpdateTaskModel updateTaskModel = ; // UpdateTaskModel | 
 
 try {
@@ -201,12 +201,12 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | [**JsonObject**](.md)|  | 
+ **id** | **String**|  | 
  **updateTaskModel** | [**UpdateTaskModel**](UpdateTaskModel.md)|  | 
 
 ### Return type
 
-[**JsonObject**](JsonObject.md)
+[**TaskModel**](TaskModel.md)
 
 ### Authorization
 

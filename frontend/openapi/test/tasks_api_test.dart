@@ -9,14 +9,14 @@ void main() {
   group(TasksApi, () {
     // Create Task
     //
-    //Future<JsonObject> createTaskTaskPost(TaskModel taskModel) async
+    //Future<TaskModel> createTaskTaskPost(TaskModel taskModel) async
     test('test createTaskTaskPost', () async {
       // TODO
     });
 
     // Delete Task
     //
-    //Future<JsonObject> deleteTaskTaskIdDelete(JsonObject id) async
+    //Future<JsonObject> deleteTaskTaskIdDelete(String id) async
     test('test deleteTaskTaskIdDelete', () async {
       // TODO
     });
@@ -30,14 +30,14 @@ void main() {
 
     // Show Task
     //
-    //Future<JsonObject> showTaskTaskIdGet(JsonObject id) async
+    //Future<TaskModel> showTaskTaskIdGet(String id) async
     test('test showTaskTaskIdGet', () async {
       // TODO
     });
 
     // Update Task
     //
-    //Future<JsonObject> updateTaskTaskIdPut(JsonObject id, UpdateTaskModel updateTaskModel) async
+    //Future<TaskModel> updateTaskTaskIdPut(String id, UpdateTaskModel updateTaskModel) async
     test('test updateTaskTaskIdPut', () async {
       // TODO
     });

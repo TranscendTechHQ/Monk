@@ -11,7 +11,8 @@ from fastapi import Depends
 router = APIRouter()
 
 
-@router.post("/", response_description="Create a new task")
+@router.post("/", response_description="Create a new task",
+             response_model=TaskModel)
 async def create_task(request: Request, task: TaskModel = Body(...),
                       session: SessionContainer = Depends(verify_session())):
     user_id = session.get_user_id()
@@ -36,16 +37,21 @@ async def list_tasks(request: Request,
     return tasks
 
 
-@router.get("/{id}", response_description="Get a single task")
-async def show_task(id: str, request: Request):
+@router.get("/{id}", response_description="Get a single task",
+            response_model=TaskModel)
+async def show_task(id: str, request: Request,
+                    session: SessionContainer = Depends(verify_session())):
     if (task := await request.app.mongodb["tasks"].find_one({"_id": id})) is not None:
         return task
 
     raise HTTPException(status_code=404, detail=f"Task {id} not found")
 
 
-@router.put("/{id}", response_description="Update a task")
-async def update_task(id: str, request: Request, task: UpdateTaskModel = Body(...)):
+@router.put("/{id}", response_description="Update a task",
+            response_model=TaskModel,)
+async def update_task(id: str, request: Request, 
+                      task: UpdateTaskModel = Body(...),
+                      session: SessionContainer = Depends(verify_session())):
     task = {k: v for k, v in task.dict().items() if v is not None}
 
     if len(task) >= 1:
@@ -68,7 +74,8 @@ async def update_task(id: str, request: Request, task: UpdateTaskModel = Body(..
 
 
 @router.delete("/{id}", response_description="Delete a task")
-async def delete_task(id: str, request: Request):
+async def delete_task(id: str, request: Request,
+                      session: SessionContainer = Depends(verify_session())):
     delete_result = await request.app.mongodb["tasks"].delete_one({"_id": id})
 
     if delete_result.deleted_count == 1:
