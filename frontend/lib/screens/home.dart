@@ -73,9 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
           bottom: 16,
         ),
         width: double.infinity,
-        clipBehavior: Clip.hardEdge,
+        // clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -84,19 +84,15 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(
-                color: Color(0xFFe7ffed),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
               ),
-              child: const Center(
-                child: Text(
-                  "Login successful",
-                  style: TextStyle(
-                    color: Color(0xFF3eb655),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+              child: Center(
+                  child: Text(
+                "Login successful",
+                style: Theme.of(context).textTheme.headlineSmall,
+              )),
+            ), // this is login successful box
             const Padding(
               padding: EdgeInsets.only(
                 top: 24.0,
@@ -115,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
                     width: 1,
-                    color: Color(0xFFff3f33),
+                    color: Theme.of(context).colorScheme.scrim,
                   ),
                 ),
                 child: Text(userId),
@@ -127,13 +123,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: FilledButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Color(0xFFff9933)),
+                  backgroundColor: MaterialStateProperty.all(
+                      Theme.of(context).colorScheme.tertiaryContainer),
                 ),
                 onPressed: () {
                   callAPI();
                   testOpenApi();
                 },
-                child: const Text("Call API"),
+                child: Text(
+                  "Call API",
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
               ),
             ),
           ],
@@ -177,18 +177,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.topRight,
                 child: FilledButton(
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Color(0xFFff9933)),
+                    backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.tertiaryContainer),
                   ),
                   onPressed: () async {
                     await signOut();
                   },
-                  child: const Text("Sign out"),
+                  child: Text(
+                    "Sign Out",
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
                 ),
               ),
               renderContent(),
-              const SizedBox(height: 16),
-              renderData(),
             ],
           ),
         ),
