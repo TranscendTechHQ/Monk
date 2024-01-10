@@ -11,7 +11,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String userId = "";
-  String data = "";
 
   @override
   void initState() {
@@ -48,19 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
     taskApi.listTasksTaskGet().then((value) {
       print(value);
     });
-  }
-
-  Future<void> callAPI() async {
-    try {
-      var response = await NetworkManager.instance.client.get(
-        "/sessioninfo",
-      );
-      setState(() {
-        data = response.data.toString();
-      });
-    } catch (e) {
-      print(e);
-    }
   }
 
   Widget renderContent() {
@@ -127,39 +113,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       Theme.of(context).colorScheme.tertiaryContainer),
                 ),
                 onPressed: () {
-                  callAPI();
-                  testOpenApi();
+                  Navigator.pushNamed(context, "/journal");
                 },
                 child: Text(
-                  "Call API",
+                  "Go to Journal",
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget renderData() {
-    if (data.isEmpty) {
-      return const SizedBox(
-        width: 0,
-        height: 0,
-      );
-    }
-
-    return Expanded(
-      flex: 1,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(data),
       ),
     );
   }

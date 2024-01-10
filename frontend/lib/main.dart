@@ -5,6 +5,7 @@ import 'constants.dart';
 import 'screens/home.dart';
 import 'screens/login.dart';
 import 'screens/splash.dart';
+import 'screens/journal.dart';
 
 void main() {
   SuperTokens.init(apiDomain: apiDomain);
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         "/": (context) => const SplashScreen(),
         "/home": (context) => const HomeScreen(),
         "/login": (context) => const LoginScreen(),
+        "/journal": (context) => const JournalScreen(),
       },
     );
   }
