@@ -48,10 +48,6 @@ class JournalScreen extends ConsumerWidget {
     // chat display widget
     final blockDisplay = Container(
         width: containerWidth,
-        //alignment: Alignment.topLeft,
-
-        //color: Color.fromARGB(255, 47, 46, 46)),
-
         child: ListView.builder(
           reverse: true,
           controller: _scrollController,
@@ -62,7 +58,7 @@ class JournalScreen extends ConsumerWidget {
               margin: EdgeInsets.all(16),
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).expansionTileTheme.backgroundColor,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.primary,
@@ -88,7 +84,6 @@ class JournalScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         border: Border.all(
           width: 1,
-          color: Theme.of(context).colorScheme.scrim,
         ),
       ),
       child: RawKeyboardListener(
@@ -117,6 +112,8 @@ class JournalScreen extends ConsumerWidget {
             minLines: 2,
             maxLines: 5,
             decoration: const InputDecoration(
+              filled: true,
+              fillColor: Color.fromARGB(255, 188, 105, 240),
               border: OutlineInputBorder(),
               hintText: 'Write your journal here...Press SHIFT+Enter to save',
             )),
