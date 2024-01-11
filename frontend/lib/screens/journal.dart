@@ -17,7 +17,7 @@ class JournalText extends _$JournalText {
   List<String> build() => [];
 
   void addString(String input) {
-    state = [...state, input];
+    state = [input, ...state];
   }
 
   void updateStringAt(int index, String input) {
@@ -46,6 +46,7 @@ class JournalScreen extends ConsumerWidget {
     final blocks = journalText;
     // chat display widget
     final blockDisplay = ListView.builder(
+      reverse: true,
       controller: _scrollController,
       itemCount: blocks.length,
       itemBuilder: (context, index) {
@@ -55,7 +56,7 @@ class JournalScreen extends ConsumerWidget {
           alignment: Alignment.topLeft,
           margin: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: Theme.of(context).expansionTileTheme.backgroundColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: Theme.of(context).colorScheme.primary,
