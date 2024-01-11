@@ -70,6 +70,7 @@ class JournalScreen extends ConsumerWidget {
                 softWrap: true,
                 style: TextStyle(
                   fontSize: 15,
+                  fontFamily: 'NotoEmoji',
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
