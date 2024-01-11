@@ -108,9 +108,10 @@ class JournalScreen extends ConsumerWidget {
         child: TextField(
             controller: _controller,
             //keyboardType: TextInputType.multiline,
-            maxLines: null,
+            minLines: 2,
+            maxLines: 5,
             decoration: const InputDecoration(
-              border: InputBorder.none,
+              border: OutlineInputBorder(),
               hintText: 'Write your journal here...Press SHIFT+Enter to save',
             )),
       ),
