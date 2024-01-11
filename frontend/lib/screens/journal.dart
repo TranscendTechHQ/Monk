@@ -35,6 +35,7 @@ class JournalScreen extends ConsumerWidget {
   var emojiParser = EmojiParser(init: true);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final containerWidth = 800.0;
     final today = DateTime.now();
     final journalText = ref.watch(journalTextProvider);
     final TextEditingController _controller = TextEditingController();
@@ -45,40 +46,44 @@ class JournalScreen extends ConsumerWidget {
 
     final blocks = journalText;
     // chat display widget
-    final blockDisplay = ListView.builder(
-      reverse: true,
-      controller: _scrollController,
-      itemCount: blocks.length,
-      itemBuilder: (context, index) {
-        final block = blocks[index];
-        return Container(
-          width: 50,
-          alignment: Alignment.topLeft,
-          margin: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).expansionTileTheme.backgroundColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.primary,
-              width: 2,
-            ),
-          ),
-          //color: Color.fromARGB(255, 47, 46, 46)),
-          padding: EdgeInsets.all(16),
-          child: Text(
-            emojiParser.emojify(block),
-            softWrap: true,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        );
-      },
-    );
+    final blockDisplay = Container(
+        width: containerWidth,
+        //alignment: Alignment.topLeft,
+
+        //color: Color.fromARGB(255, 47, 46, 46)),
+
+        child: ListView.builder(
+          reverse: true,
+          controller: _scrollController,
+          itemCount: blocks.length,
+          itemBuilder: (context, index) {
+            final block = blocks[index];
+            return Container(
+              margin: EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).expansionTileTheme.backgroundColor,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+              child: Text(
+                emojiParser.emojify(block),
+                softWrap: true,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            );
+          },
+        ));
 
     final blockInput = Container(
+      width: containerWidth,
       decoration: BoxDecoration(
         border: Border.all(
           width: 1,
@@ -122,6 +127,7 @@ class JournalScreen extends ConsumerWidget {
           title: Text('${today.year}-${today.month}-${today.day}'),
         ),
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
               child: blockDisplay,
