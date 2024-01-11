@@ -83,6 +83,7 @@ class JournalScreen extends ConsumerWidget {
         ));
 
     final blockInput = Container(
+      //alignment: Alignment.center,
       width: containerWidth,
       decoration: BoxDecoration(
         border: Border.all(
@@ -126,14 +127,16 @@ class JournalScreen extends ConsumerWidget {
         appBar: AppBar(
           title: Text('${today.year}-${today.month}-${today.day}'),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              child: blockDisplay,
-            ),
-            blockInput,
-          ],
-        ));
+        body: Align(
+            alignment: Alignment.center,
+            child: Column(
+              //mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: blockDisplay,
+                ),
+                blockInput,
+              ],
+            )));
   }
 }
