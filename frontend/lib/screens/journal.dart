@@ -133,6 +133,7 @@ class JournalScreen extends ConsumerWidget {
                   child: blockDisplay,
                 ),
                 blockInput,
+                Padding(padding: EdgeInsets.all(30))
               ],
             )));
   }
