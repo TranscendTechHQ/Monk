@@ -8,6 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from config import settings
 
 from routes.tasks.routers import router as tasks_router
+from routes.blocks.routers import router as blocks_router
 
 from contextlib import asynccontextmanager
 
@@ -62,6 +63,7 @@ async def shutdown_db_client():
 
 
 app.include_router(tasks_router, tags=["tasks"], prefix="/task")
+app.include_router(blocks_router, tags=["blocks"], prefix="/block")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 from typing import Union
 import uuid
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from uuid import UUID
 from pydantic.json_schema import SkipJsonSchema
 
@@ -9,17 +9,17 @@ class TaskModel(BaseModel):
     name: str = Field(...) # what is the task
     goal: str = Field(...) # why are we doing the task
     completed: bool = Field(...)
-
-    class Config:
-        populate_by_name = True
-        ## will not show _id in the doc as it is autmatically generated in the backend
-        json_schema_extra = {
-            "example": {
-                "name": "An informative task title",
-                "goal": "Why are we doing it?",
-                "completed": True,
-            }
-        }
+    model_config = ConfigDict(extra='ignore',
+                                populate_by_name=True,
+                                arbitrary_types_allowed=True,
+                                json_schema_extra = {
+                                    "example": {
+                                    "name": "An informative task title",
+                                    "goal": "Why are we doing it?",
+                                    "completed": True,
+                                }
+                             }
+                            )
 
 
 class UpdateTaskModel(BaseModel):
@@ -32,11 +32,14 @@ class UpdateTaskModel(BaseModel):
     goal: Union[str, SkipJsonSchema[None]] = None
     completed: Union[bool, SkipJsonSchema[None]] = None
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "name": "An informative task title",
-                "goal": "Why are we doing it?",
-                "completed": True,
-            }
-        }
+    model_config = ConfigDict(extra='ignore',
+                                populate_by_name=True,
+                                arbitrary_types_allowed=True,
+                                json_schema_extra = {
+                                    "example": {
+                                    "name": "An informative task title",
+                                    "goal": "Why are we doing it?",
+                                    "completed": True,
+                                }
+                             }
+                            )

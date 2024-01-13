@@ -46,13 +46,14 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:openapi/openapi.dart';
 
 
-final api = Openapi().getDefaultApi();
+final api = Openapi().getBlocksApi();
+final BlockModel blockModel = ; // BlockModel | 
 
 try {
-    final response = await api.secureApiSessioninfoGet();
+    final response = await api.createBlockBlockBlocksPost(blockModel);
     print(response);
 } catch on DioException (e) {
-    print("Exception when calling DefaultApi->secureApiSessioninfoGet: $e\n");
+    print("Exception when calling BlocksApi->createBlockBlockBlocksPost: $e\n");
 }
 
 ```
@@ -63,6 +64,11 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*BlocksApi*](doc/BlocksApi.md) | [**createBlockBlockBlocksPost**](doc/BlocksApi.md#createblockblockblockspost) | **POST** /block/blocks | Create Block
+[*BlocksApi*](doc/BlocksApi.md) | [**deleteBlockBlockBlocksBlockIdDelete**](doc/BlocksApi.md#deleteblockblockblocksblockiddelete) | **DELETE** /block/blocks/{block_id} | Delete Block
+[*BlocksApi*](doc/BlocksApi.md) | [**getBlockBlockBlocksBlockIdGet**](doc/BlocksApi.md#getblockblockblocksblockidget) | **GET** /block/blocks/{block_id} | Get Block
+[*BlocksApi*](doc/BlocksApi.md) | [**getBlocksBlockBlocksGet**](doc/BlocksApi.md#getblocksblockblocksget) | **GET** /block/blocks | Get Blocks
+[*BlocksApi*](doc/BlocksApi.md) | [**updateBlockBlockBlocksBlockIdPut**](doc/BlocksApi.md#updateblockblockblocksblockidput) | **PUT** /block/blocks/{block_id} | Update Block
 [*DefaultApi*](doc/DefaultApi.md) | [**secureApiSessioninfoGet**](doc/DefaultApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*TasksApi*](doc/TasksApi.md) | [**createTaskTaskPost**](doc/TasksApi.md#createtasktaskpost) | **POST** /task/ | Create Task
 [*TasksApi*](doc/TasksApi.md) | [**deleteTaskTaskIdDelete**](doc/TasksApi.md#deletetasktaskiddelete) | **DELETE** /task/{id} | Delete Task
@@ -73,8 +79,11 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [BlockCollection](doc/BlockCollection.md)
+ - [BlockModel](doc/BlockModel.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [TaskModel](doc/TaskModel.md)
+ - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateTaskModel](doc/UpdateTaskModel.md)
  - [ValidationError](doc/ValidationError.md)
 

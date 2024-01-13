@@ -7,8 +7,11 @@ part of 'serializers.dart';
 // **************************************************************************
 
 Serializers _$serializers = (new Serializers().toBuilder()
+      ..add(BlockCollection.serializer)
+      ..add(BlockModel.serializer)
       ..add(HTTPValidationError.serializer)
       ..add(TaskModel.serializer)
+      ..add(UpdateBlockModel.serializer)
       ..add(UpdateTaskModel.serializer)
       ..add(ValidationError.serializer))
     .build();

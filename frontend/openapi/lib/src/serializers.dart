@@ -14,16 +14,22 @@ import 'package:built_value/iso_8601_date_time_serializer.dart';
 import 'package:openapi/src/date_serializer.dart';
 import 'package:openapi/src/model/date.dart';
 
+import 'package:openapi/src/model/block_collection.dart';
+import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/task_model.dart';
+import 'package:openapi/src/model/update_block_model.dart';
 import 'package:openapi/src/model/update_task_model.dart';
 import 'package:openapi/src/model/validation_error.dart';
 
 part 'serializers.g.dart';
 
 @SerializersFor([
+  BlockCollection,
+  BlockModel,
   HTTPValidationError,
   TaskModel,
+  UpdateBlockModel,
   UpdateTaskModel,
   ValidationError,
 ])

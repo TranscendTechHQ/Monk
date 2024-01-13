@@ -134,8 +134,185 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /block/blocks:
+    post:
+      tags:
+      - blocks
+      summary: Create Block
+      operationId: create_block_block_blocks_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockModel'
+      responses:
+        '200':
+          description: Create a new block
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockModel'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - blocks
+      summary: Get Blocks
+      operationId: get_blocks_block_blocks_get
+      parameters:
+      - name: block_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Block Id
+      responses:
+        '200':
+          description: Get all blocks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockCollection'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /block/blocks/{block_id}:
+    put:
+      tags:
+      - blocks
+      summary: Update Block
+      operationId: update_block_block_blocks__block_id__put
+      parameters:
+      - name: block_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Block Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBlockModel'
+      responses:
+        '200':
+          description: Update a block
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockModel'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - blocks
+      summary: Delete Block
+      operationId: delete_block_block_blocks__block_id__delete
+      parameters:
+      - name: block_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Block Id
+      responses:
+        '200':
+          description: Delete a block
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - blocks
+      summary: Get Block
+      operationId: get_block_block_blocks__block_id__get
+      parameters:
+      - name: block_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Block Id
+      responses:
+        '200':
+          description: Get a single block
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockModel'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    BlockCollection:
+      properties:
+        blocks:
+          items:
+            $ref: '#/components/schemas/BlockModel'
+          type: array
+          title: Blocks
+      type: object
+      required:
+      - blocks
+      title: BlockCollection
+      example:
+        blocks:
+        - content: This is the content of the block
+          metadata:
+            created_at: '2021-01-01T00:00:00.000000'
+            description: This block describes a task
+            tags:
+            - tag1
+            - tag2
+            type: task
+    BlockModel:
+      properties:
+        _id:
+          type: string
+          format: uuid
+          title: ' Id'
+        content:
+          type: string
+          title: Content
+        metadata:
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - content
+      title: BlockModel
+      example:
+        content: This is the content of the block
+        metadata:
+          created_at: '2021-01-01T00:00:00.000000'
+          description: This block describes a task
+          tags:
+          - tag1
+          - tag2
+          type: task
     HTTPValidationError:
       properties:
         detail:
@@ -170,6 +347,25 @@ components:
         completed: true
         goal: Why are we doing it?
         name: An informative task title
+    UpdateBlockModel:
+      properties:
+        content:
+          type: string
+          title: Content
+        metadata:
+          type: object
+          title: Metadata
+      type: object
+      title: UpdateBlockModel
+      example:
+        content: This is the content of the block
+        metadata:
+          created_at: '2021-01-01T00:00:00.000000'
+          description: This block describes a task
+          tags:
+          - tag1
+          - tag2
+          type: task
     UpdateTaskModel:
       properties:
         name:
