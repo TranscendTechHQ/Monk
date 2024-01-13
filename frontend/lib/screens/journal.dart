@@ -65,9 +65,9 @@ class JournalScreen extends ConsumerWidget {
                   width: 2,
                 ),
               ),
-              child: Text(
+              child: SelectableText(
                 emojiParser.emojify(block),
-                softWrap: true,
+                //softWrap: true,
                 style: TextStyle(
                   fontSize: 15,
                   fontFamily: 'NotoEmoji',
