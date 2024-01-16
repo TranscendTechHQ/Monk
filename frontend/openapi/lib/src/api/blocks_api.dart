@@ -4,11 +4,11 @@
 
 import 'dart:async';
 
-import 'package:built_value/serializer.dart';
+// ignore: unused_import
+import 'dart:convert';
+import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
-import 'package:built_value/json_object.dart';
-import 'package:openapi/src/api_util.dart';
 import 'package:openapi/src/model/block_collection.dart';
 import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
@@ -18,9 +18,7 @@ class BlocksApi {
 
   final Dio _dio;
 
-  final Serializers _serializers;
-
-  const BlocksApi(this._dio, this._serializers);
+  const BlocksApi(this._dio);
 
   /// Create Block
   /// 
@@ -62,9 +60,7 @@ class BlocksApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(BlockModel);
-      _bodyData = _serializers.serialize(blockModel, specifiedType: _type);
-
+_bodyData=jsonEncode(blockModel);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(
@@ -89,12 +85,8 @@ class BlocksApi {
     BlockModel? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(BlockModel),
-      ) as BlockModel;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<BlockModel, BlockModel>(rawData, 'BlockModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -129,10 +121,10 @@ class BlocksApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [JsonObject] as data
+  /// Returns a [Future] containing a [Response] with a [Object] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<JsonObject>> deleteBlockBlockBlocksBlockIdDelete({ 
-    required JsonObject blockId,
+  Future<Response<Object>> deleteBlockBlockBlocksBlockIdDelete({ 
+    required Object blockId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -140,7 +132,7 @@ class BlocksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/block/blocks/{block_id}'.replaceAll('{' r'block_id' '}', encodeQueryParameter(_serializers, blockId, const FullType(JsonObject)).toString());
+    final _path = r'/block/blocks/{block_id}'.replaceAll('{' r'block_id' '}', blockId.toString());
     final _options = Options(
       method: r'DELETE',
       headers: <String, dynamic>{
@@ -161,15 +153,11 @@ class BlocksApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    JsonObject? _responseData;
+    Object? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(JsonObject),
-      ) as JsonObject;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'Object', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -180,7 +168,7 @@ class BlocksApi {
       );
     }
 
-    return Response<JsonObject>(
+    return Response<Object>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -207,7 +195,7 @@ class BlocksApi {
   /// Returns a [Future] containing a [Response] with a [BlockModel] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BlockModel>> getBlockBlockBlocksBlockIdGet({ 
-    required JsonObject blockId,
+    required Object blockId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -215,7 +203,7 @@ class BlocksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/block/blocks/{block_id}'.replaceAll('{' r'block_id' '}', encodeQueryParameter(_serializers, blockId, const FullType(JsonObject)).toString());
+    final _path = r'/block/blocks/{block_id}'.replaceAll('{' r'block_id' '}', blockId.toString());
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{
@@ -239,12 +227,8 @@ class BlocksApi {
     BlockModel? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(BlockModel),
-      ) as BlockModel;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<BlockModel, BlockModel>(rawData, 'BlockModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -282,7 +266,7 @@ class BlocksApi {
   /// Returns a [Future] containing a [Response] with a [BlockCollection] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BlockCollection>> getBlocksBlockBlocksGet({ 
-    required JsonObject blockId,
+    required Object blockId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -304,7 +288,7 @@ class BlocksApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'block_id': encodeQueryParameter(_serializers, blockId, const FullType(JsonObject)),
+      r'block_id': blockId,
     };
 
     final _response = await _dio.request<Object>(
@@ -319,12 +303,8 @@ class BlocksApi {
     BlockCollection? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(BlockCollection),
-      ) as BlockCollection;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<BlockCollection, BlockCollection>(rawData, 'BlockCollection', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -363,7 +343,7 @@ class BlocksApi {
   /// Returns a [Future] containing a [Response] with a [BlockModel] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BlockModel>> updateBlockBlockBlocksBlockIdPut({ 
-    required JsonObject blockId,
+    required Object blockId,
     required UpdateBlockModel updateBlockModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -372,7 +352,7 @@ class BlocksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/block/blocks/{block_id}'.replaceAll('{' r'block_id' '}', encodeQueryParameter(_serializers, blockId, const FullType(JsonObject)).toString());
+    final _path = r'/block/blocks/{block_id}'.replaceAll('{' r'block_id' '}', blockId.toString());
     final _options = Options(
       method: r'PUT',
       headers: <String, dynamic>{
@@ -389,9 +369,7 @@ class BlocksApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(UpdateBlockModel);
-      _bodyData = _serializers.serialize(updateBlockModel, specifiedType: _type);
-
+_bodyData=jsonEncode(updateBlockModel);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(
@@ -416,12 +394,8 @@ class BlocksApi {
     BlockModel? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(BlockModel),
-      ) as BlockModel;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<BlockModel, BlockModel>(rawData, 'BlockModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,

@@ -27,10 +27,12 @@ async def delete_mongo_document(id: str, collection):
         return doc
 
 async def create_mongo_document(document: dict, collection):
+
     new_document = await collection.insert_one(document)
+    
     created_document = await collection.find_one(
         {"_id": new_document.inserted_id})
-
+    
     return created_document
 
 async def update_mongo_document_fields(id:str, fields: dict, collection):
@@ -62,13 +64,14 @@ async def create_block(request: Request, block: BlockModel = Body(...),
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     user_id = session.get_user_id()
+    
     block = jsonable_encoder(block)
     
-    created_block = create_mongo_document(block, 
+    created_block = await create_mongo_document(block, 
                                           request.app.mongodb["blocks"])
-
+    
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
-                        content=created_block)
+                       content=jsonable_encoder(created_block))
 
 @router.put("/blocks/{block_id}", response_model=BlockModel, 
             response_description="Update a block")

@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 
 # **secureApiSessioninfoGet**
-> JsonObject secureApiSessioninfoGet()
+> Object secureApiSessioninfoGet()
 
 Secure Api
 
@@ -36,7 +36,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**JsonObject**](JsonObject.md)
+**Object**
 
 ### Authorization
 

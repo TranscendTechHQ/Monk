@@ -3,127 +3,68 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:built_value/json_object.dart';
-import 'package:built_value/built_value.dart';
-import 'package:built_value/serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'update_block_model.g.dart';
 
-/// UpdateBlockModel
-///
-/// Properties:
-/// * [content] 
-/// * [metadata] 
-@BuiltValue()
-abstract class UpdateBlockModel implements Built<UpdateBlockModel, UpdateBlockModelBuilder> {
-  @BuiltValueField(wireName: r'content')
-  JsonObject? get content;
 
-  @BuiltValueField(wireName: r'metadata')
-  JsonObject? get metadata;
+@JsonSerializable(
+  checked: true,
+  createToJson: true,
+  disallowUnrecognizedKeys: false,
+  explicitToJson: true,
+)
+class UpdateBlockModel {
+  /// Returns a new [UpdateBlockModel] instance.
+  UpdateBlockModel({
 
-  UpdateBlockModel._();
+     this.content,
 
-  factory UpdateBlockModel([void updates(UpdateBlockModelBuilder b)]) = _$UpdateBlockModel;
+     this.metadata,
+  });
 
-  @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(UpdateBlockModelBuilder b) => b;
+  @JsonKey(
+    
+    name: r'content',
+    required: false,
+    includeIfNull: false
+  )
 
-  @BuiltValueSerializer(custom: true)
-  static Serializer<UpdateBlockModel> get serializer => _$UpdateBlockModelSerializer();
-}
 
-class _$UpdateBlockModelSerializer implements PrimitiveSerializer<UpdateBlockModel> {
-  @override
-  final Iterable<Type> types = const [UpdateBlockModel, _$UpdateBlockModel];
+  final Object? content;
 
-  @override
-  final String wireName = r'UpdateBlockModel';
 
-  Iterable<Object?> _serializeProperties(
-    Serializers serializers,
-    UpdateBlockModel object, {
-    FullType specifiedType = FullType.unspecified,
-  }) sync* {
-    if (object.content != null) {
-      yield r'content';
-      yield serializers.serialize(
-        object.content,
-        specifiedType: const FullType.nullable(JsonObject),
-      );
-    }
-    if (object.metadata != null) {
-      yield r'metadata';
-      yield serializers.serialize(
-        object.metadata,
-        specifiedType: const FullType.nullable(JsonObject),
-      );
-    }
-  }
+
+  @JsonKey(
+    
+    name: r'metadata',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final Object? metadata;
+
+
 
   @override
-  Object serialize(
-    Serializers serializers,
-    UpdateBlockModel object, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
-  }
-
-  void _deserializeProperties(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-    required List<Object?> serializedList,
-    required UpdateBlockModelBuilder result,
-    required List<Object?> unhandled,
-  }) {
-    for (var i = 0; i < serializedList.length; i += 2) {
-      final key = serializedList[i] as String;
-      final value = serializedList[i + 1];
-      switch (key) {
-        case r'content':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.content = valueDes;
-          break;
-        case r'metadata':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.metadata = valueDes;
-          break;
-        default:
-          unhandled.add(key);
-          unhandled.add(value);
-          break;
-      }
-    }
-  }
+  bool operator ==(Object other) => identical(this, other) || other is UpdateBlockModel &&
+     other.content == content &&
+     other.metadata == metadata;
 
   @override
-  UpdateBlockModel deserialize(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    final result = UpdateBlockModelBuilder();
-    final serializedList = (serialized as Iterable<Object?>).toList();
-    final unhandled = <Object?>[];
-    _deserializeProperties(
-      serializers,
-      serialized,
-      specifiedType: specifiedType,
-      serializedList: serializedList,
-      unhandled: unhandled,
-      result: result,
-    );
-    return result.build();
+  int get hashCode =>
+    (content == null ? 0 : content.hashCode) +
+    (metadata == null ? 0 : metadata.hashCode);
+
+  factory UpdateBlockModel.fromJson(Map<String, dynamic> json) => _$UpdateBlockModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UpdateBlockModelToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
   }
+
 }
 

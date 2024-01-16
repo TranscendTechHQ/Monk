@@ -1,10 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
+import '../network.dart';
+import 'package:built_value/json_object.dart';
+
 part 'journal.g.dart';
+
+Future<void> createBlock(String text) async {
+  final blockApi = await NetworkManager.instance.openApi.getBlocksApi();
+  JsonObject? jsonObject = JsonObject(jsonDecode('{"content":"hello"}'));
+  //print(test);
+  //JsonObject? jsonObject = JsonObject(jsonDecode("""{"content": "hello"}"""));
+
+  blockApi.createBlockBlockBlocksPost(blockModel: BlockModel(content: "hello"));
+}
 
 // a riverpod provider that stores the content of a single day's journal entry
 // this entry can be accessed from anywhere in the app and also be sent to the
@@ -16,8 +31,9 @@ class JournalText extends _$JournalText {
   @override
   List<String> build() => [];
 
-  void addString(String input) {
+  void addString(String input) async {
     state = [input, ...state];
+    await createBlock(input);
   }
 
   void updateStringAt(int index, String input) {
@@ -67,7 +83,6 @@ class JournalScreen extends ConsumerWidget {
               ),
               child: SelectableText(
                 emojiParser.emojify(block),
-                //softWrap: true,
                 style: TextStyle(
                   fontSize: 15,
                   fontFamily: 'NotoEmoji',

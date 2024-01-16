@@ -4,12 +4,11 @@
 
 import 'dart:async';
 
-import 'package:built_value/serializer.dart';
+// ignore: unused_import
+import 'dart:convert';
+import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
-import 'package:built_collection/built_collection.dart';
-import 'package:built_value/json_object.dart';
-import 'package:openapi/src/api_util.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/task_model.dart';
 import 'package:openapi/src/model/update_task_model.dart';
@@ -18,9 +17,7 @@ class TasksApi {
 
   final Dio _dio;
 
-  final Serializers _serializers;
-
-  const TasksApi(this._dio, this._serializers);
+  const TasksApi(this._dio);
 
   /// Create Task
   /// 
@@ -62,9 +59,7 @@ class TasksApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(TaskModel);
-      _bodyData = _serializers.serialize(taskModel, specifiedType: _type);
-
+_bodyData=jsonEncode(taskModel);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(
@@ -89,12 +84,8 @@ class TasksApi {
     TaskModel? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(TaskModel),
-      ) as TaskModel;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<TaskModel, TaskModel>(rawData, 'TaskModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -129,9 +120,9 @@ class TasksApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [JsonObject] as data
+  /// Returns a [Future] containing a [Response] with a [Object] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<JsonObject>> deleteTaskTaskIdDelete({ 
+  Future<Response<Object>> deleteTaskTaskIdDelete({ 
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -140,7 +131,7 @@ class TasksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', id.toString());
     final _options = Options(
       method: r'DELETE',
       headers: <String, dynamic>{
@@ -161,15 +152,11 @@ class TasksApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    JsonObject? _responseData;
+    Object? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(JsonObject),
-      ) as JsonObject;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'Object', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -180,7 +167,7 @@ class TasksApi {
       );
     }
 
-    return Response<JsonObject>(
+    return Response<Object>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -203,9 +190,9 @@ class TasksApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [BuiltList<TaskModel>] as data
+  /// Returns a [Future] containing a [Response] with a [List<TaskModel>] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<BuiltList<TaskModel>>> listTasksTaskGet({ 
+  Future<Response<List<TaskModel>>> listTasksTaskGet({ 
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -234,15 +221,11 @@ class TasksApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    BuiltList<TaskModel>? _responseData;
+    List<TaskModel>? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(BuiltList, [FullType(TaskModel)]),
-      ) as BuiltList<TaskModel>;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<List<TaskModel>, TaskModel>(rawData, 'List<TaskModel>', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -253,7 +236,7 @@ class TasksApi {
       );
     }
 
-    return Response<BuiltList<TaskModel>>(
+    return Response<List<TaskModel>>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -288,7 +271,7 @@ class TasksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', id.toString());
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{
@@ -312,12 +295,8 @@ class TasksApi {
     TaskModel? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(TaskModel),
-      ) as TaskModel;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<TaskModel, TaskModel>(rawData, 'TaskModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -365,7 +344,7 @@ class TasksApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/task/{id}'.replaceAll('{' r'id' '}', id.toString());
     final _options = Options(
       method: r'PUT',
       headers: <String, dynamic>{
@@ -382,9 +361,7 @@ class TasksApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(UpdateTaskModel);
-      _bodyData = _serializers.serialize(updateTaskModel, specifiedType: _type);
-
+_bodyData=jsonEncode(updateTaskModel);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(
@@ -409,12 +386,8 @@ class TasksApi {
     TaskModel? _responseData;
 
     try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(TaskModel),
-      ) as TaskModel;
-
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<TaskModel, TaskModel>(rawData, 'TaskModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,

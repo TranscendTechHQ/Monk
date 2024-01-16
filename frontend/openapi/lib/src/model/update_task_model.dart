@@ -3,146 +3,84 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:built_value/json_object.dart';
-import 'package:built_value/built_value.dart';
-import 'package:built_value/serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'update_task_model.g.dart';
 
-/// UpdateTaskModel
-///
-/// Properties:
-/// * [name] 
-/// * [goal] 
-/// * [completed] 
-@BuiltValue()
-abstract class UpdateTaskModel implements Built<UpdateTaskModel, UpdateTaskModelBuilder> {
-  @BuiltValueField(wireName: r'name')
-  JsonObject? get name;
 
-  @BuiltValueField(wireName: r'goal')
-  JsonObject? get goal;
+@JsonSerializable(
+  checked: true,
+  createToJson: true,
+  disallowUnrecognizedKeys: false,
+  explicitToJson: true,
+)
+class UpdateTaskModel {
+  /// Returns a new [UpdateTaskModel] instance.
+  UpdateTaskModel({
 
-  @BuiltValueField(wireName: r'completed')
-  JsonObject? get completed;
+     this.name,
 
-  UpdateTaskModel._();
+     this.goal,
 
-  factory UpdateTaskModel([void updates(UpdateTaskModelBuilder b)]) = _$UpdateTaskModel;
+     this.completed,
+  });
 
-  @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(UpdateTaskModelBuilder b) => b;
+  @JsonKey(
+    
+    name: r'name',
+    required: false,
+    includeIfNull: false
+  )
 
-  @BuiltValueSerializer(custom: true)
-  static Serializer<UpdateTaskModel> get serializer => _$UpdateTaskModelSerializer();
-}
 
-class _$UpdateTaskModelSerializer implements PrimitiveSerializer<UpdateTaskModel> {
-  @override
-  final Iterable<Type> types = const [UpdateTaskModel, _$UpdateTaskModel];
+  final Object? name;
 
-  @override
-  final String wireName = r'UpdateTaskModel';
 
-  Iterable<Object?> _serializeProperties(
-    Serializers serializers,
-    UpdateTaskModel object, {
-    FullType specifiedType = FullType.unspecified,
-  }) sync* {
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
-        specifiedType: const FullType.nullable(JsonObject),
-      );
-    }
-    if (object.goal != null) {
-      yield r'goal';
-      yield serializers.serialize(
-        object.goal,
-        specifiedType: const FullType.nullable(JsonObject),
-      );
-    }
-    if (object.completed != null) {
-      yield r'completed';
-      yield serializers.serialize(
-        object.completed,
-        specifiedType: const FullType.nullable(JsonObject),
-      );
-    }
-  }
+
+  @JsonKey(
+    
+    name: r'goal',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final Object? goal;
+
+
+
+  @JsonKey(
+    
+    name: r'completed',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final Object? completed;
+
+
 
   @override
-  Object serialize(
-    Serializers serializers,
-    UpdateTaskModel object, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
-  }
-
-  void _deserializeProperties(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-    required List<Object?> serializedList,
-    required UpdateTaskModelBuilder result,
-    required List<Object?> unhandled,
-  }) {
-    for (var i = 0; i < serializedList.length; i += 2) {
-      final key = serializedList[i] as String;
-      final value = serializedList[i + 1];
-      switch (key) {
-        case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.name = valueDes;
-          break;
-        case r'goal':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.goal = valueDes;
-          break;
-        case r'completed':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.completed = valueDes;
-          break;
-        default:
-          unhandled.add(key);
-          unhandled.add(value);
-          break;
-      }
-    }
-  }
+  bool operator ==(Object other) => identical(this, other) || other is UpdateTaskModel &&
+     other.name == name &&
+     other.goal == goal &&
+     other.completed == completed;
 
   @override
-  UpdateTaskModel deserialize(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    final result = UpdateTaskModelBuilder();
-    final serializedList = (serialized as Iterable<Object?>).toList();
-    final unhandled = <Object?>[];
-    _deserializeProperties(
-      serializers,
-      serialized,
-      specifiedType: specifiedType,
-      serializedList: serializedList,
-      unhandled: unhandled,
-      result: result,
-    );
-    return result.build();
+  int get hashCode =>
+    (name == null ? 0 : name.hashCode) +
+    (goal == null ? 0 : goal.hashCode) +
+    (completed == null ? 0 : completed.hashCode);
+
+  factory UpdateTaskModel.fromJson(Map<String, dynamic> json) => _$UpdateTaskModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UpdateTaskModelToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
   }
+
 }
 

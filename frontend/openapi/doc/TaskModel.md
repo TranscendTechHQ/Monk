@@ -8,10 +8,10 @@ import 'package:openapi/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | [**JsonObject**](.md) |  | [optional] 
-**name** | [**JsonObject**](.md) |  | 
-**goal** | [**JsonObject**](.md) |  | 
-**completed** | [**JsonObject**](.md) |  | 
+**id** | **Object** |  | [optional] 
+**name** | **Object** |  | 
+**goal** | **Object** |  | 
+**completed** | **Object** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

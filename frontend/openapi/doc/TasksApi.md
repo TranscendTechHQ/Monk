@@ -58,7 +58,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **deleteTaskTaskIdDelete**
-> JsonObject deleteTaskTaskIdDelete(id)
+> Object deleteTaskTaskIdDelete(id)
 
 Delete Task
 
@@ -85,7 +85,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**JsonObject**](JsonObject.md)
+**Object**
 
 ### Authorization
 
@@ -99,7 +99,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **listTasksTaskGet**
-> BuiltList<TaskModel> listTasksTaskGet()
+> List<TaskModel> listTasksTaskGet()
 
 List Tasks
 
@@ -122,7 +122,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**BuiltList&lt;TaskModel&gt;**](TaskModel.md)
+[**List&lt;TaskModel&gt;**](TaskModel.md)
 
 ### Authorization
 

@@ -9,7 +9,7 @@ void main() {
   group(DefaultApi, () {
     // Secure Api
     //
-    //Future<JsonObject> secureApiSessioninfoGet() async
+    //Future<Object> secureApiSessioninfoGet() async
     test('test secureApiSessioninfoGet', () async {
       // TODO
     });

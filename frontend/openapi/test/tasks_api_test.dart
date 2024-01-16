@@ -16,14 +16,14 @@ void main() {
 
     // Delete Task
     //
-    //Future<JsonObject> deleteTaskTaskIdDelete(String id) async
+    //Future<Object> deleteTaskTaskIdDelete(String id) async
     test('test deleteTaskTaskIdDelete', () async {
       // TODO
     });
 
     // List Tasks
     //
-    //Future<BuiltList<TaskModel>> listTasksTaskGet() async
+    //Future<List<TaskModel>> listTasksTaskGet() async
     test('test listTasksTaskGet', () async {
       // TODO
     });

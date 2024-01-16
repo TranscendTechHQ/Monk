@@ -16,28 +16,28 @@ void main() {
 
     // Delete Block
     //
-    //Future<JsonObject> deleteBlockBlockBlocksBlockIdDelete(JsonObject blockId) async
+    //Future<Object> deleteBlockBlockBlocksBlockIdDelete(Object blockId) async
     test('test deleteBlockBlockBlocksBlockIdDelete', () async {
       // TODO
     });
 
     // Get Block
     //
-    //Future<BlockModel> getBlockBlockBlocksBlockIdGet(JsonObject blockId) async
+    //Future<BlockModel> getBlockBlockBlocksBlockIdGet(Object blockId) async
     test('test getBlockBlockBlocksBlockIdGet', () async {
       // TODO
     });
 
     // Get Blocks
     //
-    //Future<BlockCollection> getBlocksBlockBlocksGet(JsonObject blockId) async
+    //Future<BlockCollection> getBlocksBlockBlocksGet(Object blockId) async
     test('test getBlocksBlockBlocksGet', () async {
       // TODO
     });
 
     // Update Block
     //
-    //Future<BlockModel> updateBlockBlockBlocksBlockIdPut(JsonObject blockId, UpdateBlockModel updateBlockModel) async
+    //Future<BlockModel> updateBlockBlockBlocksBlockIdPut(Object blockId, UpdateBlockModel updateBlockModel) async
     test('test updateBlockBlockBlocksBlockIdPut', () async {
       // TODO
     });

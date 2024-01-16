@@ -46,6 +46,7 @@ dependencies:
   flutter_hooks: ^0.20.4
   emoji_picker_flutter: ^1.6.3
   flutter_emoji: ^2.5.1
+  built_value: ^8.8.1
   #sign_in_with_apple: ^5.0.0
 
 dev_dependencies:

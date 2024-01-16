@@ -3,11 +3,11 @@ import 'package:openapi/openapi.dart';
 
 // tests for BlockCollection
 void main() {
-  final instance = BlockCollectionBuilder();
-  // TODO add properties to the builder and call build()
+  final BlockCollection? instance = /* BlockCollection(...) */ null;
+  // TODO add properties to the entity
 
   group(BlockCollection, () {
-    // JsonObject blocks
+    // Object blocks
     test('to test the property `blocks`', () async {
       // TODO
     });

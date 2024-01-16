@@ -3,140 +3,54 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:built_value/json_object.dart';
-import 'package:built_value/built_value.dart';
-import 'package:built_value/serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'validation_error.g.dart';
 
-/// ValidationError
-///
-/// Properties:
-/// * [loc] 
-/// * [msg] 
-/// * [type] 
-@BuiltValue()
-abstract class ValidationError implements Built<ValidationError, ValidationErrorBuilder> {
-  @BuiltValueField(wireName: r'loc')
-  JsonObject? get loc;
+@JsonSerializable(
+  checked: true,
+  createToJson: true,
+  disallowUnrecognizedKeys: false,
+  explicitToJson: true,
+)
+class ValidationError {
+  /// Returns a new [ValidationError] instance.
+  ValidationError({
+    required this.loc,
+    required this.msg,
+    required this.type,
+  });
 
-  @BuiltValueField(wireName: r'msg')
-  JsonObject? get msg;
+  @JsonKey(name: r'loc', required: true, includeIfNull: false)
+  final Object? loc;
 
-  @BuiltValueField(wireName: r'type')
-  JsonObject? get type;
+  @JsonKey(name: r'msg', required: true, includeIfNull: false)
+  final Object? msg;
 
-  ValidationError._();
-
-  factory ValidationError([void updates(ValidationErrorBuilder b)]) = _$ValidationError;
-
-  @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(ValidationErrorBuilder b) => b;
-
-  @BuiltValueSerializer(custom: true)
-  static Serializer<ValidationError> get serializer => _$ValidationErrorSerializer();
-}
-
-class _$ValidationErrorSerializer implements PrimitiveSerializer<ValidationError> {
-  @override
-  final Iterable<Type> types = const [ValidationError, _$ValidationError];
+  @JsonKey(name: r'type', required: true, includeIfNull: false)
+  final Object? type;
 
   @override
-  final String wireName = r'ValidationError';
-
-  Iterable<Object?> _serializeProperties(
-    Serializers serializers,
-    ValidationError object, {
-    FullType specifiedType = FullType.unspecified,
-  }) sync* {
-    yield r'loc';
-    yield object.loc == null ? null : serializers.serialize(
-      object.loc,
-      specifiedType: const FullType.nullable(JsonObject),
-    );
-    yield r'msg';
-    yield object.msg == null ? null : serializers.serialize(
-      object.msg,
-      specifiedType: const FullType.nullable(JsonObject),
-    );
-    yield r'type';
-    yield object.type == null ? null : serializers.serialize(
-      object.type,
-      specifiedType: const FullType.nullable(JsonObject),
-    );
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ValidationError &&
+          other.loc == loc &&
+          other.msg == msg &&
+          other.type == type;
 
   @override
-  Object serialize(
-    Serializers serializers,
-    ValidationError object, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
-  }
+  int get hashCode =>
+      (loc == null ? 0 : loc.hashCode) +
+      (msg == null ? 0 : msg.hashCode) +
+      (type == null ? 0 : type.hashCode);
 
-  void _deserializeProperties(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-    required List<Object?> serializedList,
-    required ValidationErrorBuilder result,
-    required List<Object?> unhandled,
-  }) {
-    for (var i = 0; i < serializedList.length; i += 2) {
-      final key = serializedList[i] as String;
-      final value = serializedList[i + 1];
-      switch (key) {
-        case r'loc':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.loc = valueDes;
-          break;
-        case r'msg':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.msg = valueDes;
-          break;
-        case r'type':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.type = valueDes;
-          break;
-        default:
-          unhandled.add(key);
-          unhandled.add(value);
-          break;
-      }
-    }
-  }
+  factory ValidationError.fromJson(Map<String, dynamic> json) =>
+      _$ValidationErrorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ValidationErrorToJson(this);
 
   @override
-  ValidationError deserialize(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    final result = ValidationErrorBuilder();
-    final serializedList = (serialized as Iterable<Object?>).toList();
-    final unhandled = <Object?>[];
-    _deserializeProperties(
-      serializers,
-      serialized,
-      specifiedType: specifiedType,
-      serializedList: serializedList,
-      unhandled: unhandled,
-      result: result,
-    );
-    return result.build();
+  String toString() {
+    return toJson().toString();
   }
 }
-

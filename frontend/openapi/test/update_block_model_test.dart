@@ -3,16 +3,16 @@ import 'package:openapi/openapi.dart';
 
 // tests for UpdateBlockModel
 void main() {
-  final instance = UpdateBlockModelBuilder();
-  // TODO add properties to the builder and call build()
+  final UpdateBlockModel? instance = /* UpdateBlockModel(...) */ null;
+  // TODO add properties to the entity
 
   group(UpdateBlockModel, () {
-    // JsonObject content
+    // Object content
     test('to test the property `content`', () async {
       // TODO
     });
 
-    // JsonObject metadata
+    // Object metadata
     test('to test the property `metadata`', () async {
       // TODO
     });

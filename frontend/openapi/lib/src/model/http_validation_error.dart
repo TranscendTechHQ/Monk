@@ -3,108 +3,52 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:built_value/json_object.dart';
-import 'package:built_value/built_value.dart';
-import 'package:built_value/serializer.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'http_validation_error.g.dart';
 
-/// HTTPValidationError
-///
-/// Properties:
-/// * [detail] 
-@BuiltValue()
-abstract class HTTPValidationError implements Built<HTTPValidationError, HTTPValidationErrorBuilder> {
-  @BuiltValueField(wireName: r'detail')
-  JsonObject? get detail;
 
-  HTTPValidationError._();
+@JsonSerializable(
+  checked: true,
+  createToJson: true,
+  disallowUnrecognizedKeys: false,
+  explicitToJson: true,
+)
+class HTTPValidationError {
+  /// Returns a new [HTTPValidationError] instance.
+  HTTPValidationError({
 
-  factory HTTPValidationError([void updates(HTTPValidationErrorBuilder b)]) = _$HTTPValidationError;
+     this.detail,
+  });
 
-  @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(HTTPValidationErrorBuilder b) => b;
+  @JsonKey(
+    
+    name: r'detail',
+    required: false,
+    includeIfNull: false
+  )
 
-  @BuiltValueSerializer(custom: true)
-  static Serializer<HTTPValidationError> get serializer => _$HTTPValidationErrorSerializer();
-}
 
-class _$HTTPValidationErrorSerializer implements PrimitiveSerializer<HTTPValidationError> {
-  @override
-  final Iterable<Type> types = const [HTTPValidationError, _$HTTPValidationError];
+  final Object? detail;
 
-  @override
-  final String wireName = r'HTTPValidationError';
 
-  Iterable<Object?> _serializeProperties(
-    Serializers serializers,
-    HTTPValidationError object, {
-    FullType specifiedType = FullType.unspecified,
-  }) sync* {
-    if (object.detail != null) {
-      yield r'detail';
-      yield serializers.serialize(
-        object.detail,
-        specifiedType: const FullType.nullable(JsonObject),
-      );
-    }
-  }
 
   @override
-  Object serialize(
-    Serializers serializers,
-    HTTPValidationError object, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
-  }
-
-  void _deserializeProperties(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-    required List<Object?> serializedList,
-    required HTTPValidationErrorBuilder result,
-    required List<Object?> unhandled,
-  }) {
-    for (var i = 0; i < serializedList.length; i += 2) {
-      final key = serializedList[i] as String;
-      final value = serializedList[i + 1];
-      switch (key) {
-        case r'detail':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.detail = valueDes;
-          break;
-        default:
-          unhandled.add(key);
-          unhandled.add(value);
-          break;
-      }
-    }
-  }
+  bool operator ==(Object other) => identical(this, other) || other is HTTPValidationError &&
+     other.detail == detail;
 
   @override
-  HTTPValidationError deserialize(
-    Serializers serializers,
-    Object serialized, {
-    FullType specifiedType = FullType.unspecified,
-  }) {
-    final result = HTTPValidationErrorBuilder();
-    final serializedList = (serialized as Iterable<Object?>).toList();
-    final unhandled = <Object?>[];
-    _deserializeProperties(
-      serializers,
-      serialized,
-      specifiedType: specifiedType,
-      serializedList: serializedList,
-      unhandled: unhandled,
-      result: result,
-    );
-    return result.build();
+  int get hashCode =>
+    (detail == null ? 0 : detail.hashCode);
+
+  factory HTTPValidationError.fromJson(Map<String, dynamic> json) => _$HTTPValidationErrorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HTTPValidationErrorToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
   }
+
 }
 

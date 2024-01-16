@@ -58,7 +58,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **deleteBlockBlockBlocksBlockIdDelete**
-> JsonObject deleteBlockBlockBlocksBlockIdDelete(blockId)
+> Object deleteBlockBlockBlocksBlockIdDelete(blockId)
 
 Delete Block
 
@@ -67,7 +67,7 @@ Delete Block
 import 'package:openapi/api.dart';
 
 final api = Openapi().getBlocksApi();
-final JsonObject blockId = ; // JsonObject | 
+final Object blockId = ; // Object | 
 
 try {
     final response = api.deleteBlockBlockBlocksBlockIdDelete(blockId);
@@ -81,11 +81,11 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **blockId** | [**JsonObject**](.md)|  | 
+ **blockId** | [**Object**](.md)|  | 
 
 ### Return type
 
-[**JsonObject**](JsonObject.md)
+**Object**
 
 ### Authorization
 
@@ -108,7 +108,7 @@ Get Block
 import 'package:openapi/api.dart';
 
 final api = Openapi().getBlocksApi();
-final JsonObject blockId = ; // JsonObject | 
+final Object blockId = ; // Object | 
 
 try {
     final response = api.getBlockBlockBlocksBlockIdGet(blockId);
@@ -122,7 +122,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **blockId** | [**JsonObject**](.md)|  | 
+ **blockId** | [**Object**](.md)|  | 
 
 ### Return type
 
@@ -149,7 +149,7 @@ Get Blocks
 import 'package:openapi/api.dart';
 
 final api = Openapi().getBlocksApi();
-final JsonObject blockId = ; // JsonObject | 
+final Object blockId = ; // Object | 
 
 try {
     final response = api.getBlocksBlockBlocksGet(blockId);
@@ -163,7 +163,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **blockId** | [**JsonObject**](.md)|  | 
+ **blockId** | [**Object**](.md)|  | 
 
 ### Return type
 
@@ -190,7 +190,7 @@ Update Block
 import 'package:openapi/api.dart';
 
 final api = Openapi().getBlocksApi();
-final JsonObject blockId = ; // JsonObject | 
+final Object blockId = ; // Object | 
 final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
 
 try {
@@ -205,7 +205,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **blockId** | [**JsonObject**](.md)|  | 
+ **blockId** | [**Object**](.md)|  | 
  **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
 
 ### Return type
