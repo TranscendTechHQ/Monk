@@ -13,12 +13,10 @@ import 'package:built_value/json_object.dart';
 part 'journal.g.dart';
 
 Future<void> createBlock(String text) async {
-  final blockApi = await NetworkManager.instance.openApi.getBlocksApi();
-  JsonObject? jsonObject = JsonObject(jsonDecode('{"content":"hello"}'));
-  //print(test);
-  //JsonObject? jsonObject = JsonObject(jsonDecode("""{"content": "hello"}"""));
+  final blockApi = NetworkManager.instance.openApi.getBlocksApi();
 
-  blockApi.createBlockBlockBlocksPost(blockModel: BlockModel(content: "hello"));
+  await blockApi.createBlockBlockBlocksPost(
+      blockModel: BlockModel(content: text));
 }
 
 // a riverpod provider that stores the content of a single day's journal entry
