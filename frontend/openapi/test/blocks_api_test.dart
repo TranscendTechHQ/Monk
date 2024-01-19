@@ -30,8 +30,15 @@ void main() {
 
     // Get Blocks
     //
-    //Future<BlockCollection> getBlocksBlockBlocksGet(Object blockId) async
-    test('test getBlocksBlockBlocksGet', () async {
+    //Future<BlockCollection> getBlocksBlockAllBlocksGet(Object blockId) async
+    test('test getBlocksBlockAllBlocksGet', () async {
+      // TODO
+    });
+
+    // Get Blocks By Date
+    //
+    //Future<BlockCollection> getBlocksByDateBlockBlocksGet(ModelDate modelDate) async
+    test('test getBlocksByDateBlockBlocksGet', () async {
       // TODO
     });
 

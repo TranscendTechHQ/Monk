@@ -1,6 +1,7 @@
 import 'package:openapi/src/model/block_collection.dart';
 import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
+import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/task_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
 import 'package:openapi/src/model/update_task_model.dart';
@@ -30,6 +31,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return BlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
           return HTTPValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'ModelDate':
+          return ModelDate.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'TaskModel':
           return TaskModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateBlockModel':

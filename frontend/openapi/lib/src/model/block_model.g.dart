@@ -17,11 +17,12 @@ BlockModel _$BlockModelFromJson(Map<String, dynamic> json) => $checkedCreate(
         final val = BlockModel(
           id: $checkedConvert('_id', (v) => v),
           content: $checkedConvert('content', (v) => v),
+          createdAt: $checkedConvert('created_at', (v) => v),
           metadata: $checkedConvert('metadata', (v) => v),
         );
         return val;
       },
-      fieldKeyMap: const {'id': '_id'},
+      fieldKeyMap: const {'id': '_id', 'createdAt': 'created_at'},
     );
 
 Map<String, dynamic> _$BlockModelToJson(BlockModel instance) {
@@ -35,6 +36,7 @@ Map<String, dynamic> _$BlockModelToJson(BlockModel instance) {
 
   writeNotNull('_id', instance.id);
   writeNotNull('content', instance.content);
+  writeNotNull('created_at', instance.createdAt);
   writeNotNull('metadata', instance.metadata);
   return val;
 }

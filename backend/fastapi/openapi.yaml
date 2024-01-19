@@ -135,17 +135,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
   /block/blocks:
+    get:
+      tags:
+      - blocks
+      summary: Get Blocks By Date
+      operationId: get_blocks_by_date_block_blocks_get
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Date'
+        required: true
+      responses:
+        '200':
+          description: Get all blocks for a given date
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockCollection'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     post:
       tags:
       - blocks
       summary: Create Block
       operationId: create_block_block_blocks_post
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/BlockModel'
+        required: true
       responses:
         '200':
           description: Create a new block
@@ -153,31 +177,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlockModel'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    get:
-      tags:
-      - blocks
-      summary: Get Blocks
-      operationId: get_blocks_block_blocks_get
-      parameters:
-      - name: block_id
-        in: query
-        required: true
-        schema:
-          type: string
-          title: Block Id
-      responses:
-        '200':
-          description: Get all blocks
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockCollection'
         '422':
           description: Validation Error
           content:
@@ -265,6 +264,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /block/all_blocks:
+    get:
+      tags:
+      - blocks
+      summary: Get Blocks
+      operationId: get_blocks_block_all_blocks_get
+      parameters:
+      - name: block_id
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Block Id
+      responses:
+        '200':
+          description: Get all blocks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockCollection'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     BlockCollection:
@@ -297,6 +322,10 @@ components:
         content:
           type: string
           title: Content
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
         metadata:
           type: object
           title: Metadata
@@ -313,6 +342,16 @@ components:
           - tag1
           - tag2
           type: task
+    Date:
+      properties:
+        date:
+          type: string
+          format: date-time
+          title: Date
+      type: object
+      required:
+      - date
+      title: Date
     HTTPValidationError:
       properties:
         detail:

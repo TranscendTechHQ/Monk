@@ -12,7 +12,8 @@ Method | HTTP request | Description
 [**createBlockBlockBlocksPost**](BlocksApi.md#createblockblockblockspost) | **POST** /block/blocks | Create Block
 [**deleteBlockBlockBlocksBlockIdDelete**](BlocksApi.md#deleteblockblockblocksblockiddelete) | **DELETE** /block/blocks/{block_id} | Delete Block
 [**getBlockBlockBlocksBlockIdGet**](BlocksApi.md#getblockblockblocksblockidget) | **GET** /block/blocks/{block_id} | Get Block
-[**getBlocksBlockBlocksGet**](BlocksApi.md#getblocksblockblocksget) | **GET** /block/blocks | Get Blocks
+[**getBlocksBlockAllBlocksGet**](BlocksApi.md#getblocksblockallblocksget) | **GET** /block/all_blocks | Get Blocks
+[**getBlocksByDateBlockBlocksGet**](BlocksApi.md#getblocksbydateblockblocksget) | **GET** /block/blocks | Get Blocks By Date
 [**updateBlockBlockBlocksBlockIdPut**](BlocksApi.md#updateblockblockblocksblockidput) | **PUT** /block/blocks/{block_id} | Update Block
 
 
@@ -139,8 +140,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **getBlocksBlockBlocksGet**
-> BlockCollection getBlocksBlockBlocksGet(blockId)
+# **getBlocksBlockAllBlocksGet**
+> BlockCollection getBlocksBlockAllBlocksGet(blockId)
 
 Get Blocks
 
@@ -152,10 +153,10 @@ final api = Openapi().getBlocksApi();
 final Object blockId = ; // Object | 
 
 try {
-    final response = api.getBlocksBlockBlocksGet(blockId);
+    final response = api.getBlocksBlockAllBlocksGet(blockId);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling BlocksApi->getBlocksBlockBlocksGet: $e\n');
+    print('Exception when calling BlocksApi->getBlocksBlockAllBlocksGet: $e\n');
 }
 ```
 
@@ -176,6 +177,47 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getBlocksByDateBlockBlocksGet**
+> BlockCollection getBlocksByDateBlockBlocksGet(modelDate)
+
+Get Blocks By Date
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getBlocksApi();
+final ModelDate modelDate = ; // ModelDate | 
+
+try {
+    final response = api.getBlocksByDateBlockBlocksGet(modelDate);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling BlocksApi->getBlocksByDateBlockBlocksGet: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **modelDate** | [**ModelDate**](ModelDate.md)|  | 
+
+### Return type
+
+[**BlockCollection**](BlockCollection.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

@@ -18,6 +18,7 @@ class BlockModel {
   BlockModel({
     this.id,
     required this.content,
+    this.createdAt,
     this.metadata,
   });
 
@@ -26,6 +27,9 @@ class BlockModel {
 
   @JsonKey(name: r'content', required: true, includeIfNull: false)
   final Object? content;
+
+  @JsonKey(name: r'created_at', required: false, includeIfNull: false)
+  final Object? createdAt;
 
   @JsonKey(name: r'metadata', required: false, includeIfNull: false)
   final Object? metadata;
@@ -36,12 +40,14 @@ class BlockModel {
       other is BlockModel &&
           other.id == id &&
           other.content == content &&
+          other.createdAt == createdAt &&
           other.metadata == metadata;
 
   @override
   int get hashCode =>
       (id == null ? 0 : id.hashCode) +
       (content == null ? 0 : content.hashCode) +
+      (createdAt == null ? 0 : createdAt.hashCode) +
       (metadata == null ? 0 : metadata.hashCode);
 
   factory BlockModel.fromJson(Map<String, dynamic> json) =>

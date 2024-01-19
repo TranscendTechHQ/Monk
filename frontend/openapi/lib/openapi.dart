@@ -15,6 +15,7 @@ export 'package:openapi/src/api/tasks_api.dart';
 export 'package:openapi/src/model/block_collection.dart';
 export 'package:openapi/src/model/block_model.dart';
 export 'package:openapi/src/model/http_validation_error.dart';
+export 'package:openapi/src/model/model_date.dart';
 export 'package:openapi/src/model/task_model.dart';
 export 'package:openapi/src/model/update_block_model.dart';
 export 'package:openapi/src/model/update_task_model.dart';

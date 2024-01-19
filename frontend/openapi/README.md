@@ -68,7 +68,8 @@ Class | Method | HTTP request | Description
 [*BlocksApi*](doc/BlocksApi.md) | [**createBlockBlockBlocksPost**](doc/BlocksApi.md#createblockblockblockspost) | **POST** /block/blocks | Create Block
 [*BlocksApi*](doc/BlocksApi.md) | [**deleteBlockBlockBlocksBlockIdDelete**](doc/BlocksApi.md#deleteblockblockblocksblockiddelete) | **DELETE** /block/blocks/{block_id} | Delete Block
 [*BlocksApi*](doc/BlocksApi.md) | [**getBlockBlockBlocksBlockIdGet**](doc/BlocksApi.md#getblockblockblocksblockidget) | **GET** /block/blocks/{block_id} | Get Block
-[*BlocksApi*](doc/BlocksApi.md) | [**getBlocksBlockBlocksGet**](doc/BlocksApi.md#getblocksblockblocksget) | **GET** /block/blocks | Get Blocks
+[*BlocksApi*](doc/BlocksApi.md) | [**getBlocksBlockAllBlocksGet**](doc/BlocksApi.md#getblocksblockallblocksget) | **GET** /block/all_blocks | Get Blocks
+[*BlocksApi*](doc/BlocksApi.md) | [**getBlocksByDateBlockBlocksGet**](doc/BlocksApi.md#getblocksbydateblockblocksget) | **GET** /block/blocks | Get Blocks By Date
 [*BlocksApi*](doc/BlocksApi.md) | [**updateBlockBlockBlocksBlockIdPut**](doc/BlocksApi.md#updateblockblockblocksblockidput) | **PUT** /block/blocks/{block_id} | Update Block
 [*DefaultApi*](doc/DefaultApi.md) | [**secureApiSessioninfoGet**](doc/DefaultApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*TasksApi*](doc/TasksApi.md) | [**createTaskTaskPost**](doc/TasksApi.md#createtasktaskpost) | **POST** /task/ | Create Task
@@ -83,6 +84,7 @@ Class | Method | HTTP request | Description
  - [BlockCollection](doc/BlockCollection.md)
  - [BlockModel](doc/BlockModel.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
+ - [ModelDate](doc/ModelDate.md)
  - [TaskModel](doc/TaskModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateTaskModel](doc/UpdateTaskModel.md)

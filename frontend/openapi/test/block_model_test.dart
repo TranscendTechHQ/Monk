@@ -17,6 +17,11 @@ void main() {
       // TODO
     });
 
+    // Object createdAt
+    test('to test the property `createdAt`', () async {
+      // TODO
+    });
+
     // Object metadata
     test('to test the property `metadata`', () async {
       // TODO

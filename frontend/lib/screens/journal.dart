@@ -19,6 +19,25 @@ Future<void> createBlock(String text) async {
       blockModel: BlockModel(content: text));
 }
 
+@riverpod
+Future<BlockCollection> blocks_date(Blocks_dateRef ref) async {
+  final blockApi = NetworkManager.instance.openApi.getBlocksApi();
+  final today = DateTime.now();
+  final modelDate = ModelDate(date: today.toIso8601String());
+  print(modelDate);
+
+  final response =
+      await blockApi.getBlocksByDateBlockBlocksGet(modelDate: modelDate);
+
+  if (response.statusCode == 200) {
+    final blocks = response.data!;
+    print(blocks);
+    return blocks;
+  } else {
+    throw Exception('Failed to fetch blocks');
+  }
+}
+
 // a riverpod provider that stores the content of a single day's journal entry
 // this entry can be accessed from anywhere in the app and also be sent to the
 // backend.
@@ -29,9 +48,8 @@ class JournalText extends _$JournalText {
   @override
   List<String> build() => [];
 
-  void addString(String input) async {
+  void addString(String input) {
     state = [input, ...state];
-    await createBlock(input);
   }
 
   void updateStringAt(int index, String input) {
@@ -59,6 +77,7 @@ class JournalScreen extends ConsumerWidget {
     }
 
     final blocks = journalText;
+
     // chat display widget
     final blockDisplay = Container(
         width: containerWidth,
@@ -102,15 +121,16 @@ class JournalScreen extends ConsumerWidget {
       ),
       child: RawKeyboardListener(
         focusNode: FocusNode(),
-        onKey: (RawKeyEvent event) {
+        onKey: (RawKeyEvent event) async {
           if (!event.repeat) {
             if (event is RawKeyDownEvent) {
               if (event.isShiftPressed &&
                   event.logicalKey == LogicalKeyboardKey.enter) {
+                String blockText = _controller.text;
                 // Submit the text
-                ref
-                    .read(journalTextProvider.notifier)
-                    .addString(_controller.text);
+                ref.read(journalTextProvider.notifier).addString(blockText);
+                await createBlock(blockText);
+                ref.refresh(blocks_dateProvider.future);
                 _controller.clear();
               }
               // Handle key down
