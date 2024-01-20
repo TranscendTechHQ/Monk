@@ -42,31 +42,21 @@ async def get_mongo_documents(collection):
     return docs
 
 async def get_mongo_documents_by_date(date: dt.datetime, collection):
-    docs = []
+
    # async for doc in collection.find({"metadata.createdAt": date}):
     #    docs.append(doc)
     d = date.date()
     from_date = dt.datetime.combine(d, dt.datetime.min.time())
-    print(from_date.isoformat())
+    
     
     to_date = dt.datetime.combine(d, dt.datetime.max.time())
-    print(to_date.isoformat())
-    print("hey 1")
+    
     query = {"created_at": {"$gte": from_date.isoformat(), "$lt": to_date.isoformat()}}
-    print(query)
-    print("hey 2")
+    
     cursor =  collection.find(query)
-    print("hey 3")
-    print(cursor)
-    print("hey 4")
+    
     # Convert cursor to list of dictionaries
     documents = await cursor.to_list(length=5)
-    print("hey 5")
-    print(documents)
-    #for doc in cursor.each():
-     #   docs.append(doc)
-      #  print(doc)
-    print("hey 6")
     
     return documents
 
@@ -187,9 +177,10 @@ async def get_blocks_by_date(request: Request,
                              session: SessionContainer = Depends(verify_session())
                              ):
     # Logic to fetch all blocks by the signed-in user from MongoDB backend database
-    print(date.date)
-    #isodate = dt.datetime.fromisoformat(unquote(date))
+   
     blocks = await get_mongo_documents_by_date(date.date, request.app.mongodb["blocks"])
-    print(blocks)
+    
+    ret_block = BlockCollection(blocks=blocks)
+    ## retun the block in json format
     return JSONResponse(status_code=status.HTTP_200_OK, 
-                       content=jsonable_encoder(blocks))
+                       content=jsonable_encoder(ret_block))

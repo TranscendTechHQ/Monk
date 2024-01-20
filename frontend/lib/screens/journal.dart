@@ -24,11 +24,10 @@ Future<BlockCollection> blocks_date(Blocks_dateRef ref) async {
   final blockApi = NetworkManager.instance.openApi.getBlocksApi();
   final today = DateTime.now();
   final modelDate = ModelDate(date: today.toIso8601String());
-  print(modelDate);
 
   final response =
       await blockApi.getBlocksByDateBlockBlocksGet(modelDate: modelDate);
-
+  print(response);
   if (response.statusCode == 200) {
     final blocks = response.data!;
     print(blocks);
@@ -130,7 +129,7 @@ class JournalScreen extends ConsumerWidget {
                 // Submit the text
                 ref.read(journalTextProvider.notifier).addString(blockText);
                 await createBlock(blockText);
-                ref.refresh(blocks_dateProvider.future);
+                await ref.refresh(blocks_dateProvider.future);
                 _controller.clear();
               }
               // Handle key down

@@ -6,7 +6,7 @@ part of 'journal.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$blocks_dateHash() => r'0bf7ea272a9d598246ea3dd73f30565b36b2eedc';
+String _$blocks_dateHash() => r'e61d4232afae2a3ddd6cdddab01f46d6f9836f52';
 
 /// See also [blocks_date].
 @ProviderFor(blocks_date)
