@@ -407,7 +407,6 @@ class BlocksApi {
 
     try {
       final rawData = _response.data;
-      print(rawData);
       _responseData = rawData == null
           ? null
           : deserialize<BlockCollection, BlockCollection>(

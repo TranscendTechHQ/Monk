@@ -39,8 +39,8 @@ class JournalText extends _$JournalText {
   }
 
   FutureOr<void> initialize() async {
-    //DateTime today = DateTime.now();
-    BlockCollection blocksCollection = await blocks_date();
+    DateTime today = DateTime.now();
+    BlockCollection blocksCollection = await blocks_date(today);
     List<String> stringBlocks = [];
 
     state = AsyncValue.data([]);
@@ -49,18 +49,18 @@ class JournalText extends _$JournalText {
         stringBlocks.add(element['content']);
       });
     });
-
-    state = AsyncValue.data(stringBlocks);
+    Iterable<String> inReverse = stringBlocks.reversed;
+    state = AsyncValue.data(inReverse.toList());
   }
 
   void addString(String input) {
     state = AsyncValue.data([input, ...state.valueOrNull!]);
   }
 
-  Future<BlockCollection> blocks_date() async {
+  Future<BlockCollection> blocks_date(DateTime date) async {
     final blockApi = NetworkManager.instance.openApi.getBlocksApi();
-    final today = DateTime.now();
-    final modelDate = ModelDate(date: today.toIso8601String());
+
+    final modelDate = ModelDate(date: date.toIso8601String());
 
     final response =
         await blockApi.getBlocksByDateBlockBlocksGet(modelDate: modelDate);
@@ -169,7 +169,8 @@ class JournalScreen extends ConsumerWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('${today.year}-${today.month}-${today.day}'),
+          title: Text(
+              'Journal (YYYY-MM-DD) ${today.year}-${today.month}-${today.day}'),
         ),
         body: Align(
             alignment: Alignment.center,
