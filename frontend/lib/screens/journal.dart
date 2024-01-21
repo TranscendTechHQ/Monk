@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +11,10 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import '../network.dart';
 import 'package:built_value/json_object.dart';
+import 'package:openapi/openapi.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// ...
 part 'journal.g.dart';
 
 Future<void> createBlock(String text) async {
@@ -17,24 +22,6 @@ Future<void> createBlock(String text) async {
 
   await blockApi.createBlockBlockBlocksPost(
       blockModel: BlockModel(content: text));
-}
-
-@riverpod
-Future<BlockCollection> blocks_date(Blocks_dateRef ref) async {
-  final blockApi = NetworkManager.instance.openApi.getBlocksApi();
-  final today = DateTime.now();
-  final modelDate = ModelDate(date: today.toIso8601String());
-
-  final response =
-      await blockApi.getBlocksByDateBlockBlocksGet(modelDate: modelDate);
-  print(response);
-  if (response.statusCode == 200) {
-    final blocks = response.data!;
-    print(blocks);
-    return blocks;
-  } else {
-    throw Exception('Failed to fetch blocks');
-  }
 }
 
 // a riverpod provider that stores the content of a single day's journal entry
@@ -45,18 +32,45 @@ Future<BlockCollection> blocks_date(Blocks_dateRef ref) async {
 @riverpod
 class JournalText extends _$JournalText {
   @override
-  List<String> build() => [];
-
-  void addString(String input) {
-    state = [input, ...state];
+  Future<List<String>> build() async {
+    state = const AsyncValue.loading();
+    await initialize();
+    return state.value!;
   }
 
-  void updateStringAt(int index, String input) {
-    state = [
-      ...state.sublist(0, index),
-      input,
-      ...state.sublist(index + 1),
-    ];
+  FutureOr<void> initialize() async {
+    //DateTime today = DateTime.now();
+    BlockCollection blocksCollection = await blocks_date();
+    List<String> stringBlocks = [];
+
+    state = AsyncValue.data([]);
+    blocksCollection.toJson().forEach((key, value) {
+      value.forEach((element) {
+        stringBlocks.add(element['content']);
+      });
+    });
+
+    state = AsyncValue.data(stringBlocks);
+  }
+
+  void addString(String input) {
+    state = AsyncValue.data([input, ...state.valueOrNull!]);
+  }
+
+  Future<BlockCollection> blocks_date() async {
+    final blockApi = NetworkManager.instance.openApi.getBlocksApi();
+    final today = DateTime.now();
+    final modelDate = ModelDate(date: today.toIso8601String());
+
+    final response =
+        await blockApi.getBlocksByDateBlockBlocksGet(modelDate: modelDate);
+
+    if (response.statusCode == 200) {
+      final blocks = response.data!;
+      return blocks;
+    } else {
+      throw Exception('Failed to fetch blocks');
+    }
   }
 }
 
@@ -83,9 +97,9 @@ class JournalScreen extends ConsumerWidget {
         child: ListView.builder(
           reverse: true,
           controller: _scrollController,
-          itemCount: blocks.length,
+          itemCount: blocks.value?.length ?? 0,
           itemBuilder: (context, index) {
-            final block = blocks[index];
+            final block = blocks.value?[index];
             return Container(
               margin: EdgeInsets.all(16),
               padding: EdgeInsets.all(16),
@@ -98,7 +112,7 @@ class JournalScreen extends ConsumerWidget {
                 ),
               ),
               child: SelectableText(
-                emojiParser.emojify(block),
+                emojiParser.emojify(block?.toString() ?? ''),
                 style: TextStyle(
                   fontSize: 15,
                   fontFamily: 'NotoEmoji',
@@ -129,7 +143,7 @@ class JournalScreen extends ConsumerWidget {
                 // Submit the text
                 ref.read(journalTextProvider.notifier).addString(blockText);
                 await createBlock(blockText);
-                await ref.refresh(blocks_dateProvider.future);
+                //await ref.refresh(blocks_dateProvider.future);
                 _controller.clear();
               }
               // Handle key down

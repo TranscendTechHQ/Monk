@@ -6,26 +6,12 @@ part of 'journal.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$blocks_dateHash() => r'e61d4232afae2a3ddd6cdddab01f46d6f9836f52';
-
-/// See also [blocks_date].
-@ProviderFor(blocks_date)
-final blocks_dateProvider = AutoDisposeFutureProvider<BlockCollection>.internal(
-  blocks_date,
-  name: r'blocks_dateProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$blocks_dateHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef Blocks_dateRef = AutoDisposeFutureProviderRef<BlockCollection>;
-String _$journalTextHash() => r'08547b972a20dc995ba811c697cad8854e4e8102';
+String _$journalTextHash() => r'563f2a9fec6d782285b3e1c5fd9bb0c6f69041d3';
 
 /// See also [JournalText].
 @ProviderFor(JournalText)
 final journalTextProvider =
-    AutoDisposeNotifierProvider<JournalText, List<String>>.internal(
+    AutoDisposeAsyncNotifierProvider<JournalText, List<String>>.internal(
   JournalText.new,
   name: r'journalTextProvider',
   debugGetCreateSourceHash:
@@ -34,6 +20,6 @@ final journalTextProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$JournalText = AutoDisposeNotifier<List<String>>;
+typedef _$JournalText = AutoDisposeAsyncNotifier<List<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
