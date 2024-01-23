@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/repo/blocks.dart';
+import 'package:frontend/repo/thread.dart';
+
+import '../constants.dart';
+
+class CommandBox extends ConsumerWidget {
+  final TextEditingController _controller = TextEditingController();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      //alignment: Alignment.center,
+      width: containerWidth,
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+        ),
+      ),
+      child: RawKeyboardListener(
+        focusNode: FocusNode(),
+        onKey: (RawKeyEvent event) async {
+          if (!event.repeat) {
+            if (event is RawKeyDownEvent) {
+              if (event.isShiftPressed &&
+                  event.logicalKey == LogicalKeyboardKey.enter) {
+                String blockText = _controller.text;
+                // Submit the text
+                //blockProvider is not really being watched. Need to see what
+                // to do about it when block is properly formed
+                // right now it is just a String object.
+
+                ref.read(blockProvider.notifier).setState(blockText);
+                ref.read(threadProvider.notifier).addString(blockText);
+                _controller.clear();
+              }
+              // Handle key down
+            } else if (event is RawKeyUpEvent) {
+              // Handle key up
+              // just chill
+            }
+          }
+        },
+        child: TextField(
+          controller: _controller,
+          //keyboardType: TextInputType.multiline,
+          minLines: 2,
+          maxLines: 5,
+          decoration: const InputDecoration(
+            filled: true,
+            fillColor: Color.fromARGB(255, 188, 105, 240),
+            border: OutlineInputBorder(),
+            hintText: 'Write your journal here...Press SHIFT+Enter to save',
+          ),
+          onChanged: (text) {
+            if (text.isNotEmpty && text.startsWith('/')) {
+              // Handle command logic here
+              String command = text.substring(1);
+              switch (command) {
+                case 'plan':
+                  // Handle /plan command
+                  break;
+                case 'news':
+                  // Handle /news command
+                  break;
+                case 'report':
+                  // Handle /report command
+                  break;
+                default:
+                  // Handle unknown command
+                  break;
+              }
+            }
+          },
+        ),
+      ),
+    );
+  }
+}

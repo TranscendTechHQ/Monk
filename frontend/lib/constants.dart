@@ -17,3 +17,5 @@ enum ColorSeed {
   final String label;
   final Color color;
 }
+
+final containerWidth = 800.0; //TODO: make this a provider
