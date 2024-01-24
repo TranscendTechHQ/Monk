@@ -17,6 +17,10 @@ enum Commands {
 }
 
 final List<String> commandList = Commands.values.map((e) => e.name).toList();
+final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
+      value: e,
+      child: Text(e),
+    ));
 
 class AlphanumericWord {
   final String _value;
@@ -26,22 +30,6 @@ class AlphanumericWord {
         _value = value;
 
   String get value => _value;
-}
-
-Future<String?> _showPopupMenu(
-    BuildContext context, List<String> elements) async {
-  String? selectedElement = await showMenu<String>(
-    context: context,
-    position: RelativeRect.fromLTRB(0, 100, 0, 0),
-    items: elements.map((element) {
-      return PopupMenuItem<String>(
-        value: element,
-        child: Text(element),
-      );
-    }).toList(),
-  );
-
-  return selectedElement;
 }
 
 class CommandBox extends ConsumerWidget {
@@ -96,7 +84,11 @@ class CommandBox extends ConsumerWidget {
               // show a popup with the list of commands and allow the user to
               // select one
               // or delete the / and treat it as a normal text
-              String? command = await _showPopupMenu(context, commandList);
+              String? command = await showMenu<String>(
+                  context: context,
+                  position: RelativeRect.fill,
+                  items: popupMenuEntryList.toList());
+
               if (command != null) {
                 print(command);
               }
