@@ -81,17 +81,54 @@ class CommandBox extends ConsumerWidget {
           ),
           onChanged: (text) async {
             if (text.isNotEmpty && text.startsWith('/')) {
+              if (!context.mounted) return;
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => PopupMenuButton<String>(
+                  child: Text('Select an option'),
+                  itemBuilder: (context) => commandList
+                      .map((item) => PopupMenuItem(
+                            value: item,
+                            child: Text(item),
+                          ))
+                      .toList(),
+                  onSelected: (value) => print('Selected: $value'),
+                ),
+              );
               // show a popup with the list of commands and allow the user to
               // select one
               // or delete the / and treat it as a normal text
-              String? command = await showMenu<String>(
-                  context: context,
-                  position: RelativeRect.fill,
-                  items: popupMenuEntryList.toList());
+              /*
+              final int _cursorPosition = _controller.selection.baseOffset;
+              final RenderBox box = context.findRenderObject() as RenderBox;
+              final Offset localPosition = box.globalToLocal(Offset.zero);
+              final RelativeRect position = RelativeRect.fromSize(
+                Rect.fromLTWH(localPosition.dx + _cursorPosition * 10,
+                    localPosition.dy + 20, 100, 100),
+                box.size,
+              );
 
+              final RelativeRect position2 = RelativeRect.fromSize(
+                  Rect.fromLTWH(400, 600, 200, 400), Size(600, 1000));
+
+              final RelativeRect position3 =
+                  RelativeRect.fromLTRB(400, 600, 100, 100);
+              String? command = await showMenu<String>(
+                  useRootNavigator: true,
+                  context: context,
+                  position: position3,
+                  items: popupMenuEntryList.toList());
+              if (!context.mounted) return;
               if (command != null) {
-                print(command);
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text('You selected: $command'),
+                  ),
+                );
               }
+              */
 
               // Handle command logic here
               /* String command = text.substring(1);
