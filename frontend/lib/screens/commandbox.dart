@@ -7,12 +7,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 
 import '../constants.dart';
-part 'commandbox.g.dart';
 
 enum Commands {
   plan('plan'),
   news('news'),
-  report('report');
+  report('report'),
+  project('project'),
+  task('task'),
+  note('note'),
+  idea('idea'),
+  event('event'),
+  blocker('blocker'),
+  think('think'),
+  strategy('strategy'),
+  ;
 
   const Commands(this.name);
 
@@ -25,55 +33,30 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
       child: Text(e),
     ));
 
-@riverpod
-class CommandMenuVisibility extends _$CommandMenuVisibility {
-  @override
-  bool build() => false;
-  void on() => state = true;
-  void off() => state = false;
-}
+void _showMenu(BuildContext context, List<String> items) {
+  final renderBox = context.findRenderObject() as RenderBox;
+  final top =
+      renderBox.localToGlobal(Offset.zero).dy - 40; // Adjust for menu height
+  final left =
+      MediaQuery.of(context).size.width / 2 - 700; // Center horizontally
 
-Future<String?> _showPopupMenu(
-    BuildContext context, List<String> elements) async {
-  String? selectedElement = await showMenu<String>(
+  showMenu(
     context: context,
-    position: RelativeRect.fromLTRB(0, 100, 0, 0),
-    items: elements.map((element) {
-      return PopupMenuItem<String>(
-        value: element,
-        child: Text(element),
-      );
-    }).toList(),
-  );
-
-  return selectedElement;
-}
-
-void do_some_action(BuildContext context, String action) {
-  print("doing $action");
-}
-
-Visibility buildCommandPopUp(BuildContext context, WidgetRef ref) {
-  final box = SizedBox(
-    height: 400.0,
-    child: ListView.builder(
-      itemCount: commandList.length,
-      itemBuilder: (context, index) {
-        final command = commandList[index];
-        return PopupMenuItem<String>(
-          onTap: () {
-            do_some_action(context, command);
-            ref.read(commandMenuVisibilityProvider.notifier).off();
-          },
-          value: command,
-          child: Text(command),
-        );
-      },
+    position: RelativeRect.fromLTRB(
+      left,
+      top,
+      400,
+      200,
     ),
-  );
-  final visible = ref.watch(commandMenuVisibilityProvider);
-  print("visible: $visible");
-  return Visibility(visible: visible, child: box);
+    items: items
+        .map((item) => PopupMenuItem(
+              value: item,
+              child: Text(item),
+            ))
+        .toList(),
+  ).then((value) {
+    // Handle selected item
+  });
 }
 
 class AlphanumericWord {
@@ -99,7 +82,7 @@ class CommandBox extends ConsumerWidget {
           ),
         ),
         child: Column(children: [
-          buildCommandPopUp(context, ref),
+          //buildCommandPopUp(context, ref),
           RawKeyboardListener(
             focusNode: FocusNode(),
             onKey: (RawKeyEvent event) async {
@@ -139,7 +122,7 @@ class CommandBox extends ConsumerWidget {
                 if (text.isNotEmpty && text.startsWith('/')) {
                   if (!context.mounted) return;
                   // show the popup
-                  ref.read(commandMenuVisibilityProvider.notifier).on();
+                  _showMenu(context, commandList);
                   // show a popup with the list of commands and allow the user to
                   // select one
                   // or delete the / and treat it as a normal text
