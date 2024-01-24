@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/blocks.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_context_menu/flutter_context_menu.dart';
 
 import '../constants.dart';
 part 'commandbox.g.dart';
@@ -32,22 +33,46 @@ class CommandMenuVisibility extends _$CommandMenuVisibility {
   void off() => state = false;
 }
 
+Future<String?> _showPopupMenu(
+    BuildContext context, List<String> elements) async {
+  String? selectedElement = await showMenu<String>(
+    context: context,
+    position: RelativeRect.fromLTRB(0, 100, 0, 0),
+    items: elements.map((element) {
+      return PopupMenuItem<String>(
+        value: element,
+        child: Text(element),
+      );
+    }).toList(),
+  );
+
+  return selectedElement;
+}
+
+void do_some_action(BuildContext context, String action) {
+  print("doing $action");
+}
+
 Visibility buildCommandPopUp(BuildContext context, WidgetRef ref) {
-  final box = Stack(
-    children: [
-      PopupMenuButton<String>(
-        //child: Text('Select an option'),
-        itemBuilder: (context) => commandList
-            .map((item) => PopupMenuItem(
-                  value: item,
-                  child: Text(item),
-                ))
-            .toList(),
-        onSelected: (value) => print('Selected: $value'),
-      ),
-    ],
+  final box = SizedBox(
+    height: 400.0,
+    child: ListView.builder(
+      itemCount: commandList.length,
+      itemBuilder: (context, index) {
+        final command = commandList[index];
+        return PopupMenuItem<String>(
+          onTap: () {
+            do_some_action(context, command);
+            ref.read(commandMenuVisibilityProvider.notifier).off();
+          },
+          value: command,
+          child: Text(command),
+        );
+      },
+    ),
   );
   final visible = ref.watch(commandMenuVisibilityProvider);
+  print("visible: $visible");
   return Visibility(visible: visible, child: box);
 }
 
