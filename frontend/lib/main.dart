@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       theme: ThemeData(
         colorSchemeSeed: ColorSeed.baseColor.color,
+        //colorSchemeSeed: Color.fromARGB(255, 40, 39, 43),
         brightness: Brightness.dark,
       ),
       initialRoute: '/',

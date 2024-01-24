@@ -6,6 +6,45 @@ import 'package:frontend/repo/thread.dart';
 
 import '../constants.dart';
 
+enum Commands {
+  plan('plan'),
+  news('news'),
+  report('report');
+
+  const Commands(this.name);
+
+  final String name;
+}
+
+final List<String> commandList = Commands.values.map((e) => e.name).toList();
+
+class AlphanumericWord {
+  final String _value;
+
+  AlphanumericWord(String value)
+      : assert(RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)),
+        _value = value;
+
+  String get value => _value;
+}
+
+void _showPopupMenu(BuildContext context, List<String> elements) async {
+  String? selectedElement = await showMenu<String>(
+    context: context,
+    position: RelativeRect.fromLTRB(0, 100, 0, 0),
+    items: elements.map((element) {
+      return PopupMenuItem<String>(
+        value: element,
+        child: Text(element),
+      );
+    }).toList(),
+  );
+
+  if (selectedElement != null) {
+    print('Selected command: $selectedElement');
+  }
+}
+
 class CommandBox extends ConsumerWidget {
   final TextEditingController _controller = TextEditingController();
   @override
@@ -55,8 +94,12 @@ class CommandBox extends ConsumerWidget {
           ),
           onChanged: (text) {
             if (text.isNotEmpty && text.startsWith('/')) {
+              // show a popup with the list of commands and allow the user to
+              // select one
+              // or delete the / and treat it as a normal text
+              _showPopupMenu(context, commandList);
               // Handle command logic here
-              String command = text.substring(1);
+              /* String command = text.substring(1);
               switch (command) {
                 case 'plan':
                   // Handle /plan command
@@ -70,7 +113,7 @@ class CommandBox extends ConsumerWidget {
                 default:
                   // Handle unknown command
                   break;
-              }
+              }*/
             }
           },
         ),
