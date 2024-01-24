@@ -28,7 +28,8 @@ class AlphanumericWord {
   String get value => _value;
 }
 
-void _showPopupMenu(BuildContext context, List<String> elements) async {
+Future<String?> _showPopupMenu(
+    BuildContext context, List<String> elements) async {
   String? selectedElement = await showMenu<String>(
     context: context,
     position: RelativeRect.fromLTRB(0, 100, 0, 0),
@@ -40,9 +41,7 @@ void _showPopupMenu(BuildContext context, List<String> elements) async {
     }).toList(),
   );
 
-  if (selectedElement != null) {
-    print('Selected command: $selectedElement');
-  }
+  return selectedElement;
 }
 
 class CommandBox extends ConsumerWidget {
@@ -92,12 +91,16 @@ class CommandBox extends ConsumerWidget {
             border: OutlineInputBorder(),
             hintText: 'Write your journal here...Press SHIFT+Enter to save',
           ),
-          onChanged: (text) {
+          onChanged: (text) async {
             if (text.isNotEmpty && text.startsWith('/')) {
               // show a popup with the list of commands and allow the user to
               // select one
               // or delete the / and treat it as a normal text
-              _showPopupMenu(context, commandList);
+              String? command = await _showPopupMenu(context, commandList);
+              if (command != null) {
+                print(command);
+              }
+
               // Handle command logic here
               /* String command = text.substring(1);
               switch (command) {
