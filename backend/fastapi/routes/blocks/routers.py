@@ -54,9 +54,9 @@ async def get_mongo_documents_by_date(date: dt.datetime, collection):
     query = {"created_at": {"$gte": from_date.isoformat(), "$lt": to_date.isoformat()}}
     
     cursor =  collection.find(query)
-    
+    batch_size = 100
     # Convert cursor to list of dictionaries
-    documents = await cursor.to_list(length=5)
+    documents = await cursor.to_list(length=batch_size)
     
     return documents
 
@@ -160,11 +160,6 @@ async def get_blocks(block_id: str, request: Request,
     return JSONResponse(status_code=status.HTTP_200_OK, 
                        content=jsonable_encoder(blocks))
 
-def convert_to_datetime(date_str: str):
-    print("hello")
-    print(date_str)
-    date_str = unquote(date_str)
-    return dt.datetime.fromisoformat(date_str)
 
 class Date(BaseModel):
     date: dt.datetime
@@ -181,6 +176,8 @@ async def get_blocks_by_date(request: Request,
     blocks = await get_mongo_documents_by_date(date.date, request.app.mongodb["blocks"])
     
     ret_block = BlockCollection(blocks=blocks)
+    print(date.date)
+    print(ret_block)
     ## retun the block in json format
     return JSONResponse(status_code=status.HTTP_200_OK, 
                        content=jsonable_encoder(ret_block))

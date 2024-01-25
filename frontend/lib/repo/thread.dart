@@ -8,7 +8,6 @@
 //  - the backend will store the journal entry in the database
 // ...
 import 'package:frontend/network.dart';
-import 'package:frontend/repo/blocks.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -40,7 +39,6 @@ class Thread extends _$Thread {
 
   void addString(String input) async {
     state = AsyncValue.data([input, ...state.valueOrNull!]);
-    await ref.read(blockProvider.notifier).createBlock(input);
   }
 
   Future<BlockCollection> blocks_date(DateTime date) async {
@@ -55,7 +53,7 @@ class Thread extends _$Thread {
       final blocks = response.data!;
       return blocks;
     } else {
-      throw Exception('Failed to fetch blocks');
+      return BlockCollection.fromJson({"blocks": []});
     }
   }
 }
