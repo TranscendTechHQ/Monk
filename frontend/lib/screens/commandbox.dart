@@ -101,6 +101,19 @@ class AutoCompleteCommand extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Autocomplete<String>(
+      fieldViewBuilder: (context, controller, focusNode, onEditingComplete) {
+        return TextField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            filled: true,
+            fillColor: Color.fromARGB(255, 74, 21, 107),
+            border: OutlineInputBorder(),
+            hintText:
+                'Write here...Press SHIFT+Enter to save, press "/" for commands',
+          ),
+        );
+      },
       optionsViewOpenDirection: OptionsViewOpenDirection.up,
       //optionsMaxHeight: 200.0,
       optionsViewBuilder: (context, onSelected, options) {
