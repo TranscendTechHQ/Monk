@@ -10,20 +10,21 @@ import '../constants.dart';
 part 'commandbox.g.dart';
 
 enum Commands {
-  journal('journal'),
-  thread('thread'),
-  plan('plan'),
-  news('news'),
-  report('report'),
-  project('project'),
-  task('task'),
-  note('note'),
-  idea('idea'),
-  event('event'),
-  blocker('blocker'),
-  think('think'),
-  strategy('strategy'),
-  private('private'),
+  journal('/new-journal'),
+  thread('/new-thread'),
+  plan('/new-plan'),
+  news('/news'),
+  report('/new-report'),
+  project('/new-project'),
+  task('/new-task'),
+  note('/new-note'),
+  idea('/new-idea'),
+  event('/new-event'),
+  blocker('/new-blocker'),
+  think('/new-thought'),
+  strategy('/new-strategy'),
+  private('/new-private'),
+  go('/go'),
   ;
 
   const Commands(this.name);
@@ -59,51 +60,14 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
       child: Text(e),
     ));
 
-void _showMenu(BuildContext context, List<String> items, WidgetRef ref) {
-  final renderBox = context.findRenderObject() as RenderBox;
-  final top = renderBox.localToGlobal(Offset.zero).dy; // Adjust for menu height
-  final left = MediaQuery.of(context).size.width / 4; // Center horizontally
-
-  showMenu(
-    context: context,
-    position: RelativeRect.fromLTRB(
-      left,
-      top,
-      400,
-      200,
-    ),
-    items: items
-        .map((item) => PopupMenuItem(
-              value: item,
-              child: Text(item),
-            ))
-        .toList(),
-  ).then((value) {
-    // Handle selected item
-    // go to the command screen to get additional command parameters from the user
-    // using the textformfield widget. Then create a new thread and corresponding screen
-    // The parameter for most commands right now is just a 21 character alphanumeric string
-    // word that is used to identify the threadname. The threadname can be used
-    // to retrieve the thread from the database later. The threadname is also used
-    // to create a new screen for the thread.
-    final prevCommand = ref.read(currentCommandProvider);
-    ref.read(currentCommandProvider.notifier).setCommand(Commands.values
-        .firstWhere((element) => element.name == value,
-            orElse: () => prevCommand));
-    Navigator.pushReplacementNamed(
-      context,
-      "/commandparam",
-    );
-  });
-}
-
 class AutoCompleteCommand extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Autocomplete<String>(
       fieldViewBuilder: (context, controller, focusNode, onEditingComplete) {
         return TextField(
-          controller: controller,
+          autofocus: true,
+          controller: controller..text = "/",
           focusNode: focusNode,
           decoration: const InputDecoration(
             filled: true,
@@ -166,11 +130,11 @@ class AutoCompleteCommand extends ConsumerWidget {
 }
 
 class CommandBox extends ConsumerWidget {
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _blockController = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool visibility = ref.watch(autoCompleteVisibilityProvider);
+    bool commandVisibility = ref.watch(autoCompleteVisibilityProvider);
     return Container(
         //alignment: Alignment.center,
         width: containerWidth,
@@ -188,7 +152,7 @@ class CommandBox extends ConsumerWidget {
                 if (event is RawKeyDownEvent) {
                   if (event.isShiftPressed &&
                       event.logicalKey == LogicalKeyboardKey.enter) {
-                    String blockText = _controller.text;
+                    String blockText = _blockController.text;
                     // Submit the text
                     //blockProvider is not really being watched. Need to see what
                     // to do about it when block is properly formed
@@ -196,7 +160,13 @@ class CommandBox extends ConsumerWidget {
 
                     ref.read(blockProvider.notifier).setState(blockText);
                     ref.read(threadProvider.notifier).addString(blockText);
-                    _controller.clear();
+                    _blockController.clear();
+                  }
+                  if ((event.logicalKey == LogicalKeyboardKey.escape) &&
+                      commandVisibility) {
+                    ref
+                        .read(autoCompleteVisibilityProvider.notifier)
+                        .setVisibility(false);
                   }
                   // Handle key down
                 } else if (event is RawKeyUpEvent) {
@@ -207,9 +177,10 @@ class CommandBox extends ConsumerWidget {
             },
             child: Stack(children: [
               Visibility(
-                visible: !visibility,
+                visible: !commandVisibility,
                 child: TextField(
-                  controller: _controller,
+                  autofocus: true,
+                  controller: _blockController,
                   //keyboardType: TextInputType.multiline,
                   minLines: 2,
                   maxLines: 5,
@@ -224,6 +195,8 @@ class CommandBox extends ConsumerWidget {
                     if (text.isNotEmpty && text.startsWith('/')) {
                       if (!context.mounted) return;
                       // show the popup
+                      _blockController.clear();
+
                       ref
                           .read(autoCompleteVisibilityProvider.notifier)
                           .setVisibility(true);
@@ -235,7 +208,7 @@ class CommandBox extends ConsumerWidget {
                 ),
               ),
               Visibility(
-                visible: visibility,
+                visible: commandVisibility,
                 child: AutoCompleteCommand(),
               ),
             ]),
