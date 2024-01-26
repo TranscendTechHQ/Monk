@@ -35,10 +35,8 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
 
 void _showMenu(BuildContext context, List<String> items) {
   final renderBox = context.findRenderObject() as RenderBox;
-  final top =
-      renderBox.localToGlobal(Offset.zero).dy - 40; // Adjust for menu height
-  final left =
-      MediaQuery.of(context).size.width / 2 - 700; // Center horizontally
+  final top = renderBox.localToGlobal(Offset.zero).dy; // Adjust for menu height
+  final left = MediaQuery.of(context).size.width / 4; // Center horizontally
 
   showMenu(
     context: context,
