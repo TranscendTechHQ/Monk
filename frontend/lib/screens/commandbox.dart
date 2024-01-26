@@ -102,6 +102,29 @@ class AutoCompleteCommand extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Autocomplete<String>(
       optionsViewOpenDirection: OptionsViewOpenDirection.up,
+      //optionsMaxHeight: 200.0,
+      optionsViewBuilder: (context, onSelected, options) {
+        return Align(
+          alignment: Alignment.bottomLeft,
+          child: SizedBox(
+            width: containerWidth,
+            child: Material(
+              elevation: 4,
+              clipBehavior: Clip.antiAlias,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: options.map((e) {
+                  return ListTile(title: Text(e));
+                }).toList(),
+              ),
+            ),
+          ),
+        );
+      },
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text == '') {
           return const Iterable<String>.empty();
