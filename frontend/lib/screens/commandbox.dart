@@ -105,25 +105,36 @@ class AutoCompleteCommand extends ConsumerWidget {
       //optionsMaxHeight: 200.0,
       optionsViewBuilder: (context, onSelected, options) {
         return Align(
-          alignment: Alignment.bottomLeft,
-          child: SizedBox(
-            width: containerWidth,
-            child: Material(
-              elevation: 4,
-              clipBehavior: Clip.antiAlias,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+            alignment: Alignment.bottomLeft,
+            child: SizedBox(
+              width: containerWidth,
+              child: Material(
+                elevation: 4,
+                clipBehavior: Clip.antiAlias,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Container(
+                  height: 52.0 * options.length,
+                  width: containerWidth,
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: options.length,
+                    shrinkWrap: false,
+                    itemBuilder: (BuildContext context, int index) {
+                      final String option = options.elementAt(index);
+                      return InkWell(
+                        onTap: () => onSelected(option),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(option),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: options.map((e) {
-                  return ListTile(title: Text(e));
-                }).toList(),
-              ),
-            ),
-          ),
-        );
+            ));
       },
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text == '') {
