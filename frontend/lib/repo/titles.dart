@@ -23,6 +23,9 @@ class Titles extends _$Titles {
   List<AlphaNumericTitle> build() => [];
 
   void add(AlphaNumericTitle title) {
+    if (state.contains(title)) {
+      return;
+    }
     state = [...state, title];
   }
 

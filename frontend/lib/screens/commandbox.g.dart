@@ -6,6 +6,23 @@ part of 'commandbox.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$autoCompleteVisibilityHash() =>
+    r'cc9d6ba6733475225516e6abf203573898a8a1d7';
+
+/// See also [AutoCompleteVisibility].
+@ProviderFor(AutoCompleteVisibility)
+final autoCompleteVisibilityProvider =
+    AutoDisposeNotifierProvider<AutoCompleteVisibility, bool>.internal(
+  AutoCompleteVisibility.new,
+  name: r'autoCompleteVisibilityProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$autoCompleteVisibilityHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$AutoCompleteVisibility = AutoDisposeNotifier<bool>;
 String _$currentCommandHash() => r'48064c6c688a9a8a6ce1d3aa962e47ee7c2a65b6';
 
 /// See also [CurrentCommand].

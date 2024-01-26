@@ -32,6 +32,17 @@ enum Commands {
 }
 
 @riverpod
+class AutoCompleteVisibility extends _$AutoCompleteVisibility {
+  @override
+  bool build() => false;
+  void setVisibility(bool visibility) {
+    state = visibility;
+  }
+
+  bool get() => state;
+}
+
+@riverpod
 class CurrentCommand extends _$CurrentCommand {
   @override
   Commands build() => Commands.journal;
@@ -86,10 +97,33 @@ void _showMenu(BuildContext context, List<String> items, WidgetRef ref) {
   });
 }
 
-class CommandBox extends ConsumerWidget {
-  final TextEditingController _controller = TextEditingController();
+class AutoCompleteCommand extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return Autocomplete<String>(
+      optionsViewOpenDirection: OptionsViewOpenDirection.up,
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text == '') {
+          return const Iterable<String>.empty();
+        }
+        return commandList.where((String option) {
+          return option.contains(textEditingValue.text.toLowerCase());
+        });
+      },
+      onSelected: (String selection) {
+        debugPrint('You just selected $selection');
+        ref.read(autoCompleteVisibilityProvider.notifier).setVisibility(false);
+      },
+    );
+  }
+}
+
+class CommandBox extends ConsumerWidget {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    bool visibility = ref.watch(autoCompleteVisibilityProvider);
     return Container(
         //alignment: Alignment.center,
         width: containerWidth,
@@ -124,28 +158,40 @@ class CommandBox extends ConsumerWidget {
                 }
               }
             },
-            child: TextField(
-              controller: _controller,
-              //keyboardType: TextInputType.multiline,
-              minLines: 2,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color.fromARGB(255, 188, 105, 240),
-                border: OutlineInputBorder(),
-                hintText: 'Write your journal here...Press SHIFT+Enter to save',
+            child: Stack(children: [
+              Visibility(
+                visible: !visibility,
+                child: TextField(
+                  controller: _controller,
+                  //keyboardType: TextInputType.multiline,
+                  minLines: 2,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 188, 105, 240),
+                    border: OutlineInputBorder(),
+                    hintText:
+                        'Write your journal here...Press SHIFT+Enter to save',
+                  ),
+                  onChanged: (text) async {
+                    if (text.isNotEmpty && text.startsWith('/')) {
+                      if (!context.mounted) return;
+                      // show the popup
+                      ref
+                          .read(autoCompleteVisibilityProvider.notifier)
+                          .setVisibility(true);
+                      // show a popup with the list of commands and allow the user to
+                      // select one
+                      // or delete the / and treat it as a normal text
+                    }
+                  },
+                ),
               ),
-              onChanged: (text) async {
-                if (text.isNotEmpty && text.startsWith('/')) {
-                  if (!context.mounted) return;
-                  // show the popup
-                  _showMenu(context, commandList, ref);
-                  // show a popup with the list of commands and allow the user to
-                  // select one
-                  // or delete the / and treat it as a normal text
-                }
-              },
-            ),
+              Visibility(
+                visible: visibility,
+                child: AutoCompleteCommand(),
+              ),
+            ]),
           ),
         ]));
   }
