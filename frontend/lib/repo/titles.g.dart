@@ -1,25 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'thread.dart';
+part of 'titles.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$threadHash() => r'd4b2292821225699068c49065309542a51ba5026';
+String _$titlesHash() => r'ef058a8c61673874838a94bab8b72166f9c9ddb6';
 
-/// See also [Thread].
-@ProviderFor(Thread)
-final threadProvider =
-    AutoDisposeAsyncNotifierProvider<Thread, List<String>>.internal(
-  Thread.new,
-  name: r'threadProvider',
+/// See also [Titles].
+@ProviderFor(Titles)
+final titlesProvider =
+    AutoDisposeNotifierProvider<Titles, List<AlphaNumericTitle>>.internal(
+  Titles.new,
+  name: r'titlesProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$threadHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$titlesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$Thread = AutoDisposeAsyncNotifier<List<String>>;
+typedef _$Titles = AutoDisposeNotifier<List<AlphaNumericTitle>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

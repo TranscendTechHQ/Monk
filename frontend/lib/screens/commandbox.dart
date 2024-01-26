@@ -7,8 +7,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
 
 import '../constants.dart';
+part 'commandbox.g.dart';
 
 enum Commands {
+  journal('journal'),
+  thread('thread'),
   plan('plan'),
   news('news'),
   report('report'),
@@ -20,11 +23,23 @@ enum Commands {
   blocker('blocker'),
   think('think'),
   strategy('strategy'),
+  private('private'),
   ;
 
   const Commands(this.name);
 
   final String name;
+}
+
+@riverpod
+class CurrentCommand extends _$CurrentCommand {
+  @override
+  Commands build() => Commands.journal;
+  void setCommand(Commands command) {
+    state = command;
+  }
+
+  Commands get() => state;
 }
 
 final List<String> commandList = Commands.values.map((e) => e.name).toList();
@@ -33,7 +48,7 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
       child: Text(e),
     ));
 
-void _showMenu(BuildContext context, List<String> items) {
+void _showMenu(BuildContext context, List<String> items, WidgetRef ref) {
   final renderBox = context.findRenderObject() as RenderBox;
   final top = renderBox.localToGlobal(Offset.zero).dy; // Adjust for menu height
   final left = MediaQuery.of(context).size.width / 4; // Center horizontally
@@ -54,17 +69,21 @@ void _showMenu(BuildContext context, List<String> items) {
         .toList(),
   ).then((value) {
     // Handle selected item
+    // go to the command screen to get additional command parameters from the user
+    // using the textformfield widget. Then create a new thread and corresponding screen
+    // The parameter for most commands right now is just a 21 character alphanumeric string
+    // word that is used to identify the threadname. The threadname can be used
+    // to retrieve the thread from the database later. The threadname is also used
+    // to create a new screen for the thread.
+    final prevCommand = ref.read(currentCommandProvider);
+    ref.read(currentCommandProvider.notifier).setCommand(Commands.values
+        .firstWhere((element) => element.name == value,
+            orElse: () => prevCommand));
+    Navigator.pushReplacementNamed(
+      context,
+      "/commandparam",
+    );
   });
-}
-
-class AlphanumericWord {
-  final String _value;
-
-  AlphanumericWord(String value)
-      : assert(RegExp(r'^[a-zA-Z0-9]+$').hasMatch(value)),
-        _value = value;
-
-  String get value => _value;
 }
 
 class CommandBox extends ConsumerWidget {
@@ -120,7 +139,7 @@ class CommandBox extends ConsumerWidget {
                 if (text.isNotEmpty && text.startsWith('/')) {
                   if (!context.mounted) return;
                   // show the popup
-                  _showMenu(context, commandList);
+                  _showMenu(context, commandList, ref);
                   // show a popup with the list of commands and allow the user to
                   // select one
                   // or delete the / and treat it as a normal text

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/screens/commandparam.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 import 'constants.dart';
 import 'screens/home.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         "/home": (context) => const HomeScreen(),
         "/login": (context) => const LoginScreen(),
         "/journal": (context) => JournalScreen(),
+        "/commandparam": (context) => CommandParamScreen(),
       },
     );
   }
