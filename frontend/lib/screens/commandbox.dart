@@ -83,7 +83,7 @@ class CommandTypeAhead extends ConsumerWidget {
         direction: VerticalDirection.up,
         controller: _typeAheadController,
         builder: (context, controller, focusNode) => TextField(
-              controller: controller,
+              controller: controller..text = '/',
               onSubmitted: (value) {
                 // if value is present in the commandList,
                 //then set the current command to value
