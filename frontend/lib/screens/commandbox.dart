@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,7 @@ import 'package:frontend/repo/blocks.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_context_menu/flutter_context_menu.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../constants.dart';
 part 'commandbox.g.dart';
@@ -59,6 +62,66 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
       value: e,
       child: Text(e),
     ));
+
+class MyTypeAhead extends ConsumerWidget {
+  final TextEditingController _typeAheadController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // ...
+
+    return TypeAheadField<String>(
+        hideOnEmpty: true,
+        direction: VerticalDirection.up,
+        controller: _typeAheadController,
+        builder: (context, controller, focusNode) => TextField(
+              controller: controller,
+              onSubmitted: (value) {
+                // if value is present in the commandList,
+                //then set the current command to value
+                // and set the visibility to false
+
+                if (commandList.contains(value)) {
+                  print("Command is " + value);
+                  ref
+                      .read(currentCommandProvider.notifier)
+                      .setCommand(Commands.values[commandList.indexOf(value)]);
+                  ref
+                      .read(autoCompleteVisibilityProvider.notifier)
+                      .setVisibility(false);
+                }
+              },
+              focusNode: focusNode,
+              autofocus: true,
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(255, 74, 21, 107),
+                border: OutlineInputBorder(),
+                hintText: 'press "/" for commands',
+              ),
+            ),
+        suggestionsCallback: (pattern) async {
+          return commandList.where((String option) {
+            return option.contains(pattern.toLowerCase());
+          }).toList();
+        },
+        itemBuilder: (context, suggestion) {
+          return ListTile(
+            title: Text(suggestion),
+          );
+        },
+        onSelected: (suggestion) {
+          _typeAheadController.text = suggestion;
+          print("Suggested Command is " + suggestion);
+          ref
+              .read(currentCommandProvider.notifier)
+              .setCommand(Commands.values[commandList.indexOf(suggestion)]);
+          ref
+              .read(autoCompleteVisibilityProvider.notifier)
+              .setVisibility(false);
+        });
+  }
+}
 
 class AutoCompleteCommand extends ConsumerWidget {
   @override
@@ -145,6 +208,7 @@ class CommandBox extends ConsumerWidget {
         ),
         child: Column(children: [
           //buildCommandPopUp(context, ref),
+          MyTypeAhead(),
           RawKeyboardListener(
             focusNode: FocusNode(),
             onKey: (RawKeyEvent event) async {
