@@ -64,14 +64,17 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
     ));
 
 class CommandTypeAhead extends ConsumerWidget {
-  final TextEditingController _typeAheadController = TextEditingController();
-  void onCommandSelected(String command, WidgetRef ref) {
-    print("Command is " + command);
+  final TextEditingController _typeAheadController =
+      TextEditingController(text: "/");
+  void onCommandSelected(String command, WidgetRef ref, BuildContext context) {
+    //print("Command is " + command);
+    _typeAheadController.text = command;
 
     ref
         .read(currentCommandProvider.notifier)
         .setCommand(Commands.values[commandList.indexOf(command)]);
-    ref.read(autoCompleteVisibilityProvider.notifier).setVisibility(false);
+    FocusScope.of(context).requestFocus(FocusNode());
+    // ref.read(autoCompleteVisibilityProvider.notifier).setVisibility(false);
   }
 
   @override
@@ -83,14 +86,14 @@ class CommandTypeAhead extends ConsumerWidget {
         direction: VerticalDirection.up,
         controller: _typeAheadController,
         builder: (context, controller, focusNode) => TextField(
-              controller: controller..text = '/',
+              controller: controller,
               onSubmitted: (value) {
                 // if value is present in the commandList,
                 //then set the current command to value
                 // and set the visibility to false
 
                 if (commandList.contains(value)) {
-                  onCommandSelected(value, ref);
+                  onCommandSelected(value, ref, context);
                 }
               },
               focusNode: focusNode,
@@ -113,7 +116,7 @@ class CommandTypeAhead extends ConsumerWidget {
           );
         },
         onSelected: (suggestion) {
-          onCommandSelected(suggestion, ref);
+          onCommandSelected(suggestion, ref, context);
         });
   }
 }
@@ -196,7 +199,28 @@ class CommandBox extends ConsumerWidget {
           ),
           Visibility(
             visible: commandVisibility,
-            child: CommandTypeAhead(),
+            child: Row(mainAxisSize: MainAxisSize.max, children: [
+              Expanded(child: CommandTypeAhead()),
+              Expanded(
+                  child: TextFormField(
+                focusNode: FocusNode(),
+                autofocus: true,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromARGB(255, 52, 29, 66),
+                  border: OutlineInputBorder(),
+                  hintText:
+                      'Write your journal here...Press SHIFT+Enter to save',
+                ),
+                onFieldSubmitted: (value) {
+                  // if value is present in the commandList,
+                  //then set the current command to value
+                  // and set the visibility to false
+
+                  print("Value is " + value);
+                },
+              ))
+            ]),
           ),
         ]),
       ),

@@ -176,8 +176,7 @@ async def get_blocks_by_date(request: Request,
     blocks = await get_mongo_documents_by_date(date.date, request.app.mongodb["blocks"])
     
     ret_block = BlockCollection(blocks=blocks)
-    print(date.date)
-    print(ret_block)
+    
     ## retun the block in json format
     return JSONResponse(status_code=status.HTTP_200_OK, 
                        content=jsonable_encoder(ret_block))
