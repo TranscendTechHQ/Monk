@@ -63,8 +63,16 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
       child: Text(e),
     ));
 
-class MyTypeAhead extends ConsumerWidget {
+class CommandTypeAhead extends ConsumerWidget {
   final TextEditingController _typeAheadController = TextEditingController();
+  void onCommandSelected(String command, WidgetRef ref) {
+    print("Command is " + command);
+
+    ref
+        .read(currentCommandProvider.notifier)
+        .setCommand(Commands.values[commandList.indexOf(command)]);
+    ref.read(autoCompleteVisibilityProvider.notifier).setVisibility(false);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,13 +90,7 @@ class MyTypeAhead extends ConsumerWidget {
                 // and set the visibility to false
 
                 if (commandList.contains(value)) {
-                  print("Command is " + value);
-                  ref
-                      .read(currentCommandProvider.notifier)
-                      .setCommand(Commands.values[commandList.indexOf(value)]);
-                  ref
-                      .read(autoCompleteVisibilityProvider.notifier)
-                      .setVisibility(false);
+                  onCommandSelected(value, ref);
                 }
               },
               focusNode: focusNode,
@@ -111,84 +113,8 @@ class MyTypeAhead extends ConsumerWidget {
           );
         },
         onSelected: (suggestion) {
-          _typeAheadController.text = suggestion;
-          print("Suggested Command is " + suggestion);
-          ref
-              .read(currentCommandProvider.notifier)
-              .setCommand(Commands.values[commandList.indexOf(suggestion)]);
-          ref
-              .read(autoCompleteVisibilityProvider.notifier)
-              .setVisibility(false);
+          onCommandSelected(suggestion, ref);
         });
-  }
-}
-
-class AutoCompleteCommand extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Autocomplete<String>(
-      fieldViewBuilder: (context, controller, focusNode, onEditingComplete) {
-        return TextField(
-          autofocus: true,
-          controller: controller..text = "/",
-          focusNode: focusNode,
-          decoration: const InputDecoration(
-            filled: true,
-            fillColor: Color.fromARGB(255, 74, 21, 107),
-            border: OutlineInputBorder(),
-            hintText:
-                'Write here...Press SHIFT+Enter to save, press "/" for commands',
-          ),
-        );
-      },
-      optionsViewOpenDirection: OptionsViewOpenDirection.up,
-      //optionsMaxHeight: 200.0,
-      optionsViewBuilder: (context, onSelected, options) {
-        return Align(
-            alignment: Alignment.bottomLeft,
-            child: SizedBox(
-              width: containerWidth,
-              child: Material(
-                elevation: 4,
-                clipBehavior: Clip.antiAlias,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Container(
-                  height: 52.0 * options.length,
-                  width: containerWidth,
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: options.length,
-                    shrinkWrap: false,
-                    itemBuilder: (BuildContext context, int index) {
-                      final String option = options.elementAt(index);
-                      return InkWell(
-                        onTap: () => onSelected(option),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(option),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ));
-      },
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text == '') {
-          return const Iterable<String>.empty();
-        }
-        return commandList.where((String option) {
-          return option.contains(textEditingValue.text.toLowerCase());
-        });
-      },
-      onSelected: (String selection) {
-        debugPrint('You just selected $selection');
-        ref.read(autoCompleteVisibilityProvider.notifier).setVisibility(false);
-      },
-    );
   }
 }
 
@@ -208,14 +134,15 @@ class CommandBox extends ConsumerWidget {
         ),
         child: Column(children: [
           //buildCommandPopUp(context, ref),
-          MyTypeAhead(),
+          //MyTypeAhead(),
           RawKeyboardListener(
             focusNode: FocusNode(),
             onKey: (RawKeyEvent event) async {
               if (!event.repeat) {
                 if (event is RawKeyDownEvent) {
                   if (event.isShiftPressed &&
-                      event.logicalKey == LogicalKeyboardKey.enter) {
+                      event.logicalKey == LogicalKeyboardKey.enter &&
+                      !commandVisibility) {
                     String blockText = _blockController.text;
                     // Submit the text
                     //blockProvider is not really being watched. Need to see what
@@ -273,7 +200,7 @@ class CommandBox extends ConsumerWidget {
               ),
               Visibility(
                 visible: commandVisibility,
-                child: AutoCompleteCommand(),
+                child: CommandTypeAhead(),
               ),
             ]),
           ),
