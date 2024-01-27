@@ -125,85 +125,81 @@ class CommandBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     bool commandVisibility = ref.watch(autoCompleteVisibilityProvider);
     return Container(
-        //alignment: Alignment.center,
-        width: containerWidth,
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 1,
-          ),
+      //alignment: Alignment.center,
+      width: containerWidth,
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
         ),
-        child: Column(children: [
-          //buildCommandPopUp(context, ref),
-          //MyTypeAhead(),
-          RawKeyboardListener(
-            focusNode: FocusNode(),
-            onKey: (RawKeyEvent event) async {
-              if (!event.repeat) {
-                if (event is RawKeyDownEvent) {
-                  if (event.isShiftPressed &&
-                      event.logicalKey == LogicalKeyboardKey.enter &&
-                      !commandVisibility) {
-                    String blockText = _blockController.text;
-                    // Submit the text
-                    //blockProvider is not really being watched. Need to see what
-                    // to do about it when block is properly formed
-                    // right now it is just a String object.
+      ),
+      child: RawKeyboardListener(
+        focusNode: FocusNode(),
+        onKey: (RawKeyEvent event) async {
+          if (!event.repeat) {
+            if (event is RawKeyDownEvent) {
+              if (event.isShiftPressed &&
+                  event.logicalKey == LogicalKeyboardKey.enter &&
+                  !commandVisibility) {
+                String blockText = _blockController.text;
+                // Submit the text
+                //blockProvider is not really being watched. Need to see what
+                // to do about it when block is properly formed
+                // right now it is just a String object.
 
-                    ref.read(blockProvider.notifier).setState(blockText);
-                    ref.read(threadProvider.notifier).addString(blockText);
-                    _blockController.clear();
-                  }
-                  if ((event.logicalKey == LogicalKeyboardKey.escape) &&
-                      commandVisibility) {
-                    ref
-                        .read(autoCompleteVisibilityProvider.notifier)
-                        .setVisibility(false);
-                  }
-                  // Handle key down
-                } else if (event is RawKeyUpEvent) {
-                  // Handle key up
-                  // just chill
-                }
+                ref.read(blockProvider.notifier).setState(blockText);
+                ref.read(threadProvider.notifier).addString(blockText);
+                _blockController.clear();
               }
-            },
-            child: Stack(children: [
-              Visibility(
-                visible: !commandVisibility,
-                child: TextField(
-                  autofocus: true,
-                  controller: _blockController,
-                  //keyboardType: TextInputType.multiline,
-                  minLines: 2,
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 188, 105, 240),
-                    border: OutlineInputBorder(),
-                    hintText:
-                        'Write your journal here...Press SHIFT+Enter to save',
-                  ),
-                  onChanged: (text) async {
-                    if (text.isNotEmpty && text.startsWith('/')) {
-                      if (!context.mounted) return;
-                      // show the popup
-                      _blockController.clear();
+              if ((event.logicalKey == LogicalKeyboardKey.escape) &&
+                  commandVisibility) {
+                ref
+                    .read(autoCompleteVisibilityProvider.notifier)
+                    .setVisibility(false);
+              }
+              // Handle key down
+            } else if (event is RawKeyUpEvent) {
+              // Handle key up
+              // just chill
+            }
+          }
+        },
+        child: Stack(children: [
+          Visibility(
+            visible: !commandVisibility,
+            child: TextField(
+              autofocus: true,
+              controller: _blockController,
+              //keyboardType: TextInputType.multiline,
+              minLines: 2,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(255, 188, 105, 240),
+                border: OutlineInputBorder(),
+                hintText: 'Write your journal here...Press SHIFT+Enter to save',
+              ),
+              onChanged: (text) async {
+                if (text.isNotEmpty && text.startsWith('/')) {
+                  if (!context.mounted) return;
+                  // show the popup
+                  _blockController.clear();
 
-                      ref
-                          .read(autoCompleteVisibilityProvider.notifier)
-                          .setVisibility(true);
-                      // show a popup with the list of commands and allow the user to
-                      // select one
-                      // or delete the / and treat it as a normal text
-                    }
-                  },
-                ),
-              ),
-              Visibility(
-                visible: commandVisibility,
-                child: CommandTypeAhead(),
-              ),
-            ]),
+                  ref
+                      .read(autoCompleteVisibilityProvider.notifier)
+                      .setVisibility(true);
+                  // show a popup with the list of commands and allow the user to
+                  // select one
+                  // or delete the / and treat it as a normal text
+                }
+              },
+            ),
           ),
-        ]));
+          Visibility(
+            visible: commandVisibility,
+            child: CommandTypeAhead(),
+          ),
+        ]),
+      ),
+    );
   }
 }
