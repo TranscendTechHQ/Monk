@@ -82,6 +82,12 @@ class CommandParser {
 
     var title = parts.length > 1 ? parts[1] : '';
 
+    if (!title.startsWith('#')) {
+      throw ArgumentError('Title should start with "#"');
+    }
+
+    title = title.substring(1);
+
     if (!isAlphanumeric(title)) {
       throw ArgumentError('Title should be alphanumeric');
     }
@@ -104,6 +110,23 @@ class CommandParser {
     return matchedPatterns;
   }
 
+  List<String> patternMatchingTitles(String pattern) {
+    List<String> matchedPatterns = [];
+    if (pattern.isEmpty) return matchedPatterns;
+    var parts = pattern.split(' ');
+    String titlePattern = parts[1];
+
+    if (titlePattern.startsWith('#')) {
+      String title = titlePattern.substring(1);
+      matchedPatterns =
+          _ref.read(titlesProvider.notifier).get().where((String option) {
+        return option.contains(title.toLowerCase());
+      }).toList();
+    }
+
+    return matchedPatterns;
+  }
+
   void validateCommand(String commandString) {
     try {
       String command = parseCommand(commandString);
@@ -111,7 +134,7 @@ class CommandParser {
       _ref
           .read(currentCommandProvider.notifier)
           .setCommand(Commands.values[commandList.indexOf(command)]);
-      _ref.read(titlesProvider.notifier).add(AlphaNumericTitle(title));
+      _ref.read(titlesProvider.notifier).add(title);
     } on ArgumentError {
       rethrow;
     }

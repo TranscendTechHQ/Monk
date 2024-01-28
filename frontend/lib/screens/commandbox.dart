@@ -89,6 +89,10 @@ class CommandTypeAhead extends ConsumerWidget {
             // we are displaying a list of commands now
             return parser.patternMatchingCommands(pattern);
           }
+          if (parts.length == 2) {
+            print(parser.patternMatchingTitles(pattern));
+            return parser.patternMatchingTitles(pattern);
+          }
           return suggestions;
         },
         itemBuilder: (context, suggestion) {
