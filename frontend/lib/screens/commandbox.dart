@@ -10,30 +10,13 @@ import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../constants.dart';
+import '../repo/commandparser.dart';
 part 'commandbox.g.dart';
 
-enum Commands {
-  journal('/new-journal'),
-  thread('/new-thread'),
-  plan('/new-plan'),
-  news('/news'),
-  report('/new-report'),
-  project('/new-project'),
-  task('/new-task'),
-  note('/new-note'),
-  idea('/new-idea'),
-  event('/new-event'),
-  blocker('/new-blocker'),
-  think('/new-thought'),
-  strategy('/new-strategy'),
-  private('/new-private'),
-  go('/go'),
-  ;
-
-  const Commands(this.name);
-
-  final String name;
-}
+final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
+      value: e,
+      child: Text(e),
+    ));
 
 @riverpod
 class AutoCompleteVisibility extends _$AutoCompleteVisibility {
@@ -45,23 +28,6 @@ class AutoCompleteVisibility extends _$AutoCompleteVisibility {
 
   bool get() => state;
 }
-
-@riverpod
-class CurrentCommand extends _$CurrentCommand {
-  @override
-  Commands build() => Commands.journal;
-  void setCommand(Commands command) {
-    state = command;
-  }
-
-  Commands get() => state;
-}
-
-final List<String> commandList = Commands.values.map((e) => e.name).toList();
-final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
-      value: e,
-      child: Text(e),
-    ));
 
 class CommandTypeAhead extends ConsumerWidget {
   final TextEditingController _typeAheadController =

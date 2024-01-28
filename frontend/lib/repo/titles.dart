@@ -22,11 +22,12 @@ class Titles extends _$Titles {
   @override
   List<AlphaNumericTitle> build() => [];
 
-  void add(AlphaNumericTitle title) {
+  bool add(AlphaNumericTitle title) {
     if (state.contains(title)) {
-      return;
+      return false;
     }
     state = [...state, title];
+    return true;
   }
 
   List<AlphaNumericTitle> get() => state;
