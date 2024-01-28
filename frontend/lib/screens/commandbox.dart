@@ -59,9 +59,14 @@ class CommandTypeAhead extends ConsumerWidget {
                 // if value is present in the commandList,
                 //then set the current command to value
                 // and set the visibility to false
-
-                if (commandList.contains(value)) {
-                  onCommandSelected(value, ref, context);
+                try {
+                  parser.validateCommand(value);
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(e.toString()),
+                    duration: const Duration(seconds: 10),
+                  ));
+                  return;
                 }
               },
               focusNode: focusNode,
