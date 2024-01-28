@@ -66,6 +66,7 @@ final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
 class CommandTypeAhead extends ConsumerWidget {
   final TextEditingController _typeAheadController =
       TextEditingController(text: "/");
+  final FocusNode _commandFocusNode = FocusNode();
   void onCommandSelected(String command, WidgetRef ref, BuildContext context) {
     //print("Command is " + command);
     _typeAheadController.text = command;
@@ -73,7 +74,9 @@ class CommandTypeAhead extends ConsumerWidget {
     ref
         .read(currentCommandProvider.notifier)
         .setCommand(Commands.values[commandList.indexOf(command)]);
-    FocusScope.of(context).requestFocus(FocusNode());
+
+    _commandFocusNode.nextFocus();
+    //FocusScope.of(context).requestFocus(_optionFocusNode);
     // ref.read(autoCompleteVisibilityProvider.notifier).setVisibility(false);
   }
 
@@ -82,6 +85,7 @@ class CommandTypeAhead extends ConsumerWidget {
     // ...
 
     return TypeAheadField<String>(
+        focusNode: _commandFocusNode,
         hideOnEmpty: true,
         direction: VerticalDirection.up,
         controller: _typeAheadController,
@@ -101,7 +105,7 @@ class CommandTypeAhead extends ConsumerWidget {
               decoration: const InputDecoration(
                 filled: true,
                 fillColor: Color.fromARGB(255, 74, 21, 107),
-                border: OutlineInputBorder(),
+                border: InputBorder.none,
                 hintText: 'press "/" for commands',
               ),
             ),
@@ -123,7 +127,7 @@ class CommandTypeAhead extends ConsumerWidget {
 
 class CommandBox extends ConsumerWidget {
   final TextEditingController _blockController = TextEditingController();
-
+  final FocusNode _optionFocusNode = FocusNode();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool commandVisibility = ref.watch(autoCompleteVisibilityProvider);
@@ -203,14 +207,13 @@ class CommandBox extends ConsumerWidget {
               Expanded(child: CommandTypeAhead()),
               Expanded(
                   child: TextFormField(
-                focusNode: FocusNode(),
+                focusNode: _optionFocusNode,
                 autofocus: true,
                 decoration: const InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 52, 29, 66),
-                  border: OutlineInputBorder(),
-                  hintText:
-                      'Write your journal here...Press SHIFT+Enter to save',
+                  fillColor: Color.fromARGB(255, 74, 21, 107),
+                  border: InputBorder.none,
+                  hintText: '',
                 ),
                 onFieldSubmitted: (value) {
                   // if value is present in the commandList,
