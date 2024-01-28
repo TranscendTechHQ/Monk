@@ -105,9 +105,11 @@ class CommandTypeAhead extends ConsumerWidget {
 class CommandBox extends ConsumerWidget {
   final TextEditingController _blockController = TextEditingController();
   final FocusNode _optionFocusNode = FocusNode();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool commandVisibility = ref.watch(autoCompleteVisibilityProvider);
+    final commandHintText = ref.watch(commandHintTextProvider);
     return Container(
       //alignment: Alignment.center,
       width: containerWidth,
@@ -180,26 +182,9 @@ class CommandBox extends ConsumerWidget {
           ),
           Visibility(
             visible: commandVisibility,
-            child: Row(mainAxisSize: MainAxisSize.max, children: [
-              Expanded(child: CommandTypeAhead()),
-              Expanded(
-                  child: TextFormField(
-                focusNode: _optionFocusNode,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 74, 21, 107),
-                  border: InputBorder.none,
-                  hintText: '',
-                ),
-                onFieldSubmitted: (value) {
-                  // if value is present in the commandList,
-                  //then set the current command to value
-                  // and set the visibility to false
-
-                  print("Value is " + value);
-                },
-              ))
+            child: Column(mainAxisSize: MainAxisSize.max, children: [
+              Text(commandHintText),
+              CommandTypeAhead(),
             ]),
           ),
         ]),

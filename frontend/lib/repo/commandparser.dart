@@ -40,6 +40,17 @@ class CurrentCommand extends _$CurrentCommand {
   Commands get() => state;
 }
 
+@riverpod
+class CommandHintText extends _$CommandHintText {
+  @override
+  String build() => 'press "/" for commands';
+  void set(String text) {
+    state = text;
+  }
+
+  String get() => state;
+}
+
 class CommandParser {
   WidgetRef _ref;
   CommandParser(this._ref);
