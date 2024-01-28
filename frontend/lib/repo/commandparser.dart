@@ -41,7 +41,7 @@ class CurrentCommand extends _$CurrentCommand {
 }
 
 class CommandParser {
-  Ref _ref;
+  WidgetRef _ref;
   CommandParser(this._ref);
 
   String parseCommand(String commandString) {
@@ -80,6 +80,17 @@ class CommandParser {
     }
 
     return title;
+  }
+
+  List<String> patternMatchingCommands(String pattern) {
+    List<String> matchedPatterns = [];
+    if (pattern.isEmpty) return matchedPatterns;
+    var parts = pattern.split(' ');
+    String commandPattern = parts[0];
+    matchedPatterns = commandList.where((String option) {
+      return option.contains(commandPattern.toLowerCase());
+    }).toList();
+    return matchedPatterns;
   }
 
   void validateCommand(String commandString) {

@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/blocks.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter_context_menu/flutter_context_menu.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import '../constants.dart';
@@ -48,8 +47,7 @@ class CommandTypeAhead extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ...
-
+    final parser = CommandParser(ref);
     return TypeAheadField<String>(
         focusNode: _commandFocusNode,
         hideOnEmpty: true,
@@ -76,9 +74,17 @@ class CommandTypeAhead extends ConsumerWidget {
               ),
             ),
         suggestionsCallback: (pattern) async {
-          return commandList.where((String option) {
-            return option.contains(pattern.toLowerCase());
-          }).toList();
+          List<String> suggestions = [];
+          if (pattern.isEmpty) {
+            //suggestions.add('');
+            return suggestions;
+          }
+          List<String> parts = pattern.split(' ');
+          if (parts.length == 1) {
+            // we are displaying a list of commands now
+            return parser.patternMatchingCommands(pattern);
+          }
+          return suggestions;
         },
         itemBuilder: (context, suggestion) {
           return ListTile(

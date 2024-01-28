@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/titles.dart';
-import 'package:frontend/screens/commandbox.dart';
+import '../repo/commandparser.dart';
 
 class CommandParamScreen extends ConsumerWidget {
   const CommandParamScreen({Key? key}) : super(key: key);
