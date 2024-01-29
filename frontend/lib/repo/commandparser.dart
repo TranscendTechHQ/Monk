@@ -136,8 +136,6 @@ class CommandParser {
       if (!added) {
         throw ArgumentError('Title must be unique');
       } else {
-        print("Titles are: ");
-        print(titlesNotifier.get());
         commandHintTextNotifier.set('Title added');
       }
     } on ArgumentError {

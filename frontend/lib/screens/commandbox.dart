@@ -34,7 +34,6 @@ class CommandTypeAhead extends ConsumerWidget {
       TextEditingController(text: "/");
   final FocusNode _commandFocusNode = FocusNode();
   void onCommandSelected(String command, WidgetRef ref, BuildContext context) {
-    //print("Command is " + command);
     _typeAheadController.text = command;
 
     ref
@@ -52,7 +51,6 @@ class CommandTypeAhead extends ConsumerWidget {
     final titlesNotifier = ref.read(titlesProvider.notifier);
     final currentCommandNotifier = ref.read(currentCommandProvider.notifier);
     final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
-    final titles = ref.watch(titlesProvider);
 
     return TypeAheadField<String>(
         focusNode: _commandFocusNode,
@@ -97,10 +95,6 @@ class CommandTypeAhead extends ConsumerWidget {
             return parser.patternMatchingCommands(pattern);
           }
           if (parts.length == 2) {
-            print("pattern is " + pattern);
-            print(titlesNotifier.get());
-            print(titles);
-
             return parser.patternMatchingTitles(pattern, titlesNotifier);
           }
           return suggestions;
