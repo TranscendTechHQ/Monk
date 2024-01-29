@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/blocks.dart';
 import 'package:frontend/repo/thread.dart';
+import 'package:frontend/repo/titles.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -47,7 +48,12 @@ class CommandTypeAhead extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parser = CommandParser(ref);
+    final parser = CommandParser();
+    final titlesNotifier = ref.read(titlesProvider.notifier);
+    final currentCommandNotifier = ref.read(currentCommandProvider.notifier);
+    final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
+    final titles = ref.watch(titlesProvider);
+
     return TypeAheadField<String>(
         focusNode: _commandFocusNode,
         hideOnEmpty: true,
@@ -60,7 +66,8 @@ class CommandTypeAhead extends ConsumerWidget {
                 //then set the current command to value
                 // and set the visibility to false
                 try {
-                  parser.validateCommand(value);
+                  parser.validateCommand(value, currentCommandNotifier,
+                      titlesNotifier, commandHintTextNotifier);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
@@ -90,8 +97,11 @@ class CommandTypeAhead extends ConsumerWidget {
             return parser.patternMatchingCommands(pattern);
           }
           if (parts.length == 2) {
-            print(parser.patternMatchingTitles(pattern));
-            return parser.patternMatchingTitles(pattern);
+            print("pattern is " + pattern);
+            print(titlesNotifier.get());
+            print(titles);
+
+            return parser.patternMatchingTitles(pattern, titlesNotifier);
           }
           return suggestions;
         },

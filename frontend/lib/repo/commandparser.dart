@@ -52,8 +52,7 @@ class CommandHintText extends _$CommandHintText {
 }
 
 class CommandParser {
-  WidgetRef _ref;
-  CommandParser(this._ref);
+  CommandParser();
 
   String parseCommand(String commandString) {
     if (!commandString.startsWith('/')) {
@@ -71,7 +70,7 @@ class CommandParser {
     return command;
   }
 
-  String parseTitle(String commandString) {
+  String parseTitle(String commandString, titlesNotifier) {
     var parts = commandString.split(' ');
     if (parts.length > 2) {
       throw ArgumentError('Command should have at most one argument');
@@ -92,7 +91,7 @@ class CommandParser {
       throw ArgumentError('Title should be alphanumeric');
     }
 
-    if (!isUnique(title)) {
+    if (!isUnique(title, titlesNotifier)) {
       throw ArgumentError('Title must be unique');
     }
 
@@ -110,7 +109,7 @@ class CommandParser {
     return matchedPatterns;
   }
 
-  List<String> patternMatchingTitles(String pattern) {
+  List<String> patternMatchingTitles(String pattern, titleNotifier) {
     List<String> matchedPatterns = [];
     if (pattern.isEmpty) return matchedPatterns;
     var parts = pattern.split(' ');
@@ -118,8 +117,7 @@ class CommandParser {
 
     if (titlePattern.startsWith('#')) {
       String title = titlePattern.substring(1);
-      matchedPatterns =
-          _ref.read(titlesProvider.notifier).get().where((String option) {
+      matchedPatterns = titleNotifier.get().where((String option) {
         return option.contains(title.toLowerCase());
       }).toList();
     }
@@ -127,14 +125,21 @@ class CommandParser {
     return matchedPatterns;
   }
 
-  void validateCommand(String commandString) {
+  void validateCommand(String commandString, currentCommandNotifier,
+      titlesNotifier, commandHintTextNotifier) {
     try {
       String command = parseCommand(commandString);
-      String title = parseTitle(commandString);
-      _ref
-          .read(currentCommandProvider.notifier)
+      String title = parseTitle(commandString, titlesNotifier);
+      currentCommandNotifier
           .setCommand(Commands.values[commandList.indexOf(command)]);
-      _ref.read(titlesProvider.notifier).add(title);
+      bool added = titlesNotifier.add(title);
+      if (!added) {
+        throw ArgumentError('Title must be unique');
+      } else {
+        print("Titles are: ");
+        print(titlesNotifier.get());
+        commandHintTextNotifier.set('Title added');
+      }
     } on ArgumentError {
       rethrow;
     }
@@ -144,7 +149,7 @@ class CommandParser {
     return RegExp(r'^[a-zA-Z0-9]+$').hasMatch(argument);
   }
 
-  bool isUnique(String argument) {
-    return !_ref.read(titlesProvider.notifier).get().contains(argument);
+  bool isUnique(String argument, titlesNotifier) {
+    return !titlesNotifier.get().contains(argument);
   }
 }
