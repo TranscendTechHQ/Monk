@@ -1,4 +1,3 @@
-import 'package:frontend/screens/commandbox.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'titles.g.dart';
