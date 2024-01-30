@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,17 +33,6 @@ class CommandTypeAhead extends ConsumerWidget {
   final FocusNode _commandFocusNode = FocusNode();
 
   CommandTypeAhead({super.key});
-  void onCommandSelected(String command, WidgetRef ref, BuildContext context) {
-    _typeAheadController.text = command;
-
-    ref
-        .read(currentCommandProvider.notifier)
-        .setCommand(Commands.values[commandList.indexOf(command)]);
-
-    _commandFocusNode.nextFocus();
-    //FocusScope.of(context).requestFocus(_optionFocusNode);
-    // ref.read(autoCompleteVisibilityProvider.notifier).setVisibility(false);
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,6 +55,10 @@ class CommandTypeAhead extends ConsumerWidget {
                 try {
                   parser.validateCommand(value, currentCommandNotifier,
                       titlesNotifier, commandHintTextNotifier);
+                  // only if the command was successfully validated
+                  /*ref
+                      .read(autoCompleteVisibilityProvider.notifier)
+                      .setVisibility(false);*/
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
@@ -106,7 +98,18 @@ class CommandTypeAhead extends ConsumerWidget {
           );
         },
         onSelected: (suggestion) {
-          onCommandSelected(suggestion, ref, context);
+          if (suggestion.startsWith('/')) {
+            // this is a command
+            _typeAheadController.text = suggestion;
+            currentCommandNotifier
+                .setCommand(Commands.values[commandList.indexOf(suggestion)]);
+          } else {
+            // this is a title
+            // set the current title
+            String currentCommand = currentCommandNotifier.get().name;
+            _typeAheadController.text = currentCommand + " #" + suggestion;
+          }
+          return;
         });
   }
 }
