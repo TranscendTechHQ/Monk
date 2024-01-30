@@ -27,7 +27,7 @@ class Thread extends _$Thread {
     BlockCollection blocksCollection = await blocks_date(today);
     List<String> stringBlocks = [];
 
-    state = AsyncValue.data([]);
+    state = const AsyncValue.data([]);
     blocksCollection.toJson().forEach((key, value) {
       value.forEach((element) {
         stringBlocks.add(element['content']);

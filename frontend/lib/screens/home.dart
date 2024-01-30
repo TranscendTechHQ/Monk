@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> testOpenApi() async {
     //final api = Openapi().getPetApi();
-    final taskApi = await NetworkManager.instance.openApi.getTasksApi();
+    final taskApi = NetworkManager.instance.openApi.getTasksApi();
 
     taskApi.listTasksTaskGet().then((value) {
       print(value);

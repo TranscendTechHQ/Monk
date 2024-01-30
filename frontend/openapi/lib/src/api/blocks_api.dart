@@ -11,7 +11,6 @@ import 'package:dio/dio.dart';
 
 import 'package:openapi/src/model/block_collection.dart';
 import 'package:openapi/src/model/block_model.dart';
-import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/update_block_model.dart';
 

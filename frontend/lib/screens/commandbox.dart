@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,6 +32,8 @@ class CommandTypeAhead extends ConsumerWidget {
   final TextEditingController _typeAheadController =
       TextEditingController(text: "/");
   final FocusNode _commandFocusNode = FocusNode();
+
+  CommandTypeAhead({super.key});
   void onCommandSelected(String command, WidgetRef ref, BuildContext context) {
     _typeAheadController.text = command;
 
@@ -113,6 +114,8 @@ class CommandTypeAhead extends ConsumerWidget {
 class CommandBox extends ConsumerWidget {
   final TextEditingController _blockController = TextEditingController();
   final FocusNode _optionFocusNode = FocusNode();
+
+  CommandBox({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

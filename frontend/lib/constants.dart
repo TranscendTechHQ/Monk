@@ -18,4 +18,4 @@ enum ColorSeed {
   final Color color;
 }
 
-final containerWidth = 800.0; //TODO: make this a provider
+const containerWidth = 800.0; //TODO: make this a provider

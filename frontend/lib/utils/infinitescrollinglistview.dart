@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class InfiniteScrollingListView extends StatefulWidget {
+  const InfiniteScrollingListView({super.key});
+
   @override
   _InfiniteScrollingListViewState createState() =>
       _InfiniteScrollingListViewState();
 }
 
 class _InfiniteScrollingListViewState extends State<InfiniteScrollingListView> {
-  ScrollController _scrollController = ScrollController();
-  List<int> _dataList = List.generate(20, (index) => index);
+  final ScrollController _scrollController = ScrollController();
+  final List<int> _dataList = List.generate(20, (index) => index);
 
   bool _isLoading = false;
 
@@ -38,7 +40,7 @@ class _InfiniteScrollingListViewState extends State<InfiniteScrollingListView> {
       });
 
       // Simulating a delay to fetch more data
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
 
       List<int> newDataList =
           List.generate(20, (index) => index + _dataList.length);
@@ -62,7 +64,7 @@ class _InfiniteScrollingListViewState extends State<InfiniteScrollingListView> {
           );
         } else {
           return _isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Container();
         }
       },

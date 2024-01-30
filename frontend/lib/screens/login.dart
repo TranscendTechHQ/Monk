@@ -28,14 +28,14 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       );
     } else {
-      var GOOGLE_CLIENT_ID =
+      var googleClientId =
           "337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com";
-      var BACKEND_CLIENT_ID =
+      var backendClientId =
           "337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com";
 
       googleSignIn = GoogleSignIn(
-        clientId: GOOGLE_CLIENT_ID,
-        serverClientId: BACKEND_CLIENT_ID,
+        clientId: googleClientId,
+        serverClientId: backendClientId,
         scopes: [
           'email',
         ],
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(context).pushReplacementNamed("/home");
         });
       }
-    } on DioExceptionType catch (e) {
+    } on DioExceptionType {
       print("Google sign in failed");
     }
   }
