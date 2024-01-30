@@ -56,9 +56,9 @@ class CommandTypeAhead extends ConsumerWidget {
                   parser.validateCommand(value, currentCommandNotifier,
                       titlesNotifier, commandHintTextNotifier);
                   // only if the command was successfully validated
-                  /*ref
+                  ref
                       .read(autoCompleteVisibilityProvider.notifier)
-                      .setVisibility(false);*/
+                      .setVisibility(false);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
