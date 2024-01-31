@@ -27,7 +27,7 @@ async def create_thread(request: Request, thread_data: CreateThreadModel = Body(
                                           request.app.mongodb["threads"])
     
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
-                       content=json_util.dumps(created_thread))
+                       content=jsonable_encoder(created_thread))
 
 @router.put("/threads/{title}", response_model=ThreadModel)
 async def update_thread(request: Request, title: str, thread_data: UpdateThreadModel, 
@@ -40,7 +40,7 @@ async def update_thread(request: Request, title: str, thread_data: UpdateThreadM
         thread, 
         request.app.mongodb["threads"])
     return JSONResponse(status_code=status.HTTP_200_OK, 
-                       content=json_util.dumps(updated_thread))
+                       content=jsonable_encoder(updated_thread))
 
 @router.get("/threads/{title}", response_model=ThreadModel)
 async def get_thread(request: Request, title: str, 
@@ -51,7 +51,7 @@ async def get_thread(request: Request, title: str,
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
     return JSONResponse(status_code=status.HTTP_200_OK, 
-                       content=json_util.dumps(old_thread))
+                       content=jsonable_encoder(old_thread))
 
 @router.get("/threads", response_model=List[ThreadsModel])
 async def get_all_threads(request: Request, session: SessionContainer = Depends(verify_session)):

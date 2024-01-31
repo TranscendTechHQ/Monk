@@ -28,7 +28,7 @@ async def create_block(request: Request, block: UpdateBlockModel = Body(...),
                                           request.app.mongodb["blocks"])
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
-                       content=json_util.dumps(created_block))
+                       content=jsonable_encoder(created_block))
   
     
 # get blocks given a date
@@ -43,7 +43,8 @@ async def get_blocks_by_date(request: Request,
     blocks = await get_mongo_documents_by_date(date.date, request.app.mongodb["blocks"])
     
     ret_block = BlockCollection(blocks=blocks)
+
     
     ## retun the block in json format
     return JSONResponse(status_code=status.HTTP_200_OK, 
-                       content=json_util.dumps(ret_block))
+                       content=jsonable_encoder(ret_block))
