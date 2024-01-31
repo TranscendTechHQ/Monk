@@ -21,10 +21,10 @@ async def create_block(request: Request, block: UpdateBlockModel = Body(...),
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     
-    block = jsonable_encoder(block)
+    block = block.model_dump()
+    new_block = BlockModel(**block)
     
-
-    created_block = await create_mongo_document(block, 
+    created_block = await create_mongo_document(jsonable_encoder(new_block), 
                                           request.app.mongodb["blocks"])
 
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
