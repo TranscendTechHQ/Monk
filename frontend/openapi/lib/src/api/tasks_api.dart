@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
+import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/task_model.dart';
 import 'package:openapi/src/model/update_task_model.dart';
 

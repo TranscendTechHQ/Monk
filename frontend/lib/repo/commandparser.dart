@@ -16,6 +16,7 @@ enum Commands {
   think('/new-thought'),
   strategy('/new-strategy'),
   private('/new-private'),
+  experiment('/new-experiment'),
   go('/go'),
   ;
 
