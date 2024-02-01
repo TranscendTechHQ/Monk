@@ -59,9 +59,7 @@ async def get_journal_by_date(request: Request,
                                 session: SessionContainer = Depends(verify_session())
                                 ):
     # get journal thread. If it does not exist, create it
-    journal = await get_mongo_document({"title": "journal"}, request.app.mongodb["threads"])
-    if not journal:
-        journal = await create_mongo_document({"title": "journal", "content": []}, request.app.mongodb["threads"])
+    journal_thread  = await create_new_thread(request, session, "journal") 
     ## get the blocks that have created_at date equal to the date
     ## doing this query in the db directly will be much faster than doing this 
     ## in the python application
@@ -77,6 +75,7 @@ async def get_journal_by_date(request: Request,
                             "$lt": to_date.isoformat()}}}}
     collection = request.app.mongodb["threads"]
     cursor =  collection.find(query)
+    print(query)
     batch_size = 100
     # Convert cursor to list of dictionaries
     blocks = await cursor.to_list(length=batch_size)
@@ -87,19 +86,30 @@ async def get_journal_by_date(request: Request,
     print(ret_thread)
     return JSONResponse(status_code=status.HTTP_200_OK,
                           content=jsonable_encoder(ret_thread))
-                        
+    
+## creates a new thread or returns an existing thread. Content
+## is blank for the new thread
+async def create_new_thread(request: Request, session, title:str, content:List[BlockModel] = []):
+    old_thread = await get_mongo_document({"title": title}, request.app.mongodb["threads"])
+    if not old_thread:
+        
+        user_id = session.get_user_id()
+        new_thread = ThreadModel(creator=user_id, title=title, content=content)
+        created_thread = await create_mongo_document(jsonable_encoder(new_thread), 
+                                          request.app.mongodb["threads"])
+    else:
+        created_thread = old_thread
+    return created_thread
+                    
 @router.post("/threads", response_model=ThreadModel)
 async def create_thread(request: Request, thread_data: CreateThreadModel = Body(...), 
                         session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data
     # Index the thread by userId
     
-    thread = jsonable_encoder(thread_data)
-    new_thread = ThreadModel(**thread)
-    user_id = session.get_user_id()
-    new_thread.creator = user_id
-    created_thread = await create_mongo_document(new_thread, 
-                                          request.app.mongodb["threads"])
+    thread_title = jsonable_encoder(thread_data)["title"]
+    
+    created_thread = await create_new_thread(request, session, thread_title) 
     
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
                        content=jsonable_encoder(created_thread))
