@@ -8,7 +8,7 @@ import 'package:openapi/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**type** | [**ThreadType**](ThreadType.md) |  | 
+**type** | **String** |  | 
 **title** | **String** |  | 
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
 

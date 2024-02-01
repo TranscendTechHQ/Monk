@@ -17,7 +17,6 @@ export 'package:openapi/src/model/create_thread_model.dart';
 export 'package:openapi/src/model/http_validation_error.dart';
 export 'package:openapi/src/model/model_date.dart';
 export 'package:openapi/src/model/thread_model.dart';
-export 'package:openapi/src/model/thread_type.dart';
 export 'package:openapi/src/model/threads_model.dart';
 export 'package:openapi/src/model/update_block_model.dart';
 export 'package:openapi/src/model/update_thread_model.dart';

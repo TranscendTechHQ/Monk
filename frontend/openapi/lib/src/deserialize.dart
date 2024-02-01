@@ -39,9 +39,6 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return ModelDate.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadModel':
           return ThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ThreadType':
-          
-          
         case 'ThreadsModel':
           return ThreadsModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateBlockModel':

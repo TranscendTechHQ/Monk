@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **id** | **String** |  | [optional] 
 **creator** | **String** |  | 
 **createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
-**type** | [**ThreadType**](ThreadType.md) |  | 
+**type** | **String** |  | 
 **title** | **String** |  | 
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
 

@@ -16,8 +16,7 @@ CreateThreadModel _$CreateThreadModelFromJson(Map<String, dynamic> json) =>
           requiredKeys: const ['type', 'title'],
         );
         final val = CreateThreadModel(
-          type: $checkedConvert(
-              'type', (v) => $enumDecode(_$ThreadTypeEnumMap, v)),
+          type: $checkedConvert('type', (v) => v as String),
           title: $checkedConvert('title', (v) => v as String),
           content: $checkedConvert(
               'content',
@@ -31,7 +30,7 @@ CreateThreadModel _$CreateThreadModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$CreateThreadModelToJson(CreateThreadModel instance) {
   final val = <String, dynamic>{
-    'type': _$ThreadTypeEnumMap[instance.type]!,
+    'type': instance.type,
     'title': instance.title,
   };
 
@@ -44,22 +43,3 @@ Map<String, dynamic> _$CreateThreadModelToJson(CreateThreadModel instance) {
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
   return val;
 }
-
-const _$ThreadTypeEnumMap = {
-  ThreadType.slashNewJournal: '/new-journal',
-  ThreadType.newThread: 'new-thread',
-  ThreadType.newPlan: 'new-plan',
-  ThreadType.news: 'news',
-  ThreadType.newReport: 'new-report',
-  ThreadType.newProject: 'new-project',
-  ThreadType.newTask: 'new-task',
-  ThreadType.newNote: 'new-note',
-  ThreadType.newIdea: 'new-idea',
-  ThreadType.newEvent: 'new-event',
-  ThreadType.newBlocker: 'new-blocker',
-  ThreadType.newThought: 'new-thought',
-  ThreadType.newStrategy: 'new-strategy',
-  ThreadType.newPrivate: 'new-private',
-  ThreadType.newExperiment: 'new-experiment',
-  ThreadType.go: 'go',
-};

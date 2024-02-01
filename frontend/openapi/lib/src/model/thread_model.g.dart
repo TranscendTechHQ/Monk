@@ -19,8 +19,7 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
           creator: $checkedConvert('creator', (v) => v as String),
           createdDate: $checkedConvert('created_date',
               (v) => v == null ? null : DateTime.parse(v as String)),
-          type: $checkedConvert(
-              'type', (v) => $enumDecode(_$ThreadTypeEnumMap, v)),
+          type: $checkedConvert('type', (v) => v as String),
           title: $checkedConvert('title', (v) => v as String),
           content: $checkedConvert(
               'content',
@@ -45,27 +44,8 @@ Map<String, dynamic> _$ThreadModelToJson(ThreadModel instance) {
   writeNotNull('_id', instance.id);
   val['creator'] = instance.creator;
   writeNotNull('created_date', instance.createdDate?.toIso8601String());
-  val['type'] = _$ThreadTypeEnumMap[instance.type]!;
+  val['type'] = instance.type;
   val['title'] = instance.title;
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
   return val;
 }
-
-const _$ThreadTypeEnumMap = {
-  ThreadType.slashNewJournal: '/new-journal',
-  ThreadType.newThread: 'new-thread',
-  ThreadType.newPlan: 'new-plan',
-  ThreadType.news: 'news',
-  ThreadType.newReport: 'new-report',
-  ThreadType.newProject: 'new-project',
-  ThreadType.newTask: 'new-task',
-  ThreadType.newNote: 'new-note',
-  ThreadType.newIdea: 'new-idea',
-  ThreadType.newEvent: 'new-event',
-  ThreadType.newBlocker: 'new-blocker',
-  ThreadType.newThought: 'new-thought',
-  ThreadType.newStrategy: 'new-strategy',
-  ThreadType.newPrivate: 'new-private',
-  ThreadType.newExperiment: 'new-experiment',
-  ThreadType.go: 'go',
-};

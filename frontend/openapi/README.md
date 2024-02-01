@@ -81,7 +81,6 @@ Class | Method | HTTP request | Description
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
  - [ThreadModel](doc/ThreadModel.md)
- - [ThreadType](doc/ThreadType.md)
  - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateThreadModel](doc/UpdateThreadModel.md)

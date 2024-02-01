@@ -1,14 +1,29 @@
 from datetime import datetime
-from typing import List, Union
+from typing import Annotated, List, Union
 from uuid import UUID
 import uuid
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
 from pydantic.json_schema import SkipJsonSchema
-from enum import Enum
 
 import datetime as dt
 
+THREADTYPES = ["journal", 
+                "/new-thread", 
+                "/new-plan", 
+                "/news", 
+                "/new-report", 
+                "/new-project", 
+                "/new-task", 
+                "/new-note", 
+                "/new-idea", 
+                "/new-event", 
+                "/new-blocker", 
+                "/new-thought", 
+                "/new-strategy", 
+                "/new-private", 
+                "/new-experiment", 
+                "/go"]
 
 class BlockModel(BaseModel):
     id: UUID = Field(default_factory=uuid.uuid4, alias="_id")
@@ -61,23 +76,11 @@ class Date(BaseModel):
     date: dt.datetime
 
 
-class ThreadType(str, Enum):
-    journal = "/new-journal"
-    thread = "new-thread"
-    plan = "new-plan"
-    news = "news"
-    report = "new-report"
-    project = "new-project"
-    task = "new-task"
-    note = "new-note"
-    idea = "new-idea"
-    event = "new-event"
-    blocker = "new-blocker"
-    think = "new-thought"
-    strategy = "new-strategy"
-    private = "new-private"
-    experiment = "new-experiment"
-    go = "go"
+def allowed_thread_types(threadType: str) -> str:
+    assert threadType in [e.value for e in THREADTYPES], f'{threadType} Unknown ThreadType'
+    return threadType
+
+ThreadType = Annotated[str, AfterValidator(allowed_thread_types)]
    
 class CreateThreadModel(BaseModel):
     type: ThreadType

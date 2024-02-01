@@ -3,7 +3,6 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:openapi/src/model/thread_type.dart';
 import 'package:openapi/src/model/block_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -35,7 +34,7 @@ class CreateThreadModel {
   )
 
 
-  final ThreadType type;
+  final String type;
 
 
 

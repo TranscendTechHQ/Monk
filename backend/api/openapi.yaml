@@ -200,7 +200,8 @@ components:
     CreateThreadModel:
       properties:
         type:
-          $ref: '#/components/schemas/ThreadType'
+          type: string
+          title: Type
         title:
           type: string
           maxLength: 100
@@ -256,7 +257,8 @@ components:
           format: date-time
           title: Created Date
         type:
-          $ref: '#/components/schemas/ThreadType'
+          type: string
+          title: Type
         title:
           type: string
           maxLength: 100
@@ -282,26 +284,6 @@ components:
         creator: user1
         title: This is the title of the thread
         type: /new-plan
-    ThreadType:
-      type: string
-      enum:
-      - /new-journal
-      - new-thread
-      - new-plan
-      - news
-      - new-report
-      - new-project
-      - new-task
-      - new-note
-      - new-idea
-      - new-event
-      - new-blocker
-      - new-thought
-      - new-strategy
-      - new-private
-      - new-experiment
-      - go
-      title: ThreadType
     ThreadsModel:
       properties:
         threads:
@@ -356,9 +338,7 @@ components:
     ValidationError:
       properties:
         loc:
-          items:
-            type: string
-          type: array
+          type: string
           title: Location
         msg:
           type: string
