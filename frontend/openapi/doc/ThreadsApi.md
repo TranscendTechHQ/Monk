@@ -13,6 +13,7 @@ Method | HTTP request | Description
 [**createThreadThreadsPost**](ThreadsApi.md#createthreadthreadspost) | **POST** /threads | Create Thread
 [**getAllThreadsThreadsGet**](ThreadsApi.md#getallthreadsthreadsget) | **GET** /threads | Get All Threads
 [**getBlocksByDateBlocksGet**](ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date
+[**getJournalByDateJournalGet**](ThreadsApi.md#getjournalbydatejournalget) | **GET** /journal | Get Journal By Date
 [**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
 [**updateThreadThreadsTitlePut**](ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
@@ -153,6 +154,47 @@ try {
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->getBlocksByDateBlocksGet: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **modelDate** | [**ModelDate**](ModelDate.md)|  | 
+
+### Return type
+
+[**BlockCollection**](BlockCollection.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getJournalByDateJournalGet**
+> BlockCollection getJournalByDateJournalGet(modelDate)
+
+Get Journal By Date
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final ModelDate modelDate = ; // ModelDate | 
+
+try {
+    final response = api.getJournalByDateJournalGet(modelDate);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->getJournalByDateJournalGet: $e\n');
 }
 ```
 

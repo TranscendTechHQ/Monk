@@ -8,7 +8,7 @@ from pydantic.json_schema import SkipJsonSchema
 
 import datetime as dt
 
-THREADTYPES = ["journal", 
+THREADTYPES = [ 
                 "/new-thread", 
                 "/new-plan", 
                 "/news", 

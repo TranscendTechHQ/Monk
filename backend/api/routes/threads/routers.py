@@ -12,6 +12,7 @@ from supertokens_python.recipe.session import SessionContainer
 from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields
 from fastapi import status, Request
 from bson import json_util
+import datetime as dt
 
 router = APIRouter()
 
@@ -51,7 +52,39 @@ async def get_blocks_by_date(request: Request,
     return JSONResponse(status_code=status.HTTP_200_OK, 
                        content=jsonable_encoder(ret_block))
 
-
+@router.get("/journal", response_model=BlockCollection,
+            response_description="Get journal for a given date")
+async def get_journal_by_date(request: Request,
+                                date: Date,
+                                session: SessionContainer = Depends(verify_session())
+                                ):
+    # get journal thread. If it does not exist, create it
+    journal = await get_mongo_document({"title": "journal"}, request.app.mongodb["threads"])
+    if not journal:
+        journal = await create_mongo_document({"title": "journal", "content": []}, request.app.mongodb["threads"])
+    ## get the blocks that have created_at date equal to the date
+    ## doing this query in the db directly will be much faster than doing this 
+    ## in the python application
+    
+    ## build a pymongo query to get the list of blocks from a thread that have the created_at date equal to the date
+    ## provided date:
+    d = date.date()
+    from_date = dt.datetime.combine(d, dt.datetime.min.time())
+    to_date = dt.datetime.combine(d, dt.datetime.max.time())
+    
+    query = {"title": "journal",
+             "content":{ "$elemMatch": {"created_at": {"$gte": from_date.isoformat(), 
+                            "$lt": to_date.isoformat()}}}}
+    collection = request.app.mongodb["threads"]
+    
+    blocks = collection.find(query)
+    print(blocks)
+    ret_thread = BlockCollection(**blocks)
+    
+    print(ret_thread)
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                          content=jsonable_encoder(ret_thread))
+                        
 @router.post("/threads", response_model=ThreadModel)
 async def create_thread(request: Request, thread_data: CreateThreadModel = Body(...), 
                         session: SessionContainer = Depends(verify_session())):

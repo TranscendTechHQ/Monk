@@ -62,6 +62,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /journal:
+    get:
+      tags:
+      - threads
+      summary: Get Journal By Date
+      operationId: get_journal_by_date_journal_get
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Date'
+        required: true
+      responses:
+        '200':
+          description: Get journal for a given date
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockCollection'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /threads:
     get:
       tags:
@@ -338,7 +363,9 @@ components:
     ValidationError:
       properties:
         loc:
-          type: string
+          items:
+            type: string
+          type: array
           title: Location
         msg:
           type: string

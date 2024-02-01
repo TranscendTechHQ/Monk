@@ -18,8 +18,6 @@ async def get_mongo_documents_by_date(date: dt.datetime, collection):
     #    docs.append(doc)
     d = date.date()
     from_date = dt.datetime.combine(d, dt.datetime.min.time())
-    
-    
     to_date = dt.datetime.combine(d, dt.datetime.max.time())
     
     query = {"created_at": {"$gte": from_date.isoformat(), "$lt": to_date.isoformat()}}
@@ -37,7 +35,10 @@ async def delete_mongo_document(query:dict, collection):
         return doc
 
 async def create_mongo_document(document: dict, collection):
-
+    ## if the document already exists, return the existing document
+    if (doc := await collection.find_one(document)) is not None:
+        return doc
+    
     new_document = await collection.insert_one(document)
     
     created_document = await collection.find_one(

@@ -7,7 +7,7 @@ void main() {
   // TODO add properties to the entity
 
   group(ValidationError, () {
-    // String loc
+    // List<String> loc
     test('to test the property `loc`', () async {
       // TODO
     });

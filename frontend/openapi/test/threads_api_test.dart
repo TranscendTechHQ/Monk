@@ -35,6 +35,13 @@ void main() {
       // TODO
     });
 
+    // Get Journal By Date
+    //
+    //Future<BlockCollection> getJournalByDateJournalGet(ModelDate modelDate) async
+    test('test getJournalByDateJournalGet', () async {
+      // TODO
+    });
+
     // Get Thread
     //
     //Future<ThreadModel> getThreadThreadsTitleGet(String title) async

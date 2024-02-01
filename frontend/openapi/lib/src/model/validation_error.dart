@@ -33,7 +33,7 @@ class ValidationError {
   )
 
 
-  final String loc;
+  final List<String> loc;
 
 
 
