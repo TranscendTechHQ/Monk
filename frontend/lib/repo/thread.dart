@@ -42,12 +42,13 @@ class Thread extends _$Thread {
   }
 
   Future<BlockCollection> blocks_date(DateTime date) async {
-    final blockApi = NetworkManager.instance.openApi.getBlocksApi();
+    final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
-    final modelDate = ModelDate(date: date.toIso8601String());
+    //final modelDate = ModelDate(date: date.toIso8601String());
+    final modelDate = ModelDate(date: date);
 
     final response =
-        await blockApi.getBlocksByDateBlockBlocksGet(modelDate: modelDate);
+        await blockApi.getBlocksByDateBlocksGet(modelDate: modelDate);
 
     if (response.statusCode == 200) {
       final blocks = response.data!;

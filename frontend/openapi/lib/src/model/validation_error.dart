@@ -3,7 +3,6 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:openapi/src/model/validation_error_loc_inner.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'validation_error.g.dart';
@@ -34,7 +33,7 @@ class ValidationError {
   )
 
 
-  final List<ValidationErrorLocInner> loc;
+  final List<String> loc;
 
 
 

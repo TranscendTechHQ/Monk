@@ -86,7 +86,6 @@ Class | Method | HTTP request | Description
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateThreadModel](doc/UpdateThreadModel.md)
  - [ValidationError](doc/ValidationError.md)
- - [ValidationErrorLocInner](doc/ValidationErrorLocInner.md)
 
 
 ## Documentation For Authorization

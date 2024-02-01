@@ -16,7 +16,6 @@ doc/ThreadsModel.md
 doc/UpdateBlockModel.md
 doc/UpdateThreadModel.md
 doc/ValidationError.md
-doc/ValidationErrorLocInner.md
 lib/openapi.dart
 lib/src/api.dart
 lib/src/api/default_api.dart
@@ -38,7 +37,6 @@ lib/src/model/threads_model.dart
 lib/src/model/update_block_model.dart
 lib/src/model/update_thread_model.dart
 lib/src/model/validation_error.dart
-lib/src/model/validation_error_loc_inner.dart
 pubspec.yaml
 test/block_collection_test.dart
 test/block_model_test.dart
@@ -52,5 +50,4 @@ test/threads_api_test.dart
 test/threads_model_test.dart
 test/update_block_model_test.dart
 test/update_thread_model_test.dart
-test/validation_error_loc_inner_test.dart
 test/validation_error_test.dart

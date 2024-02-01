@@ -8,7 +8,6 @@ import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
 import 'package:openapi/src/model/update_thread_model.dart';
 import 'package:openapi/src/model/validation_error.dart';
-import 'package:openapi/src/model/validation_error_loc_inner.dart';
 
 final _regList = RegExp(r'^List<(.*)>$');
 final _regSet = RegExp(r'^Set<(.*)>$');
@@ -51,8 +50,6 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return UpdateThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ValidationError':
           return ValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ValidationErrorLocInner':
-          return ValidationErrorLocInner.fromJson(value as Map<String, dynamic>) as ReturnType;
         default:
           RegExpMatch? match;
 

@@ -18,10 +18,10 @@ class Block extends _$Block {
   }
 
   Future<void> createBlock(String text) async {
-    final blockApi = NetworkManager.instance.openApi.getBlocksApi();
+    final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
-    await blockApi.createBlockBlockBlocksPost(
-        blockModel: BlockModel(content: text));
+    await blockApi.createBlockBlocksPost(
+        updateBlockModel: UpdateBlockModel(content: text));
   }
 
   void clearState() {

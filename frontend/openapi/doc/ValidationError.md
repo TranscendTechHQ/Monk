@@ -8,7 +8,7 @@ import 'package:openapi/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**loc** | [**List&lt;ValidationErrorLocInner&gt;**](ValidationErrorLocInner.md) |  | 
+**loc** | **List&lt;String&gt;** |  | 
 **msg** | **String** |  | 
 **type** | **String** |  | 
 

@@ -16,12 +16,8 @@ ValidationError _$ValidationErrorFromJson(Map<String, dynamic> json) =>
           requiredKeys: const ['loc', 'msg', 'type'],
         );
         final val = ValidationError(
-          loc: $checkedConvert(
-              'loc',
-              (v) => (v as List<dynamic>)
-                  .map((e) => ValidationErrorLocInner.fromJson(
-                      e as Map<String, dynamic>))
-                  .toList()),
+          loc: $checkedConvert('loc',
+              (v) => (v as List<dynamic>).map((e) => e as String).toList()),
           msg: $checkedConvert('msg', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
         );
@@ -31,7 +27,7 @@ ValidationError _$ValidationErrorFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ValidationErrorToJson(ValidationError instance) =>
     <String, dynamic>{
-      'loc': instance.loc.map((e) => e.toJson()).toList(),
+      'loc': instance.loc,
       'msg': instance.msg,
       'type': instance.type,
     };

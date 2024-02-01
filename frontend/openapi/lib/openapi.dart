@@ -22,4 +22,3 @@ export 'package:openapi/src/model/threads_model.dart';
 export 'package:openapi/src/model/update_block_model.dart';
 export 'package:openapi/src/model/update_thread_model.dart';
 export 'package:openapi/src/model/validation_error.dart';
-export 'package:openapi/src/model/validation_error_loc_inner.dart';
