@@ -12,7 +12,12 @@ HTTPValidationError _$HTTPValidationErrorFromJson(Map<String, dynamic> json) =>
       json,
       ($checkedConvert) {
         final val = HTTPValidationError(
-          detail: $checkedConvert('detail', (v) => v),
+          detail: $checkedConvert(
+              'detail',
+              (v) => (v as List<dynamic>?)
+                  ?.map((e) =>
+                      ValidationError.fromJson(e as Map<String, dynamic>))
+                  .toList()),
         );
         return val;
       },
@@ -27,6 +32,6 @@ Map<String, dynamic> _$HTTPValidationErrorToJson(HTTPValidationError instance) {
     }
   }
 
-  writeNotNull('detail', instance.detail);
+  writeNotNull('detail', instance.detail?.map((e) => e.toJson()).toList());
   return val;
 }

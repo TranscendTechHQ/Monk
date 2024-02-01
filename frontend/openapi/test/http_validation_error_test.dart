@@ -7,7 +7,7 @@ void main() {
   // TODO add properties to the entity
 
   group(HTTPValidationError, () {
-    // Object detail
+    // List<ValidationError> detail
     test('to test the property `detail`', () async {
       // TODO
     });

@@ -15,21 +15,12 @@ ModelDate _$ModelDateFromJson(Map<String, dynamic> json) => $checkedCreate(
           requiredKeys: const ['date'],
         );
         final val = ModelDate(
-          date: $checkedConvert('date', (v) => v),
+          date: $checkedConvert('date', (v) => DateTime.parse(v as String)),
         );
         return val;
       },
     );
 
-Map<String, dynamic> _$ModelDateToJson(ModelDate instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('date', instance.date);
-  return val;
-}
+Map<String, dynamic> _$ModelDateToJson(ModelDate instance) => <String, dynamic>{
+      'date': instance.date.toIso8601String(),
+    };

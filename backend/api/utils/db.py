@@ -23,7 +23,7 @@ async def get_mongo_documents_by_date(date: dt.datetime, collection):
     to_date = dt.datetime.combine(d, dt.datetime.max.time())
     
     query = {"created_at": {"$gte": from_date.isoformat(), "$lt": to_date.isoformat()}}
-    print(query)
+    
     cursor =  collection.find(query)
     batch_size = 100
     # Convert cursor to list of dictionaries

@@ -7,7 +7,7 @@ void main() {
   // TODO add properties to the entity
 
   group(BlockCollection, () {
-    // Object blocks
+    // List<BlockModel> blocks
     test('to test the property `blocks`', () async {
       // TODO
     });

@@ -7,23 +7,18 @@ void main() {
   // TODO add properties to the entity
 
   group(BlockModel, () {
-    // Object id
+    // String id
     test('to test the property `id`', () async {
       // TODO
     });
 
-    // Object content
+    // String content
     test('to test the property `content`', () async {
       // TODO
     });
 
-    // Object createdAt
+    // DateTime createdAt
     test('to test the property `createdAt`', () async {
-      // TODO
-    });
-
-    // Object metadata
-    test('to test the property `metadata`', () async {
       // TODO
     });
 

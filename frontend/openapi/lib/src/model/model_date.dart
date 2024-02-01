@@ -7,6 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'model_date.g.dart';
 
+
 @JsonSerializable(
   checked: true,
   createToJson: true,
@@ -16,21 +17,31 @@ part 'model_date.g.dart';
 class ModelDate {
   /// Returns a new [ModelDate] instance.
   ModelDate({
-    required this.date,
+
+    required  this.date,
   });
 
-  @JsonKey(name: r'date', required: true, includeIfNull: false)
-  final Object? date;
+  @JsonKey(
+    
+    name: r'date',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final DateTime date;
+
+
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) || other is ModelDate && other.date == date;
+  bool operator ==(Object other) => identical(this, other) || other is ModelDate &&
+     other.date == date;
 
   @override
-  int get hashCode => (date == null ? 0 : date.hashCode);
+  int get hashCode =>
+    date.hashCode;
 
-  factory ModelDate.fromJson(Map<String, dynamic> json) =>
-      _$ModelDateFromJson(json);
+  factory ModelDate.fromJson(Map<String, dynamic> json) => _$ModelDateFromJson(json);
 
   Map<String, dynamic> toJson() => _$ModelDateToJson(this);
 
@@ -38,4 +49,6 @@ class ModelDate {
   String toString() {
     return toJson().toString();
   }
+
 }
+

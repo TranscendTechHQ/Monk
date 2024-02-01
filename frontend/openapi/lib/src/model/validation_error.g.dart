@@ -16,25 +16,22 @@ ValidationError _$ValidationErrorFromJson(Map<String, dynamic> json) =>
           requiredKeys: const ['loc', 'msg', 'type'],
         );
         final val = ValidationError(
-          loc: $checkedConvert('loc', (v) => v),
-          msg: $checkedConvert('msg', (v) => v),
-          type: $checkedConvert('type', (v) => v),
+          loc: $checkedConvert(
+              'loc',
+              (v) => (v as List<dynamic>)
+                  .map((e) => ValidationErrorLocInner.fromJson(
+                      e as Map<String, dynamic>))
+                  .toList()),
+          msg: $checkedConvert('msg', (v) => v as String),
+          type: $checkedConvert('type', (v) => v as String),
         );
         return val;
       },
     );
 
-Map<String, dynamic> _$ValidationErrorToJson(ValidationError instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('loc', instance.loc);
-  writeNotNull('msg', instance.msg);
-  writeNotNull('type', instance.type);
-  return val;
-}
+Map<String, dynamic> _$ValidationErrorToJson(ValidationError instance) =>
+    <String, dynamic>{
+      'loc': instance.loc.map((e) => e.toJson()).toList(),
+      'msg': instance.msg,
+      'type': instance.type,
+    };

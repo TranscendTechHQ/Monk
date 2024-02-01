@@ -1,23 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'block_collection.dart';
+part of 'update_thread_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-BlockCollection _$BlockCollectionFromJson(Map<String, dynamic> json) =>
+UpdateThreadModel _$UpdateThreadModelFromJson(Map<String, dynamic> json) =>
     $checkedCreate(
-      'BlockCollection',
+      'UpdateThreadModel',
       json,
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['blocks'],
+          requiredKeys: const ['content'],
         );
-        final val = BlockCollection(
-          blocks: $checkedConvert(
-              'blocks',
+        final val = UpdateThreadModel(
+          content: $checkedConvert(
+              'content',
               (v) => (v as List<dynamic>)
                   .map((e) => BlockModel.fromJson(e as Map<String, dynamic>))
                   .toList()),
@@ -26,7 +26,7 @@ BlockCollection _$BlockCollectionFromJson(Map<String, dynamic> json) =>
       },
     );
 
-Map<String, dynamic> _$BlockCollectionToJson(BlockCollection instance) =>
+Map<String, dynamic> _$UpdateThreadModelToJson(UpdateThreadModel instance) =>
     <String, dynamic>{
-      'blocks': instance.blocks.map((e) => e.toJson()).toList(),
+      'content': instance.content.map((e) => e.toJson()).toList(),
     };

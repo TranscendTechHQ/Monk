@@ -1,4 +1,4 @@
-# openapi.api.BlocksApi
+# openapi.api.ThreadsApi
 
 ## Load the API package
 ```dart
@@ -9,16 +9,16 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createBlockBlockBlocksPost**](BlocksApi.md#createblockblockblockspost) | **POST** /block/blocks | Create Block
-[**deleteBlockBlockBlocksBlockIdDelete**](BlocksApi.md#deleteblockblockblocksblockiddelete) | **DELETE** /block/blocks/{block_id} | Delete Block
-[**getBlockBlockBlocksBlockIdGet**](BlocksApi.md#getblockblockblocksblockidget) | **GET** /block/blocks/{block_id} | Get Block
-[**getBlocksBlockAllBlocksGet**](BlocksApi.md#getblocksblockallblocksget) | **GET** /block/all_blocks | Get Blocks
-[**getBlocksByDateBlockBlocksGet**](BlocksApi.md#getblocksbydateblockblocksget) | **GET** /block/blocks | Get Blocks By Date
-[**updateBlockBlockBlocksBlockIdPut**](BlocksApi.md#updateblockblockblocksblockidput) | **PUT** /block/blocks/{block_id} | Update Block
+[**createBlockBlocksPost**](ThreadsApi.md#createblockblockspost) | **POST** /blocks | Create Block
+[**createThreadThreadsPost**](ThreadsApi.md#createthreadthreadspost) | **POST** /threads | Create Thread
+[**getAllThreadsThreadsGet**](ThreadsApi.md#getallthreadsthreadsget) | **GET** /threads | Get All Threads
+[**getBlocksByDateBlocksGet**](ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date
+[**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
+[**updateThreadThreadsTitlePut**](ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
-# **createBlockBlockBlocksPost**
-> BlockModel createBlockBlockBlocksPost(blockModel)
+# **createBlockBlocksPost**
+> BlockModel createBlockBlocksPost(updateBlockModel)
 
 Create Block
 
@@ -26,14 +26,14 @@ Create Block
 ```dart
 import 'package:openapi/api.dart';
 
-final api = Openapi().getBlocksApi();
-final BlockModel blockModel = ; // BlockModel | 
+final api = Openapi().getThreadsApi();
+final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
 
 try {
-    final response = api.createBlockBlockBlocksPost(blockModel);
+    final response = api.createBlockBlocksPost(updateBlockModel);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling BlocksApi->createBlockBlockBlocksPost: $e\n');
+    print('Exception when calling ThreadsApi->createBlockBlocksPost: $e\n');
 }
 ```
 
@@ -41,7 +41,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **blockModel** | [**BlockModel**](BlockModel.md)|  | 
+ **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
 
 ### Return type
 
@@ -58,23 +58,23 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **deleteBlockBlockBlocksBlockIdDelete**
-> Object deleteBlockBlockBlocksBlockIdDelete(blockId)
+# **createThreadThreadsPost**
+> ThreadModel createThreadThreadsPost(createThreadModel)
 
-Delete Block
+Create Thread
 
 ### Example
 ```dart
 import 'package:openapi/api.dart';
 
-final api = Openapi().getBlocksApi();
-final Object blockId = ; // Object | 
+final api = Openapi().getThreadsApi();
+final CreateThreadModel createThreadModel = ; // CreateThreadModel | 
 
 try {
-    final response = api.deleteBlockBlockBlocksBlockIdDelete(blockId);
+    final response = api.createThreadThreadsPost(createThreadModel);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling BlocksApi->deleteBlockBlockBlocksBlockIdDelete: $e\n');
+    print('Exception when calling ThreadsApi->createThreadThreadsPost: $e\n');
 }
 ```
 
@@ -82,11 +82,48 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **blockId** | [**Object**](.md)|  | 
+ **createThreadModel** | [**CreateThreadModel**](CreateThreadModel.md)|  | 
 
 ### Return type
 
-**Object**
+[**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getAllThreadsThreadsGet**
+> List<ThreadsModel> getAllThreadsThreadsGet()
+
+Get All Threads
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+
+try {
+    final response = api.getAllThreadsThreadsGet();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->getAllThreadsThreadsGet: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**List&lt;ThreadsModel&gt;**](ThreadsModel.md)
 
 ### Authorization
 
@@ -99,90 +136,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **getBlockBlockBlocksBlockIdGet**
-> BlockModel getBlockBlockBlocksBlockIdGet(blockId)
-
-Get Block
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getBlocksApi();
-final Object blockId = ; // Object | 
-
-try {
-    final response = api.getBlockBlockBlocksBlockIdGet(blockId);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling BlocksApi->getBlockBlockBlocksBlockIdGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **blockId** | [**Object**](.md)|  | 
-
-### Return type
-
-[**BlockModel**](BlockModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getBlocksBlockAllBlocksGet**
-> BlockCollection getBlocksBlockAllBlocksGet(blockId)
-
-Get Blocks
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getBlocksApi();
-final Object blockId = ; // Object | 
-
-try {
-    final response = api.getBlocksBlockAllBlocksGet(blockId);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling BlocksApi->getBlocksBlockAllBlocksGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **blockId** | [**Object**](.md)|  | 
-
-### Return type
-
-[**BlockCollection**](BlockCollection.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getBlocksByDateBlockBlocksGet**
-> BlockCollection getBlocksByDateBlockBlocksGet(modelDate)
+# **getBlocksByDateBlocksGet**
+> BlockCollection getBlocksByDateBlocksGet(modelDate)
 
 Get Blocks By Date
 
@@ -190,14 +145,14 @@ Get Blocks By Date
 ```dart
 import 'package:openapi/api.dart';
 
-final api = Openapi().getBlocksApi();
+final api = Openapi().getThreadsApi();
 final ModelDate modelDate = ; // ModelDate | 
 
 try {
-    final response = api.getBlocksByDateBlockBlocksGet(modelDate);
+    final response = api.getBlocksByDateBlocksGet(modelDate);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling BlocksApi->getBlocksByDateBlockBlocksGet: $e\n');
+    print('Exception when calling ThreadsApi->getBlocksByDateBlocksGet: $e\n');
 }
 ```
 
@@ -222,24 +177,23 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **updateBlockBlockBlocksBlockIdPut**
-> BlockModel updateBlockBlockBlocksBlockIdPut(blockId, updateBlockModel)
+# **getThreadThreadsTitleGet**
+> ThreadModel getThreadThreadsTitleGet(title)
 
-Update Block
+Get Thread
 
 ### Example
 ```dart
 import 'package:openapi/api.dart';
 
-final api = Openapi().getBlocksApi();
-final Object blockId = ; // Object | 
-final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
+final api = Openapi().getThreadsApi();
+final String title = title_example; // String | 
 
 try {
-    final response = api.updateBlockBlockBlocksBlockIdPut(blockId, updateBlockModel);
+    final response = api.getThreadThreadsTitleGet(title);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling BlocksApi->updateBlockBlockBlocksBlockIdPut: $e\n');
+    print('Exception when calling ThreadsApi->getThreadThreadsTitleGet: $e\n');
 }
 ```
 
@@ -247,12 +201,54 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **blockId** | [**Object**](.md)|  | 
- **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
+ **title** | **String**|  | 
 
 ### Return type
 
-[**BlockModel**](BlockModel.md)
+[**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateThreadThreadsTitlePut**
+> ThreadModel updateThreadThreadsTitlePut(title, updateThreadModel)
+
+Update Thread
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String title = title_example; // String | 
+final UpdateThreadModel updateThreadModel = ; // UpdateThreadModel | 
+
+try {
+    final response = api.updateThreadThreadsTitlePut(title, updateThreadModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateThreadThreadsTitlePut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **title** | **String**|  | 
+ **updateThreadModel** | [**UpdateThreadModel**](UpdateThreadModel.md)|  | 
+
+### Return type
+
+[**ThreadModel**](ThreadModel.md)
 
 ### Authorization
 

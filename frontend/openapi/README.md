@@ -47,14 +47,13 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:openapi/openapi.dart';
 
 
-final api = Openapi().getBlocksApi();
-final BlockModel blockModel = ; // BlockModel | 
+final api = Openapi().getDefaultApi();
 
 try {
-    final response = await api.createBlockBlockBlocksPost(blockModel);
+    final response = await api.secureApiSessioninfoGet();
     print(response);
 } catch on DioException (e) {
-    print("Exception when calling BlocksApi->createBlockBlockBlocksPost: $e\n");
+    print("Exception when calling DefaultApi->secureApiSessioninfoGet: $e\n");
 }
 
 ```
@@ -65,30 +64,29 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-[*BlocksApi*](doc/BlocksApi.md) | [**createBlockBlockBlocksPost**](doc/BlocksApi.md#createblockblockblockspost) | **POST** /block/blocks | Create Block
-[*BlocksApi*](doc/BlocksApi.md) | [**deleteBlockBlockBlocksBlockIdDelete**](doc/BlocksApi.md#deleteblockblockblocksblockiddelete) | **DELETE** /block/blocks/{block_id} | Delete Block
-[*BlocksApi*](doc/BlocksApi.md) | [**getBlockBlockBlocksBlockIdGet**](doc/BlocksApi.md#getblockblockblocksblockidget) | **GET** /block/blocks/{block_id} | Get Block
-[*BlocksApi*](doc/BlocksApi.md) | [**getBlocksBlockAllBlocksGet**](doc/BlocksApi.md#getblocksblockallblocksget) | **GET** /block/all_blocks | Get Blocks
-[*BlocksApi*](doc/BlocksApi.md) | [**getBlocksByDateBlockBlocksGet**](doc/BlocksApi.md#getblocksbydateblockblocksget) | **GET** /block/blocks | Get Blocks By Date
-[*BlocksApi*](doc/BlocksApi.md) | [**updateBlockBlockBlocksBlockIdPut**](doc/BlocksApi.md#updateblockblockblocksblockidput) | **PUT** /block/blocks/{block_id} | Update Block
 [*DefaultApi*](doc/DefaultApi.md) | [**secureApiSessioninfoGet**](doc/DefaultApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
-[*TasksApi*](doc/TasksApi.md) | [**createTaskTaskPost**](doc/TasksApi.md#createtasktaskpost) | **POST** /task/ | Create Task
-[*TasksApi*](doc/TasksApi.md) | [**deleteTaskTaskIdDelete**](doc/TasksApi.md#deletetasktaskiddelete) | **DELETE** /task/{id} | Delete Task
-[*TasksApi*](doc/TasksApi.md) | [**listTasksTaskGet**](doc/TasksApi.md#listtaskstaskget) | **GET** /task/ | List Tasks
-[*TasksApi*](doc/TasksApi.md) | [**showTaskTaskIdGet**](doc/TasksApi.md#showtasktaskidget) | **GET** /task/{id} | Show Task
-[*TasksApi*](doc/TasksApi.md) | [**updateTaskTaskIdPut**](doc/TasksApi.md#updatetasktaskidput) | **PUT** /task/{id} | Update Task
+[*ThreadsApi*](doc/ThreadsApi.md) | [**createBlockBlocksPost**](doc/ThreadsApi.md#createblockblockspost) | **POST** /blocks | Create Block
+[*ThreadsApi*](doc/ThreadsApi.md) | [**createThreadThreadsPost**](doc/ThreadsApi.md#createthreadthreadspost) | **POST** /threads | Create Thread
+[*ThreadsApi*](doc/ThreadsApi.md) | [**getAllThreadsThreadsGet**](doc/ThreadsApi.md#getallthreadsthreadsget) | **GET** /threads | Get All Threads
+[*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksGet**](doc/ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date
+[*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
+[*ThreadsApi*](doc/ThreadsApi.md) | [**updateThreadThreadsTitlePut**](doc/ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
 ## Documentation For Models
 
  - [BlockCollection](doc/BlockCollection.md)
  - [BlockModel](doc/BlockModel.md)
+ - [CreateThreadModel](doc/CreateThreadModel.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
- - [TaskModel](doc/TaskModel.md)
+ - [ThreadModel](doc/ThreadModel.md)
+ - [ThreadType](doc/ThreadType.md)
+ - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
- - [UpdateTaskModel](doc/UpdateTaskModel.md)
+ - [UpdateThreadModel](doc/UpdateThreadModel.md)
  - [ValidationError](doc/ValidationError.md)
+ - [ValidationErrorLocInner](doc/ValidationErrorLocInner.md)
 
 
 ## Documentation For Authorization

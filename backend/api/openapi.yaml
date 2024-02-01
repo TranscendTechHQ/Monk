@@ -13,133 +13,12 @@ paths:
           content:
             application/json:
               schema: {}
-  /task/:
+  /blocks:
     get:
       tags:
-      - tasks
-      summary: List Tasks
-      operationId: list_tasks_task__get
-      responses:
-        '200':
-          description: Get all tasks
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/TaskModel'
-                type: array
-                title: Response List Tasks Task  Get
-    post:
-      tags:
-      - tasks
-      summary: Create Task
-      operationId: create_task_task__post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TaskModel'
-        required: true
-      responses:
-        '200':
-          description: Create a new task
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskModel'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /task/{id}:
-    get:
-      tags:
-      - tasks
-      summary: Show Task
-      operationId: show_task_task__id__get
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Id
-      responses:
-        '200':
-          description: Get a single task
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskModel'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    put:
-      tags:
-      - tasks
-      summary: Update Task
-      operationId: update_task_task__id__put
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Id
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTaskModel'
-      responses:
-        '200':
-          description: Update a task
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskModel'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    delete:
-      tags:
-      - tasks
-      summary: Delete Task
-      operationId: delete_task_task__id__delete
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Id
-      responses:
-        '200':
-          description: Delete a task
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /block/blocks:
-    get:
-      tags:
-      - blocks
+      - threads
       summary: Get Blocks By Date
-      operationId: get_blocks_by_date_block_blocks_get
+      operationId: get_blocks_by_date_blocks_get
       requestBody:
         content:
           application/json:
@@ -161,14 +40,14 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     post:
       tags:
-      - blocks
+      - threads
       summary: Create Block
-      operationId: create_block_block_blocks_post
+      operationId: create_block_blocks_post
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlockModel'
+              $ref: '#/components/schemas/UpdateBlockModel'
         required: true
       responses:
         '200':
@@ -183,56 +62,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-  /block/blocks/{block_id}:
+  /threads:
+    get:
+      tags:
+      - threads
+      summary: Get All Threads
+      operationId: get_all_threads_threads_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ThreadsModel'
+                type: array
+                title: Response Get All Threads Threads Get
+    post:
+      tags:
+      - threads
+      summary: Create Thread
+      operationId: create_thread_threads_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateThreadModel'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadModel'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /threads/{title}:
     put:
       tags:
-      - blocks
-      summary: Update Block
-      operationId: update_block_block_blocks__block_id__put
+      - threads
+      summary: Update Thread
+      operationId: update_thread_threads__title__put
       parameters:
-      - name: block_id
+      - name: title
         in: path
         required: true
         schema:
           type: string
-          title: Block Id
+          title: Title
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateBlockModel'
+              $ref: '#/components/schemas/UpdateThreadModel'
       responses:
         '200':
-          description: Update a block
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockModel'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    delete:
-      tags:
-      - blocks
-      summary: Delete Block
-      operationId: delete_block_block_blocks__block_id__delete
-      parameters:
-      - name: block_id
-        in: path
-        required: true
-        schema:
-          type: string
-          title: Block Id
-      responses:
-        '200':
-          description: Delete a block
-          content:
-            application/json:
-              schema: {}
+                $ref: '#/components/schemas/ThreadModel'
         '422':
           description: Validation Error
           content:
@@ -241,49 +136,23 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
     get:
       tags:
-      - blocks
-      summary: Get Block
-      operationId: get_block_block_blocks__block_id__get
+      - threads
+      summary: Get Thread
+      operationId: get_thread_threads__title__get
       parameters:
-      - name: block_id
+      - name: title
         in: path
         required: true
         schema:
           type: string
-          title: Block Id
+          title: Title
       responses:
         '200':
-          description: Get a single block
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockModel'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-  /block/all_blocks:
-    get:
-      tags:
-      - blocks
-      summary: Get Blocks
-      operationId: get_blocks_block_all_blocks_get
-      parameters:
-      - name: block_id
-        in: query
-        required: true
-        schema:
-          type: string
-          title: Block Id
-      responses:
-        '200':
-          description: Get all blocks
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockCollection'
+                $ref: '#/components/schemas/ThreadModel'
         '422':
           description: Validation Error
           content:
@@ -306,13 +175,7 @@ components:
       example:
         blocks:
         - content: This is the content of the block
-          metadata:
-            created_at: '2021-01-01T00:00:00.000000'
-            description: This block describes a task
-            tags:
-            - tag1
-            - tag2
-            type: task
+        - content: This is the content of the block
     BlockModel:
       properties:
         _id:
@@ -326,22 +189,40 @@ components:
           type: string
           format: date-time
           title: Created At
-        metadata:
-          type: object
-          title: Metadata
       type: object
       required:
       - content
       title: BlockModel
       example:
         content: This is the content of the block
-        metadata:
-          created_at: '2021-01-01T00:00:00.000000'
-          description: This block describes a task
-          tags:
-          - tag1
-          - tag2
-          type: task
+        created_at: '2021-01-01T00:00:00.000000'
+        id: 12345678-1234-5678-1234-567812345678
+    CreateThreadModel:
+      properties:
+        type:
+          $ref: '#/components/schemas/ThreadType'
+        title:
+          type: string
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9]+$
+          title: Title
+        content:
+          items:
+            $ref: '#/components/schemas/BlockModel'
+          type: array
+          title: Content
+      type: object
+      required:
+      - type
+      - title
+      title: CreateThreadModel
+      example:
+        content:
+        - content: This is the content of the block
+        - content: This is the content of the block
+        title: This is the title of the thread
+        type: /new-plan
     Date:
       properties:
         date:
@@ -361,67 +242,117 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    TaskModel:
+    ThreadModel:
       properties:
         _id:
           type: string
           format: uuid
           title: ' Id'
-        name:
+        creator:
           type: string
-          title: Name
-        goal:
+          title: Creator
+        created_date:
           type: string
-          title: Goal
-        completed:
-          type: boolean
-          title: Completed
+          format: date-time
+          title: Created Date
+        type:
+          $ref: '#/components/schemas/ThreadType'
+        title:
+          type: string
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9]+$
+          title: Title
+        content:
+          items:
+            $ref: '#/components/schemas/BlockModel'
+          type: array
+          title: Content
       type: object
       required:
-      - name
-      - goal
-      - completed
-      title: TaskModel
+      - creator
+      - type
+      - title
+      title: ThreadModel
       example:
-        completed: true
-        goal: Why are we doing it?
-        name: An informative task title
+        content:
+        - content: This is the content of the block
+        - content: This is the content of the block
+        created_date: '2021-01-01T00:00:00.000000'
+        creator: user1
+        title: This is the title of the thread
+        type: /new-plan
+    ThreadType:
+      type: string
+      enum:
+      - /new-journal
+      - new-thread
+      - new-plan
+      - news
+      - new-report
+      - new-project
+      - new-task
+      - new-note
+      - new-idea
+      - new-event
+      - new-blocker
+      - new-thought
+      - new-strategy
+      - new-private
+      - new-experiment
+      - go
+      title: ThreadType
+    ThreadsModel:
+      properties:
+        threads:
+          items:
+            $ref: '#/components/schemas/ThreadModel'
+          type: array
+          title: Threads
+      type: object
+      required:
+      - threads
+      title: ThreadsModel
+      example:
+        threads:
+        - content:
+          - content: This is the content of the block
+          - content: This is the content of the block
+          created_date: '2021-01-01T00:00:00.000000'
+          creator: user1
+          title: This is the title of the thread
+          type: /new-plan
+        - content:
+          - content: This is the content of the block
+          - content: This is the content of the block
+          created_date: '2021-01-01T00:00:00.000000'
+          creator: user1
+          title: This is the title of the thread
+          type: /new-plan
     UpdateBlockModel:
       properties:
         content:
           type: string
           title: Content
-        metadata:
-          type: object
-          title: Metadata
       type: object
       title: UpdateBlockModel
       example:
         content: This is the content of the block
-        metadata:
-          created_at: '2021-01-01T00:00:00.000000'
-          description: This block describes a task
-          tags:
-          - tag1
-          - tag2
-          type: task
-    UpdateTaskModel:
+    UpdateThreadModel:
       properties:
-        name:
-          type: string
-          title: Name
-        goal:
-          type: string
-          title: Goal
-        completed:
-          type: boolean
-          title: Completed
+        content:
+          items:
+            $ref: '#/components/schemas/BlockModel'
+          type: array
+          title: Content
       type: object
-      title: UpdateTaskModel
+      required:
+      - content
+      title: UpdateThreadModel
       example:
-        completed: true
-        goal: Why are we doing it?
-        name: An informative task title
+        content:
+        - content: This is the content of the block
+        - content: This is the content of the block
     ValidationError:
       properties:
         loc:

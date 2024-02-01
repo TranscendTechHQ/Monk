@@ -7,6 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'block_model.g.dart';
 
+
 @JsonSerializable(
   checked: true,
   createToJson: true,
@@ -16,42 +17,63 @@ part 'block_model.g.dart';
 class BlockModel {
   /// Returns a new [BlockModel] instance.
   BlockModel({
-    this.id,
-    required this.content,
-    this.createdAt,
-    this.metadata,
+
+     this.id,
+
+    required  this.content,
+
+     this.createdAt,
   });
 
-  @JsonKey(name: r'_id', required: false, includeIfNull: false)
-  final Object? id;
+  @JsonKey(
+    
+    name: r'_id',
+    required: false,
+    includeIfNull: false
+  )
 
-  @JsonKey(name: r'content', required: true, includeIfNull: false)
-  final Object? content;
 
-  @JsonKey(name: r'created_at', required: false, includeIfNull: false)
-  final Object? createdAt;
+  final String? id;
 
-  @JsonKey(name: r'metadata', required: false, includeIfNull: false)
-  final Object? metadata;
+
+
+  @JsonKey(
+    
+    name: r'content',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final String content;
+
+
+
+  @JsonKey(
+    
+    name: r'created_at',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? createdAt;
+
+
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is BlockModel &&
-          other.id == id &&
-          other.content == content &&
-          other.createdAt == createdAt &&
-          other.metadata == metadata;
+  bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
+     other.id == id &&
+     other.content == content &&
+     other.createdAt == createdAt;
 
   @override
   int get hashCode =>
-      (id == null ? 0 : id.hashCode) +
-      (content == null ? 0 : content.hashCode) +
-      (createdAt == null ? 0 : createdAt.hashCode) +
-      (metadata == null ? 0 : metadata.hashCode);
+    id.hashCode +
+    content.hashCode +
+    createdAt.hashCode;
 
-  factory BlockModel.fromJson(Map<String, dynamic> json) =>
-      _$BlockModelFromJson(json);
+  factory BlockModel.fromJson(Map<String, dynamic> json) => _$BlockModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$BlockModelToJson(this);
 
@@ -59,4 +81,6 @@ class BlockModel {
   String toString() {
     return toJson().toString();
   }
+
 }
+

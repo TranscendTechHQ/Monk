@@ -7,9 +7,8 @@ import 'package:openapi/src/auth/api_key_auth.dart';
 import 'package:openapi/src/auth/basic_auth.dart';
 import 'package:openapi/src/auth/bearer_auth.dart';
 import 'package:openapi/src/auth/oauth.dart';
-import 'package:openapi/src/api/blocks_api.dart';
 import 'package:openapi/src/api/default_api.dart';
-import 'package:openapi/src/api/tasks_api.dart';
+import 'package:openapi/src/api/threads_api.dart';
 
 class Openapi {
   static const String basePath = r'http://localhost';
@@ -62,21 +61,15 @@ class Openapi {
     }
   }
 
-  /// Get BlocksApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  BlocksApi getBlocksApi() {
-    return BlocksApi(dio);
-  }
-
   /// Get DefaultApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   DefaultApi getDefaultApi() {
     return DefaultApi(dio);
   }
 
-  /// Get TasksApi instance, base route and serializer can be overridden by a given but be careful,
+  /// Get ThreadsApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
-  TasksApi getTasksApi() {
-    return TasksApi(dio);
+  ThreadsApi getThreadsApi() {
+    return ThreadsApi(dio);
   }
 }

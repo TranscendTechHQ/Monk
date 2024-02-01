@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/validation_error.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'http_validation_error.g.dart';
@@ -29,7 +30,7 @@ class HTTPValidationError {
   )
 
 
-  final Object? detail;
+  final List<ValidationError>? detail;
 
 
 
@@ -39,7 +40,7 @@ class HTTPValidationError {
 
   @override
   int get hashCode =>
-    (detail == null ? 0 : detail.hashCode);
+    detail.hashCode;
 
   factory HTTPValidationError.fromJson(Map<String, dynamic> json) => _$HTTPValidationErrorFromJson(json);
 

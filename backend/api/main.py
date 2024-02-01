@@ -7,8 +7,7 @@ import uvicorn
 from motor.motor_asyncio import AsyncIOMotorClient
 from config import settings
 
-from routes.tasks.routers import router as tasks_router
-from routes.blocks.routers import router as blocks_router
+
 from routes.threads.routers import router as threads_router
 
 from contextlib import asynccontextmanager
@@ -63,9 +62,7 @@ async def shutdown_db_client():
     app.mongodb_client.close()
 
 
-app.include_router(tasks_router, tags=["tasks"], prefix="/task")
-app.include_router(blocks_router, tags=["blocks"], prefix="/block")
-app.include_router(threads_router, tags=["threads"], prefix="/thread")
+app.include_router(threads_router, tags=["threads"])
 
 
 if __name__ == "__main__":

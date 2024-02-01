@@ -7,7 +7,7 @@ void main() {
   // TODO add properties to the entity
 
   group(ModelDate, () {
-    // Object date
+    // DateTime date
     test('to test the property `date`', () async {
       // TODO
     });
