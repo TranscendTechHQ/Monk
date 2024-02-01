@@ -68,7 +68,7 @@ async def get_journal_by_date(request: Request,
     
     ## build a pymongo query to get the list of blocks from a thread that have the created_at date equal to the date
     ## provided date:
-    d = date.date()
+    d = date.date.date()
     from_date = dt.datetime.combine(d, dt.datetime.min.time())
     to_date = dt.datetime.combine(d, dt.datetime.max.time())
     
@@ -76,10 +76,13 @@ async def get_journal_by_date(request: Request,
              "content":{ "$elemMatch": {"created_at": {"$gte": from_date.isoformat(), 
                             "$lt": to_date.isoformat()}}}}
     collection = request.app.mongodb["threads"]
+    cursor =  collection.find(query)
+    batch_size = 100
+    # Convert cursor to list of dictionaries
+    blocks = await cursor.to_list(length=batch_size)
     
-    blocks = collection.find(query)
     print(blocks)
-    ret_thread = BlockCollection(**blocks)
+    ret_thread = BlockCollection(blocks=blocks)
     
     print(ret_thread)
     return JSONResponse(status_code=status.HTTP_200_OK,

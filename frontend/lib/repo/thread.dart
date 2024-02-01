@@ -48,7 +48,7 @@ class Thread extends _$Thread {
     final modelDate = ModelDate(date: date);
 
     final response =
-        await blockApi.getBlocksByDateBlocksGet(modelDate: modelDate);
+        await blockApi.getJournalByDateJournalGet(modelDate: modelDate);
 
     if (response.statusCode == 200) {
       final blocks = response.data!;
