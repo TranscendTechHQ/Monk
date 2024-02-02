@@ -108,6 +108,7 @@ async def get_journal_by_date(request: Request,
 ## is blank for the new thread
 async def create_new_thread(request: Request, session, title:str, 
                             thread_type:ThreadType, content:List[BlockModel] = []):
+
     old_thread = await get_mongo_document({"title": title}, request.app.mongodb["threads"])
     if not old_thread:
         
