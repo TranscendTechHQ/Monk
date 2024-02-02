@@ -9,7 +9,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createBlockBlocksPost**](ThreadsApi.md#createblockblockspost) | **POST** /blocks | Create Block
+[**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [**createThreadThreadsPost**](ThreadsApi.md#createthreadthreadspost) | **POST** /threads | Create Thread
 [**getAllThreadsThreadsGet**](ThreadsApi.md#getallthreadsthreadsget) | **GET** /threads | Get All Threads
 [**getBlocksByDateBlocksGet**](ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date
@@ -18,23 +18,24 @@ Method | HTTP request | Description
 [**updateThreadThreadsTitlePut**](ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
-# **createBlockBlocksPost**
-> BlockModel createBlockBlocksPost(updateBlockModel)
+# **createBlocksPost**
+> ThreadModel createBlocksPost(threadTitle, updateBlockModel)
 
-Create Block
+Create
 
 ### Example
 ```dart
 import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
+final String threadTitle = threadTitle_example; // String | 
 final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
 
 try {
-    final response = api.createBlockBlocksPost(updateBlockModel);
+    final response = api.createBlocksPost(threadTitle, updateBlockModel);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling ThreadsApi->createBlockBlocksPost: $e\n');
+    print('Exception when calling ThreadsApi->createBlocksPost: $e\n');
 }
 ```
 
@@ -42,11 +43,12 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+ **threadTitle** | **String**|  | 
  **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
 
 ### Return type
 
-[**BlockModel**](BlockModel.md)
+[**ThreadModel**](ThreadModel.md)
 
 ### Authorization
 

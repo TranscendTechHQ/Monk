@@ -10,7 +10,6 @@ import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
 import 'package:openapi/src/model/block_collection.dart';
-import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
@@ -25,10 +24,11 @@ class ThreadsApi {
 
   const ThreadsApi(this._dio);
 
-  /// Create Block
+  /// Create
   /// 
   ///
   /// Parameters:
+  /// * [threadTitle] 
   /// * [updateBlockModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -37,9 +37,10 @@ class ThreadsApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [BlockModel] as data
+  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<BlockModel>> createBlockBlocksPost({ 
+  Future<Response<ThreadModel>> createBlocksPost({ 
+    required String threadTitle,
     required UpdateBlockModel updateBlockModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -62,6 +63,10 @@ class ThreadsApi {
       validateStatus: validateStatus,
     );
 
+    final _queryParameters = <String, dynamic>{
+      r'thread_title': threadTitle,
+    };
+
     dynamic _bodyData;
 
     try {
@@ -71,6 +76,7 @@ _bodyData=jsonEncode(updateBlockModel);
          requestOptions: _options.compose(
           _dio.options,
           _path,
+          queryParameters: _queryParameters,
         ),
         type: DioExceptionType.unknown,
         error: error,
@@ -82,16 +88,17 @@ _bodyData=jsonEncode(updateBlockModel);
       _path,
       data: _bodyData,
       options: _options,
+      queryParameters: _queryParameters,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
     );
 
-    BlockModel? _responseData;
+    ThreadModel? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<BlockModel, BlockModel>(rawData, 'BlockModel', growable: true);
+_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -102,7 +109,7 @@ _responseData = rawData == null ? null : deserialize<BlockModel, BlockModel>(raw
       );
     }
 
-    return Response<BlockModel>(
+    return Response<ThreadModel>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

@@ -18,20 +18,36 @@ router = APIRouter()
 
 
 
-@router.post("/blocks", response_model=BlockModel, response_description="Create a new block")
-async def create_block(request: Request, block: UpdateBlockModel = Body(...),
+@router.post("/blocks", response_model=ThreadModel, response_description="Create a new block")
+async def create(request: Request, thread_title:str, block: UpdateBlockModel = Body(...),
                       session: SessionContainer = Depends(verify_session())):
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     
     block = block.model_dump()
     new_block = BlockModel(**block)
-    
-    created_block = await create_mongo_document(jsonable_encoder(new_block), 
-                                          request.app.mongodb["blocks"])
+    new_block_dict = new_block.model_dump()
+    new_block_dict["id"] = str(new_block_dict["id"])
+    ## to store the block as a json string in the db
+    ## we need the following. We have chose to insert 
+    ## the block as a dictionary object in the db
+    #json_new_block = json_util.dumps(new_block_dict)
+    thread = await get_mongo_document({"title": thread_title}, request.app.mongodb["threads"])
+    if not thread:
+        return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
+   
+   
+    thread["content"].append(new_block_dict)
+   
+    updated_thread = await update_mongo_document_fields(
+    {"title": thread_title}, 
+    thread, 
+    request.app.mongodb["threads"])
 
+    json_updated_thread = json_util.dumps(updated_thread)
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
-                       content=jsonable_encoder(created_block))
+                       content=json_updated_thread)
+
   
     
 # get blocks given a date
@@ -75,15 +91,14 @@ async def get_journal_by_date(request: Request,
                             "$lt": to_date.isoformat()}}}}
     collection = request.app.mongodb["threads"]
     cursor =  collection.find(query)
-    print(query)
+    
     batch_size = 100
     # Convert cursor to list of dictionaries
     blocks = await cursor.to_list(length=batch_size)
     
-    print(blocks)
+    
     ret_thread = BlockCollection(blocks=blocks)
     
-    print(ret_thread)
     return JSONResponse(status_code=status.HTTP_200_OK,
                           content=jsonable_encoder(ret_thread))
     

@@ -20,7 +20,8 @@ class Block extends _$Block {
   Future<void> createBlock(String text) async {
     final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
-    await blockApi.createBlockBlocksPost(
+    await blockApi.createBlocksPost(
+        threadTitle: "journal",
         updateBlockModel: UpdateBlockModel(content: text));
   }
 

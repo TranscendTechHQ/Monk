@@ -7,10 +7,10 @@ void main() {
   final instance = Openapi().getThreadsApi();
 
   group(ThreadsApi, () {
-    // Create Block
+    // Create
     //
-    //Future<BlockModel> createBlockBlocksPost(UpdateBlockModel updateBlockModel) async
-    test('test createBlockBlocksPost', () async {
+    //Future<ThreadModel> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
+    test('test createBlocksPost', () async {
       // TODO
     });
 

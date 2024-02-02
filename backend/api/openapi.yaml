@@ -14,17 +14,48 @@ paths:
             application/json:
               schema: {}
   /blocks:
+    post:
+      tags:
+      - threads
+      summary: Create
+      operationId: create_blocks_post
+      parameters:
+      - name: thread_title
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Thread Title
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBlockModel'
+      responses:
+        '200':
+          description: Create a new block
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadModel'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
     get:
       tags:
       - threads
       summary: Get Blocks By Date
       operationId: get_blocks_by_date_blocks_get
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Date'
-        required: true
       responses:
         '200':
           description: Get all blocks for a given date
@@ -32,30 +63,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlockCollection'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-    post:
-      tags:
-      - threads
-      summary: Create Block
-      operationId: create_block_blocks_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateBlockModel'
-        required: true
-      responses:
-        '200':
-          description: Create a new block
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockModel'
         '422':
           description: Validation Error
           content:
@@ -364,7 +371,9 @@ components:
       properties:
         loc:
           items:
-            type: string
+            anyOf:
+            - type: string
+            - type: integer
           type: array
           title: Location
         msg:

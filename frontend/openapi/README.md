@@ -65,7 +65,7 @@ All URIs are relative to *http://localhost*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 [*DefaultApi*](doc/DefaultApi.md) | [**secureApiSessioninfoGet**](doc/DefaultApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
-[*ThreadsApi*](doc/ThreadsApi.md) | [**createBlockBlocksPost**](doc/ThreadsApi.md#createblockblockspost) | **POST** /blocks | Create Block
+[*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createThreadThreadsPost**](doc/ThreadsApi.md#createthreadthreadspost) | **POST** /threads | Create Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getAllThreadsThreadsGet**](doc/ThreadsApi.md#getallthreadsthreadsget) | **GET** /threads | Get All Threads
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksGet**](doc/ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date

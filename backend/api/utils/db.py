@@ -47,7 +47,7 @@ async def create_mongo_document(document: dict, collection):
     return created_document
 
 async def update_mongo_document_fields(query:dict, fields: dict, collection):
-    fields_dict = {k: v for k, v in fields.dict().items() if v is not None}
+    fields_dict = {k: v for k, v in fields.items() if v is not None}
 
     if len(fields_dict) >= 1:
         update_result = await collection.update_one(
