@@ -30,3 +30,22 @@ if __name__ == "__main__":
             yaml.dump(openapi, f, sort_keys=False)
 
     print(f"spec written to {args.out}")
+    
+    # Load the YAML file
+    with open(args.out, "r") as file:
+        data = yaml.safe_load(file)
+
+    # Modify the relevant section
+    for item in data.get("properties", []):
+        if "anyOf" in item:
+            del item["anyOf"]
+        if "type" in item and item["type"] == "integer":
+            item["type"] = "string"
+
+    # Save the modified YAML file
+    with open(args.out, "w") as file:
+        yaml.dump(data, file)
+    print(f"modified spec written to {args.out}")
+
+
+

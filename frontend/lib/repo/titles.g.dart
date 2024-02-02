@@ -6,7 +6,7 @@ part of 'titles.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$titlesHash() => r'615e5fad3a243bcc4c9e28cf1ee8988f4ca90cd2';
+String _$titlesHash() => r'5a16182ccb2097600c8381980dcffd6135fa130a';
 
 /// See also [Titles].
 @ProviderFor(Titles)

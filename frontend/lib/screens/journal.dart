@@ -19,7 +19,14 @@ class JournalScreen extends ConsumerWidget {
     }
 
     //final blockText = ref.watch(blockProvider);
-    final blocks = ref.watch(threadProvider);
+    final currentThread = ref.watch(currentThreadProvider.call(
+      title: 'journal',
+      type: '/new-thread',
+      creator: 'system',
+    ));
+
+    final blocks =
+        currentThread.content?.reversed.toList().map((e) => e.content).toList();
 
     // chat display widget
     final blockDisplay = SizedBox(
@@ -27,9 +34,9 @@ class JournalScreen extends ConsumerWidget {
         child: ListView.builder(
           reverse: true,
           controller: scrollController,
-          itemCount: blocks.value?.length ?? 0,
+          itemCount: blocks?.length ?? 0,
           itemBuilder: (context, index) {
-            final block = blocks.value?[index];
+            final block = blocks?[index];
             return Container(
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),

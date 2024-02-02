@@ -7,8 +7,8 @@ void main() {
   // TODO add properties to the entity
 
   group(CreateThreadModel, () {
-    // String type
-    test('to test the property `type`', () async {
+    // List<BlockModel> content
+    test('to test the property `content`', () async {
       // TODO
     });
 
@@ -17,8 +17,8 @@ void main() {
       // TODO
     });
 
-    // List<BlockModel> content
-    test('to test the property `content`', () async {
+    // String type
+    test('to test the property `type`', () async {
       // TODO
     });
 

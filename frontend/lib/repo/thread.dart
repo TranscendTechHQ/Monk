@@ -13,18 +13,27 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'thread.g.dart';
 
-@riverpod
-class Thread extends _$Thread {
-  @override
-  Future<List<String>> build() async {
-    state = const AsyncValue.loading();
-    await initialize();
-    return state.value!;
+/*
+Future<BlockCollection> journalBlocksDate(DateTime date) async {
+  final blockApi = NetworkManager.instance.openApi.getThreadsApi();
+
+  //final modelDate = ModelDate(date: date.toIso8601String());
+  final modelDate = ModelDate(date: date);
+
+  final response =
+      await blockApi.getJournalByDateJournalGet(modelDate: modelDate);
+
+  if (response.statusCode == 200) {
+    final blocks = response.data!;
+    return blocks;
+  } else {
+    return BlockCollection.fromJson({"blocks": []});
   }
+}
 
   FutureOr<void> initialize() async {
     DateTime today = DateTime.now();
-    BlockCollection blocksCollection = await blocks_date(today);
+    BlockCollection blocksCollection = await journalBlocksDate(today);
     List<String> stringBlocks = [];
 
     state = const AsyncValue.data([]);
@@ -36,25 +45,60 @@ class Thread extends _$Thread {
     Iterable<String> inReverse = stringBlocks.reversed;
     state = AsyncValue.data(inReverse.toList());
   }
+*/
 
-  void addString(String input) async {
-    state = AsyncValue.data([input, ...state.valueOrNull!]);
+@riverpod
+class CurrentThread extends _$CurrentThread {
+  @override
+  ThreadModel build(
+      {String title = "", String type = "", String creator = ""}) {
+    return ThreadModel(title: title, type: type, creator: creator);
   }
 
-  Future<BlockCollection> blocks_date(DateTime date) async {
+  Future<ThreadModel> createBlock(String text) async {
+    String threadTitle = state.title;
     final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
-    //final modelDate = ModelDate(date: date.toIso8601String());
-    final modelDate = ModelDate(date: date);
+    final newThreadState = await blockApi.createBlocksPost(
+        threadTitle: threadTitle,
+        updateBlockModel: UpdateBlockModel(content: text));
 
-    final response =
-        await blockApi.getJournalByDateJournalGet(modelDate: modelDate);
-
-    if (response.statusCode == 200) {
-      final blocks = response.data!;
-      return blocks;
-    } else {
-      return BlockCollection.fromJson({"blocks": []});
+    if (newThreadState.statusCode != 201) {
+      throw Exception("Failed to create block");
     }
+
+    state = newThreadState.data!;
+    return state;
+  }
+
+  Future<ThreadModel> createOrGetThread(String title, String type) async {
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+
+    final response = await threadApi.createThreadThreadsPost(
+        createThreadModel: CreateThreadModel(title: title, type: type));
+
+    if (response.statusCode != 201) {
+      throw Exception("Failed to create thread");
+    }
+    state = response.data!;
+    return state;
+  }
+
+  Future<ThreadModel> getThread(String title) async {
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+
+    final response = await threadApi.getThreadThreadsTitleGet(title: title);
+
+    if (response.statusCode != 200) {
+      throw Exception("Failed to get thread");
+    }
+    state = response.data!;
+    return state;
+  }
+
+  List<String> getBlocks() {
+    final blocks =
+        state.content?.map((e) => e.content).toList().reversed.toList();
+    return blocks ?? [];
   }
 }

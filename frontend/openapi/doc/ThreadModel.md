@@ -9,11 +9,11 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
-**creator** | **String** |  | 
-**createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
-**type** | **String** |  | 
-**title** | **String** |  | 
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
+**createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
+**creator** | **String** |  | 
+**title** | **String** |  | 
+**type** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

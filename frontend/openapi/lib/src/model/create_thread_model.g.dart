@@ -13,26 +13,23 @@ CreateThreadModel _$CreateThreadModelFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['type', 'title'],
+          requiredKeys: const ['title', 'type'],
         );
         final val = CreateThreadModel(
-          type: $checkedConvert('type', (v) => v as String),
-          title: $checkedConvert('title', (v) => v as String),
           content: $checkedConvert(
               'content',
               (v) => (v as List<dynamic>?)
                   ?.map((e) => BlockModel.fromJson(e as Map<String, dynamic>))
                   .toList()),
+          title: $checkedConvert('title', (v) => v as String),
+          type: $checkedConvert('type', (v) => v as String),
         );
         return val;
       },
     );
 
 Map<String, dynamic> _$CreateThreadModelToJson(CreateThreadModel instance) {
-  final val = <String, dynamic>{
-    'type': instance.type,
-    'title': instance.title,
-  };
+  final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
     if (value != null) {
@@ -41,5 +38,7 @@ Map<String, dynamic> _$CreateThreadModelToJson(CreateThreadModel instance) {
   }
 
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
+  val['title'] = instance.title;
+  val['type'] = instance.type;
   return val;
 }

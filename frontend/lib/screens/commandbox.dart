@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/repo/blocks.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:frontend/repo/titles.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -146,8 +145,10 @@ class CommandBox extends ConsumerWidget {
                 // to do about it when block is properly formed
                 // right now it is just a String object.
 
-                ref.read(blockProvider.notifier).setState(blockText);
-                ref.read(threadProvider.notifier).addString(blockText);
+                //ref.read(currentThreadProvider.getProviderOverride(provider)).addString(blockText);
+                ref
+                    .read(currentThreadProvider.call().notifier)
+                    .createBlock(blockText);
                 _blockController.clear();
               }
               if ((event.logicalKey == LogicalKeyboardKey.escape) &&

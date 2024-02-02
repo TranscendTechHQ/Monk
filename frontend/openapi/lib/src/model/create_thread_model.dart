@@ -19,22 +19,22 @@ class CreateThreadModel {
   /// Returns a new [CreateThreadModel] instance.
   CreateThreadModel({
 
-    required  this.type,
+     this.content,
 
     required  this.title,
 
-     this.content,
+    required  this.type,
   });
 
   @JsonKey(
     
-    name: r'type',
-    required: true,
+    name: r'content',
+    required: false,
     includeIfNull: false
   )
 
 
-  final String type;
+  final List<BlockModel>? content;
 
 
 
@@ -52,27 +52,27 @@ class CreateThreadModel {
 
   @JsonKey(
     
-    name: r'content',
-    required: false,
+    name: r'type',
+    required: true,
     includeIfNull: false
   )
 
 
-  final List<BlockModel>? content;
+  final String type;
 
 
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateThreadModel &&
-     other.type == type &&
+     other.content == content &&
      other.title == title &&
-     other.content == content;
+     other.type == type;
 
   @override
   int get hashCode =>
-    type.hashCode +
+    content.hashCode +
     title.hashCode +
-    content.hashCode;
+    type.hashCode;
 
   factory CreateThreadModel.fromJson(Map<String, dynamic> json) => _$CreateThreadModelFromJson(json);
 

@@ -21,15 +21,15 @@ class ThreadModel {
 
      this.id,
 
-    required  this.creator,
+     this.content,
 
      this.createdDate,
 
-    required  this.type,
+    required  this.creator,
 
     required  this.title,
 
-     this.content,
+    required  this.type,
   });
 
   @JsonKey(
@@ -46,13 +46,13 @@ class ThreadModel {
 
   @JsonKey(
     
-    name: r'creator',
-    required: true,
+    name: r'content',
+    required: false,
     includeIfNull: false
   )
 
 
-  final String creator;
+  final List<BlockModel>? content;
 
 
 
@@ -70,13 +70,13 @@ class ThreadModel {
 
   @JsonKey(
     
-    name: r'type',
+    name: r'creator',
     required: true,
     includeIfNull: false
   )
 
 
-  final String type;
+  final String creator;
 
 
 
@@ -94,33 +94,33 @@ class ThreadModel {
 
   @JsonKey(
     
-    name: r'content',
-    required: false,
+    name: r'type',
+    required: true,
     includeIfNull: false
   )
 
 
-  final List<BlockModel>? content;
+  final String type;
 
 
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is ThreadModel &&
      other.id == id &&
-     other.creator == creator &&
+     other.content == content &&
      other.createdDate == createdDate &&
-     other.type == type &&
+     other.creator == creator &&
      other.title == title &&
-     other.content == content;
+     other.type == type;
 
   @override
   int get hashCode =>
     id.hashCode +
-    creator.hashCode +
+    content.hashCode +
     createdDate.hashCode +
-    type.hashCode +
+    creator.hashCode +
     title.hashCode +
-    content.hashCode;
+    type.hashCode;
 
   factory ThreadModel.fromJson(Map<String, dynamic> json) => _$ThreadModelFromJson(json);
 
