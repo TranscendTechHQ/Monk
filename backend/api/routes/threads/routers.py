@@ -46,8 +46,11 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     request.app.mongodb["threads"])
 
     json_updated_thread = json_util.dumps(updated_thread)
+    
+    
+    ret_thread = ThreadModel(**jsonable_encoder(updated_thread))
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
-                       content=json_updated_thread)
+                       content=jsonable_encoder(ret_thread))
 
   
     
