@@ -36,7 +36,8 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
    
-   
+    #change new_block_dict to json_new_block if you want to store
+    ## block as a json string in the db
     thread["content"].append(new_block_dict)
    
     updated_thread = await update_mongo_document_fields(
@@ -90,14 +91,15 @@ async def get_journal_by_date(request: Request,
              "content":{ "$elemMatch": {"created_at": {"$gte": from_date.isoformat(), 
                             "$lt": to_date.isoformat()}}}}
     collection = request.app.mongodb["threads"]
-    cursor =  collection.find(query)
+    doc =  await collection.find_one(query)
+    if not doc:
+        return JSONResponse(status_code=404, content={"message": "Journal not found"})
     
-    batch_size = 100
     # Convert cursor to list of dictionaries
-    blocks = await cursor.to_list(length=batch_size)
-    
-    
+    blocks = doc["content"]
+
     ret_thread = BlockCollection(blocks=blocks)
+    
     
     return JSONResponse(status_code=status.HTTP_200_OK,
                           content=jsonable_encoder(ret_thread))
