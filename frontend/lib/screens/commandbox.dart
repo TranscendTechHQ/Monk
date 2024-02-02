@@ -121,6 +121,9 @@ class CommandBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final threadNotifier = ref.read(currentThreadProvider
+        .call(title: 'journal', type: '/new-thread')
+        .notifier);
     bool commandVisibility = ref.watch(autoCompleteVisibilityProvider);
     final commandHintText = ref.watch(commandHintTextProvider);
     return Container(
@@ -146,9 +149,7 @@ class CommandBox extends ConsumerWidget {
                 // right now it is just a String object.
 
                 //ref.read(currentThreadProvider.getProviderOverride(provider)).addString(blockText);
-                ref
-                    .read(currentThreadProvider.call().notifier)
-                    .createBlock(blockText);
+                threadNotifier.createBlock(blockText);
                 _blockController.clear();
               }
               if ((event.logicalKey == LogicalKeyboardKey.escape) &&

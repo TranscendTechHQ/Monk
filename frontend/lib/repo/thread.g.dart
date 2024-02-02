@@ -6,7 +6,7 @@ part of 'thread.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$currentThreadHash() => r'31e6772be6fabb1c2a0ff166811d71f58c32a3c9';
+String _$currentThreadHash() => r'3dcbeb034e478b98dc2c7ff8476e2a594aeb4ea6';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,15 +30,13 @@ class _SystemHash {
 }
 
 abstract class _$CurrentThread
-    extends BuildlessAutoDisposeNotifier<ThreadModel> {
+    extends BuildlessAutoDisposeAsyncNotifier<ThreadModel> {
   late final String title;
   late final String type;
-  late final String creator;
 
-  ThreadModel build({
-    String title = "",
-    String type = "",
-    String creator = "",
+  FutureOr<ThreadModel> build({
+    required String title,
+    required String type,
   });
 }
 
@@ -47,20 +45,18 @@ abstract class _$CurrentThread
 const currentThreadProvider = CurrentThreadFamily();
 
 /// See also [CurrentThread].
-class CurrentThreadFamily extends Family<ThreadModel> {
+class CurrentThreadFamily extends Family<AsyncValue<ThreadModel>> {
   /// See also [CurrentThread].
   const CurrentThreadFamily();
 
   /// See also [CurrentThread].
   CurrentThreadProvider call({
-    String title = "",
-    String type = "",
-    String creator = "",
+    required String title,
+    required String type,
   }) {
     return CurrentThreadProvider(
       title: title,
       type: type,
-      creator: creator,
     );
   }
 
@@ -71,7 +67,6 @@ class CurrentThreadFamily extends Family<ThreadModel> {
     return call(
       title: provider.title,
       type: provider.type,
-      creator: provider.creator,
     );
   }
 
@@ -92,17 +87,15 @@ class CurrentThreadFamily extends Family<ThreadModel> {
 
 /// See also [CurrentThread].
 class CurrentThreadProvider
-    extends AutoDisposeNotifierProviderImpl<CurrentThread, ThreadModel> {
+    extends AutoDisposeAsyncNotifierProviderImpl<CurrentThread, ThreadModel> {
   /// See also [CurrentThread].
   CurrentThreadProvider({
-    String title = "",
-    String type = "",
-    String creator = "",
+    required String title,
+    required String type,
   }) : this._internal(
           () => CurrentThread()
             ..title = title
-            ..type = type
-            ..creator = creator,
+            ..type = type,
           from: currentThreadProvider,
           name: r'currentThreadProvider',
           debugGetCreateSourceHash:
@@ -114,7 +107,6 @@ class CurrentThreadProvider
               CurrentThreadFamily._allTransitiveDependencies,
           title: title,
           type: type,
-          creator: creator,
         );
 
   CurrentThreadProvider._internal(
@@ -126,21 +118,18 @@ class CurrentThreadProvider
     required super.from,
     required this.title,
     required this.type,
-    required this.creator,
   }) : super.internal();
 
   final String title;
   final String type;
-  final String creator;
 
   @override
-  ThreadModel runNotifierBuild(
+  FutureOr<ThreadModel> runNotifierBuild(
     covariant CurrentThread notifier,
   ) {
     return notifier.build(
       title: title,
       type: type,
-      creator: creator,
     );
   }
 
@@ -151,8 +140,7 @@ class CurrentThreadProvider
       override: CurrentThreadProvider._internal(
         () => create()
           ..title = title
-          ..type = type
-          ..creator = creator,
+          ..type = type,
         from: from,
         name: null,
         dependencies: null,
@@ -160,13 +148,12 @@ class CurrentThreadProvider
         debugGetCreateSourceHash: null,
         title: title,
         type: type,
-        creator: creator,
       ),
     );
   }
 
   @override
-  AutoDisposeNotifierProviderElement<CurrentThread, ThreadModel>
+  AutoDisposeAsyncNotifierProviderElement<CurrentThread, ThreadModel>
       createElement() {
     return _CurrentThreadProviderElement(this);
   }
@@ -175,8 +162,7 @@ class CurrentThreadProvider
   bool operator ==(Object other) {
     return other is CurrentThreadProvider &&
         other.title == title &&
-        other.type == type &&
-        other.creator == creator;
+        other.type == type;
   }
 
   @override
@@ -184,25 +170,21 @@ class CurrentThreadProvider
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, title.hashCode);
     hash = _SystemHash.combine(hash, type.hashCode);
-    hash = _SystemHash.combine(hash, creator.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-mixin CurrentThreadRef on AutoDisposeNotifierProviderRef<ThreadModel> {
+mixin CurrentThreadRef on AutoDisposeAsyncNotifierProviderRef<ThreadModel> {
   /// The parameter `title` of this provider.
   String get title;
 
   /// The parameter `type` of this provider.
   String get type;
-
-  /// The parameter `creator` of this provider.
-  String get creator;
 }
 
 class _CurrentThreadProviderElement
-    extends AutoDisposeNotifierProviderElement<CurrentThread, ThreadModel>
+    extends AutoDisposeAsyncNotifierProviderElement<CurrentThread, ThreadModel>
     with CurrentThreadRef {
   _CurrentThreadProviderElement(super.provider);
 
@@ -210,8 +192,6 @@ class _CurrentThreadProviderElement
   String get title => (origin as CurrentThreadProvider).title;
   @override
   String get type => (origin as CurrentThreadProvider).type;
-  @override
-  String get creator => (origin as CurrentThreadProvider).creator;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

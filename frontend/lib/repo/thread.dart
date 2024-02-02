@@ -7,11 +7,26 @@
 // backend.
 //  - the backend will store the journal entry in the database
 // ...
+import 'dart:ffi';
+
 import 'package:frontend/network.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'thread.g.dart';
+
+Future<ThreadModel> createOrGetThread(
+    {required String title, required String type}) async {
+  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+
+  final response = await threadApi.createThreadThreadsPost(
+      createThreadModel: CreateThreadModel(title: title, type: type));
+
+  if (response.statusCode != 201) {
+    throw Exception("Failed to create thread");
+  }
+  return response.data!;
+}
 
 /*
 Future<BlockCollection> journalBlocksDate(DateTime date) async {
@@ -50,13 +65,16 @@ Future<BlockCollection> journalBlocksDate(DateTime date) async {
 @riverpod
 class CurrentThread extends _$CurrentThread {
   @override
-  ThreadModel build(
-      {String title = "", String type = "", String creator = ""}) {
-    return ThreadModel(title: title, type: type, creator: creator);
+  Future<ThreadModel> build(
+      {required String title, required String type}) async {
+    state = AsyncValue.loading();
+    final response = await createOrGetThread(title: title, type: type);
+    state = AsyncValue.data(response);
+    return state.value!;
   }
 
   Future<ThreadModel> createBlock(String text) async {
-    String threadTitle = state.title;
+    String threadTitle = state.value!.title;
     final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
     final newThreadState = await blockApi.createBlocksPost(
@@ -67,21 +85,8 @@ class CurrentThread extends _$CurrentThread {
       throw Exception("Failed to create block");
     }
 
-    state = newThreadState.data!;
-    return state;
-  }
-
-  Future<ThreadModel> createOrGetThread(String title, String type) async {
-    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-
-    final response = await threadApi.createThreadThreadsPost(
-        createThreadModel: CreateThreadModel(title: title, type: type));
-
-    if (response.statusCode != 201) {
-      throw Exception("Failed to create thread");
-    }
-    state = response.data!;
-    return state;
+    state = AsyncValue.data(newThreadState.data!);
+    return state.value!;
   }
 
   Future<ThreadModel> getThread(String title) async {
@@ -92,13 +97,13 @@ class CurrentThread extends _$CurrentThread {
     if (response.statusCode != 200) {
       throw Exception("Failed to get thread");
     }
-    state = response.data!;
-    return state;
+    state = AsyncValue.data(response.data!);
+    return state.value!;
   }
 
   List<String> getBlocks() {
     final blocks =
-        state.content?.map((e) => e.content).toList().reversed.toList();
+        state.value?.content?.map((e) => e.content).toList().reversed.toList();
     return blocks ?? [];
   }
 }

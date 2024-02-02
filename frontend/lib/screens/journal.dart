@@ -22,11 +22,12 @@ class JournalScreen extends ConsumerWidget {
     final currentThread = ref.watch(currentThreadProvider.call(
       title: 'journal',
       type: '/new-thread',
-      creator: 'system',
     ));
 
-    final blocks =
-        currentThread.content?.reversed.toList().map((e) => e.content).toList();
+    final blocks = currentThread.value?.content?.reversed
+        .toList()
+        .map((e) => e.content)
+        .toList();
 
     // chat display widget
     final blockDisplay = SizedBox(
