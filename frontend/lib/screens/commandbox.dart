@@ -37,8 +37,10 @@ class CommandTypeAhead extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final parser = CommandParser();
     final asyncTitlesList = ref.watch(fetchTitlesProvider);
+    var selectedCommand;
+    var selectedTitle;
     final List<String> titlesList = asyncTitlesList.value ?? [];
-    final currentCommandNotifier = ref.read(currentCommandProvider.notifier);
+
     final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
 
     return TypeAheadField<String>(
@@ -54,10 +56,7 @@ class CommandTypeAhead extends ConsumerWidget {
                 // and set the visibility to false
                 try {
                   final newCommand = parser.validateCommand(
-                      value,
-                      currentCommandNotifier,
-                      titlesList,
-                      commandHintTextNotifier);
+                      value, titlesList, commandHintTextNotifier);
                   print(newCommand["command"]);
                   print(newCommand["title"]);
                   // only if the command was successfully validated
@@ -106,13 +105,12 @@ class CommandTypeAhead extends ConsumerWidget {
           if (suggestion.startsWith('/')) {
             // this is a command
             _typeAheadController.text = suggestion;
-            currentCommandNotifier
-                .setCommand(Commands.values[commandList.indexOf(suggestion)]);
+            selectedCommand = Commands.values[commandList.indexOf(suggestion)];
           } else {
             // this is a title
             // set the current title
-            String currentCommand = currentCommandNotifier.get().name;
-            _typeAheadController.text = currentCommand + " #" + suggestion;
+            _typeAheadController.text =
+                selectedCommand.name + " #" + suggestion;
           }
           return;
         });

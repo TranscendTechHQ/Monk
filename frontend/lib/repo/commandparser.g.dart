@@ -6,22 +6,6 @@ part of 'commandparser.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$currentCommandHash() => r'65b2e27e24671249ba6b00a3cd0a0017b5719c6e';
-
-/// See also [CurrentCommand].
-@ProviderFor(CurrentCommand)
-final currentCommandProvider =
-    AutoDisposeNotifierProvider<CurrentCommand, Commands>.internal(
-  CurrentCommand.new,
-  name: r'currentCommandProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$currentCommandHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$CurrentCommand = AutoDisposeNotifier<Commands>;
 String _$commandHintTextHash() => r'fbcabe6f16a1687f7f16950a515ac67290798c09';
 
 /// See also [CommandHintText].

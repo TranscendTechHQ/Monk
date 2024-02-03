@@ -27,17 +27,6 @@ enum Commands {
 final List<String> commandList = Commands.values.map((e) => e.name).toList();
 
 @riverpod
-class CurrentCommand extends _$CurrentCommand {
-  @override
-  Commands build() => Commands.thread;
-  void setCommand(Commands command) {
-    state = command;
-  }
-
-  Commands get() => state;
-}
-
-@riverpod
 class CommandHintText extends _$CommandHintText {
   @override
   String build() => 'press "/" for commands';
@@ -122,13 +111,11 @@ class CommandParser {
     return matchedPatterns;
   }
 
-  Map<String, String> validateCommand(String commandString,
-      currentCommandNotifier, titlesList, commandHintTextNotifier) {
+  Map<String, String> validateCommand(
+      String commandString, titlesList, commandHintTextNotifier) {
     try {
       String command = parseCommand(commandString);
       String title = parseTitle(commandString, titlesList);
-      currentCommandNotifier
-          .setCommand(Commands.values[commandList.indexOf(command)]);
 
       if (!isUnique(title, titlesList)) {
         throw ArgumentError('Title must be unique');
