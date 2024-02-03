@@ -77,10 +77,6 @@ class CommandParser {
       throw ArgumentError('Title should be alphanumeric');
     }
 
-    if (!isUnique(title, titlesList)) {
-      throw ArgumentError('Title must be unique');
-    }
-
     return title;
   }
 
@@ -117,10 +113,20 @@ class CommandParser {
       String command = parseCommand(commandString);
       String title = parseTitle(commandString, titlesList);
 
-      if (!isUnique(title, titlesList)) {
-        throw ArgumentError('Title must be unique');
-      } else {
-        commandHintTextNotifier.set('Title added');
+      if (command.startsWith('/new-')) {
+        if (!isUnique(title, titlesList)) {
+          throw ArgumentError('Title must be unique for creating new threads');
+        } else {
+          final threadType = command.substring(5);
+          commandHintTextNotifier.set('New ${threadType} ${title} added');
+        }
+      }
+      if (command == '/go') {
+        if (!titlesList.contains(title)) {
+          throw ArgumentError(
+              'Thread ${title} does not exist. Please create it first usng "/new-*" commands');
+        }
+        commandHintTextNotifier.set('Go to ${title}');
       }
       return {'command': command, 'title': title};
     } on ArgumentError {
