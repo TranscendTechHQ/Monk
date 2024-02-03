@@ -100,7 +100,7 @@ class CommandParser {
     if (titlePattern.startsWith('#')) {
       String title = titlePattern.substring(1);
       matchedPatterns = titleList.where((String option) {
-        return option.contains(title.toLowerCase());
+        return option.toLowerCase().contains(title.toLowerCase());
       }).toList();
     }
 
