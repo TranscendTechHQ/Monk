@@ -49,6 +49,13 @@ void main() {
       // TODO
     });
 
+    // Thread Titles
+    //
+    //Future<TitleModel> threadTitlesTitlesGet() async
+    test('test threadTitlesTitlesGet', () async {
+      // TODO
+    });
+
     // Update Thread
     //
     //Future<ThreadModel> updateThreadThreadsTitlePut(String title, UpdateThreadModel updateThreadModel) async

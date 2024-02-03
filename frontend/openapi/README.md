@@ -71,6 +71,7 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksGet**](doc/ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getJournalByDateJournalGet**](doc/ThreadsApi.md#getjournalbydatejournalget) | **GET** /journal | Get Journal By Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
+[*ThreadsApi*](doc/ThreadsApi.md) | [**threadTitlesTitlesGet**](doc/ThreadsApi.md#threadtitlestitlesget) | **GET** /titles | Thread Titles
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateThreadThreadsTitlePut**](doc/ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
@@ -83,6 +84,7 @@ Class | Method | HTTP request | Description
  - [ModelDate](doc/ModelDate.md)
  - [ThreadModel](doc/ThreadModel.md)
  - [ThreadsModel](doc/ThreadsModel.md)
+ - [TitleModel](doc/TitleModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateThreadModel](doc/UpdateThreadModel.md)
  - [ValidationError](doc/ValidationError.md)

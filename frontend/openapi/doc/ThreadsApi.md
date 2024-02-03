@@ -15,6 +15,7 @@ Method | HTTP request | Description
 [**getBlocksByDateBlocksGet**](ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date
 [**getJournalByDateJournalGet**](ThreadsApi.md#getjournalbydatejournalget) | **GET** /journal | Get Journal By Date
 [**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
+[**threadTitlesTitlesGet**](ThreadsApi.md#threadtitlestitlesget) | **GET** /titles | Thread Titles
 [**updateThreadThreadsTitlePut**](ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
@@ -250,6 +251,43 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **threadTitlesTitlesGet**
+> TitleModel threadTitlesTitlesGet()
+
+Thread Titles
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+
+try {
+    final response = api.threadTitlesTitlesGet();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->threadTitlesTitlesGet: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**TitleModel**](TitleModel.md)
 
 ### Authorization
 

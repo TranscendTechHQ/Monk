@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 
-from .models import ThreadModel, ThreadType, UpdateThreadModel, CreateThreadModel, ThreadsModel
+from .models import ThreadModel, ThreadType, TitleModel, UpdateThreadModel, CreateThreadModel, ThreadsModel
 from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
 from utils.db import create_mongo_document, get_mongo_documents_by_date
 from supertokens_python.recipe.session.framework.fastapi import verify_session
@@ -16,7 +16,15 @@ import datetime as dt
 
 router = APIRouter()
 
-
+@router.get("/titles", response_model=TitleModel, 
+            response_description="Get all thread titles")
+async def thread_titles(request: Request, 
+                        session: SessionContainer = Depends(verify_session())):
+    # Get all thread titles from MongoDB
+    threads = await get_mongo_documents(request.app.mongodb["threads"])
+    titles = [thread["title"] for thread in threads]
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                          content=jsonable_encoder(TitleModel(titles=titles)))
 
 @router.post("/blocks", response_model=ThreadModel, response_description="Create a new block")
 async def create(request: Request, thread_title:str, block: UpdateBlockModel = Body(...),

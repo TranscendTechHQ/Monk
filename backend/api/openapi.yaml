@@ -150,6 +150,21 @@ components:
       - threads
       title: ThreadsModel
       type: object
+    TitleModel:
+      example:
+        titles:
+        - TitleThis
+        - TitleThat
+      properties:
+        titles:
+          items:
+            type: string
+          title: Titles
+          type: array
+      required:
+      - titles
+      title: TitleModel
+      type: object
     UpdateBlockModel:
       example:
         content: This is the content of the block
@@ -384,5 +399,18 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Update Thread
+      tags:
+      - threads
+  /titles:
+    get:
+      operationId: thread_titles_titles_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TitleModel'
+          description: Get all thread titles
+      summary: Thread Titles
       tags:
       - threads
