@@ -38,7 +38,6 @@ class CommandTypeAhead extends ConsumerWidget {
     final parser = CommandParser();
     final asyncTitlesList = ref.watch(fetchTitlesProvider);
     var selectedCommand;
-    var selectedTitle;
     final List<String> titlesList = asyncTitlesList.value ?? [];
 
     final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
@@ -55,14 +54,17 @@ class CommandTypeAhead extends ConsumerWidget {
                 //then set the current command to value
                 // and set the visibility to false
                 try {
-                  final newCommand = parser.validateCommand(
+                  final newThread = parser.validateCommand(
                       value, titlesList, commandHintTextNotifier);
-                  print(newCommand["command"]);
-                  print(newCommand["title"]);
                   // only if the command was successfully validated
                   ref
                       .read(autoCompleteVisibilityProvider.notifier)
                       .setVisibility(false);
+
+                  /*  ref.read(currentThreadProvider.call(
+                    title: newThread["title"]!,
+                    type: newThread["command"]!,
+                  ).notifier); */
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
