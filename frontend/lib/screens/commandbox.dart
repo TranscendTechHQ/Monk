@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:frontend/repo/titles.dart';
+import 'package:frontend/screens/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
@@ -61,10 +62,12 @@ class CommandTypeAhead extends ConsumerWidget {
                       .read(autoCompleteVisibilityProvider.notifier)
                       .setVisibility(false);
 
-                  /*  ref.read(currentThreadProvider.call(
-                    title: newThread["title"]!,
-                    type: newThread["command"]!,
-                  ).notifier); */
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ThreadScreen(
+                      title: newThread["title"]!,
+                      type: newThread["command"]!,
+                    );
+                  }));
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
