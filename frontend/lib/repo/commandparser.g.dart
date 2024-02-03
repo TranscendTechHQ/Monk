@@ -6,7 +6,7 @@ part of 'commandparser.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$currentCommandHash() => r'48064c6c688a9a8a6ce1d3aa962e47ee7c2a65b6';
+String _$currentCommandHash() => r'65b2e27e24671249ba6b00a3cd0a0017b5719c6e';
 
 /// See also [CurrentCommand].
 @ProviderFor(CurrentCommand)

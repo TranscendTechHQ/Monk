@@ -67,7 +67,7 @@ class CommandParser {
     return command;
   }
 
-  String parseTitle(String commandString, titlesNotifier) {
+  String parseTitle(String commandString, titlesList) {
     var parts = commandString.split(' ');
     if (parts.length > 2) {
       throw ArgumentError('Command should have at most one argument');
@@ -88,7 +88,7 @@ class CommandParser {
       throw ArgumentError('Title should be alphanumeric');
     }
 
-    if (!isUnique(title, titlesNotifier)) {
+    if (!isUnique(title, titlesList)) {
       throw ArgumentError('Title must be unique');
     }
 
@@ -106,7 +106,7 @@ class CommandParser {
     return matchedPatterns;
   }
 
-  List<String> patternMatchingTitles(String pattern, titleNotifier) {
+  List<String> patternMatchingTitles(String pattern, List<String> titleList) {
     List<String> matchedPatterns = [];
     if (pattern.isEmpty) return matchedPatterns;
     var parts = pattern.split(' ');
@@ -114,7 +114,7 @@ class CommandParser {
 
     if (titlePattern.startsWith('#')) {
       String title = titlePattern.substring(1);
-      matchedPatterns = titleNotifier.get().where((String option) {
+      matchedPatterns = titleList.where((String option) {
         return option.contains(title.toLowerCase());
       }).toList();
     }
@@ -122,19 +122,20 @@ class CommandParser {
     return matchedPatterns;
   }
 
-  void validateCommand(String commandString, currentCommandNotifier,
-      titlesNotifier, commandHintTextNotifier) {
+  Map<String, String> validateCommand(String commandString,
+      currentCommandNotifier, titlesList, commandHintTextNotifier) {
     try {
       String command = parseCommand(commandString);
-      String title = parseTitle(commandString, titlesNotifier);
+      String title = parseTitle(commandString, titlesList);
       currentCommandNotifier
           .setCommand(Commands.values[commandList.indexOf(command)]);
-      bool added = titlesNotifier.add(title);
-      if (!added) {
+
+      if (!isUnique(title, titlesList)) {
         throw ArgumentError('Title must be unique');
       } else {
         commandHintTextNotifier.set('Title added');
       }
+      return {'command': command, 'title': title};
     } on ArgumentError {
       rethrow;
     }
@@ -144,7 +145,7 @@ class CommandParser {
     return RegExp(r'^[a-zA-Z0-9]+$').hasMatch(argument);
   }
 
-  bool isUnique(String argument, titlesNotifier) {
-    return !titlesNotifier.get().contains(argument);
+  bool isUnique(String argument, List<String> titlesList) {
+    return !titlesList.contains(argument);
   }
 }

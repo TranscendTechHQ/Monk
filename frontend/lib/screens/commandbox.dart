@@ -36,7 +36,8 @@ class CommandTypeAhead extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final parser = CommandParser();
-    final titlesNotifier = ref.read(titlesProvider.notifier);
+    final asyncTitlesList = ref.watch(fetchTitlesProvider);
+    final List<String> titlesList = asyncTitlesList.value ?? [];
     final currentCommandNotifier = ref.read(currentCommandProvider.notifier);
     final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
 
@@ -52,8 +53,13 @@ class CommandTypeAhead extends ConsumerWidget {
                 //then set the current command to value
                 // and set the visibility to false
                 try {
-                  parser.validateCommand(value, currentCommandNotifier,
-                      titlesNotifier, commandHintTextNotifier);
+                  final newCommand = parser.validateCommand(
+                      value,
+                      currentCommandNotifier,
+                      titlesList,
+                      commandHintTextNotifier);
+                  print(newCommand["command"]);
+                  print(newCommand["title"]);
                   // only if the command was successfully validated
                   ref
                       .read(autoCompleteVisibilityProvider.notifier)
@@ -87,7 +93,7 @@ class CommandTypeAhead extends ConsumerWidget {
             return parser.patternMatchingCommands(pattern);
           }
           if (parts.length == 2) {
-            return parser.patternMatchingTitles(pattern, titlesNotifier);
+            return parser.patternMatchingTitles(pattern, titlesList);
           }
           return suggestions;
         },

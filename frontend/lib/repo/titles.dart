@@ -1,19 +1,14 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
+import 'package:frontend/network.dart';
+import 'package:openapi/openapi.dart';
 part 'titles.g.dart';
 
 @riverpod
-class Titles extends _$Titles {
-  @override
-  List<String> build() => ["journal"];
-
-  bool add(String title) {
-    if (state.contains(title)) {
-      return false;
-    }
-    state = [...state, title];
-    return true;
+Future<List<String>> fetchTitles(FetchTitlesRef ref) async {
+  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+  final response = await threadApi.threadTitlesTitlesGet();
+  if (response.statusCode != 200) {
+    throw Exception("Failed to fetch titles");
   }
-
-  List<String> get() => state;
+  return response.data!.titles;
 }

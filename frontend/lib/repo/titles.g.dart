@@ -6,20 +6,19 @@ part of 'titles.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$titlesHash() => r'5a16182ccb2097600c8381980dcffd6135fa130a';
+String _$fetchTitlesHash() => r'a1e98e02952c809c468ff684fd73e7ac6b5859d6';
 
-/// See also [Titles].
-@ProviderFor(Titles)
-final titlesProvider =
-    AutoDisposeNotifierProvider<Titles, List<String>>.internal(
-  Titles.new,
-  name: r'titlesProvider',
+/// See also [fetchTitles].
+@ProviderFor(fetchTitles)
+final fetchTitlesProvider = AutoDisposeFutureProvider<List<String>>.internal(
+  fetchTitles,
+  name: r'fetchTitlesProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$titlesHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$fetchTitlesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$Titles = AutoDisposeNotifier<List<String>>;
+typedef FetchTitlesRef = AutoDisposeFutureProviderRef<List<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
