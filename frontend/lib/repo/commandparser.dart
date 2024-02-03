@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'commandparser.g.dart';
 
 enum Commands {
-  journal('/new-journal'),
   thread('/new-thread'),
   plan('/new-plan'),
   news('/news'),
@@ -30,7 +29,7 @@ final List<String> commandList = Commands.values.map((e) => e.name).toList();
 @riverpod
 class CurrentCommand extends _$CurrentCommand {
   @override
-  Commands build() => Commands.journal;
+  Commands build() => Commands.thread;
   void setCommand(Commands command) {
     state = command;
   }

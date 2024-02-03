@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/repo/commandparser.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 import 'constants.dart';
 import 'screens/home.dart';
 import 'screens/login.dart';
 import 'screens/splash.dart';
-import 'screens/journal.dart';
+import 'screens/thread.dart';
 
 void main() {
   SuperTokens.init(apiDomain: apiDomain);
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
         "/": (context) => const SplashScreen(),
         "/home": (context) => const HomeScreen(),
         "/login": (context) => const LoginScreen(),
-        "/journal": (context) => JournalScreen(),
+        "/journal": (context) =>
+            ThreadScreen(title: "journal", type: Commands.thread.name),
       },
     );
   }

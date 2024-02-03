@@ -5,7 +5,7 @@ part 'titles.g.dart';
 @riverpod
 class Titles extends _$Titles {
   @override
-  List<String> build() => ["Journal"];
+  List<String> build() => ["journal"];
 
   bool add(String title) {
     if (state.contains(title)) {

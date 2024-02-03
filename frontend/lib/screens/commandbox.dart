@@ -116,14 +116,15 @@ class CommandTypeAhead extends ConsumerWidget {
 class CommandBox extends ConsumerWidget {
   final TextEditingController _blockController = TextEditingController();
   final FocusNode _optionFocusNode = FocusNode();
+  final String title;
+  final String type;
 
-  CommandBox({super.key});
+  CommandBox({super.key, required this.title, required this.type});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final threadNotifier = ref.read(currentThreadProvider
-        .call(title: 'journal', type: '/new-thread')
-        .notifier);
+    final threadNotifier =
+        ref.read(currentThreadProvider.call(title: title, type: type).notifier);
     bool commandVisibility = ref.watch(autoCompleteVisibilityProvider);
     final commandHintText = ref.watch(commandHintTextProvider);
     return Container(
@@ -178,7 +179,8 @@ class CommandBox extends ConsumerWidget {
                 filled: true,
                 fillColor: Color.fromARGB(255, 188, 105, 240),
                 border: OutlineInputBorder(),
-                hintText: 'Write your journal here...Press SHIFT+Enter to save',
+                hintText:
+                    'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
               ),
               onChanged: (text) async {
                 if (text.isNotEmpty && text.startsWith('/')) {

@@ -6,9 +6,11 @@ import 'package:frontend/screens/commandbox.dart';
 
 import 'package:flutter_emoji/flutter_emoji.dart';
 
-class JournalScreen extends ConsumerWidget {
+class ThreadScreen extends ConsumerWidget {
   final emojiParser = EmojiParser(init: true);
-  JournalScreen({super.key});
+  final String title;
+  final String type;
+  ThreadScreen({super.key, required this.title, required this.type});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,11 +20,8 @@ class JournalScreen extends ConsumerWidget {
       scrollController.jumpTo(scrollController.position.maxScrollExtent);
     }
 
-    //final blockText = ref.watch(blockProvider);
-    final currentThread = ref.watch(currentThreadProvider.call(
-      title: 'journal',
-      type: '/new-thread',
-    ));
+    final currentThread =
+        ref.watch(currentThreadProvider.call(title: title, type: type));
 
     final blocks = currentThread.value?.content?.reversed
         .toList()
@@ -62,12 +61,15 @@ class JournalScreen extends ConsumerWidget {
           },
         ));
 
-    final blockInput = CommandBox();
+    final blockInput = CommandBox(title: title, type: type);
 
     return Scaffold(
         appBar: AppBar(
           title: Text(
-              'Journal (YYYY-MM-DD) ${today.year}-${today.month}-${today.day}'),
+            'ThreadType:$type Title:$title',
+            style: TextStyle(
+                fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
+          ),
         ),
         body: Align(
             alignment: Alignment.center,
