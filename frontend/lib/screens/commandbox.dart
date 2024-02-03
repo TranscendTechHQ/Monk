@@ -62,7 +62,8 @@ class CommandTypeAhead extends ConsumerWidget {
                       .read(autoCompleteVisibilityProvider.notifier)
                       .setVisibility(false);
 
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
                     return ThreadScreen(
                       title: newThread["title"]!,
                       type: newThread["command"]!,
