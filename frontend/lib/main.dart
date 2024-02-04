@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/repo/commandparser.dart';
+import 'package:frontend/repo/thread.dart';
+
 import 'package:supertokens_flutter/supertokens.dart';
 import 'constants.dart';
 import 'screens/home.dart';
@@ -13,12 +14,13 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final commandList = ref.watch(fetchThreadTypesProvider);
     return MaterialApp(
       title: 'Monk',
       debugShowCheckedModeBanner: false,
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
         "/home": (context) => const HomeScreen(),
         "/login": (context) => const LoginScreen(),
         "/journal": (context) =>
-            ThreadScreen(title: "journal", type: Commands.thread.name),
+            ThreadScreen(title: "journal", type: commandList.value![0]),
       },
     );
   }

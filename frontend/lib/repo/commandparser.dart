@@ -1,32 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'commandparser.g.dart';
 
-enum Commands {
-  thread('/new-thread'),
-  plan('/new-plan'),
-  news('/news'),
-  report('/new-report'),
-  project('/new-project'),
-  task('/new-task'),
-  note('/new-note'),
-  idea('/new-idea'),
-  event('/new-event'),
-  blocker('/new-blocker'),
-  think('/new-thought'),
-  strategy('/new-strategy'),
-  private('/new-private'),
-  experiment('/new-experiment'),
-  go('/go'),
-  ;
-
-  const Commands(this.name);
-
-  type() => name.split('-')[1];
-
-  final String name;
-}
-
-//final List<String> commandList = Commands.values.map((e) => e.name).toList();
 @riverpod
 class CommandHintText extends _$CommandHintText {
   @override
