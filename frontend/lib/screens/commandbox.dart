@@ -58,9 +58,15 @@ class CommandTypeAhead extends ConsumerWidget {
 
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) {
+                    String newTheadType;
+                    if (threadList.value!.containsKey(newThread["title"])) {
+                      newTheadType = threadList.value![newThread["title"]]!;
+                    } else {
+                      newTheadType = newThread["type"]!;
+                    }
                     return ThreadScreen(
                       title: newThread["title"]!,
-                      type: threadList.value![newThread["title"]]!,
+                      type: newTheadType,
                     );
                   }));
                 } catch (e) {

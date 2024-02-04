@@ -107,7 +107,7 @@ class CommandParser {
         }
         commandHintTextNotifier.set('Go to ${title}');
       }
-      return {'command': command, 'title': title};
+      return {'type': command, 'title': title};
     } on ArgumentError {
       rethrow;
     }
