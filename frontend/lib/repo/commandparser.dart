@@ -87,8 +87,11 @@ class CommandParser {
     if (pattern.isEmpty) return matchedPatterns;
     var parts = pattern.split(' ');
     String commandPattern = parts[0];
+    if (commandPattern.startsWith('/')) {
+      commandPattern = commandPattern.substring(1);
+    }
     matchedPatterns = commandList.where((String option) {
-      return option.contains(commandPattern.toLowerCase());
+      return option.substring(1).contains(commandPattern.toLowerCase());
     }).toList();
     return matchedPatterns;
   }
