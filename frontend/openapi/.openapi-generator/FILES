@@ -11,8 +11,8 @@ doc/HTTPValidationError.md
 doc/ModelDate.md
 doc/ThreadModel.md
 doc/ThreadsApi.md
+doc/ThreadsInfo.md
 doc/ThreadsModel.md
-doc/TitleModel.md
 doc/UpdateBlockModel.md
 doc/UpdateThreadModel.md
 doc/ValidationError.md
@@ -32,8 +32,8 @@ lib/src/model/create_thread_model.dart
 lib/src/model/http_validation_error.dart
 lib/src/model/model_date.dart
 lib/src/model/thread_model.dart
+lib/src/model/threads_info.dart
 lib/src/model/threads_model.dart
-lib/src/model/title_model.dart
 lib/src/model/update_block_model.dart
 lib/src/model/update_thread_model.dart
 lib/src/model/validation_error.dart
@@ -46,8 +46,8 @@ test/http_validation_error_test.dart
 test/model_date_test.dart
 test/thread_model_test.dart
 test/threads_api_test.dart
+test/threads_info_test.dart
 test/threads_model_test.dart
-test/title_model_test.dart
 test/update_block_model_test.dart
 test/update_thread_model_test.dart
 test/validation_error_test.dart

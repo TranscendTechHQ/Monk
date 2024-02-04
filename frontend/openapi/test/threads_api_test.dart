@@ -7,6 +7,13 @@ void main() {
   final instance = Openapi().getThreadsApi();
 
   group(ThreadsApi, () {
+    // At
+    //
+    //Future<List<ThreadsModel>> atAllThreadsGet() async
+    test('test atAllThreadsGet', () async {
+      // TODO
+    });
+
     // Create
     //
     //Future<ThreadModel> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
@@ -14,31 +21,24 @@ void main() {
       // TODO
     });
 
-    // Create Thread
+    // Create
     //
-    //Future<ThreadModel> createThreadThreadsPost(CreateThreadModel createThreadModel) async
-    test('test createThreadThreadsPost', () async {
+    //Future<ThreadModel> createThreadsPost(CreateThreadModel createThreadModel) async
+    test('test createThreadsPost', () async {
       // TODO
     });
 
-    // Get All Threads
+    // Date
     //
-    //Future<List<ThreadsModel>> getAllThreadsThreadsGet() async
-    test('test getAllThreadsThreadsGet', () async {
+    //Future<BlockCollection> dateJournalGet(ModelDate modelDate) async
+    test('test dateJournalGet', () async {
       // TODO
     });
 
     // Get Blocks By Date
     //
-    //Future<BlockCollection> getBlocksByDateBlocksGet(ModelDate modelDate) async
-    test('test getBlocksByDateBlocksGet', () async {
-      // TODO
-    });
-
-    // Get Journal By Date
-    //
-    //Future<BlockCollection> getJournalByDateJournalGet(ModelDate modelDate) async
-    test('test getJournalByDateJournalGet', () async {
+    //Future<BlockCollection> getBlocksByDateBlocksDateGet(ModelDate modelDate) async
+    test('test getBlocksByDateBlocksDateGet', () async {
       // TODO
     });
 
@@ -49,10 +49,17 @@ void main() {
       // TODO
     });
 
-    // Thread Titles
+    // Ti
     //
-    //Future<TitleModel> threadTitlesTitlesGet() async
-    test('test threadTitlesTitlesGet', () async {
+    //Future<ThreadsInfo> tiThreadsInfoGet() async
+    test('test tiThreadsInfoGet', () async {
+      // TODO
+    });
+
+    // Tt
+    //
+    //Future<List<String>> ttThreadTypesGet() async
+    test('test ttThreadTypesGet', () async {
       // TODO
     });
 

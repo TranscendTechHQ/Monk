@@ -15,11 +15,31 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'thread.g.dart';
 
+@riverpod
+Future<Map<String, String>> fetchThreadsInfo(FetchThreadsInfoRef ref) async {
+  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+  final response = await threadApi.tiThreadsInfoGet();
+  if (response.statusCode != 200) {
+    throw Exception("Failed to fetch titles");
+  }
+  return response.data!.info!;
+}
+
+@riverpod
+Future<List<String>> fetchThreadTypes(FetchThreadTypesRef ref) async {
+  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+  final response = await threadApi.ttThreadTypesGet();
+  if (response.statusCode != 200) {
+    throw Exception("Failed to fetch thread types");
+  }
+  return response.data!;
+}
+
 Future<ThreadModel> createOrGetThread(
     {required String title, required String type}) async {
   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
 
-  final response = await threadApi.createThreadThreadsPost(
+  final response = await threadApi.createThreadsPost(
       createThreadModel: CreateThreadModel(title: title, type: type));
 
   if (response.statusCode != 201) {

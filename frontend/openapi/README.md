@@ -65,13 +65,14 @@ All URIs are relative to *http://localhost*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 [*DefaultApi*](doc/DefaultApi.md) | [**secureApiSessioninfoGet**](doc/DefaultApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
+[*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
-[*ThreadsApi*](doc/ThreadsApi.md) | [**createThreadThreadsPost**](doc/ThreadsApi.md#createthreadthreadspost) | **POST** /threads | Create Thread
-[*ThreadsApi*](doc/ThreadsApi.md) | [**getAllThreadsThreadsGet**](doc/ThreadsApi.md#getallthreadsthreadsget) | **GET** /threads | Get All Threads
-[*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksGet**](doc/ThreadsApi.md#getblocksbydateblocksget) | **GET** /blocks | Get Blocks By Date
-[*ThreadsApi*](doc/ThreadsApi.md) | [**getJournalByDateJournalGet**](doc/ThreadsApi.md#getjournalbydatejournalget) | **GET** /journal | Get Journal By Date
+[*ThreadsApi*](doc/ThreadsApi.md) | [**createThreadsPost**](doc/ThreadsApi.md#createthreadspost) | **POST** /threads | Create
+[*ThreadsApi*](doc/ThreadsApi.md) | [**dateJournalGet**](doc/ThreadsApi.md#datejournalget) | **GET** /journal | Date
+[*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksDateGet**](doc/ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
-[*ThreadsApi*](doc/ThreadsApi.md) | [**threadTitlesTitlesGet**](doc/ThreadsApi.md#threadtitlestitlesget) | **GET** /titles | Thread Titles
+[*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
+[*ThreadsApi*](doc/ThreadsApi.md) | [**ttThreadTypesGet**](doc/ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateThreadThreadsTitlePut**](doc/ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
@@ -83,8 +84,8 @@ Class | Method | HTTP request | Description
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
  - [ThreadModel](doc/ThreadModel.md)
+ - [ThreadsInfo](doc/ThreadsInfo.md)
  - [ThreadsModel](doc/ThreadsModel.md)
- - [TitleModel](doc/TitleModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateThreadModel](doc/UpdateThreadModel.md)
  - [ValidationError](doc/ValidationError.md)

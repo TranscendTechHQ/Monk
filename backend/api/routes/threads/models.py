@@ -200,18 +200,21 @@ class ThreadsModel(BaseModel):
                               }
                         )
 
-class TitleModel(BaseModel):
-    titles: List[str]
+class ThreadsInfo(BaseModel):
+    info: dict[str, ThreadType]
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               json_schema_extra = {
-                                "example": {
+                                "example": {        
                                 "titles": [
-                                    "TitleThis",
-                                    "TitleThat"
+                                    {
+                                        "ThreadTitle": "ThreadType",
+                                    },
+                                    {
+                                        "AnotherThreadTitle": "AnotherThreadType",
+                                    }
                                 ]
-                                
                                 }
                               }
     )

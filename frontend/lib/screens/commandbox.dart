@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/thread.dart';
-import 'package:frontend/repo/titles.dart';
 import 'package:frontend/screens/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -10,11 +9,6 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import '../constants.dart';
 import '../repo/commandparser.dart';
 part 'commandbox.g.dart';
-
-final popupMenuEntryList = commandList.map((e) => PopupMenuItem<String>(
-      value: e,
-      child: Text(e),
-    ));
 
 @riverpod
 class AutoCompleteVisibility extends _$AutoCompleteVisibility {
@@ -37,8 +31,8 @@ class CommandTypeAhead extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final parser = CommandParser();
-    final asyncTitlesList = ref.watch(fetchTitlesProvider);
-    final List<String> titlesList = asyncTitlesList.value ?? [];
+    final threadList = ref.watch(fetchThreadsInfoProvider);
+    final List<String> titlesList = threadList.value?.keys.toList() ?? [];
 
     final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
 
@@ -65,7 +59,7 @@ class CommandTypeAhead extends ConsumerWidget {
                       MaterialPageRoute(builder: (context) {
                     return ThreadScreen(
                       title: newThread["title"]!,
-                      type: newThread["command"]!,
+                      type: threadList.value![newThread["title"]]!,
                     );
                   }));
                 } catch (e) {

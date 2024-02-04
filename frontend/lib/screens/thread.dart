@@ -66,7 +66,7 @@ class ThreadScreen extends ConsumerWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'ThreadType:$type Title:$title',
+            '${type.split('-')[1]} -: $title',
             style: TextStyle(
                 fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
           ),

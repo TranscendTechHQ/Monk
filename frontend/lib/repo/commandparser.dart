@@ -21,6 +21,8 @@ enum Commands {
 
   const Commands(this.name);
 
+  type() => name.split('-')[1];
+
   final String name;
 }
 

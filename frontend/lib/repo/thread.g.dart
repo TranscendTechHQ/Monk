@@ -6,6 +6,38 @@ part of 'thread.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$fetchThreadsInfoHash() => r'2f19f66379d9c9d60759ef7bf34ac062de6baaab';
+
+/// See also [fetchThreadsInfo].
+@ProviderFor(fetchThreadsInfo)
+final fetchThreadsInfoProvider =
+    AutoDisposeFutureProvider<Map<String, String>>.internal(
+  fetchThreadsInfo,
+  name: r'fetchThreadsInfoProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$fetchThreadsInfoHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef FetchThreadsInfoRef = AutoDisposeFutureProviderRef<Map<String, String>>;
+String _$fetchThreadTypesHash() => r'732745883f982e5fc4a4791f7ac1c4fa5e0af7bb';
+
+/// See also [fetchThreadTypes].
+@ProviderFor(fetchThreadTypes)
+final fetchThreadTypesProvider =
+    AutoDisposeFutureProvider<List<String>>.internal(
+  fetchThreadTypes,
+  name: r'fetchThreadTypesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$fetchThreadTypesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef FetchThreadTypesRef = AutoDisposeFutureProviderRef<List<String>>;
 String _$currentThreadHash() => r'3dcbeb034e478b98dc2c7ff8476e2a594aeb4ea6';
 
 /// Copied from Dart SDK

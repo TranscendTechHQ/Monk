@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 
-from .models import ThreadModel, ThreadType, TitleModel, UpdateThreadModel, CreateThreadModel, ThreadsModel
+from .models import THREADTYPES, ThreadModel, ThreadType, ThreadsInfo, UpdateThreadModel, CreateThreadModel, ThreadsModel
 from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
 from utils.db import create_mongo_document, get_mongo_documents_by_date
 from supertokens_python.recipe.session.framework.fastapi import verify_session
@@ -16,15 +16,25 @@ import datetime as dt
 
 router = APIRouter()
 
-@router.get("/titles", response_model=TitleModel, 
-            response_description="Get all thread titles")
-async def thread_titles(request: Request, 
+@router.get("/threadTypes", response_model=List[ThreadType], 
+            response_description="Get all thread types")
+async def tt(request: Request, 
+                        session: SessionContainer = Depends(verify_session())):
+    # Get all thread types 
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                          content=jsonable_encoder(THREADTYPES))
+    
+@router.get("/threadsInfo", response_model=ThreadsInfo, 
+            response_description="Get all thread titles and corresponding types")
+async def ti(request: Request, 
                         session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
     threads = await get_mongo_documents(request.app.mongodb["threads"])
-    titles = [thread["title"] for thread in threads]
+    info:dict[str, ThreadType] = {}
+    for thread in threads:
+        info[thread["title"]] = thread["type"] 
     return JSONResponse(status_code=status.HTTP_200_OK,
-                          content=jsonable_encoder(TitleModel(titles=titles)))
+                          content=jsonable_encoder(ThreadsInfo(info=info)))
 
 @router.post("/blocks", response_model=ThreadModel, response_description="Create a new block")
 async def create(request: Request, thread_title:str, block: UpdateBlockModel = Body(...),
@@ -59,7 +69,7 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
   
     
 # get blocks given a date
-@router.get("/blocks", response_model=BlockCollection,
+@router.get("/blocksDate", response_model=BlockCollection,
             response_description="Get all blocks for a given date")
 async def get_blocks_by_date(request: Request,
                              date: Date,
@@ -78,7 +88,7 @@ async def get_blocks_by_date(request: Request,
 
 @router.get("/journal", response_model=BlockCollection,
             response_description="Get journal for a given date")
-async def get_journal_by_date(request: Request,
+async def date(request: Request,
                                 date: Date,
                                 session: SessionContainer = Depends(verify_session())
                                 ):
@@ -129,7 +139,7 @@ async def create_new_thread(request: Request, session, title:str,
     return created_thread
                     
 @router.post("/threads", response_model=ThreadModel)
-async def create_thread(request: Request, thread_data: CreateThreadModel = Body(...), 
+async def create(request: Request, thread_data: CreateThreadModel = Body(...), 
                         session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data
     # Index the thread by userId
@@ -166,8 +176,8 @@ async def get_thread(request: Request, title: str,
     return JSONResponse(status_code=status.HTTP_200_OK, 
                        content=jsonable_encoder(old_thread))
 
-@router.get("/threads", response_model=List[ThreadsModel])
-async def get_all_threads(request: Request, session: SessionContainer = Depends(verify_session())):
+@router.get("/allThreads", response_model=List[ThreadsModel])
+async def at(request: Request, session: SessionContainer = Depends(verify_session())):
     # Get all threads from MongoDB by date created
     threads = await get_mongo_documents(request.app.mongodb["threads"])
     return threads

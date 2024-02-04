@@ -123,6 +123,21 @@ components:
       - title
       title: ThreadModel
       type: object
+    ThreadsInfo:
+      example:
+        titles:
+        - ThreadTitle: ThreadType
+        - AnotherThreadTitle: AnotherThreadType
+      properties:
+        info:
+          additionalProperties:
+            type: string
+          title: Info
+          type: object
+      required:
+      - info
+      title: ThreadsInfo
+      type: object
     ThreadsModel:
       example:
         threads:
@@ -149,21 +164,6 @@ components:
       required:
       - threads
       title: ThreadsModel
-      type: object
-    TitleModel:
-      example:
-        titles:
-        - TitleThis
-        - TitleThat
-      properties:
-        titles:
-          items:
-            type: string
-          title: Titles
-          type: array
-      required:
-      - titles
-      title: TitleModel
       type: object
     UpdateBlockModel:
       example:
@@ -213,31 +213,23 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
-  /blocks:
+  /allThreads:
     get:
-      operationId: get_blocks_by_date_blocks_get
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Date'
-        required: true
+      operationId: at_allThreads_get
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlockCollection'
-          description: Get all blocks for a given date
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Get Blocks By Date
+                items:
+                  $ref: '#/components/schemas/ThreadsModel'
+                title: Response At Allthreads Get
+                type: array
+          description: Successful Response
+      summary: At
       tags:
       - threads
+  /blocks:
     post:
       operationId: create_blocks_post
       parameters:
@@ -269,9 +261,34 @@ paths:
       summary: Create
       tags:
       - threads
+  /blocksDate:
+    get:
+      operationId: get_blocks_by_date_blocksDate_get
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Date'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockCollection'
+          description: Get all blocks for a given date
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Blocks By Date
+      tags:
+      - threads
   /journal:
     get:
-      operationId: get_journal_by_date_journal_get
+      operationId: date_journal_get
       requestBody:
         content:
           application/json:
@@ -291,7 +308,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Get Journal By Date
+      summary: Date
       tags:
       - threads
   /sessioninfo:
@@ -304,24 +321,25 @@ paths:
               schema: {}
           description: Successful Response
       summary: Secure Api
-  /threads:
+  /threadTypes:
     get:
-      operationId: get_all_threads_threads_get
+      operationId: tt_threadTypes_get
       responses:
         '200':
           content:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/ThreadsModel'
-                title: Response Get All Threads Threads Get
+                  type: string
+                title: Response Tt Threadtypes Get
                 type: array
-          description: Successful Response
-      summary: Get All Threads
+          description: Get all thread types
+      summary: Tt
       tags:
       - threads
+  /threads:
     post:
-      operationId: create_thread_threads_post
+      operationId: create_threads_post
       requestBody:
         content:
           application/json:
@@ -341,7 +359,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Create Thread
+      summary: Create
       tags:
       - threads
   /threads/{title}:
@@ -401,16 +419,16 @@ paths:
       summary: Update Thread
       tags:
       - threads
-  /titles:
+  /threadsInfo:
     get:
-      operationId: thread_titles_titles_get
+      operationId: ti_threadsInfo_get
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TitleModel'
-          description: Get all thread titles
-      summary: Thread Titles
+                $ref: '#/components/schemas/ThreadsInfo'
+          description: Get all thread titles and corresponding types
+      summary: Ti
       tags:
       - threads
