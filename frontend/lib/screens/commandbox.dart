@@ -30,7 +30,8 @@ class CommandTypeAhead extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parser = CommandParser();
+    final commandList = ref.watch(fetchThreadTypesProvider);
+    final parser = CommandParser(commandList.value ?? []);
     final threadList = ref.watch(fetchThreadsInfoProvider);
     final List<String> titlesList = threadList.value?.keys.toList() ?? [];
 

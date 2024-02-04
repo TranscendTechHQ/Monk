@@ -26,8 +26,7 @@ enum Commands {
   final String name;
 }
 
-final List<String> commandList = Commands.values.map((e) => e.name).toList();
-
+//final List<String> commandList = Commands.values.map((e) => e.name).toList();
 @riverpod
 class CommandHintText extends _$CommandHintText {
   @override
@@ -40,7 +39,8 @@ class CommandHintText extends _$CommandHintText {
 }
 
 class CommandParser {
-  CommandParser();
+  CommandParser(this.commandList);
+  List<String> commandList;
 
   String parseCommand(String commandString) {
     if (!commandString.startsWith('/')) {
