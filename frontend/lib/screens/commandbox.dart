@@ -38,7 +38,6 @@ class CommandTypeAhead extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final parser = CommandParser();
     final asyncTitlesList = ref.watch(fetchTitlesProvider);
-    var selectedCommand;
     final List<String> titlesList = asyncTitlesList.value ?? [];
 
     final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
@@ -111,12 +110,11 @@ class CommandTypeAhead extends ConsumerWidget {
           if (suggestion.startsWith('/')) {
             // this is a command
             _typeAheadController.text = suggestion;
-            selectedCommand = Commands.values[commandList.indexOf(suggestion)];
           } else {
+            String firstHalf = _typeAheadController.text.split('#')[0];
             // this is a title
             // set the current title
-            _typeAheadController.text =
-                selectedCommand.name + " #" + suggestion;
+            _typeAheadController.text = firstHalf + "#" + suggestion;
           }
           return;
         });
