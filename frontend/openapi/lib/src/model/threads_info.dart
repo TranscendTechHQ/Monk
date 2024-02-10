@@ -7,7 +7,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'threads_info.g.dart';
 
-
 @JsonSerializable(
   checked: true,
   createToJson: true,
@@ -17,31 +16,25 @@ part 'threads_info.g.dart';
 class ThreadsInfo {
   /// Returns a new [ThreadsInfo] instance.
   ThreadsInfo({
-
-    required  this.info,
+    required this.info,
   });
 
   @JsonKey(
-    
     name: r'info',
     required: true,
-    includeIfNull: truefalse
+    includeIfNull: false,
   )
-
-
   final Map<String, String>? info;
 
-
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is ThreadsInfo && other.info == info;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is ThreadsInfo &&
-     other.info == info;
+  int get hashCode => (info == null ? 0 : info.hashCode);
 
-  @override
-  int get hashCode =>
-    (info == null ? 0 : info.hashCode);
-
-  factory ThreadsInfo.fromJson(Map<String, dynamic> json) => _$ThreadsInfoFromJson(json);
+  factory ThreadsInfo.fromJson(Map<String, dynamic> json) =>
+      _$ThreadsInfoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ThreadsInfoToJson(this);
 
@@ -49,6 +42,4 @@ class ThreadsInfo {
   String toString() {
     return toJson().toString();
   }
-
 }
-

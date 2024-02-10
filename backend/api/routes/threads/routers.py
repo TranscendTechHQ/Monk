@@ -19,8 +19,11 @@ router = APIRouter()
 @router.get("/searchThreads", response_model=ThreadsModel, response_description="Search threads by query")
 async def search_threads(request: Request, query: str, session: SessionContainer = Depends(verify_session())):
     # Search threads in MongoDB by query
-    threads = await request.app.mongodb["threads"].find({"$text": {"$search": query}}).to_list(length=None)
-    return threads
+    collection = request.app.mongodb["threads"]
+    #collection.create_index([('type', 'text')], unique=True, background=False)
+    threads = await collection.find({"$text": {"$search": query}}).to_list(length=None)
+    print(threads)
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(ThreadsModel(threads=threads)))
 
 @router.get("/threadTypes", response_model=List[ThreadType], 
             response_description="Get all thread types")

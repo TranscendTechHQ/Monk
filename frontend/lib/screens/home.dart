@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/network.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,7 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> testOpenApi() async {
     //final api = Openapi().getPetApi();
 //    final taskApi = NetworkManager.instance.openApi.getTasksApi();
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final response =
+        await threadApi.searchThreadsSearchThreadsGet(query: "plan");
+    if (response.statusCode != 200) {
+      throw Exception("Failed to fetch matching threads");
+    }
+    final results = response.data!;
 
+    print(results.threads.map((e) => e.title).toList());
   }
 
   Widget renderContent() {
@@ -108,7 +117,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: MaterialStateProperty.all(
                       Theme.of(context).colorScheme.tertiaryContainer),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  await testOpenApi();
                   Navigator.pushNamed(context, "/journal");
                 },
                 child: Text(
