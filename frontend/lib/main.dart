@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/repo/thread.dart';
+//import 'package:frontend/repo/thread.dart';
 
 import 'package:supertokens_flutter/supertokens.dart';
 import 'constants.dart';
@@ -20,7 +20,7 @@ class MyApp extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final commandList = ref.watch(fetchThreadTypesProvider);
+    //final commandList = ref.watch(fetchThreadTypesProvider);
     return MaterialApp(
       title: 'Monk',
       debugShowCheckedModeBanner: false,
@@ -37,7 +37,7 @@ class MyApp extends ConsumerWidget {
         "/home": (context) => const HomeScreen(),
         "/login": (context) => const LoginScreen(),
         "/journal": (context) =>
-            ThreadScreen(title: "journal", type: commandList.value![0]),
+            ThreadScreen(title: "journal", type: "/new-thread"),
       },
     );
   }

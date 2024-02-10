@@ -97,15 +97,15 @@ class CommandParser {
           throw ArgumentError('Title must be unique for creating new threads');
         } else {
           final threadType = command.substring(5);
-          commandHintTextNotifier.set('New ${threadType} ${title} added');
+          commandHintTextNotifier.set('New $threadType $title added');
         }
       }
       if (command == '/go') {
         if (!titlesList.contains(title)) {
           throw ArgumentError(
-              'Thread ${title} does not exist. Please create it first usng "/new-*" commands');
+              'Thread $title does not exist. Please create it first usng "/new-*" commands');
         }
-        commandHintTextNotifier.set('Go to ${title}');
+        commandHintTextNotifier.set('Go to $title');
       }
       return {'type': command, 'title': title};
     } on ArgumentError {

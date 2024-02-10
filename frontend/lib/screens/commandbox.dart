@@ -115,7 +115,7 @@ class CommandTypeAhead extends ConsumerWidget {
             String firstHalf = _typeAheadController.text.split('#')[0];
             // this is a title
             // set the current title
-            _typeAheadController.text = firstHalf + "#" + suggestion;
+            _typeAheadController.text = "$firstHalf#$suggestion";
           }
           return;
         });

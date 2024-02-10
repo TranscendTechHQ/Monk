@@ -7,7 +7,6 @@
 // backend.
 //  - the backend will store the journal entry in the database
 // ...
-import 'dart:ffi';
 
 import 'package:frontend/network.dart';
 import 'package:openapi/openapi.dart';
@@ -87,7 +86,7 @@ class CurrentThread extends _$CurrentThread {
   @override
   Future<ThreadModel> build(
       {required String title, required String type}) async {
-    state = AsyncValue.loading();
+    state = const AsyncValue.loading();
     final response = await createOrGetThread(title: title, type: type);
     state = AsyncValue.data(response);
     return state.value!;

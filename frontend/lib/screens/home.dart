@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supertokens_flutter/supertokens.dart';
-import '../network.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
     //final api = Openapi().getPetApi();
 //    final taskApi = NetworkManager.instance.openApi.getTasksApi();
 
-    ;
   }
 
   Widget renderContent() {
