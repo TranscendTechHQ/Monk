@@ -15,6 +15,7 @@ Method | HTTP request | Description
 [**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [**getBlocksByDateBlocksDateGet**](ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
+[**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [**updateThreadThreadsTitlePut**](ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
@@ -252,6 +253,47 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **searchThreadsSearchThreadsGet**
+> ThreadsModel searchThreadsSearchThreadsGet(query)
+
+Search Threads
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String query = query_example; // String | 
+
+try {
+    final response = api.searchThreadsSearchThreadsGet(query);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->searchThreadsSearchThreadsGet: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **query** | **String**|  | 
+
+### Return type
+
+[**ThreadsModel**](ThreadsModel.md)
 
 ### Authorization
 

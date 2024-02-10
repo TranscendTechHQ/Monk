@@ -311,6 +311,32 @@ paths:
       summary: Date
       tags:
       - threads
+  /searchThreads:
+    get:
+      operationId: search_threads_searchThreads_get
+      parameters:
+      - in: query
+        name: query
+        required: true
+        schema:
+          title: Query
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadsModel'
+          description: Search threads by query
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Search Threads
+      tags:
+      - threads
   /sessioninfo:
     get:
       operationId: secure_api_sessioninfo_get

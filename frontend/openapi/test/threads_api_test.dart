@@ -49,6 +49,13 @@ void main() {
       // TODO
     });
 
+    // Search Threads
+    //
+    //Future<ThreadsModel> searchThreadsSearchThreadsGet(String query) async
+    test('test searchThreadsSearchThreadsGet', () async {
+      // TODO
+    });
+
     // Ti
     //
     //Future<ThreadsInfo> tiThreadsInfoGet() async

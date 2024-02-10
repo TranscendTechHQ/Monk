@@ -16,6 +16,12 @@ import datetime as dt
 
 router = APIRouter()
 
+@router.get("/searchThreads", response_model=ThreadsModel, response_description="Search threads by query")
+async def search_threads(request: Request, query: str, session: SessionContainer = Depends(verify_session())):
+    # Search threads in MongoDB by query
+    threads = await request.app.mongodb["threads"].find({"$text": {"$search": query}}).to_list(length=None)
+    return threads
+
 @router.get("/threadTypes", response_model=List[ThreadType], 
             response_description="Get all thread types")
 async def tt(request: Request, 
