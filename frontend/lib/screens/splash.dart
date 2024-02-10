@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return const Scaffold(
       body: Center(
         child: Text(
-          "SuperTokens Example",
+          "Welcome to Monk!",
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,

@@ -21,8 +21,24 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     # Search threads in MongoDB by query
     collection = request.app.mongodb["threads"]
     #collection.create_index([('type', 'text')], unique=True, background=False)
-    threads = await collection.find({"$text": {"$search": query}}).to_list(length=None)
-    print(threads)
+    #threads = await collection.find({"$text": {"$search": query}}).to_list(length=None)
+    threads = await collection.aggregate( [ 
+    {
+        "$search": {
+        "index": "monkThreadIndex",
+        "text": {
+            "query": query,
+            "path": {
+            "wildcard": "*"
+            }
+        }
+        }
+    },
+    {
+        "$limit": 3
+    }
+]).to_list(length=None)
+    
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(ThreadsModel(threads=threads)))
 
 @router.get("/threadTypes", response_model=List[ThreadType], 
