@@ -23,8 +23,13 @@ class DatabaseSettings(BaseSettings):
     DB_URL: str = os.getenv("DB_URL")
     DB_NAME: str = os.getenv("DB_NAME")
 
-
-class Settings(CommonSettings, ServerSettings, DatabaseSettings):
+class OpenAISettings(BaseSettings):
+    AZURE_OPENAI_KEY: str = os.getenv("AZURE_OPENAI_KEY")
+    AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT")
+    AZURE_OPENAI_EMB_DEPLOYMENT: str = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT")
+    API_VERSION: str = "2022-12-01"
+    
+class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings):
     pass
 
 
