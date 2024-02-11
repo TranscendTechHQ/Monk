@@ -39,6 +39,30 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     }
 ]).to_list(length=None)
     
+    
+    # pipeline = [
+    # {
+    #     '$search': {
+    #         'index': 'vector_index',
+    #         'text': {
+    #             'query': query,
+    #             'path': 'thread_embedding',
+    #             'score': {'$meta': 'textScore'}
+    #         }
+    #     }
+    # },
+    # {
+    #     '$project': {
+    #         'content': 1,
+    #         'score': {'$meta': 'textScore'}
+    #     }
+    # }
+    # ]
+
+    # cursor = collection.aggregate(pipeline)
+    # results = await cursor.to_list(length=None)
+    # print(results)
+    
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(ThreadsModel(threads=threads)))
 
 @router.get("/threadTypes", response_model=List[ThreadType], 
