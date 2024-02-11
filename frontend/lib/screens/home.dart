@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Theme.of(context).colorScheme.tertiaryContainer),
                 ),
                 onPressed: () async {
-                  //await testOpenApi();
+                  await testOpenApi();
                   Navigator.pushNamed(context, "/journal");
                 },
                 child: Text(

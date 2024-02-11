@@ -1,3 +1,4 @@
+import os
 from typing import List
 from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
@@ -13,6 +14,66 @@ from utils.db import get_mongo_document, get_mongo_documents, update_mongo_docum
 from fastapi import status, Request
 from bson import json_util
 import datetime as dt
+import openai
+
+
+
+os.environ["AZURE_OPENAI_KEY"] = "6e4b89aa89d74abb8f516e9b48a765da"
+
+os.environ["AZURE_OPENAI_ENDPOINT"] = "https://monk-openai-cluster.openai.azure.com/"
+
+os.environ["AZURE_OPENAI_EMB_DEPLOYMENT"] = "monk-ada"
+
+client_args = {}
+client_args["api_key"] = os.getenv("AZURE_OPENAI_KEY")
+
+client = openai.AsyncAzureOpenAI(
+            api_version="2023-07-01-preview",
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            **client_args,
+        )
+# Configure the OpenAI client with your API key and endpoint
+#openai.api_key = os.getenv("OPENAI_API_KEY")
+#openai.api_base = os.getenv("OPENAI_ENDPOINT")
+
+        # Setup OpenAI Variables
+#openai.api_type = "azure"
+        #openai.api_base = os.getenv('OPENAI_API_BASE')
+#openai.api_version = "2022-12-01"
+
+# Setting up the deployment name
+deployment_name = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT")
+
+# This is set to `azure`
+openai.api_type = "azure"
+
+# The API key for your Azure OpenAI resource.
+openai.api_key = os.getenv("AZURE_OPENAI_KEY")
+
+# The base URL for your Azure OpenAI resource. e.g. "https://<your resource name>.openai.azure.com"
+openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT")
+
+# Currently OPENAI API have the following versions available: 2022-12-01
+openai.api_version = "2022-12-01"
+
+#engine=os.getenv('DEPLOYMENT_NAME'),
+#embeddings = openai.embeddings.create(model=deployment_name, input="The food was delicious and the waiter...")
+
+# Number of embeddings    
+#len(embeddings)
+
+# Print embeddings
+#print(embeddings.data[0].embedding)
+    
+def get_embedding(text):
+    #text = text.replace("\n", " ")
+    result =  openai.embeddings.create(
+                                   input = [text], 
+                                   model=deployment_name)
+    embeddings = result.data[0].embedding
+    print(embeddings)
+    return embeddings
+
 
 router = APIRouter()
 
@@ -39,7 +100,17 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     }
 ]).to_list(length=None)
     
-    
+    print("I AM GHERE")
+    embedding = get_embedding(query)
+    pipeline = [
+    {"$vectorSearch": {
+    "queryVector": embedding,
+    "path": "thread_embedding",
+    "numCandidates": 100,
+    "limit": 5,
+    "index": "vector_index",
+      }}
+    ]
     # pipeline = [
     # {
     #     '$search': {
@@ -59,9 +130,9 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     # }
     # ]
 
-    # cursor = collection.aggregate(pipeline)
-    # results = await cursor.to_list(length=None)
-    # print(results)
+    cursor = collection.aggregate(pipeline)
+    results = await cursor.to_list(length=None)
+    print(results)
     
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(ThreadsModel(threads=threads)))
 
