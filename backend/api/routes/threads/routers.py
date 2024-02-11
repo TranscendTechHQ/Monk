@@ -49,7 +49,7 @@ def get_embedding(text):
                                    input = [text], 
                                    model=deployment_name)
     embeddings = result.data[0].embedding
-    print(embeddings)
+    #print(embeddings)
     return embeddings
 
 

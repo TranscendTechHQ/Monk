@@ -44,14 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
     //final api = Openapi().getPetApi();
 //    final taskApi = NetworkManager.instance.openApi.getTasksApi();
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    final response =
-        await threadApi.searchThreadsSearchThreadsGet(query: "plan");
+    final response = await threadApi.searchThreadsSearchThreadsGet(
+        query: "thw thread with link to jira dataset");
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch matching threads");
     }
     final results = response.data!;
 
-    print(results.threads.map((e) => e.title).toList());
+    //print(results.threads.map((e) => e.title).toList());
   }
 
   Widget renderContent() {
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Theme.of(context).colorScheme.tertiaryContainer),
                 ),
                 onPressed: () async {
-                  //await testOpenApi();
+                  await testOpenApi();
                   Navigator.pushNamed(context, "/journal");
                 },
                 child: Text(
