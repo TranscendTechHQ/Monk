@@ -1,6 +1,6 @@
 import openai
 from config import settings
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 from pymongo import ReplaceOne
 
 class App:
@@ -67,10 +67,27 @@ def generate_thread_embedding():
         requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
     collection.bulk_write(requests)
-    
+
+def move_thread_embedding():
+    collection = app.mongodb["threads"]
+    dest_collection = app.mongodb["thread_embeddings"]
+    embeddings = { }
+    requests = []
+    for doc in collection.find({'title':{"$exists": True}}).limit(500):
+        title = doc['title']
+        if 'thread_embedding' in doc:
+            embeddings[title] = doc["thread_embedding"]
+            #dest_collection.insert_one(embeddings)
+            collection.update_one({'_id': doc['_id']}, {'$unset': {'thread_embedding': 1}})
+        #requests.append(UpdateOne({'_id': doc['_id']}, {'$set': {'thread_embedding': embeddings}}))
+        #requests.append(ReplaceOne({'_id': doc['_id']}, doc))
+
+    #collection.bulk_write(requests)
+ 
 def main():
     startup_db_client()
-    generate_thread_embedding()
+    #generate_thread_embedding()
+    move_thread_embedding()
     shutdown_db_client()
 
 main()
