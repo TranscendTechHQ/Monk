@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel
 from supertokens_python import SupertokensConfig, get_all_cors_headers
 from fastapi import FastAPI
@@ -44,13 +45,15 @@ class SessionInfo(BaseModel):
 @app.get("/sessioninfo", response_model=SessionInfo, tags=["session"])
 async def secure_api(s: SessionContainer = Depends(verify_session())) -> SessionInfo:
     userId = s.get_user_id()
-    userName: User = await get_user_by_id(userId)
-    email = userName.email
+    userObj: User = await get_user_by_id(userId)
+    email = userObj.email
     
     userDoc = await app.mongodb["users"].find_one({"_id": userId})
     fullName = ""
     if userDoc is not None:
         fullName = userDoc['user_name']
+        await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": datetime.datetime.now().isoformat()}}, upsert=True)
+        await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
     else:
         fullName = "Unknown user"
         

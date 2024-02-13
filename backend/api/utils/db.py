@@ -1,5 +1,26 @@
 import datetime as dt
 
+async def get_user_name(user_id, collection) -> str:
+    if (doc := await collection.find_one({"_id": user_id})) is not None:
+        return doc["user_name"]
+    return "Unknown user"
+
+async def get_user_email(user_id, collection) -> str:
+    if (doc := await collection.find_one({"_id": user_id})) is not None:
+        return doc["email"]
+    return "Unknown email"
+
+async def get_user_metadata(user_id, collection) -> dict:
+    if (doc := await collection.find_one({"_id": user_id})) is not None:
+        return doc
+    return None
+
+async def get_user_last_login(user_id, collection) -> dt.datetime:
+    if (doc := await collection.find_one({"_id": user_id})) is not None:
+        return doc["last_login"]
+    return None
+
+
 ## first argument should be a dictionary to query the db
 async def get_mongo_document(query: dict, collection):
     if (doc := await collection.find_one(query)) is not None:
