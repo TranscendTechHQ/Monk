@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String userId = "";
   String email = "";
+  String fullName = "";
 
   @override
   void initState() {
@@ -25,6 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
     getEmail().then((value) {
       setState(() {
         email = value;
+      });
+    });
+    getUserName().then((value) {
+      setState(() {
+        fullName = value;
       });
     });
   }
@@ -48,6 +54,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // get user name
+  Future<String> getUserName() async {
+    final api = NetworkManager.instance.openApi.getSessionApi();
+
+    final response = await api.secureApiSessioninfoGet();
+    if (response.statusCode == 200) {
+      final sessionInfo = response.data!;
+      return sessionInfo.fullName;
+    }
+    return "";
+  }
+
   Future<String> getUserId() async {
     return await SuperTokens.getUserId();
   }
@@ -123,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Theme.of(context).colorScheme.scrim,
                   ),
                 ),
-                child: Text(email),
+                child: Text(fullName),
               ),
             ),
             Padding(

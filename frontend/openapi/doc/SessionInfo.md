@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **accessTokenPayload** | **Object** |  | 
 **email** | **String** |  | 
+**fullName** | **String** |  | 
 **sessionHandle** | **String** |  | 
 **userId** | **String** |  | 
 

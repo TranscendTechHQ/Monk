@@ -12,12 +12,13 @@ import 'package:dio/dio.dart';
 import 'package:openapi/src/model/session_info.dart';
 
 class SessionApi {
+
   final Dio _dio;
 
   const SessionApi(this._dio);
 
   /// Secure Api
-  ///
+  /// 
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -29,7 +30,7 @@ class SessionApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SessionInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SessionInfo>> secureApiSessioninfoGet({
+  Future<Response<SessionInfo>> secureApiSessioninfoGet({ 
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -61,11 +62,8 @@ class SessionApi {
     SessionInfo? _responseData;
 
     try {
-      final rawData = _response.data;
-      _responseData = rawData == null
-          ? null
-          : deserialize<SessionInfo, SessionInfo>(rawData, 'SessionInfo',
-              growable: true);
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<SessionInfo, SessionInfo>(rawData, 'SessionInfo', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -87,4 +85,5 @@ class SessionApi {
       extra: _response.extra,
     );
   }
+
 }

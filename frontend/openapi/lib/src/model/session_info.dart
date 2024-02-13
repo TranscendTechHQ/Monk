@@ -22,6 +22,8 @@ class SessionInfo {
 
     required  this.email,
 
+    required  this.fullName,
+
     required  this.sessionHandle,
 
     required  this.userId,
@@ -53,6 +55,18 @@ class SessionInfo {
 
   @JsonKey(
     
+    name: r'fullName',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final String fullName;
+
+
+
+  @JsonKey(
+    
     name: r'sessionHandle',
     required: true,
     includeIfNull: false
@@ -79,6 +93,7 @@ class SessionInfo {
   bool operator ==(Object other) => identical(this, other) || other is SessionInfo &&
      other.accessTokenPayload == accessTokenPayload &&
      other.email == email &&
+     other.fullName == fullName &&
      other.sessionHandle == sessionHandle &&
      other.userId == userId;
 
@@ -86,6 +101,7 @@ class SessionInfo {
   int get hashCode =>
     accessTokenPayload.hashCode +
     email.hashCode +
+    fullName.hashCode +
     sessionHandle.hashCode +
     userId.hashCode;
 

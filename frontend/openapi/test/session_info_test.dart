@@ -17,6 +17,11 @@ void main() {
       // TODO
     });
 
+    // String fullName
+    test('to test the property `fullName`', () async {
+      // TODO
+    });
+
     // String sessionHandle
     test('to test the property `sessionHandle`', () async {
       // TODO
