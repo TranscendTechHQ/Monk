@@ -23,16 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
         userId = value;
       });
     });
-    getEmail().then((value) {
-      setState(() {
-        email = value;
-      });
-    });
-    getUserName().then((value) {
-      setState(() {
-        fullName = value;
-      });
-    });
+    getAndSetUserInfo().then((value) => null);
   }
 
   Future<void> signOut() async {
@@ -42,27 +33,19 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<String> getEmail() async {
+  Future<bool> getAndSetUserInfo() async {
     final api = NetworkManager.instance.openApi.getSessionApi();
 
     final response = await api.secureApiSessioninfoGet();
     if (response.statusCode == 200) {
       final sessionInfo = response.data!;
-      return sessionInfo.email;
+      setState(() {
+        fullName = sessionInfo.fullName;
+        email = sessionInfo.email;
+      });
+      return true;
     }
-    return "";
-  }
-
-  // get user name
-  Future<String> getUserName() async {
-    final api = NetworkManager.instance.openApi.getSessionApi();
-
-    final response = await api.secureApiSessioninfoGet();
-    if (response.statusCode == 200) {
-      final sessionInfo = response.data!;
-      return sessionInfo.fullName;
-    }
-    return "";
+    return false;
   }
 
   Future<String> getUserId() async {

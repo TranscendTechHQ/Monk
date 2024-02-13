@@ -46,15 +46,12 @@ async def secure_api(s: SessionContainer = Depends(verify_session())) -> Session
     userId = s.get_user_id()
     userName: User = await get_user_by_id(userId)
     email = userName.email
-    print(userId)
-    print("I am called these many times")
+    
     userDoc = await app.mongodb["users"].find_one({"_id": userId})
     fullName = ""
     if userDoc is not None:
-        print("found user")
         fullName = userDoc['user_name']
     else:
-        print("user not found")
         fullName = "Unknown user"
         
     #thirdpartyInfo:ThirdPartyInfo = userName.third_party_info
