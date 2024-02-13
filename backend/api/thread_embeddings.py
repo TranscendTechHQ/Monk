@@ -1,3 +1,4 @@
+
 import openai
 from config import settings
 from pymongo import MongoClient, UpdateOne
@@ -67,6 +68,15 @@ def generate_embedding_new_api(text):
 def shutdown_db_client():
     app.mongodb_client.close()
     
+def update_thread_creator() :
+    collection = app.mongodb["threads"]
+    requests = []
+    for doc in collection.find({'title':{"$exists": True}}).limit(500):
+        #print(doc['content'])
+        
+        requests.append(UpdateOne({'_id': doc['_id']}, {'$set': {'creator': "Yogesh K. Soni"}}))
+
+    collection.bulk_write(requests)
 
 def generate_thread_embedding():
     collection = app.mongodb["threads"]
@@ -114,8 +124,9 @@ def move_thread_embedding():
 
     #collection.bulk_write(requests)
  
-def main():
+def main() :
     startup_db_client()
+    update_thread_creator()
     #generate_embedding_new_api(
     #    "The food was delicious and the waiter was very friendly.")
     #print(embedding)

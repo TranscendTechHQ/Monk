@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from .models import THREADTYPES, ThreadModel, ThreadType, ThreadsInfo, UpdateThreadModel, CreateThreadModel, ThreadsModel
 from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
-from utils.db import create_mongo_document, get_mongo_documents_by_date
+from utils.db import create_mongo_document, get_mongo_documents_by_date, get_user_name
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.session import SessionContainer
 from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields
@@ -229,7 +229,8 @@ async def create_new_thread(request: Request, session, title:str,
     if not old_thread:
         
         user_id = session.get_user_id()
-        new_thread = ThreadModel(creator=user_id, title=title, type=thread_type,
+        fullName = await get_user_name(user_id, request.app.mongodb["users"])
+        new_thread = ThreadModel(creator=fullName, title=title, type=thread_type,
                                  content=content)
         created_thread = await create_mongo_document(jsonable_encoder(new_thread), 
                                           request.app.mongodb["threads"])
