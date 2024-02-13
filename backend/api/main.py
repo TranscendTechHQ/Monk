@@ -1,4 +1,5 @@
-from supertokens_python import get_all_cors_headers
+from pydantic import BaseModel
+from supertokens_python import SupertokensConfig, get_all_cors_headers
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from supertokens_python.framework.fastapi import get_middleware
@@ -15,8 +16,11 @@ from contextlib import asynccontextmanager
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.session import SessionContainer
 from fastapi import Depends
+from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
+from supertokens_python.recipe.thirdparty.types import User, ThirdPartyInfo
 
-    
+
+   
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Code to be executed before the application starts up
@@ -29,13 +33,31 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(get_middleware())
 
-@app.get("/sessioninfo")
-async def secure_api(s: SessionContainer = Depends(verify_session())):
-    return {
-        "sessionHandle": s.get_handle(),
-        "userId": s.get_user_id(),
-        "accessTokenPayload": s.get_access_token_payload(),
-    }
+
+class SessionInfo(BaseModel):
+    sessionHandle: str
+    userId: str
+    email: str
+    accessTokenPayload: dict
+
+@app.get("/sessioninfo", response_model=SessionInfo, tags=["session"])
+async def secure_api(s: SessionContainer = Depends(verify_session())) -> SessionInfo:
+    userId = s.get_user_id()
+    userName: User = await get_user_by_id(userId)
+    email = userName.email
+    #thirdpartyInfo:ThirdPartyInfo = userName.third_party_info
+    #print(email)
+    #print(thirdpartyInfo.user_id)
+    #print(thirdpartyInfo.id)
+    
+    #print("userId: ", userId)
+    sessionInfo: SessionInfo = SessionInfo(
+        sessionHandle=s.get_handle(),
+        userId=userId,
+        email=email,
+        accessTokenPayload=s.get_access_token_payload()
+    )
+    return sessionInfo
 
 
 

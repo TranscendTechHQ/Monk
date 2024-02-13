@@ -1,4 +1,4 @@
-# openapi.api.DefaultApi
+# openapi.api.SessionApi
 
 ## Load the API package
 ```dart
@@ -9,11 +9,11 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**secureApiSessioninfoGet**](DefaultApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
+[**secureApiSessioninfoGet**](SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 
 
 # **secureApiSessioninfoGet**
-> Object secureApiSessioninfoGet()
+> SessionInfo secureApiSessioninfoGet()
 
 Secure Api
 
@@ -21,13 +21,13 @@ Secure Api
 ```dart
 import 'package:openapi/api.dart';
 
-final api = Openapi().getDefaultApi();
+final api = Openapi().getSessionApi();
 
 try {
     final response = api.secureApiSessioninfoGet();
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling DefaultApi->secureApiSessioninfoGet: $e\n');
+    print('Exception when calling SessionApi->secureApiSessioninfoGet: $e\n');
 }
 ```
 
@@ -36,7 +36,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-**Object**
+[**SessionInfo**](SessionInfo.md)
 
 ### Authorization
 

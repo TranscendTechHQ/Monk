@@ -8,7 +8,7 @@ export 'package:openapi/src/auth/basic_auth.dart';
 export 'package:openapi/src/auth/oauth.dart';
 
 
-export 'package:openapi/src/api/default_api.dart';
+export 'package:openapi/src/api/session_api.dart';
 export 'package:openapi/src/api/threads_api.dart';
 
 export 'package:openapi/src/model/block_collection.dart';
@@ -16,6 +16,7 @@ export 'package:openapi/src/model/block_model.dart';
 export 'package:openapi/src/model/create_thread_model.dart';
 export 'package:openapi/src/model/http_validation_error.dart';
 export 'package:openapi/src/model/model_date.dart';
+export 'package:openapi/src/model/session_info.dart';
 export 'package:openapi/src/model/thread_model.dart';
 export 'package:openapi/src/model/threads_info.dart';
 export 'package:openapi/src/model/threads_model.dart';

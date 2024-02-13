@@ -2,14 +2,14 @@ import 'package:test/test.dart';
 import 'package:openapi/openapi.dart';
 
 
-/// tests for DefaultApi
+/// tests for SessionApi
 void main() {
-  final instance = Openapi().getDefaultApi();
+  final instance = Openapi().getSessionApi();
 
-  group(DefaultApi, () {
+  group(SessionApi, () {
     // Secure Api
     //
-    //Future<Object> secureApiSessioninfoGet() async
+    //Future<SessionInfo> secureApiSessioninfoGet() async
     test('test secureApiSessioninfoGet', () async {
       // TODO
     });

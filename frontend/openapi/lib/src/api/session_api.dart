@@ -9,15 +9,15 @@ import 'dart:convert';
 import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
+import 'package:openapi/src/model/session_info.dart';
 
-class DefaultApi {
-
+class SessionApi {
   final Dio _dio;
 
-  const DefaultApi(this._dio);
+  const SessionApi(this._dio);
 
   /// Secure Api
-  /// 
+  ///
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -27,9 +27,9 @@ class DefaultApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [Object] as data
+  /// Returns a [Future] containing a [Response] with a [SessionInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<Object>> secureApiSessioninfoGet({ 
+  Future<Response<SessionInfo>> secureApiSessioninfoGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -58,11 +58,14 @@ class DefaultApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    Object? _responseData;
+    SessionInfo? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'Object', growable: true);
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<SessionInfo, SessionInfo>(rawData, 'SessionInfo',
+              growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -73,7 +76,7 @@ _responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'O
       );
     }
 
-    return Response<Object>(
+    return Response<SessionInfo>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -84,5 +87,4 @@ _responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'O
       extra: _response.extra,
     );
   }
-
 }

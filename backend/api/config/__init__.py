@@ -3,6 +3,17 @@ from dotenv import load_dotenv
 import os
 from supertokens_python.recipe.thirdparty.provider import ProviderInput, ProviderConfig, ProviderClientConfig
 from supertokens_python.recipe import thirdparty
+from supertokens_python import init, InputAppInfo, SupertokensConfig
+from supertokens_python.recipe import emailpassword, session
+from supertokens_python.recipe import dashboard
+
+
+from supertokens_python.types import GeneralErrorResponse
+from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOptions, SignInUpPostOkResult, SignInUpPostNoEmailGivenByProviderResponse
+from typing import Optional, Union, Dict, Any
+from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
+
+
 
 load_dotenv()
 
@@ -37,9 +48,48 @@ settings = Settings()
 
 
 
-from supertokens_python import init, InputAppInfo, SupertokensConfig
-from supertokens_python.recipe import emailpassword, session
-from supertokens_python.recipe import dashboard
+
+def override_thirdparty_apis(original_implementation: APIInterface):
+    original_thirdparty_sign_in_up_post = original_implementation.sign_in_up_post
+    
+    async def thirdparty_sign_in_up_post(
+        provider: Provider,
+        redirect_uri_info: Optional[RedirectUriInfo],
+        oauth_tokens: Optional[Dict[str, Any]],
+        tenant_id: str,
+        api_options: APIOptions,
+        user_context: Dict[str, Any]
+    ) -> Union[
+        SignInUpPostOkResult,
+        SignInUpPostNoEmailGivenByProviderResponse,
+        GeneralErrorResponse,
+    ]:
+        # call the default behaviour as show below
+        result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id, api_options, user_context)
+        
+        if isinstance(result, SignInUpPostOkResult):
+            print(result.user)
+
+            # This is the response from the OAuth tokens provided by the third party provider
+            print(result.oauth_tokens["access_token"])
+            # other tokens like the refresh_token or id_token are also 
+            # available in the OAuthTokens object.
+
+            # This gives the user's info as returned by the provider's user profile endpoint.
+            if result.raw_user_info_from_provider.from_user_info_api is not None:
+                print(result.raw_user_info_from_provider.from_user_info_api['name'])
+
+            # This gives the user's info from the returned ID token 
+            # if the provider gave us an ID token
+            if result.raw_user_info_from_provider.from_id_token_payload is not None:
+                print(result.raw_user_info_from_provider.from_id_token_payload["name"])
+        
+        return result
+
+    original_implementation.sign_in_up_post = thirdparty_sign_in_up_post
+    return original_implementation
+
+
 
 init(
     app_info=InputAppInfo(
@@ -61,6 +111,9 @@ init(
         session.init(), # initializes session features
         # Inside init
         thirdparty.init(
+            override=thirdparty.InputOverrideConfig(
+                apis=override_thirdparty_apis
+            ),
             sign_in_and_up_feature=thirdparty.SignInAndUpFeature(providers=[
                 # We have provided you with development keys which you can use for testing.
                 # IMPORTANT: Please replace them with your own OAuth keys for production use.

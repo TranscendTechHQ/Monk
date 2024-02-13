@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/network.dart';
 import 'package:supertokens_flutter/supertokens.dart';
+import 'package:frontend/network.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String userId = "";
+  String email = "";
 
   @override
   void initState() {
@@ -20,6 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
         userId = value;
       });
     });
+    getEmail().then((value) {
+      setState(() {
+        email = value;
+      });
+    });
   }
 
   Future<void> signOut() async {
@@ -27,6 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.delayed(Duration.zero, () {
       Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
     });
+  }
+
+  Future<String> getEmail() async {
+    final api = NetworkManager.instance.openApi.getSessionApi();
+
+    final response = await api.secureApiSessioninfoGet();
+    if (response.statusCode == 200) {
+      final sessionInfo = response.data!;
+      return sessionInfo.email;
+    }
+    return "";
   }
 
   // get user name
@@ -89,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 top: 24.0,
               ),
               child: Center(
-                child: Text("Your userID is:"),
+                child: Text("Hello,"),
               ),
             ),
             Padding(
@@ -105,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Theme.of(context).colorScheme.scrim,
                   ),
                 ),
-                child: Text(userId),
+                child: Text(email),
               ),
             ),
             Padding(
@@ -118,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Theme.of(context).colorScheme.tertiaryContainer),
                 ),
                 onPressed: () async {
-                  await testOpenApi();
+                  //await testOpenApi();
                   Navigator.pushNamed(context, "/journal");
                 },
                 child: Text(

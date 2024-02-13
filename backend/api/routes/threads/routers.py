@@ -16,6 +16,7 @@ from bson import json_util
 import datetime as dt
 import openai
 from config import settings
+from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
 
 
@@ -241,6 +242,8 @@ async def create(request: Request, thread_data: CreateThreadModel = Body(...),
                         session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data
     # Index the thread by userId
+    userId = session.get_user_id()
+    userName = await get_user_by_id(userId)
     
     thread_title = jsonable_encoder(thread_data)["title"]
     thread_type = jsonable_encoder(thread_data)["type"]

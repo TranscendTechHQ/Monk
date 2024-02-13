@@ -82,6 +82,27 @@ components:
           type: array
       title: HTTPValidationError
       type: object
+    SessionInfo:
+      properties:
+        accessTokenPayload:
+          title: Accesstokenpayload
+          type: object
+        email:
+          title: Email
+          type: string
+        sessionHandle:
+          title: Sessionhandle
+          type: string
+        userId:
+          title: Userid
+          type: string
+      required:
+      - sessionHandle
+      - userId
+      - email
+      - accessTokenPayload
+      title: SessionInfo
+      type: object
     ThreadModel:
       example:
         content:
@@ -344,9 +365,12 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
           description: Successful Response
       summary: Secure Api
+      tags:
+      - session
   /threadTypes:
     get:
       operationId: tt_threadTypes_get

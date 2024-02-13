@@ -19,11 +19,7 @@ class ThreadsInfo {
     required this.info,
   });
 
-  @JsonKey(
-    name: r'info',
-    required: true,
-    includeIfNull: false,
-  )
+  @JsonKey(name: r'info', required: true, includeIfNull: false)
   final Map<String, String>? info;
 
   @override

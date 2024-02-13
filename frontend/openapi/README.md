@@ -47,13 +47,13 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:openapi/openapi.dart';
 
 
-final api = Openapi().getDefaultApi();
+final api = Openapi().getSessionApi();
 
 try {
     final response = await api.secureApiSessioninfoGet();
     print(response);
 } catch on DioException (e) {
-    print("Exception when calling DefaultApi->secureApiSessioninfoGet: $e\n");
+    print("Exception when calling SessionApi->secureApiSessioninfoGet: $e\n");
 }
 
 ```
@@ -64,7 +64,7 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-[*DefaultApi*](doc/DefaultApi.md) | [**secureApiSessioninfoGet**](doc/DefaultApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
+[*SessionApi*](doc/SessionApi.md) | [**secureApiSessioninfoGet**](doc/SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createThreadsPost**](doc/ThreadsApi.md#createthreadspost) | **POST** /threads | Create
@@ -84,6 +84,7 @@ Class | Method | HTTP request | Description
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
+ - [SessionInfo](doc/SessionInfo.md)
  - [ThreadModel](doc/ThreadModel.md)
  - [ThreadsInfo](doc/ThreadsInfo.md)
  - [ThreadsModel](doc/ThreadsModel.md)

@@ -2,6 +2,8 @@ import openai
 from config import settings
 from pymongo import MongoClient, UpdateOne
 from pymongo import ReplaceOne
+import os
+from openai import AzureOpenAI
 
 class App:
     pass
@@ -32,6 +34,8 @@ openai.api_version = settings.API_VERSION
 # Print embeddings
 #print(embeddings.data[0].embedding)
 
+
+
 def generate_embedding(text):
     #text = text.replace("\n", " ")
     result =  openai.embeddings.create(
@@ -45,7 +49,20 @@ def startup_db_client():
     app.mongodb_client = MongoClient(settings.DB_URL)
     app.mongodb = app.mongodb_client[settings.DB_NAME]
 
+def generate_embedding_new_api(text):
+    client = AzureOpenAI(
+    api_key = settings.AZURE_OPENAI_KEY,  
+    api_version = "2023-05-15",
+    azure_endpoint =settings.AZURE_OPENAI_ENDPOINT 
+    )
 
+    response = client.embeddings.create(
+        input = text,
+        model= settings.AZURE_OPENAI_EMB_DEPLOYMENT  # model = "deployment_name".
+    )
+    embedding = response.data[0].embedding
+    print(embedding)
+    #print(response.model_dump_json(indent=2))
 
 def shutdown_db_client():
     app.mongodb_client.close()
@@ -54,19 +71,32 @@ def shutdown_db_client():
 def generate_thread_embedding():
     collection = app.mongodb["threads"]
     # Update the collection with the embeddings
-    requests = []
-    text = ""
+    #requests = []
+    dest_collection = app.mongodb["thread_embeddings"]
+    embeddings = { }
     for doc in collection.find({'title':{"$exists": True}}).limit(500):
         #print(doc['content'])
+        
+        title = doc['title']
+        text = "This is the content of the thread with title " + title + ". "
+        threadType = doc['type']
+        text += "The type of the thread is " + threadType + ". "
+        createdAt = doc['created_date']
+        text += "The thread was created on " + createdAt + ". "
+        creator = doc['creator']
+        text += "The creator of the thread is " + creator + ". "
+        
         blocks = doc['content']
+        
         for block in blocks:
             #print(block['content'])
             text += block['content'] + " "
         #print (text)
-        doc["thread_embedding"] = generate_embedding(text)
-        requests.append(ReplaceOne({'_id': doc['_id']}, doc))
+        embeddings[title] = generate_embedding_new_api(text)
+        dest_collection.insert_one(embeddings)
+        #requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
-    collection.bulk_write(requests)
+    #collection.bulk_write(requests)
 
 def move_thread_embedding():
     collection = app.mongodb["threads"]
@@ -86,8 +116,11 @@ def move_thread_embedding():
  
 def main():
     startup_db_client()
+    #generate_embedding_new_api(
+    #    "The food was delicious and the waiter was very friendly.")
+    #print(embedding)
     #generate_thread_embedding()
-    move_thread_embedding()
+    #move_thread_embedding()
     shutdown_db_client()
 
 main()
