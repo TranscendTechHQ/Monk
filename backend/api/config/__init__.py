@@ -13,6 +13,7 @@ from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOpt
 from typing import Optional, Union, Dict, Any
 from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
 from supertokens_python.recipe.usermetadata.asyncio import update_user_metadata
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 
@@ -82,6 +83,13 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 #print(result.raw_user_info_from_provider.from_user_info_api['name'])
                 user_id = result.user.user_id
                 user_name = result.raw_user_info_from_provider.from_user_info_api['name']
+                
+                mongodb_client = AsyncIOMotorClient(settings.DB_URL)
+                mongodb = mongodb_client[settings.DB_NAME]
+                
+                mongodb_users = mongodb["users"]
+                update_result = await mongodb_users.update_one({"_id": user_id}, {"$set": {"user_name": user_name}}, upsert=True)
+                
                 #await update_user_metadata(user_id=user_id, metadata_update={
                  #   "user_name": user_name
                 #})
