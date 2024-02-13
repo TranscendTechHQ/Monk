@@ -12,6 +12,8 @@ from supertokens_python.types import GeneralErrorResponse
 from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOptions, SignInUpPostOkResult, SignInUpPostNoEmailGivenByProviderResponse
 from typing import Optional, Union, Dict, Any
 from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
+from supertokens_python.recipe.usermetadata.asyncio import update_user_metadata
+
 
 
 
@@ -68,21 +70,25 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id, api_options, user_context)
         
         if isinstance(result, SignInUpPostOkResult):
-            print(result.user)
+            #print(result.user)
 
             # This is the response from the OAuth tokens provided by the third party provider
-            print(result.oauth_tokens["access_token"])
+            #print(result.oauth_tokens["access_token"])
             # other tokens like the refresh_token or id_token are also 
             # available in the OAuthTokens object.
 
             # This gives the user's info as returned by the provider's user profile endpoint.
             if result.raw_user_info_from_provider.from_user_info_api is not None:
-                print(result.raw_user_info_from_provider.from_user_info_api['name'])
-
+                #print(result.raw_user_info_from_provider.from_user_info_api['name'])
+                user_id = result.user.user_id
+                user_name = result.raw_user_info_from_provider.from_user_info_api['name']
+                #await update_user_metadata(user_id=user_id, metadata_update={
+                 #   "user_name": user_name
+                #})
             # This gives the user's info from the returned ID token 
             # if the provider gave us an ID token
-            if result.raw_user_info_from_provider.from_id_token_payload is not None:
-                print(result.raw_user_info_from_provider.from_id_token_payload["name"])
+            #if result.raw_user_info_from_provider.from_id_token_payload is not None:
+             #   print(result.raw_user_info_from_provider.from_id_token_payload["name"])
         
         return result
 

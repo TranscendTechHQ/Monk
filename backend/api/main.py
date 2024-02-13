@@ -45,6 +45,7 @@ async def secure_api(s: SessionContainer = Depends(verify_session())) -> Session
     userId = s.get_user_id()
     userName: User = await get_user_by_id(userId)
     email = userName.email
+    
     #thirdpartyInfo:ThirdPartyInfo = userName.third_party_info
     #print(email)
     #print(thirdpartyInfo.user_id)
