@@ -1,70 +1,25 @@
 
-import openai
+
+from utils.embedding import generate_embedding
 from config import settings
 from pymongo import MongoClient, UpdateOne
 from pymongo import ReplaceOne
 import os
-from openai import AzureOpenAI
+
 
 class App:
     pass
 
 app = App()
 
-# Setting up the deployment name
-deployment_name = settings.AZURE_OPENAI_EMB_DEPLOYMENT
-
-# This is set to `azure`
-openai.api_type = "azure"
-
-# The API key for your Azure OpenAI resource.
-openai.api_key = settings.AZURE_OPENAI_KEY
-
-# The base URL for your Azure OpenAI resource. e.g. "https://<your resource name>.openai.azure.com"
-openai.api_base = settings.AZURE_OPENAI_ENDPOINT
-
-# Currently OPENAI API have the following versions available: 2022-12-01
-openai.api_version = settings.API_VERSION
-
-#engine=os.getenv('DEPLOYMENT_NAME'),
-#embeddings = openai.embeddings.create(model=deployment_name, input="The food was delicious and the waiter...")
-
-# Number of embeddings    
-#len(embeddings)
-
-# Print embeddings
-#print(embeddings.data[0].embedding)
 
 
-
-def generate_embedding(text):
-    #text = text.replace("\n", " ")
-    result =  openai.embeddings.create(
-                                   input = [text], 
-                                   model=deployment_name)
-    embeddings = result.data[0].embedding
-    #print(embeddings)
-    return embeddings
 
 def startup_db_client():
     app.mongodb_client = MongoClient(settings.DB_URL)
     app.mongodb = app.mongodb_client[settings.DB_NAME]
 
-def generate_embedding_new_api(text):
-    client = AzureOpenAI(
-    api_key = settings.AZURE_OPENAI_KEY,  
-    api_version = "2023-05-15",
-    azure_endpoint =settings.AZURE_OPENAI_ENDPOINT 
-    )
 
-    response = client.embeddings.create(
-        input = text,
-        model= settings.AZURE_OPENAI_EMB_DEPLOYMENT  # model = "deployment_name".
-    )
-    embedding = response.data[0].embedding
-    #print(embedding)
-    return embedding
-    #print(response.model_dump_json(indent=2))
 
 def shutdown_db_client():
     app.mongodb_client.close()
@@ -113,7 +68,7 @@ def generate_thread_embedding():
             text += block['content'] + " "
         #print (text)
         
-        embeddings['embedding'] = generate_embedding_new_api(text)
+        embeddings['embedding'] = generate_embedding(text)
         dest_collection.update_one({'_id': doc['_id']},
                                    {'$set':embeddings}, upsert=True)
         

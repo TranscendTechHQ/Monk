@@ -14,44 +14,10 @@ from utils.db import get_mongo_document, get_mongo_documents, update_mongo_docum
 from fastapi import status, Request
 from bson import json_util
 import datetime as dt
-import openai
+
 from config import settings
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
-
-
-
-# Setting up the deployment name
-deployment_name = settings.AZURE_OPENAI_EMB_DEPLOYMENT
-
-# This is set to `azure`
-openai.api_type = "azure"
-
-# The API key for your Azure OpenAI resource.
-openai.api_key = settings.AZURE_OPENAI_KEY
-
-# The base URL for your Azure OpenAI resource. e.g. "https://<your resource name>.openai.azure.com"
-openai.api_base = settings.AZURE_OPENAI_ENDPOINT
-
-# Currently OPENAI API have the following versions available: 2022-12-01
-openai.api_version = settings.API_VERSION
-
-#engine=os.getenv('DEPLOYMENT_NAME'),
-#embeddings = openai.embeddings.create(model=deployment_name, input="The food was delicious and the waiter...")
-
-# Number of embeddings    
-#len(embeddings)
-
-# Print embeddings
-#print(embeddings.data[0].embedding)
-    
-def get_embedding(text):
-    #text = text.replace("\n", " ")
-    result =  openai.embeddings.create(
-                                   input = [text], 
-                                   model=deployment_name)
-    embeddings = result.data[0].embedding
-    #print(embeddings)
-    return embeddings
+from utils.embedding import generate_embedding
 
 
 router = APIRouter()
@@ -80,7 +46,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 ]).to_list(length=None)
     
     
-    embedding = get_embedding(query)
+    embedding = generate_embedding(query)
     pipeline = [
     {"$vectorSearch": {
     "queryVector": embedding,

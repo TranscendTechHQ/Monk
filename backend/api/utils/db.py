@@ -1,4 +1,16 @@
 import datetime as dt
+from motor.motor_asyncio import AsyncIOMotorClient
+from config import settings
+
+async def startup_db_client(app):
+    app.mongodb_client = AsyncIOMotorClient(settings.DB_URL)
+    app.mongodb = app.mongodb_client[settings.DB_NAME]
+
+
+
+async def shutdown_db_client(app):
+    app.mongodb_client.close()
+
 
 async def get_user_name(user_id, collection) -> str:
     if (doc := await collection.find_one({"_id": user_id})) is not None:
