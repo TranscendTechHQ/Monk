@@ -50,8 +50,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     embeddings_collection = request.app.mongodb["thread_embeddings"]
     #threads = await keyword_search(query, threads_collection)
     result = await thread_semantic_search(query)
-    print(result)
-    return
+    
     filtered_threads = []
     for doc in result:
         filtered_threads.append(await get_mongo_document({"title": doc["title"]}, threads_collection))
