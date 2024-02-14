@@ -131,7 +131,7 @@ class CommandTypeAhead extends ConsumerWidget {
 class CommandBox extends ConsumerWidget {
   final TextEditingController _blockController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
-  final FocusNode _optionFocusNode = FocusNode();
+  final FocusNode _searchFocusNode = FocusNode();
   final String title;
   final String type;
 
@@ -179,6 +179,7 @@ class CommandBox extends ConsumerWidget {
                 ref
                     .read(screenVisibilityProvider.notifier)
                     .setVisibility(VisibilityEnum.searchBox);
+                _searchFocusNode.requestFocus();
               }
               // Handle key down
             } else if (event is RawKeyUpEvent) {
@@ -228,17 +229,10 @@ class CommandBox extends ConsumerWidget {
           ),
           Visibility(
               visible: (commandVisibility == VisibilityEnum.searchBox),
-              child: TextField(
-                autocorrect: true,
+              child: SearchBar(
                 controller: _searchController,
-                autofocus: true,
-                enableSuggestions: true,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.tertiary,
-                  border: const OutlineInputBorder(),
-                  hintText: 'Search for a thread',
-                ),
+                hintText: "Search for a thread",
+                focusNode: _searchFocusNode,
               ))
         ]),
       ),
