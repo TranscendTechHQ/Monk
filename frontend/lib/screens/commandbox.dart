@@ -130,6 +130,7 @@ class CommandTypeAhead extends ConsumerWidget {
 
 class CommandBox extends ConsumerWidget {
   final TextEditingController _blockController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   final FocusNode _optionFocusNode = FocusNode();
   final String title;
   final String type;
@@ -168,14 +169,13 @@ class CommandBox extends ConsumerWidget {
                 threadNotifier.createBlock(blockText);
                 _blockController.clear();
               }
-              if ((event.logicalKey == LogicalKeyboardKey.escape) &&
-                  commandVisibility == VisibilityEnum.commandBox) {
+              if (event.logicalKey == LogicalKeyboardKey.escape) {
                 ref
                     .read(screenVisibilityProvider.notifier)
                     .setVisibility(VisibilityEnum.thread);
               }
-              if (event.logicalKey == LogicalKeyboardKey.superKey &&
-                  commandVisibility == VisibilityEnum.thread) {
+              if ((event.isMetaPressed) &&
+                  (commandVisibility == VisibilityEnum.thread)) {
                 ref
                     .read(screenVisibilityProvider.notifier)
                     .setVisibility(VisibilityEnum.searchBox);
@@ -226,6 +226,20 @@ class CommandBox extends ConsumerWidget {
               CommandTypeAhead(),
             ]),
           ),
+          Visibility(
+              visible: (commandVisibility == VisibilityEnum.searchBox),
+              child: TextField(
+                autocorrect: true,
+                controller: _searchController,
+                autofocus: true,
+                enableSuggestions: true,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.tertiary,
+                  border: const OutlineInputBorder(),
+                  hintText: 'Search for a thread',
+                ),
+              ))
         ]),
       ),
     );
