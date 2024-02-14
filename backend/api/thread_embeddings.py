@@ -24,6 +24,10 @@ def startup_db_client():
 def shutdown_db_client():
     app.mongodb_client.close()
     
+
+
+    
+    
 def update_thread_creator() :
     collection = app.mongodb["threads"]
     requests = []
@@ -91,7 +95,40 @@ def move_thread_embedding():
         #requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
     #collection.bulk_write(requests)
- 
+
+def semantic_search(query):
+    embedding = generate_embedding(query)
+    pipeline = [
+    
+        {"$vectorSearch": {
+            "queryVector": embedding,
+            "path": "embedding",
+            "numCandidates": 100,
+            "limit": 3,
+            "index": "thread_index",
+        }},
+        
+        {'$project': {
+            'title': 1,
+            'score': {
+                '$meta': 'vectorSearchScore'
+            }
+        }},
+        
+        {'$sort': {
+            'score': -1
+        }}
+        
+     
+    ]
+    collection = app.mongodb["thread_embeddings"]
+
+    cursor = collection.aggregate(pipeline)
+    
+    for doc in cursor:
+        print(doc)
+    
+    
 def main() :
     startup_db_client()
     #update_thread_creator()
@@ -100,6 +137,7 @@ def main() :
     #print(embedding)
     #generate_thread_embedding()
     #move_thread_embedding()
+    semantic_search("thread about go to market strategy")
     shutdown_db_client()
 
 main()

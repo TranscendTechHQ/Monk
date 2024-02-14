@@ -50,10 +50,10 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     pipeline = [
     {"$vectorSearch": {
     "queryVector": embedding,
-    "path": "thread_embedding",
+    "path": "embedding",
     "numCandidates": 100,
-    "limit": 5,
-    "index": "vector_index",
+    "limit": 3,
+    "index": "thread_index",
       }}
     ]
     # pipeline = [
@@ -76,7 +76,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     # ]
 
     cursor = collection.aggregate(pipeline)
-    results = await cursor.to_list(length=None)
+    results = await cursor.to_list(length=3)
     print(results)
     
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(ThreadsModel(threads=threads)))
