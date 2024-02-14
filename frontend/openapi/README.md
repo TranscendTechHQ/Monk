@@ -72,6 +72,7 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksDateGet**](doc/ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
+[*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [*ThreadsApi*](doc/ThreadsApi.md) | [**ttThreadTypesGet**](doc/ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateThreadThreadsTitlePut**](doc/ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread

@@ -56,6 +56,13 @@ void main() {
       // TODO
     });
 
+    // Search Titles
+    //
+    //Future<List<String>> searchTitlesSearchTitlesGet(String query) async
+    test('test searchTitlesSearchTitlesGet', () async {
+      // TODO
+    });
+
     // Ti
     //
     //Future<ThreadsInfo> tiThreadsInfoGet() async

@@ -43,11 +43,17 @@ async def keyword_search(query, collection):
     
     return threads
 
-@router.get("/searchThreads", response_model=ThreadsModel, response_description="Search threads by query")
+@router.get("/searchTitles", response_model=list[str], response_description="Search threads by query and get title")
+async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> list[str]:
+    result = await thread_semantic_search(query)
+    titles = [doc["title"] for doc in result]
+    return JSONResponse(status_code=status.HTTP_200_OK, content=titles)
+    
+@router.get("/searchThreads", response_model=ThreadsModel, response_description="Search threads by query and get matching threads")
 async def search_threads(request: Request, query: str, session: SessionContainer = Depends(verify_session())):
     # Search threads in MongoDB by query
     threads_collection = request.app.mongodb["threads"]
-    embeddings_collection = request.app.mongodb["thread_embeddings"]
+    
     #threads = await keyword_search(query, threads_collection)
     result = await thread_semantic_search(query)
     

@@ -62,13 +62,13 @@ class _HomeScreenState extends State<HomeScreen> {
     //final api = Openapi().getPetApi();
 //    final taskApi = NetworkManager.instance.openApi.getTasksApi();
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    final response = await threadApi.searchThreadsSearchThreadsGet(
+    final response = await threadApi.searchTitlesSearchTitlesGet(
         query: "thw thread with link to jira dataset");
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch matching threads");
     }
     final results = response.data!;
-
+    print(results);
     //print(results.threads.map((e) => e.title).toList());
   }
 
