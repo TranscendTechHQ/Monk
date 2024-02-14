@@ -139,11 +139,11 @@ def move_thread_embedding():
  
 def main() :
     startup_db_client()
-    update_thread_creator()
+    #update_thread_creator()
     #generate_embedding_new_api(
     #    "The food was delicious and the waiter was very friendly.")
     #print(embedding)
-    generate_thread_embedding()
+    #generate_thread_embedding()
     #move_thread_embedding()
     shutdown_db_client()
 
