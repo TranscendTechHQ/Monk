@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-
+from .search import thread_semantic_search
 from .models import THREADTYPES, ThreadModel, ThreadType, ThreadsInfo, UpdateThreadModel, CreateThreadModel, ThreadsModel
 from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
 from utils.db import create_mongo_document, get_mongo_documents_by_date, get_user_name
@@ -22,12 +22,8 @@ from utils.embedding import generate_embedding
 
 router = APIRouter()
 
-@router.get("/searchThreads", response_model=ThreadsModel, response_description="Search threads by query")
-async def search_threads(request: Request, query: str, session: SessionContainer = Depends(verify_session())):
-    # Search threads in MongoDB by query
-    collection = request.app.mongodb["threads"]
-    #collection.create_index([('type', 'text')], unique=True, background=False)
-    #threads = await collection.find({"$text": {"$search": query}}).to_list(length=None)
+async def keyword_search(query, collection):
+    
     threads = await collection.aggregate( [ 
     {
         "$search": {
@@ -43,43 +39,26 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     {
         "$limit": 3
     }
-]).to_list(length=None)
+    ]).to_list(length=None)
     
-    
-    embedding = generate_embedding(query)
-    pipeline = [
-    {"$vectorSearch": {
-    "queryVector": embedding,
-    "path": "embedding",
-    "numCandidates": 100,
-    "limit": 3,
-    "index": "thread_index",
-      }}
-    ]
-    # pipeline = [
-    # {
-    #     '$search': {
-    #         'index': 'vector_index',
-    #         'text': {
-    #             'query': query,
-    #             'path': 'thread_embedding',
-    #             'score': {'$meta': 'textScore'}
-    #         }
-    #     }
-    # },
-    # {
-    #     '$project': {
-    #         'content': 1,
-    #         'score': {'$meta': 'textScore'}
-    #     }
-    # }
-    # ]
+    return threads
 
-    cursor = collection.aggregate(pipeline)
-    results = await cursor.to_list(length=3)
-    print(results)
-    
-    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(ThreadsModel(threads=threads)))
+@router.get("/searchThreads", response_model=ThreadsModel, response_description="Search threads by query")
+async def search_threads(request: Request, query: str, session: SessionContainer = Depends(verify_session())):
+    # Search threads in MongoDB by query
+    threads_collection = request.app.mongodb["threads"]
+    embeddings_collection = request.app.mongodb["thread_embeddings"]
+    #threads = await keyword_search(query, threads_collection)
+    result = await thread_semantic_search(query)
+    print(result)
+    return
+    filtered_threads = []
+    for doc in result:
+        filtered_threads.append(await get_mongo_document({"title": doc["title"]}, threads_collection))
+    return_threads = jsonable_encoder(ThreadsModel(threads=filtered_threads))
+    print(return_threads)
+    return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)
+
 
 @router.get("/threadTypes", response_model=List[ThreadType], 
             response_description="Get all thread types")

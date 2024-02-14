@@ -1,10 +1,13 @@
 
 
+import pprint
+from routes.threads.search import thread_semantic_search
 from utils.embedding import generate_embedding
 from config import settings
 from pymongo import MongoClient, UpdateOne
 from pymongo import ReplaceOne
 import os
+import asyncio
 
 
 class App:
@@ -96,40 +99,10 @@ def move_thread_embedding():
 
     #collection.bulk_write(requests)
 
-def semantic_search(query):
-    embedding = generate_embedding(query)
-    pipeline = [
-    
-        {"$vectorSearch": {
-            "queryVector": embedding,
-            "path": "embedding",
-            "numCandidates": 100,
-            "limit": 3,
-            "index": "thread_index",
-        }},
-        
-        {'$project': {
-            'title': 1,
-            'score': {
-                '$meta': 'vectorSearchScore'
-            }
-        }},
-        
-        {'$sort': {
-            'score': -1
-        }}
-        
-     
-    ]
-    collection = app.mongodb["thread_embeddings"]
 
-    cursor = collection.aggregate(pipeline)
-    
-    for doc in cursor:
-        print(doc)
     
     
-def main() :
+async def main() :
     startup_db_client()
     #update_thread_creator()
     #generate_embedding_new_api(
@@ -137,7 +110,11 @@ def main() :
     #print(embedding)
     #generate_thread_embedding()
     #move_thread_embedding()
-    semantic_search("thread about go to market strategy")
+    result = await thread_semantic_search(
+        "thread about go to market strategy")
+    pprint.pprint(result)
+    
     shutdown_db_client()
 
-main()
+if __name__ == "__main__":
+    asyncio.run(main())
