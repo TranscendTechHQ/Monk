@@ -55,7 +55,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     for doc in result:
         filtered_threads.append(await get_mongo_document({"title": doc["title"]}, threads_collection))
     return_threads = jsonable_encoder(ThreadsModel(threads=filtered_threads))
-    print(return_threads)
+    #print(return_threads)
     return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)
 
 
