@@ -230,10 +230,12 @@ class CommandBox extends ConsumerWidget {
           Visibility(
               visible: (commandVisibility == VisibilityEnum.searchBox),
               child: SearchBar(
-                controller: _searchController,
-                hintText: "Search for a thread",
-                focusNode: _searchFocusNode,
-              ))
+                  controller: _searchController,
+                  hintText: "Search for a thread",
+                  focusNode: _searchFocusNode,
+                  onSubmitted: (value) {}
+                  // call the semantic search api from the backend.
+                  ))
         ]),
       ),
     );

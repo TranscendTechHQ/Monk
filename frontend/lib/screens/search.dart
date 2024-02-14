@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/search.dart';
 
-class SearchBar extends ConsumerWidget {
-  const SearchBar({super.key});
+class SearchInput extends ConsumerWidget {
+  const SearchInput({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -11,16 +11,14 @@ class SearchBar extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.all(8),
-      child: TextField(
+      child: SearchBar(
         onSubmitted: (value) async {
           final List<String> queryResults =
               await ref.watch(queryMatchingThreadsProvider.call(value).future);
           ref.read(queryResultsProvider.notifier).setResults(queryResults);
         },
         controller: searchController,
-        decoration: const InputDecoration(
-          hintText: 'Search',
-        ),
+        hintText: 'Search for a thread',
       ),
     );
   }
@@ -54,7 +52,7 @@ class SearchModal extends StatelessWidget {
       ),
       body: const Column(
         children: [
-          SearchBar(),
+          SearchInput(),
           SearchResults(),
         ],
       ),

@@ -6,13 +6,14 @@ part 'search.g.dart';
 Future<List<String>> queryMatchingThreads(
     QueryMatchingThreadsRef ref, String query) async {
   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-  final response = await threadApi.searchThreadsSearchThreadsGet(query: query);
+  final response = await threadApi.searchTitlesSearchTitlesGet(query: query);
   if (response.statusCode != 200) {
     throw Exception("Failed to fetch matching threads");
   }
   final results = response.data!;
+  print(results);
 
-  return results.threads.map((e) => e.title).toList();
+  return results;
 }
 
 @riverpod
