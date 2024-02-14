@@ -62,7 +62,8 @@ def generate_embedding_new_api(text):
         model= settings.AZURE_OPENAI_EMB_DEPLOYMENT  # model = "deployment_name".
     )
     embedding = response.data[0].embedding
-    print(embedding)
+    #print(embedding)
+    return embedding
     #print(response.model_dump_json(indent=2))
 
 def shutdown_db_client():
@@ -83,6 +84,8 @@ def generate_thread_embedding():
     # Update the collection with the embeddings
     #requests = []
     dest_collection = app.mongodb["thread_embeddings"]
+    user_collection = app.mongodb["users"]
+    
     embeddings = { }
     for doc in collection.find({'title':{"$exists": True}}).limit(500):
         #print(doc['content'])
@@ -95,6 +98,13 @@ def generate_thread_embedding():
         text += "The thread was created on " + createdAt + ". "
         creator = doc['creator']
         text += "The creator of the thread is " + creator + ". "
+        userDoc = user_collection.find_one({'user_name': creator})
+        email = userDoc['email']
+        text += "The email of the creator is " + email + ". "
+        #print(text)
+        embeddings['title'] = title
+        
+        #return
         
         blocks = doc['content']
         
@@ -102,8 +112,11 @@ def generate_thread_embedding():
             #print(block['content'])
             text += block['content'] + " "
         #print (text)
-        embeddings[title] = generate_embedding_new_api(text)
-        dest_collection.insert_one(embeddings)
+        
+        embeddings['embedding'] = generate_embedding_new_api(text)
+        dest_collection.update_one({'_id': doc['_id']},
+                                   {'$set':embeddings}, upsert=True)
+        
         #requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
     #collection.bulk_write(requests)
@@ -118,7 +131,7 @@ def move_thread_embedding():
         if 'thread_embedding' in doc:
             embeddings[title] = doc["thread_embedding"]
             #dest_collection.insert_one(embeddings)
-            collection.update_one({'_id': doc['_id']}, {'$unset': {'thread_embedding': 1}})
+            collection.update_one({'_id': doc['_id']}, {'$unset': {'thread_embedding': 1}}, upsert=True)
         #requests.append(UpdateOne({'_id': doc['_id']}, {'$set': {'thread_embedding': embeddings}}))
         #requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
@@ -130,7 +143,7 @@ def main() :
     #generate_embedding_new_api(
     #    "The food was delicious and the waiter was very friendly.")
     #print(embedding)
-    #generate_thread_embedding()
+    generate_thread_embedding()
     #move_thread_embedding()
     shutdown_db_client()
 
