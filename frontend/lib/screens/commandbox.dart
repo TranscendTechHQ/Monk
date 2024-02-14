@@ -10,15 +10,21 @@ import '../constants.dart';
 import '../repo/commandparser.dart';
 part 'commandbox.g.dart';
 
+enum VisibilityEnum {
+  thread,
+  commandBox,
+  searchBox,
+}
+
 @riverpod
-class AutoCompleteVisibility extends _$AutoCompleteVisibility {
+class ScreenVisibility extends _$ScreenVisibility {
   @override
-  bool build() => false;
-  void setVisibility(bool visibility) {
+  VisibilityEnum build() => VisibilityEnum.thread;
+  void setVisibility(VisibilityEnum visibility) {
     state = visibility;
   }
 
-  bool get() => state;
+  VisibilityEnum get() => state;
 }
 
 class CommandTypeAhead extends ConsumerWidget {
@@ -53,8 +59,8 @@ class CommandTypeAhead extends ConsumerWidget {
                       value, titlesList, commandHintTextNotifier);
                   // only if the command was successfully validated
                   ref
-                      .read(autoCompleteVisibilityProvider.notifier)
-                      .setVisibility(false);
+                      .read(screenVisibilityProvider.notifier)
+                      .setVisibility(VisibilityEnum.thread);
 
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) {
@@ -134,7 +140,7 @@ class CommandBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final threadNotifier =
         ref.read(currentThreadProvider.call(title: title, type: type).notifier);
-    bool commandVisibility = ref.watch(autoCompleteVisibilityProvider);
+    VisibilityEnum commandVisibility = ref.watch(screenVisibilityProvider);
     final commandHintText = ref.watch(commandHintTextProvider);
     return Container(
       //alignment: Alignment.center,
@@ -151,7 +157,7 @@ class CommandBox extends ConsumerWidget {
             if (event is RawKeyDownEvent) {
               if (event.isShiftPressed &&
                   event.logicalKey == LogicalKeyboardKey.enter &&
-                  !commandVisibility) {
+                  commandVisibility == VisibilityEnum.thread) {
                 String blockText = _blockController.text;
                 // Submit the text
                 //blockProvider is not really being watched. Need to see what
@@ -163,10 +169,16 @@ class CommandBox extends ConsumerWidget {
                 _blockController.clear();
               }
               if ((event.logicalKey == LogicalKeyboardKey.escape) &&
-                  commandVisibility) {
+                  commandVisibility == VisibilityEnum.commandBox) {
                 ref
-                    .read(autoCompleteVisibilityProvider.notifier)
-                    .setVisibility(false);
+                    .read(screenVisibilityProvider.notifier)
+                    .setVisibility(VisibilityEnum.thread);
+              }
+              if (event.logicalKey == LogicalKeyboardKey.superKey &&
+                  commandVisibility == VisibilityEnum.thread) {
+                ref
+                    .read(screenVisibilityProvider.notifier)
+                    .setVisibility(VisibilityEnum.searchBox);
               }
               // Handle key down
             } else if (event is RawKeyUpEvent) {
@@ -177,7 +189,7 @@ class CommandBox extends ConsumerWidget {
         },
         child: Stack(children: [
           Visibility(
-            visible: !commandVisibility,
+            visible: (commandVisibility == VisibilityEnum.thread),
             child: TextField(
               autofocus: true,
               controller: _blockController,
@@ -198,8 +210,8 @@ class CommandBox extends ConsumerWidget {
                   _blockController.clear();
 
                   ref
-                      .read(autoCompleteVisibilityProvider.notifier)
-                      .setVisibility(true);
+                      .read(screenVisibilityProvider.notifier)
+                      .setVisibility(VisibilityEnum.commandBox);
                   // show a popup with the list of commands and allow the user to
                   // select one
                   // or delete the / and treat it as a normal text
@@ -208,7 +220,7 @@ class CommandBox extends ConsumerWidget {
             ),
           ),
           Visibility(
-            visible: commandVisibility,
+            visible: (commandVisibility == VisibilityEnum.commandBox),
             child: Column(mainAxisSize: MainAxisSize.max, children: [
               Text(commandHintText),
               CommandTypeAhead(),

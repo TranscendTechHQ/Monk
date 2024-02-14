@@ -6,22 +6,21 @@ part of 'commandbox.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$autoCompleteVisibilityHash() =>
-    r'cc9d6ba6733475225516e6abf203573898a8a1d7';
+String _$screenVisibilityHash() => r'e895c39f2f75d52169f37c060b3e4a9ca50f1c55';
 
-/// See also [AutoCompleteVisibility].
-@ProviderFor(AutoCompleteVisibility)
-final autoCompleteVisibilityProvider =
-    AutoDisposeNotifierProvider<AutoCompleteVisibility, bool>.internal(
-  AutoCompleteVisibility.new,
-  name: r'autoCompleteVisibilityProvider',
+/// See also [ScreenVisibility].
+@ProviderFor(ScreenVisibility)
+final screenVisibilityProvider =
+    AutoDisposeNotifierProvider<ScreenVisibility, VisibilityEnum>.internal(
+  ScreenVisibility.new,
+  name: r'screenVisibilityProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$autoCompleteVisibilityHash,
+      : _$screenVisibilityHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AutoCompleteVisibility = AutoDisposeNotifier<bool>;
+typedef _$ScreenVisibility = AutoDisposeNotifier<VisibilityEnum>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
