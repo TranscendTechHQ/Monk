@@ -130,7 +130,8 @@ class CommandTypeAhead extends ConsumerWidget {
 
 class CommandBox extends ConsumerWidget {
   final TextEditingController _blockController = TextEditingController();
-  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchTextController = TextEditingController();
+  final SearchController _searchController = SearchController();
   final FocusNode _searchFocusNode = FocusNode();
   final String title;
   final String type;
@@ -229,13 +230,22 @@ class CommandBox extends ConsumerWidget {
           ),
           Visibility(
               visible: (commandVisibility == VisibilityEnum.searchBox),
-              child: SearchBar(
-                  controller: _searchController,
-                  hintText: "Search for a thread",
-                  focusNode: _searchFocusNode,
-                  onSubmitted: (value) {}
-                  // call the semantic search api from the backend.
-                  ))
+              child: SearchAnchor(
+                searchController: _searchController,
+                builder: (context, controller) {
+                  return SearchBar(
+                      controller: controller,
+                      hintText: "Search for a Thread",
+                      focusNode: _searchFocusNode,
+                      onSubmitted: (value) {
+                        // call the semantic search api from the backend.
+                      });
+                },
+                suggestionsBuilder: (context, controller) {
+                  return List.generate(10, (index) => Text("$index"));
+                },
+                // call the semantic search api from the backend.
+              )),
         ]),
       ),
     );
