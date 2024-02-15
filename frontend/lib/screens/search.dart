@@ -31,6 +31,7 @@ class SearchResults extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final results = ref.watch(queryResultsProvider);
     return ListView.builder(
+      shrinkWrap: true,
       itemCount: results.length,
       itemBuilder: (context, index) {
         return ListTile(
@@ -46,16 +47,12 @@ class SearchModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search'),
-      ),
-      body: const Column(
-        children: [
-          SearchInput(),
-          SearchResults(),
-        ],
-      ),
+    return const Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SearchInput(),
+        SearchResults(),
+      ],
     );
   }
 }

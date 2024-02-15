@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/thread.dart';
+import 'package:frontend/screens/search.dart';
 import 'package:frontend/screens/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -230,22 +231,7 @@ class CommandBox extends ConsumerWidget {
           ),
           Visibility(
               visible: (commandVisibility == VisibilityEnum.searchBox),
-              child: SearchAnchor(
-                searchController: _searchController,
-                builder: (context, controller) {
-                  return SearchBar(
-                      controller: controller,
-                      hintText: "Search for a Thread",
-                      focusNode: _searchFocusNode,
-                      onSubmitted: (value) {
-                        // call the semantic search api from the backend.
-                      });
-                },
-                suggestionsBuilder: (context, controller) {
-                  return List.generate(10, (index) => Text("$index"));
-                },
-                // call the semantic search api from the backend.
-              )),
+              child: SearchModal()),
         ]),
       ),
     );
