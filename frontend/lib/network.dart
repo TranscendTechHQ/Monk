@@ -36,6 +36,20 @@ class NetworkManager {
     //client.addSupertokensInterceptor();
     client.interceptors
         .add(SuperTokensInterceptorWrapper(client: client)); //same as above
+
+    client.interceptors.add(InterceptorsWrapper(
+      onError: (DioException e, handler) {
+        if (e.response?.statusCode == 500) {
+          // Handle 500 error
+          print('Server error: ${e.message}');
+        } else {
+          // Handle other DioErrors
+          print('Error: ${e.message}');
+        }
+        return handler.next(
+            e); // This line is important to continue the error handling process
+      },
+    ));
     openApi = Openapi(
       dio: client,
       basePathOverride: apiDomain,
