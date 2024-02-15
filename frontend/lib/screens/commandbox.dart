@@ -151,6 +151,34 @@ class CommandBox extends ConsumerWidget {
         ref.read(currentThreadProvider.call(title: title, type: type).notifier);
     VisibilityEnum commandVisibility = ref.watch(screenVisibilityProvider);
     final commandHintText = ref.watch(commandHintTextProvider);
+    final threadInput = TextField(
+      autofocus: true,
+      controller: _blockController,
+      //keyboardType: TextInputType.multiline,
+      minLines: 2,
+      maxLines: 5,
+      decoration: const InputDecoration(
+        filled: true,
+        fillColor: Color.fromARGB(255, 188, 105, 240),
+        border: OutlineInputBorder(),
+        hintText:
+            'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
+      ),
+      onChanged: (text) async {
+        if (text.isNotEmpty && text.startsWith('/')) {
+          if (!context.mounted) return;
+          // show the popup
+          _blockController.clear();
+
+          ref
+              .read(screenVisibilityProvider.notifier)
+              .setVisibility(VisibilityEnum.commandBox);
+          // show a popup with the list of commands and allow the user to
+          // select one
+          // or delete the / and treat it as a normal text
+        }
+      },
+    );
     return Container(
       //alignment: Alignment.center,
       width: containerWidth,
@@ -199,34 +227,7 @@ class CommandBox extends ConsumerWidget {
         child: Stack(children: [
           Visibility(
             visible: (commandVisibility == VisibilityEnum.thread),
-            child: TextField(
-              autofocus: true,
-              controller: _blockController,
-              //keyboardType: TextInputType.multiline,
-              minLines: 2,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color.fromARGB(255, 188, 105, 240),
-                border: OutlineInputBorder(),
-                hintText:
-                    'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
-              ),
-              onChanged: (text) async {
-                if (text.isNotEmpty && text.startsWith('/')) {
-                  if (!context.mounted) return;
-                  // show the popup
-                  _blockController.clear();
-
-                  ref
-                      .read(screenVisibilityProvider.notifier)
-                      .setVisibility(VisibilityEnum.commandBox);
-                  // show a popup with the list of commands and allow the user to
-                  // select one
-                  // or delete the / and treat it as a normal text
-                }
-              },
-            ),
+            child: threadInput,
           ),
           Visibility(
             visible: (commandVisibility == VisibilityEnum.commandBox),
