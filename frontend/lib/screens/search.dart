@@ -29,23 +29,25 @@ class SearchInput extends ConsumerWidget {
 }
 
 class SearchResults extends ConsumerWidget {
-  SearchResults({super.key});
-  int selectedIndex = 0;
+  const SearchResults({super.key});
+  //int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final results = ref.watch(queryResultsProvider);
     final threadList = ref.watch(fetchThreadsInfoProvider);
     return ListView.builder(
+      reverse: true,
       shrinkWrap: true,
       itemCount: results.length,
       itemBuilder: (context, index) {
         return ListTile(
-          selectedTileColor: Theme.of(context).colorScheme.shadow,
-          selectedColor: Theme.of(context).colorScheme.primary,
-          //selected: selectedIndex == index,
+          autofocus: true,
+          selectedTileColor: Theme.of(context).colorScheme.primary,
+          //selectedColor: Theme.of(context).colorScheme.primary,
+          // selected: selectedIndex == index,
           onTap: () {
-            selectedIndex = index;
+            //selectedIndex = index;
             //print('Selected index: $selectedIndex');
             final newThreadTitle = results[index];
             final newThreadType = threadList.value![newThreadTitle]!;
@@ -67,8 +69,8 @@ class SearchModal extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        const SearchResults(),
         SearchInput(focusNode: focusNode),
-        SearchResults(),
       ],
     );
   }
