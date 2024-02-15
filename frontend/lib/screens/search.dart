@@ -42,7 +42,8 @@ class SearchResults extends ConsumerWidget {
       itemBuilder: (context, index) {
         return ListTile(
           selectedTileColor: Theme.of(context).colorScheme.shadow,
-          selected: selectedIndex == index,
+          selectedColor: Theme.of(context).colorScheme.primary,
+          //selected: selectedIndex == index,
           onTap: () {
             selectedIndex = index;
             //print('Selected index: $selectedIndex');
