@@ -6,7 +6,7 @@ part of 'commandbox.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$screenVisibilityHash() => r'e895c39f2f75d52169f37c060b3e4a9ca50f1c55';
+String _$screenVisibilityHash() => r'08fb5340816f0aa36a6c8e4437546d6788ff5a29';
 
 /// See also [ScreenVisibility].
 @ProviderFor(ScreenVisibility)

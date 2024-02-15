@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +28,19 @@ class ScreenVisibility extends _$ScreenVisibility {
   }
 
   VisibilityEnum get() => state;
+}
+
+void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
+    String newThreadType) {
+  final screenVisibility = ref.read(screenVisibilityProvider.notifier);
+  screenVisibility.setVisibility(VisibilityEnum.thread);
+
+  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+    return ThreadScreen(
+      title: newThreadTitle,
+      type: newThreadType,
+    );
+  }));
 }
 
 class CommandTypeAhead extends ConsumerWidget {
@@ -58,24 +73,15 @@ class CommandTypeAhead extends ConsumerWidget {
                 try {
                   final newThread = parser.validateCommand(
                       value, titlesList, commandHintTextNotifier);
+                  String newThreadType;
+                  if (threadList.value!.containsKey(newThread["title"])) {
+                    newThreadType = threadList.value![newThread["title"]]!;
+                  } else {
+                    newThreadType = newThread["type"]!;
+                  }
+                  switchThread(
+                      ref, context, newThread["title"]!, newThreadType);
                   // only if the command was successfully validated
-                  ref
-                      .read(screenVisibilityProvider.notifier)
-                      .setVisibility(VisibilityEnum.thread);
-
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) {
-                    String newTheadType;
-                    if (threadList.value!.containsKey(newThread["title"])) {
-                      newTheadType = threadList.value![newThread["title"]]!;
-                    } else {
-                      newTheadType = newThread["type"]!;
-                    }
-                    return ThreadScreen(
-                      title: newThread["title"]!,
-                      type: newTheadType,
-                    );
-                  }));
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
