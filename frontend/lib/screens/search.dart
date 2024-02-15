@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/search.dart';
 
 class SearchInput extends ConsumerWidget {
-  const SearchInput({super.key});
+  final FocusNode focusNode;
+  const SearchInput({super.key, required this.focusNode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -12,6 +13,7 @@ class SearchInput extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       child: SearchBar(
+        focusNode: focusNode,
         onSubmitted: (value) async {
           final List<String> queryResults =
               await ref.watch(queryMatchingThreadsProvider.call(value).future);
@@ -43,15 +45,16 @@ class SearchResults extends ConsumerWidget {
 }
 
 class SearchModal extends StatelessWidget {
-  const SearchModal({super.key});
+  final FocusNode focusNode;
+  const SearchModal({super.key, required this.focusNode});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SearchInput(),
-        SearchResults(),
+        SearchInput(focusNode: focusNode),
+        const SearchResults(),
       ],
     );
   }

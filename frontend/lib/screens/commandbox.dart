@@ -231,7 +231,7 @@ class CommandBox extends ConsumerWidget {
           ),
           Visibility(
               visible: (commandVisibility == VisibilityEnum.searchBox),
-              child: SearchModal()),
+              child: SearchModal(focusNode: _searchFocusNode)),
         ]),
       ),
     );
