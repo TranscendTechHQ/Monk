@@ -192,25 +192,11 @@ class CommandBox extends ConsumerWidget {
         onKey: (RawKeyEvent event) async {
           if (!event.repeat) {
             if (event is RawKeyDownEvent) {
-              if (event.isShiftPressed &&
-                  event.logicalKey == LogicalKeyboardKey.enter &&
-                  commandVisibility == VisibilityEnum.thread) {
-                String blockText = _blockController.text;
-                // Submit the text
-                //blockProvider is not really being watched. Need to see what
-                // to do about it when block is properly formed
-                // right now it is just a String object.
-
-                //ref.read(currentThreadProvider.getProviderOverride(provider)).addString(blockText);
-                threadNotifier.createBlock(blockText);
-                _blockController.clear();
-              }
               if (event.logicalKey == LogicalKeyboardKey.escape) {
                 ref
                     .read(screenVisibilityProvider.notifier)
                     .setVisibility(VisibilityEnum.thread);
               }
-
               // Handle key down
             } else if (event is RawKeyUpEvent) {
               // Handle key up
@@ -227,6 +213,14 @@ class CommandBox extends ConsumerWidget {
                       .read(screenVisibilityProvider.notifier)
                       .setVisibility(VisibilityEnum.searchBox);
                   _searchFocusNode.requestFocus();
+                },
+                const SingleActivator(LogicalKeyboardKey.enter, shift: true):
+                    () {
+                  String blockText = _blockController.text;
+                  // Submit the text
+
+                  threadNotifier.createBlock(blockText);
+                  _blockController.clear();
                 },
               }, child: threadInput)),
           Visibility(
