@@ -390,6 +390,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  flutter_markdown:
+    dependency: transitive
+    description:
+      name: flutter_markdown
+      sha256: "21b085a1c185e46701373866144ced56cfb7a0c33f63c916bb8fe2d0c1491278"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.19"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -560,6 +568,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.1"
+  keymap:
+    dependency: "direct main"
+    description:
+      name: keymap
+      sha256: "837f37bce794bb41c3a49cd122718544921afec348f34c78f6153c72b43f3c10"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.92"
   lints:
     dependency: transitive
     description:
@@ -576,6 +592,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  markdown:
+    dependency: transitive
+    description:
+      name: markdown
+      sha256: "1b134d9f8ff2da15cb298efe6cd8b7d2a78958c1b00384ebcbdf13fe340a6c90"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.2.1"
   matcher:
     dependency: transitive
     description:

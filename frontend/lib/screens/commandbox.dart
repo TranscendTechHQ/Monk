@@ -8,7 +8,7 @@ import 'package:frontend/screens/search.dart';
 import 'package:frontend/screens/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
+import 'package:keymap/keymap.dart';
 import '../constants.dart';
 import '../repo/commandparser.dart';
 part 'commandbox.g.dart';
@@ -210,13 +210,7 @@ class CommandBox extends ConsumerWidget {
                     .read(screenVisibilityProvider.notifier)
                     .setVisibility(VisibilityEnum.thread);
               }
-              if ((event.isMetaPressed) &&
-                  (commandVisibility == VisibilityEnum.thread)) {
-                ref
-                    .read(screenVisibilityProvider.notifier)
-                    .setVisibility(VisibilityEnum.searchBox);
-                _searchFocusNode.requestFocus();
-              }
+
               // Handle key down
             } else if (event is RawKeyUpEvent) {
               // Handle key up
@@ -226,9 +220,20 @@ class CommandBox extends ConsumerWidget {
         },
         child: Stack(children: [
           Visibility(
-            visible: (commandVisibility == VisibilityEnum.thread),
-            child: threadInput,
-          ),
+              visible: (commandVisibility == VisibilityEnum.thread),
+              child: KeyboardWidget(bindings: [
+                KeyAction(
+                  LogicalKeyboardKey.keyS,
+                  'Search for Threads',
+                  () {
+                    ref
+                        .read(screenVisibilityProvider.notifier)
+                        .setVisibility(VisibilityEnum.searchBox);
+                    _searchFocusNode.requestFocus();
+                  },
+                  isMetaPressed: true,
+                )
+              ], child: threadInput)),
           Visibility(
             visible: (commandVisibility == VisibilityEnum.commandBox),
             child: Column(mainAxisSize: MainAxisSize.max, children: [
