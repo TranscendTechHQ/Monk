@@ -8,7 +8,7 @@ import 'package:frontend/screens/search.dart';
 import 'package:frontend/screens/thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:keymap/keymap.dart';
+
 import '../constants.dart';
 import '../repo/commandparser.dart';
 part 'commandbox.g.dart';
@@ -221,19 +221,14 @@ class CommandBox extends ConsumerWidget {
         child: Stack(children: [
           Visibility(
               visible: (commandVisibility == VisibilityEnum.thread),
-              child: KeyboardWidget(bindings: [
-                KeyAction(
-                  LogicalKeyboardKey.keyS,
-                  'Search for Threads',
-                  () {
-                    ref
-                        .read(screenVisibilityProvider.notifier)
-                        .setVisibility(VisibilityEnum.searchBox);
-                    _searchFocusNode.requestFocus();
-                  },
-                  isMetaPressed: true,
-                )
-              ], child: threadInput)),
+              child: CallbackShortcuts(bindings: {
+                const SingleActivator(LogicalKeyboardKey.keyS, meta: true): () {
+                  ref
+                      .read(screenVisibilityProvider.notifier)
+                      .setVisibility(VisibilityEnum.searchBox);
+                  _searchFocusNode.requestFocus();
+                },
+              }, child: threadInput)),
           Visibility(
             visible: (commandVisibility == VisibilityEnum.commandBox),
             child: Column(mainAxisSize: MainAxisSize.max, children: [
