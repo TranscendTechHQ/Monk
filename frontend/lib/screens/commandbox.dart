@@ -46,9 +46,9 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
 class CommandTypeAhead extends ConsumerWidget {
   final TextEditingController _typeAheadController =
       TextEditingController(text: "/");
-  final FocusNode _commandFocusNode = FocusNode();
+  final FocusNode commandFocusNode;
 
-  CommandTypeAhead({super.key});
+  CommandTypeAhead({super.key, required this.commandFocusNode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,7 +60,7 @@ class CommandTypeAhead extends ConsumerWidget {
     final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
 
     return TypeAheadField<String>(
-        focusNode: _commandFocusNode,
+        focusNode: commandFocusNode,
         hideOnEmpty: true,
         direction: VerticalDirection.up,
         controller: _typeAheadController,
@@ -140,6 +140,7 @@ class CommandBox extends ConsumerWidget {
   final TextEditingController _searchTextController = TextEditingController();
   final SearchController _searchController = SearchController();
   final FocusNode _searchFocusNode = FocusNode();
+  final FocusNode _commandFocusNode = FocusNode();
   final String title;
   final String type;
 
@@ -169,7 +170,7 @@ class CommandBox extends ConsumerWidget {
           if (!context.mounted) return;
           // show the popup
           _blockController.clear();
-
+          _commandFocusNode.requestFocus();
           ref
               .read(screenVisibilityProvider.notifier)
               .setVisibility(VisibilityEnum.commandBox);
@@ -227,7 +228,9 @@ class CommandBox extends ConsumerWidget {
             visible: (commandVisibility == VisibilityEnum.commandBox),
             child: Column(mainAxisSize: MainAxisSize.max, children: [
               Text(commandHintText),
-              CommandTypeAhead(),
+              CommandTypeAhead(
+                commandFocusNode: _commandFocusNode,
+              ),
             ]),
           ),
           Visibility(
