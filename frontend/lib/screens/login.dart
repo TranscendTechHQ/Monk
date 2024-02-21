@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/widgets.dart' as prefix;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
@@ -20,27 +19,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loginWithGoogle() async {
     GoogleSignIn googleSignIn;
 
-    if (Platform.isAndroid) {
-      googleSignIn = GoogleSignIn(
-        serverClientId: "GOOGLE_WEB_CLIENT_ID",
-        scopes: [
-          'email',
-        ],
-      );
-    } else {
-      var googleClientId =
-          "337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com";
-      var backendClientId =
-          "337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com";
+    var googleClientId =
+        "337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com";
+    var backendClientId =
+        "337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com";
 
-      googleSignIn = GoogleSignIn(
-        clientId: googleClientId,
-        serverClientId: backendClientId,
-        scopes: [
-          'email',
-        ],
-      );
-    }
+    googleSignIn = GoogleSignIn(
+      clientId: googleClientId,
+      serverClientId: backendClientId,
+      scopes: [
+        'email',
+      ],
+    );
 
     if (googleSignIn.currentUser != null) {
       // This cleans up the current user from the google sign in package if there is any active user
@@ -77,7 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (result.statusCode == 200) {
         Future.delayed(Duration.zero, () {
-          Navigator.of(context).pushReplacementNamed("/home");
+          // ...
+
+          prefix.Navigator.of(context).pushReplacementNamed("/home");
         });
       }
     } on DioExceptionType {
