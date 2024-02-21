@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/network.dart';
 import 'package:supertokens_flutter/supertokens.dart';
-import 'package:frontend/network.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -53,6 +53,7 @@ dependencies:
   keymap: ^0.0.92
   #sign_in_with_apple: ^5.0.0
 
+  dio: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
