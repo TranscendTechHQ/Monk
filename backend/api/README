@@ -1,2 +1,28 @@
+## create virtual env
+python -m venv env
+
+## activate virtual env 
+source env/bin/activate
+
+## install required python packages
+pip install -m requirements.txt
+
+## run the backend
+
+cd api
+
+## open the config/.env file and add the credentials
+## use vi or any other editor 
+vi config/.env 
+
+## now run the main file
+python main.py
+
+
+
+
+
+
+
 ## Extract openapi.yaml from the FastAPI app
 python extract-openapi.py main:app
