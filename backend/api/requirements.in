@@ -7,3 +7,4 @@ python-dotenv
 motor
 supertokens-python
 pip_tools
+openai
