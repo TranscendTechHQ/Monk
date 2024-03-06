@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart' as prefix;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/constants.dart';
 //import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -19,14 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loginWithGoogle() async {
     GoogleSignIn googleSignIn;
 
-    var googleClientId =
-        "337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com";
-    var backendClientId =
-        "337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com";
-
     googleSignIn = GoogleSignIn(
-      clientId: googleClientId,
-      serverClientId: backendClientId,
+      clientId: Constants.googleClientId,
+      serverClientId: Constants.backendGoogleClientId,
       scopes: [
         'email',
       ],

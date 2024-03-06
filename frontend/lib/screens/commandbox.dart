@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,12 +33,17 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
   final screenVisibility = ref.read(screenVisibilityProvider.notifier);
   screenVisibility.setVisibility(VisibilityEnum.thread);
 
-  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-    return ThreadScreen(
-      title: newThreadTitle,
-      type: newThreadType,
-    );
-  }));
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) {
+        return ThreadScreen(
+          title: newThreadTitle,
+          type: newThreadType,
+        );
+      },
+    ),
+  );
 }
 
 class CommandTypeAhead extends ConsumerWidget {

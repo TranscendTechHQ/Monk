@@ -37,7 +37,7 @@ class MyApp extends ConsumerWidget {
         "/home": (context) => const HomeScreen(),
         "/login": (context) => const LoginScreen(),
         "/journal": (context) =>
-            ThreadScreen(title: "journal", type: "/new-thread"),
+            const ThreadScreen(title: "journal", type: "/new-thread"),
       },
     );
   }
