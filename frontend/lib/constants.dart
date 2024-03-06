@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const apiDomain = "http://35.209.147.65:8000";
+//const apiDomain = "http://0.0.0.0:8000";
 
 enum ColorSeed {
   baseColor('M3 Baseline', Color(0xff6750a4)),

@@ -22,5 +22,10 @@ void main() {
       // TODO
     });
 
+    // String createdBy (default value: 'unknown user')
+    test('to test the property `createdBy`', () async {
+      // TODO
+    });
+
   });
 }
