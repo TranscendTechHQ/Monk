@@ -1,22 +1,25 @@
 import 'package:flutter/widgets.dart' as prefix;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/constants.dart';
+import 'package:frontend/helper/constants.dart';
+import 'package:frontend/ui/pages/home_page.dart';
 //import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 /*import 'package:sign_in_with_apple/sign_in_with_apple.dart'
     hide AuthorizationRequest;*/
-import '../network.dart';
+import '../../helper/network.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  static String route = "/login";
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginPageState extends State<LoginPage> {
   Future<void> loginWithGoogle() async {
     GoogleSignIn googleSignIn;
 
@@ -65,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Future.delayed(Duration.zero, () {
           // ...
 
-          prefix.Navigator.of(context).pushReplacementNamed("/home");
+          prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
         });
       }
     } on DioExceptionType {

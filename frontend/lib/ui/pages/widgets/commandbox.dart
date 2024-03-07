@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/helper/constants.dart';
+import 'package:frontend/repo/commandparser.dart';
 import 'package:frontend/repo/thread.dart';
-import 'package:frontend/screens/search.dart';
-import 'package:frontend/screens/thread.dart';
+import 'package:frontend/ui/pages/widgets/search.dart';
+import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
-import '../constants.dart';
-import '../repo/commandparser.dart';
 part 'commandbox.g.dart';
 
 enum VisibilityEnum {
@@ -33,11 +32,11 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
   final screenVisibility = ref.read(screenVisibilityProvider.notifier);
   screenVisibility.setVisibility(VisibilityEnum.thread);
 
-  Navigator.push(
+  Navigator.pushReplacement(
     context,
     MaterialPageRoute(
       builder: (context) {
-        return ThreadScreen(
+        return ThreadPage(
           title: newThreadTitle,
           type: newThreadType,
         );

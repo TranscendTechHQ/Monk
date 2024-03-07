@@ -1,17 +1,19 @@
+import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/constants.dart';
+import 'package:frontend/helper/constants.dart';
 import 'package:frontend/repo/thread.dart';
-import 'package:frontend/screens/commandbox.dart';
 
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:openapi/openapi.dart';
 
-class ThreadScreen extends ConsumerWidget {
+class ThreadPage extends ConsumerWidget {
   final String title;
   final String type;
-  const ThreadScreen({super.key, required this.title, required this.type});
+  const ThreadPage({super.key, required this.title, required this.type});
+
+  static String route = "/journal";
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

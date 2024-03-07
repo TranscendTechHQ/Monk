@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/network.dart';
+import 'package:frontend/helper/network.dart';
+import 'package:frontend/ui/pages/login_page.dart';
+import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  static String route = "/home";
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomePageState extends State<HomePage> {
   String userId = "";
   String email = "";
   String fullName = "";
@@ -28,7 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> signOut() async {
     await SuperTokens.signOut();
     Future.delayed(Duration.zero, () {
-      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        LoginPage.route,
+        (route) => false,
+      );
     });
   }
 
@@ -87,61 +95,40 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-              ),
-              child: Center(
-                  child: Text(
-                "Login successful",
-                style: Theme.of(context).textTheme.headlineSmall,
-              )),
-            ), // this is login successful box
-            const Padding(
-              padding: EdgeInsets.only(
-                top: 24.0,
-              ),
-              child: Center(
-                child: Text("Hello,"),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 6.0,
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    width: 1,
-                    color: Theme.of(context).colorScheme.scrim,
+            const SizedBox(height: 32),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "Hello, ",
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                ),
-                child: Text(fullName),
+                  TextSpan(
+                    text: fullName,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 16,
+            Text(
+              'Welcome to Monk!',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 32),
+            FilledButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                    Theme.of(context).colorScheme.tertiaryContainer),
               ),
-              child: FilledButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.tertiaryContainer),
-                ),
-                onPressed: () async {
-                  //await testOpenApi();
-                  Navigator.pushNamed(context, "/journal");
-                },
-                child: Text(
-                  "Go to Journal",
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
+              onPressed: () async {
+                Navigator.pushNamed(context, ThreadPage.route);
+              },
+              child: Text(
+                "Go to Journal",
+                style: Theme.of(context).textTheme.labelSmall,
               ),
             ),
           ],
@@ -161,17 +148,19 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Align(
                 alignment: Alignment.topRight,
-                child: FilledButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.tertiaryContainer),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.error,
+                    shape: BoxShape.circle,
                   ),
-                  onPressed: () async {
-                    await signOut();
-                  },
-                  child: Text(
-                    "Sign Out",
-                    style: Theme.of(context).textTheme.labelSmall,
+                  padding: const EdgeInsets.all(8),
+                  child: Tooltip(
+                    message: "Sign Out",
+                    child: Icon(
+                      Icons.logout,
+                      color: Theme.of(context).colorScheme.onError,
+                      size: 18,
+                    ),
                   ),
                 ),
               ),

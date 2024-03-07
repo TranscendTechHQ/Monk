@@ -8,7 +8,7 @@
 //  - the backend will store the journal entry in the database
 // ...
 
-import 'package:frontend/network.dart';
+import 'package:frontend/helper/network.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

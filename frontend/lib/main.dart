@@ -1,43 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import 'package:frontend/repo/thread.dart';
-
+import 'package:frontend/ui/pages/splash_page.dart';
+import 'package:frontend/ui/pages/thread_page.dart';
+import 'package:frontend/ui/pages/login_page.dart';
+import 'package:frontend/ui/pages/home_page.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:supertokens_flutter/supertokens.dart';
-import 'constants.dart';
-import 'screens/home.dart';
-import 'screens/login.dart';
-import 'screens/splash.dart';
-import 'screens/thread.dart';
+import 'helper/constants.dart';
 
 void main() {
   SuperTokens.init(apiDomain: apiDomain);
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MonkApp()));
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class MonkApp extends ConsumerWidget {
+  const MonkApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final commandList = ref.watch(fetchThreadTypesProvider);
     return MaterialApp(
       title: 'Monk',
       debugShowCheckedModeBanner: false,
-      darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: ThemeMode.dark,
-      theme: ThemeData(
-        colorSchemeSeed: ColorSeed.baseColor.color,
-        //colorSchemeSeed: Color.fromARGB(255, 40, 39, 43),
-        brightness: Brightness.dark,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       initialRoute: '/',
       routes: {
-        "/": (context) => const SplashScreen(),
-        "/home": (context) => const HomeScreen(),
-        "/login": (context) => const LoginScreen(),
-        "/journal": (context) =>
-            const ThreadScreen(title: "journal", type: "/new-thread"),
+        "/": (context) => const SplashPage(),
+        HomePage.route: (context) => const HomePage(),
+        LoginPage.route: (context) => const LoginPage(),
+        ThreadPage.route: (context) =>
+            const ThreadPage(title: "journal", type: "/new-thread"),
       },
     );
   }
