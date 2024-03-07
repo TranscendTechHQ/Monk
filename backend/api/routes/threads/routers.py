@@ -90,9 +90,12 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
                       session: SessionContainer = Depends(verify_session())):
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
-    
     block = block.model_dump()
     new_block = BlockModel(**block)
+    userId = session.get_user_id()
+    userDoc = await request.app.mongodb["users"].find_one({"_id": userId})
+    fullName = userDoc['user_name']
+    new_block.created_by = fullName
     new_block_dict = new_block.model_dump()
     new_block_dict["id"] = str(new_block_dict["id"])
     ## to store the block as a json string in the db

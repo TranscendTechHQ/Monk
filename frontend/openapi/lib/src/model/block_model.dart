@@ -23,6 +23,8 @@ class BlockModel {
     required  this.content,
 
      this.createdAt,
+
+     this.createdBy = 'unknown user',
   });
 
   @JsonKey(
@@ -61,17 +63,31 @@ class BlockModel {
 
 
 
+  @JsonKey(
+    defaultValue: 'unknown user',
+    name: r'created_by',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? createdBy;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
      other.id == id &&
      other.content == content &&
-     other.createdAt == createdAt;
+     other.createdAt == createdAt &&
+     other.createdBy == createdBy;
 
   @override
   int get hashCode =>
     id.hashCode +
     content.hashCode +
-    createdAt.hashCode;
+    createdAt.hashCode +
+    createdBy.hashCode;
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => _$BlockModelFromJson(json);
 

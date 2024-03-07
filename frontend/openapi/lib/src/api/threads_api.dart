@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 
 import 'package:openapi/src/model/block_collection.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
+import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/thread_model.dart';
 import 'package:openapi/src/model/threads_info.dart';

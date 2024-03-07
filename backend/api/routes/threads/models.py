@@ -29,6 +29,7 @@ class BlockModel(BaseModel):
     id: UUID = Field(default_factory=uuid.uuid4, alias="_id")
     content: str = Field(...)
     created_at: datetime = Field(default_factory=datetime.now)
+    created_by: str = Field(default="unknown user")
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
