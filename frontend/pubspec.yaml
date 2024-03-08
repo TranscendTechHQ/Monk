@@ -55,6 +55,7 @@ dependencies:
 
   dio: any
   web: ^0.5.0
+  intl: ^0.19.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

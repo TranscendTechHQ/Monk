@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ui/pages/home_page.dart';
+import 'package:frontend/ui/pages/login_page.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashPageState extends State<SplashPage> {
   void checkForAuthAndNavigate() {
     SuperTokens.doesSessionExist().then((value) {
       if (value) {
         Navigator.pushReplacementNamed(
           context,
-          "/home",
+          HomePage.route,
         );
       } else {
         Navigator.pushReplacementNamed(
           context,
-          "/login",
+          LoginPage.route,
         );
       }
     });

@@ -1,15 +1,14 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/helper/constants.dart';
+import 'package:frontend/repo/commandparser.dart';
 import 'package:frontend/repo/thread.dart';
-import 'package:frontend/screens/search.dart';
-import 'package:frontend/screens/thread.dart';
+import 'package:frontend/ui/pages/widgets/search.dart';
+import 'package:frontend/ui/pages/thread_page.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
-import '../constants.dart';
-import '../repo/commandparser.dart';
 part 'commandbox.g.dart';
 
 enum VisibilityEnum {
@@ -34,12 +33,17 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
   final screenVisibility = ref.read(screenVisibilityProvider.notifier);
   screenVisibility.setVisibility(VisibilityEnum.thread);
 
-  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-    return ThreadScreen(
-      title: newThreadTitle,
-      type: newThreadType,
-    );
-  }));
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) {
+        return ThreadPage(
+          title: newThreadTitle,
+          type: newThreadType,
+        );
+      },
+    ),
+  );
 }
 
 class CommandTypeAhead extends ConsumerWidget {
@@ -84,7 +88,7 @@ class CommandTypeAhead extends ConsumerWidget {
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
-                    duration: const Duration(seconds: 10),
+                    duration: const Duration(seconds: 3),
                   ));
                   return;
                 }
@@ -151,18 +155,34 @@ class CommandBox extends ConsumerWidget {
         ref.read(currentThreadProvider.call(title: title, type: type).notifier);
     VisibilityEnum commandVisibility = ref.watch(screenVisibilityProvider);
     final commandHintText = ref.watch(commandHintTextProvider);
+
     final threadInput = TextField(
       autofocus: true,
       controller: _blockController,
       //keyboardType: TextInputType.multiline,
       minLines: 2,
       maxLines: 5,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         filled: true,
-        fillColor: Color.fromARGB(255, 188, 105, 240),
-        border: OutlineInputBorder(),
+        fillColor: context.colorScheme.tertiaryContainer.withOpacity(.3),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.colorScheme.tertiaryContainer,
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(0),
+        ),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: context.disabledColor)),
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+          color: context.disabledColor,
+        )),
         hintText:
             'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
+        hintStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiaryContainer,
+        ),
       ),
       onChanged: (text) async {
         if (text.isNotEmpty && text.startsWith('/')) {
@@ -179,14 +199,8 @@ class CommandBox extends ConsumerWidget {
         }
       },
     );
-    return Container(
-      //alignment: Alignment.center,
+    return SizedBox(
       width: containerWidth,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 1,
-        ),
-      ),
       child: RawKeyboardListener(
         focusNode: FocusNode(),
         onKey: (RawKeyEvent event) async {

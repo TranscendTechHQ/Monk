@@ -24,6 +24,12 @@ class NetworkManager {
   List<Interceptor> interceptors() {
     return [
       SuperTokensInterceptorWrapper(client: client),
+      LogInterceptor(
+        requestHeader: false,
+        responseHeader: false,
+        requestBody: true,
+        responseBody: true,
+      ),
     ];
   }
 

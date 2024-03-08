@@ -1,32 +1,31 @@
 import 'package:flutter/widgets.dart' as prefix;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/helper/constants.dart';
+import 'package:frontend/ui/pages/home_page.dart';
 //import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 /*import 'package:sign_in_with_apple/sign_in_with_apple.dart'
     hide AuthorizationRequest;*/
-import '../network.dart';
+import '../../helper/network.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  static String route = "/login";
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginPageState extends State<LoginPage> {
   Future<void> loginWithGoogle() async {
     GoogleSignIn googleSignIn;
 
-    var googleClientId =
-        "337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com";
-    var backendClientId =
-        "337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com";
-
     googleSignIn = GoogleSignIn(
-      clientId: googleClientId,
-      serverClientId: backendClientId,
+      clientId: Constants.googleClientId,
+      serverClientId: Constants.backendGoogleClientId,
       scopes: [
         'email',
       ],
@@ -69,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Future.delayed(Duration.zero, () {
           // ...
 
-          prefix.Navigator.of(context).pushReplacementNamed("/home");
+          prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
         });
       }
     } on DioExceptionType {

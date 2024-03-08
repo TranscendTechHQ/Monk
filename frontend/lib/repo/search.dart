@@ -1,4 +1,4 @@
-import 'package:frontend/network.dart';
+import 'package:frontend/helper/network.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'search.g.dart';
 
