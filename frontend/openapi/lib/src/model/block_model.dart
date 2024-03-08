@@ -25,6 +25,10 @@ class BlockModel {
      this.createdAt,
 
      this.createdBy = 'unknown user',
+
+     this.creatorEmail = 'unknown email',
+
+     this.creatorPicture = 'unknown picture link',
   });
 
   @JsonKey(
@@ -75,19 +79,47 @@ class BlockModel {
 
 
 
+  @JsonKey(
+    defaultValue: 'unknown email',
+    name: r'creator_email',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? creatorEmail;
+
+
+
+  @JsonKey(
+    defaultValue: 'unknown picture link',
+    name: r'creator_picture',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? creatorPicture;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
      other.id == id &&
      other.content == content &&
      other.createdAt == createdAt &&
-     other.createdBy == createdBy;
+     other.createdBy == createdBy &&
+     other.creatorEmail == creatorEmail &&
+     other.creatorPicture == creatorPicture;
 
   @override
   int get hashCode =>
     id.hashCode +
     content.hashCode +
     createdAt.hashCode +
-    createdBy.hashCode;
+    createdBy.hashCode +
+    creatorEmail.hashCode +
+    creatorPicture.hashCode;
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => _$BlockModelFromJson(json);
 

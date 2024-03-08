@@ -41,21 +41,29 @@ class SessionInfo(BaseModel):
     fullName: str
     email: str
     accessTokenPayload: dict
+    picture: str = None
+    last_login: str = None
 
 @app.get("/sessioninfo", response_model=SessionInfo, tags=["session"])
 async def secure_api(s: SessionContainer = Depends(verify_session())) -> SessionInfo:
     userId = s.get_user_id()
     userObj: User = await get_user_by_id(userId)
-    email = userObj.email
+    #email = userObj.email
     
     userDoc = await app.mongodb["users"].find_one({"_id": userId})
-    fullName = ""
+    fullName = "Unknown user"
+    picture = ""
+    email = ""
+    last_login = datetime.datetime.now().isoformat()
     if userDoc is not None:
         fullName = userDoc['user_name']
-        await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": datetime.datetime.now().isoformat()}}, upsert=True)
-        await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
-    else:
-        fullName = "Unknown user"
+        picture = userDoc['user_picture']
+        email = userDoc['email']
+        
+        #print(userDoc)
+        await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": last_login}}, upsert=True)
+        #await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
+        
         
     #thirdpartyInfo:ThirdPartyInfo = userName.third_party_info
     #print(email)

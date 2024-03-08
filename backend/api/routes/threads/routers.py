@@ -95,7 +95,11 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     userId = session.get_user_id()
     userDoc = await request.app.mongodb["users"].find_one({"_id": userId})
     fullName = userDoc['user_name']
+    email = userDoc['email']
+    picture = userDoc['user_picture']
     new_block.created_by = fullName
+    new_block.creator_email = email
+    new_block.creator_picture = picture
     new_block_dict = new_block.model_dump()
     new_block_dict["id"] = str(new_block_dict["id"])
     ## to store the block as a json string in the db

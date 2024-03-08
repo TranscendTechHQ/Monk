@@ -28,6 +28,17 @@ class ThreadScreen extends ConsumerWidget {
         .map((e) => e.content)
         .toList();
 
+    // Remove this. THis is only for demonstration
+    final emails = currentThread.value?.content?.reversed
+        .toList()
+        .map((e) => e.creatorEmail)
+        .toList();
+
+    final pictures = currentThread.value?.content?.reversed
+        .toList()
+        .map((e) => e.creatorPicture)
+        .toList();
+
     // chat display widget
     final blockDisplay = SizedBox(
         width: containerWidth,
@@ -37,6 +48,10 @@ class ThreadScreen extends ConsumerWidget {
           itemCount: blocks?.length ?? 0,
           itemBuilder: (context, index) {
             final block = blocks?[index];
+            final email = emails?.elementAt(index);
+            final picture = pictures?.elementAt(index);
+            print(email);
+            print(picture);
             return Container(
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),

@@ -24,6 +24,10 @@ class SessionInfo {
 
     required  this.fullName,
 
+     this.lastLogin,
+
+     this.picture,
+
     required  this.sessionHandle,
 
     required  this.userId,
@@ -67,6 +71,30 @@ class SessionInfo {
 
   @JsonKey(
     
+    name: r'last_login',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? lastLogin;
+
+
+
+  @JsonKey(
+    
+    name: r'picture',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? picture;
+
+
+
+  @JsonKey(
+    
     name: r'sessionHandle',
     required: true,
     includeIfNull: false
@@ -94,6 +122,8 @@ class SessionInfo {
      other.accessTokenPayload == accessTokenPayload &&
      other.email == email &&
      other.fullName == fullName &&
+     other.lastLogin == lastLogin &&
+     other.picture == picture &&
      other.sessionHandle == sessionHandle &&
      other.userId == userId;
 
@@ -102,6 +132,8 @@ class SessionInfo {
     accessTokenPayload.hashCode +
     email.hashCode +
     fullName.hashCode +
+    lastLogin.hashCode +
+    picture.hashCode +
     sessionHandle.hashCode +
     userId.hashCode;
 

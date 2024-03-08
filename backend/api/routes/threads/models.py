@@ -30,6 +30,8 @@ class BlockModel(BaseModel):
     content: str = Field(...)
     created_at: datetime = Field(default_factory=datetime.now)
     created_by: str = Field(default="unknown user")
+    creator_email: str = Field(default="unknown email")
+    creator_picture: str = Field(default="unknown picture link")
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

@@ -36,6 +36,14 @@ components:
           default: unknown user
           title: Created By
           type: string
+        creator_email:
+          default: unknown email
+          title: Creator Email
+          type: string
+        creator_picture:
+          default: unknown picture link
+          title: Creator Picture
+          type: string
       required:
       - content
       title: BlockModel
@@ -96,6 +104,12 @@ components:
           type: string
         fullName:
           title: Fullname
+          type: string
+        last_login:
+          title: Last Login
+          type: string
+        picture:
+          title: Picture
           type: string
         sessionHandle:
           title: Sessionhandle
