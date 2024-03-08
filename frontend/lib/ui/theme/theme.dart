@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 part 'color_scheme.dart';
+part 'theme_extensions.dart';
 
 // enum ColorSeed {
 //   baseColor('M3 Baseline', Color(0xff6750a4)),

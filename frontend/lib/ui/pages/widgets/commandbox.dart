@@ -6,6 +6,7 @@ import 'package:frontend/repo/commandparser.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
 import 'package:frontend/ui/pages/thread_page.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 part 'commandbox.g.dart';
@@ -154,18 +155,34 @@ class CommandBox extends ConsumerWidget {
         ref.read(currentThreadProvider.call(title: title, type: type).notifier);
     VisibilityEnum commandVisibility = ref.watch(screenVisibilityProvider);
     final commandHintText = ref.watch(commandHintTextProvider);
+
     final threadInput = TextField(
       autofocus: true,
       controller: _blockController,
       //keyboardType: TextInputType.multiline,
       minLines: 2,
       maxLines: 5,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         filled: true,
-        fillColor: Color.fromARGB(255, 188, 105, 240),
-        border: OutlineInputBorder(),
+        fillColor: context.colorScheme.tertiaryContainer.withOpacity(.3),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: context.colorScheme.tertiaryContainer,
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(0),
+        ),
+        enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: context.disabledColor)),
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+          color: context.disabledColor,
+        )),
         hintText:
             'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
+        hintStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiaryContainer,
+        ),
       ),
       onChanged: (text) async {
         if (text.isNotEmpty && text.startsWith('/')) {
@@ -182,14 +199,8 @@ class CommandBox extends ConsumerWidget {
         }
       },
     );
-    return Container(
-      //alignment: Alignment.center,
+    return SizedBox(
       width: containerWidth,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 1,
-        ),
-      ),
       child: RawKeyboardListener(
         focusNode: FocusNode(),
         onKey: (RawKeyEvent event) async {

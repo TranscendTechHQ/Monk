@@ -38,7 +38,7 @@ class ThreadPage extends ConsumerWidget {
                   : ChatListView(currentThread: currentThread),
             ),
             blockInput,
-            // const Padding(padding: EdgeInsets.all(16))
+            const Padding(padding: EdgeInsets.all(8))
           ],
         ),
       ),
@@ -91,35 +91,69 @@ class ThreadCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: Theme.of(context).colorScheme.primary,
-          width: 1,
+          width: .3,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      block.creatorPicture!.startsWith('https')
+                          ? block.creatorPicture!
+                          : "https://api.dicebear.com/7.x/identicon/png?seed=${block.createdBy ?? "UN"}",
+                      width: 25,
+                      height: 25,
+                      cacheHeight: 30,
+                      cacheWidth: 30,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${block.createdBy}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      if (block.createdAt != null)
+                        Text(
+                          DateFormat('dd MMM yyyy')
+                              .format(block.createdAt!.toLocal()),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(.6),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           SelectableText(
             emojiParser.emojify(block.content.toString() ?? '').trimRight(),
             style: TextStyle(
               fontSize: 15,
               fontFamily: 'NotoEmoji',
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w400,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          if (block.createdAt != null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  DateFormat('dd MMM yyyy').format(block.createdAt!.toLocal()),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color:
-                        Theme.of(context).colorScheme.onSurface.withOpacity(.6),
-                  ),
-                ),
-              ],
-            ),
         ],
       ),
     );

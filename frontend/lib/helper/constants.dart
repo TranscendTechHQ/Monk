@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-
 const apiDomain = "http://35.209.147.65:8000";
-//const apiDomain = "http://0.0.0.0:8000";
 
 class Constants {
+  static String appName = "Monk";
   static String googleClientId =
       "337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com";
 

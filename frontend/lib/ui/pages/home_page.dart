@@ -155,13 +155,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                   padding: const EdgeInsets.all(8),
                   child: Tooltip(
-                    message: "Sign Out",
-                    child: Icon(
-                      Icons.logout,
-                      color: Theme.of(context).colorScheme.onError,
-                      size: 18,
-                    ),
-                  ),
+                      message: "Sign Out",
+                      child: InkWell(
+                        onTap: () {
+                          signOut();
+                        },
+                        child: Icon(
+                          Icons.logout,
+                          color: Theme.of(context).colorScheme.onError,
+                          size: 18,
+                        ),
+                      )),
                 ),
               ),
               renderContent(),

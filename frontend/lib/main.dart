@@ -19,7 +19,8 @@ class MonkApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Monk',
+      title: Constants.appName,
+      onGenerateTitle: (BuildContext context) => Constants.appName,
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.dark,
       theme: AppTheme.lightTheme,
