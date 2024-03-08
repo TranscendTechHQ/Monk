@@ -27,5 +27,15 @@ void main() {
       // TODO
     });
 
+    // String creatorEmail (default value: 'unknown email')
+    test('to test the property `creatorEmail`', () async {
+      // TODO
+    });
+
+    // String creatorPicture (default value: 'unknown picture link')
+    test('to test the property `creatorPicture`', () async {
+      // TODO
+    });
+
   });
 }

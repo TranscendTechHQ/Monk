@@ -83,12 +83,17 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 #print(result.raw_user_info_from_provider.from_user_info_api['name'])
                 user_id = result.user.user_id
                 user_name = result.raw_user_info_from_provider.from_user_info_api['name']
-                
+                user_picture = result.raw_user_info_from_provider.from_user_info_api['picture']
+                #email = result.raw_user_info_from_provider.from_user_info_api['email']
+                email = result.user.email
                 mongodb_client = AsyncIOMotorClient(settings.DB_URL)
                 mongodb = mongodb_client[settings.DB_NAME]
                 
                 mongodb_users = mongodb["users"]
-                update_result = await mongodb_users.update_one({"_id": user_id}, {"$set": {"user_name": user_name}}, upsert=True)
+                update_result = await mongodb_users.update_one({"_id": user_id}, 
+                                                               {"$set": {"user_name": user_name, 
+                                                                         "user_picture": user_picture,
+                                                                         "email": email}}, upsert=True)
                 
                 #await update_user_metadata(user_id=user_id, metadata_update={
                  #   "user_name": user_name

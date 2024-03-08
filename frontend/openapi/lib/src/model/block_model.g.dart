@@ -21,13 +21,19 @@ BlockModel _$BlockModelFromJson(Map<String, dynamic> json) => $checkedCreate(
               (v) => v == null ? null : DateTime.parse(v as String)),
           createdBy: $checkedConvert(
               'created_by', (v) => v as String? ?? 'unknown user'),
+          creatorEmail: $checkedConvert(
+              'creator_email', (v) => v as String? ?? 'unknown email'),
+          creatorPicture: $checkedConvert(
+              'creator_picture', (v) => v as String? ?? 'unknown picture link'),
         );
         return val;
       },
       fieldKeyMap: const {
         'id': '_id',
         'createdAt': 'created_at',
-        'createdBy': 'created_by'
+        'createdBy': 'created_by',
+        'creatorEmail': 'creator_email',
+        'creatorPicture': 'creator_picture'
       },
     );
 
@@ -44,5 +50,7 @@ Map<String, dynamic> _$BlockModelToJson(BlockModel instance) {
   val['content'] = instance.content;
   writeNotNull('created_at', instance.createdAt?.toIso8601String());
   writeNotNull('created_by', instance.createdBy);
+  writeNotNull('creator_email', instance.creatorEmail);
+  writeNotNull('creator_picture', instance.creatorPicture);
   return val;
 }

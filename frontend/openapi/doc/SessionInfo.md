@@ -11,6 +11,8 @@ Name | Type | Description | Notes
 **accessTokenPayload** | **Object** |  | 
 **email** | **String** |  | 
 **fullName** | **String** |  | 
+**lastLogin** | **String** |  | [optional] 
+**picture** | **String** |  | [optional] 
 **sessionHandle** | **String** |  | 
 **userId** | **String** |  | 
 

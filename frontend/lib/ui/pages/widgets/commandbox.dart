@@ -87,7 +87,7 @@ class CommandTypeAhead extends ConsumerWidget {
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(e.toString()),
-                    duration: const Duration(seconds: 10),
+                    duration: const Duration(seconds: 3),
                   ));
                   return;
                 }

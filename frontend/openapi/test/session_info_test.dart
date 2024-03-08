@@ -22,6 +22,16 @@ void main() {
       // TODO
     });
 
+    // String lastLogin
+    test('to test the property `lastLogin`', () async {
+      // TODO
+    });
+
+    // String picture
+    test('to test the property `picture`', () async {
+      // TODO
+    });
+
     // String sessionHandle
     test('to test the property `sessionHandle`', () async {
       // TODO
