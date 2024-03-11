@@ -8,7 +8,14 @@ from pymongo import MongoClient, UpdateOne
 from pymongo import ReplaceOne
 import os
 import asyncio
+import threading
 
+
+def start_timer(delay, func):
+  # Simulate your event triggering the timer
+  print("Event triggered, starting timer!")
+  timer = threading.Timer(delay, func)
+  timer.start()
 
 class App:
     pass
@@ -29,7 +36,7 @@ def shutdown_db_client():
     
 
 
-    
+
     
 def update_thread_creator() :
     collection = app.mongodb["threads"]
@@ -41,48 +48,56 @@ def update_thread_creator() :
 
     collection.bulk_write(requests)
 
-def generate_thread_embedding():
-    collection = app.mongodb["threads"]
-    # Update the collection with the embeddings
-    #requests = []
-    dest_collection = app.mongodb["thread_embeddings"]
+def generate_single_thread_embedding(thread_doc):
+    embeddings = { }
+    embeddings_collection = app.mongodb["thread_embeddings"]
     user_collection = app.mongodb["users"]
     
-    embeddings = { }
-    for doc in collection.find({'title':{"$exists": True}}).limit(500):
+    title = thread_doc['title']
+    text = "This is the content of the thread with title " + title + ". "
+    threadType = thread_doc['type']
+    text += "The type of the thread is " + threadType + ". "
+    createdAt = thread_doc['created_date']
+    text += "The thread was created on " + createdAt + ". "
+    creator = thread_doc['creator']
+    text += "The creator of the thread is " + creator + ". "
+    userDoc = user_collection.find_one({'user_name': creator})
+    email = userDoc['email']
+    text += "The email of the creator is " + email + ". "
+    #print(text)
+    embeddings['title'] = title
+    
+    #return
+    
+    blocks = thread_doc['content']
+    
+    for block in blocks:
+        #print(block['content'])
+        text += block['content'] + " "
+    #print (text)
+    
+    embeddings['embedding'] = generate_embedding(text)
+    embeddings_collection.update_one({'_id': thread_doc['_id']},
+                                {'$set':embeddings}, upsert=True)
+    
+    
+def generate_all_threads_embedding():
+    thread_collection = app.mongodb["threads"]
+    # Update the collection with the embeddings
+    #requests = []
+
+    
+    for thread_doc in thread_collection.find({'title':{"$exists": True}}).limit(500):
         #print(doc['content'])
-        
-        title = doc['title']
-        text = "This is the content of the thread with title " + title + ". "
-        threadType = doc['type']
-        text += "The type of the thread is " + threadType + ". "
-        createdAt = doc['created_date']
-        text += "The thread was created on " + createdAt + ". "
-        creator = doc['creator']
-        text += "The creator of the thread is " + creator + ". "
-        userDoc = user_collection.find_one({'user_name': creator})
-        email = userDoc['email']
-        text += "The email of the creator is " + email + ". "
-        #print(text)
-        embeddings['title'] = title
-        
-        #return
-        
-        blocks = doc['content']
-        
-        for block in blocks:
-            #print(block['content'])
-            text += block['content'] + " "
-        #print (text)
-        
-        embeddings['embedding'] = generate_embedding(text)
-        dest_collection.update_one({'_id': doc['_id']},
-                                   {'$set':embeddings}, upsert=True)
+        generate_single_thread_embedding(thread_doc)
         
         #requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
     #collection.bulk_write(requests)
 
+def generate_all_threads_embedding_delayed(delay):
+    start_timer(delay, generate_all_threads_embedding)
+    
 def move_thread_embedding():
     collection = app.mongodb["threads"]
     dest_collection = app.mongodb["thread_embeddings"]
@@ -110,8 +125,9 @@ async def main() :
     #print(embedding)
     #generate_thread_embedding()
     #move_thread_embedding()
+    #generate_all_threads_embedding()
     result = await thread_semantic_search(
-        "thread about go to market strategy")
+        "thread about monk next steps")
     pprint.pprint(result)
     
     shutdown_db_client()
