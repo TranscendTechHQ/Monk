@@ -10,12 +10,17 @@ os.environ["OPENAI_API_KEY"] = settings.MONK_OPENAPI_KEY
 os.environ["OPENAI_API_ENDPOINT"] = "https://api.openai.com"
 os.environ["OPENAI_API_VERSION"] = "2023-05-15"
 
-def generate_summary(text: str) -> str:
+def generate_headline(text: str) -> str:
     # Define prompt
     
-    prompt_template = """Write a concise summary of the following:
+    prompt_template = """Imagine the following text in
+    triple quotes is from a concatenated tweetstorm. 
+    Generate a concise headline, maximum 1-2 sentences long, 
+    such the reader gets the gist just by reading the headline. 
+    If the text is empty, just generate an empty text as headline. 
+    Also, directly print the headline without any filler text like 'the headline is':
     "{text}"
-    CONCISE SUMMARY:"""
+    headline:"""
     prompt = PromptTemplate.from_template(prompt_template)
 
     # Define LLM chain
@@ -27,7 +32,7 @@ def generate_summary(text: str) -> str:
 
     #docs = loader.load()
     
-    summary = llm_chain.invoke(text)
+    headline = llm_chain.invoke(text)
     #print(summary)
-    return summary
+    return headline
 

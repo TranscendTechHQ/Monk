@@ -1,6 +1,9 @@
 import asyncio
 import pprint
-from utils.summary import generate_summary
+
+from pymongo import MongoClient
+from config import settings
+from utils.headline import generate_headline
 
 text = """
 
@@ -31,9 +34,51 @@ You don't need to have a complete thesis; you just need some kind of gap you can
 If you come across a question that's sufficiently puzzling, it could be worth exploring even if it doesn't seem very momentous. Many an important discovery has been made by pulling on a thread that seemed insignificant at first. How can they all be finches?
 """
 
+class App:
+    pass
+
+app = App()
+
+
+
+
+def startup_db_client():
+    app.mongodb_client = MongoClient(settings.DB_URL)
+    app.mongodb = app.mongodb_client[settings.DB_NAME]
+
+
+
+def shutdown_db_client():
+    app.mongodb_client.close()
+    
+    
+def generate_single_thread_headline(thread_doc):   
+    blocks = thread_doc['content']
+    text = ""
+    for block in blocks:
+        #print(block['content'])
+        text += block['content'] + " " 
+    headline = generate_headline(text)
+    return headline
+
+def generate_all_thread_headlines(num_thread_limit):
+    thread_collection = app.mongodb["threads"]
+    headline_collection = app.mongodb["thread_headlines"]
+    for doc in thread_collection.find({'title':{"$exists": True}}).limit(num_thread_limit):
+        headline = generate_single_thread_headline(doc)
+        title = doc['title']
+        headline_collection.update_one({'_id': doc['_id']}, 
+                                      {'$set': {'headline': headline['text'], 
+                                                'title': title}}, upsert=True)
+        pprint.pprint(headline['text'])
+    
 async def main() :
-    result =  generate_summary(text)
-    pprint.pprint(result)
+    startup_db_client()
+    #result =  generate_headline(text)
+    #pprint.pprint(result)
+    generate_all_thread_headlines(50)
+    shutdown_db_client()
+    
     
     
 if __name__ == "__main__":
