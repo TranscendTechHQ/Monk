@@ -10,6 +10,8 @@ doc/HTTPValidationError.md
 doc/ModelDate.md
 doc/SessionApi.md
 doc/SessionInfo.md
+doc/ThreadHeadlineModel.md
+doc/ThreadHeadlinesModel.md
 doc/ThreadModel.md
 doc/ThreadsApi.md
 doc/ThreadsInfo.md
@@ -33,6 +35,8 @@ lib/src/model/create_thread_model.dart
 lib/src/model/http_validation_error.dart
 lib/src/model/model_date.dart
 lib/src/model/session_info.dart
+lib/src/model/thread_headline_model.dart
+lib/src/model/thread_headlines_model.dart
 lib/src/model/thread_model.dart
 lib/src/model/threads_info.dart
 lib/src/model/threads_model.dart
@@ -47,6 +51,8 @@ test/http_validation_error_test.dart
 test/model_date_test.dart
 test/session_api_test.dart
 test/session_info_test.dart
+test/thread_headline_model_test.dart
+test/thread_headlines_model_test.dart
 test/thread_model_test.dart
 test/threads_api_test.dart
 test/threads_info_test.dart

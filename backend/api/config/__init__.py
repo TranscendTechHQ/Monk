@@ -42,6 +42,8 @@ class OpenAISettings(BaseSettings):
     AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT")
     AZURE_OPENAI_EMB_DEPLOYMENT: str = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT")
     API_VERSION: str = "2023-05-15"
+    AZURE_OPENAI_GPT_DEPLOYEMENT: str = os.getenv("AZURE_OPENAI_GPT_DEPLOYEMENT")
+    MONK_OPENAPI_KEY: str = os.getenv("MONK_OPENAPI_KEY")
     
 class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings):
     pass

@@ -221,3 +221,24 @@ class ThreadsInfo(BaseModel):
                                 }
                               }
     )
+    
+
+class ThreadHeadlineModel(BaseModel):
+    id: str = Field(..., alias="_id")
+    title: str
+    headline: str
+    model_config = ConfigDict(extra='ignore',                      
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              json_schema_extra = {
+                                "example": {
+                                "id": "12345678-1234-5678-1234-567812345678",
+                                "title": "This is the title of the thread",
+                                "headline": "This is the headline of the thread"
+                                }
+                              }
+    )
+    
+class ThreadHeadlinesModel(BaseModel):
+    headlines: List[ThreadHeadlineModel]
+    

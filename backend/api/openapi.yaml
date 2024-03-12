@@ -125,6 +125,38 @@ components:
       - accessTokenPayload
       title: SessionInfo
       type: object
+    ThreadHeadlineModel:
+      example:
+        headline: This is the headline of the thread
+        id: 12345678-1234-5678-1234-567812345678
+        title: This is the title of the thread
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        headline:
+          title: Headline
+          type: string
+        title:
+          title: Title
+          type: string
+      required:
+      - _id
+      - title
+      - headline
+      title: ThreadHeadlineModel
+      type: object
+    ThreadHeadlinesModel:
+      properties:
+        headlines:
+          items:
+            $ref: '#/components/schemas/ThreadHeadlineModel'
+          title: Headlines
+          type: array
+      required:
+      - headlines
+      title: ThreadHeadlinesModel
+      type: object
     ThreadModel:
       example:
         content:
@@ -422,6 +454,19 @@ paths:
       summary: Secure Api
       tags:
       - session
+  /threadHeadlines:
+    get:
+      operationId: th_threadHeadlines_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadHeadlinesModel'
+          description: Get headlines for all threads
+      summary: Th
+      tags:
+      - threads
   /threadTypes:
     get:
       operationId: tt_threadTypes_get
