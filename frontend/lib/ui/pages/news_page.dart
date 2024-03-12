@@ -1,3 +1,4 @@
+import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -8,23 +9,33 @@ import 'package:frontend/repo/thread.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:openapi/openapi.dart';
 
-class ThreadPage extends ConsumerWidget {
+class NewsPage extends ConsumerWidget {
   final String title;
   final String type;
-  const ThreadPage({super.key, required this.title, required this.type});
+  const NewsPage({super.key, required this.title, required this.type});
 
-  static String route = "/journal";
-  static Route launchRoute({required String title, required String type}) {
+  static String route = "/news";
+
+  static Route launchRoute() {
     return MaterialPageRoute<void>(
-      builder: (_) => ThreadPage(title: title, type: type),
-    );
+        builder: (_) => const NewsPage(title: "News", type: "/new-thread"));
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // _searchFocusNode.requestFocus();
+
     final currentThread =
         ref.watch(currentThreadProvider.call(title: title, type: type));
-    final blockInput = CommandBox(title: title, type: type);
+    final blockInput = CommandBox(
+      title: title,
+      type: type,
+      allowedInputTypes: const [
+        InputBoxType.commandBox,
+        InputBoxType.searchBox,
+        // InputBoxType.thread,
+      ],
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -56,26 +67,90 @@ class ChatListView extends ConsumerWidget {
   final AsyncValue<ThreadModel> currentThread;
 
   final scrollController = ScrollController();
-  scrollToBottom() {
-    scrollController.jumpTo(scrollController.position.maxScrollExtent);
-  }
 
   final emojiParser = EmojiParser(init: true);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blocks = currentThread.value?.content?.reversed.toList();
-    return SizedBox(
-      width: containerWidth,
-      child: ListView.builder(
-        reverse: true,
-        controller: scrollController,
-        itemCount: blocks?.length ?? 0,
-        padding: const EdgeInsets.only(bottom: 30),
-        itemBuilder: (context, index) {
-          final block = blocks?[index];
-          return ThreadCard(block: block!, emojiParser: emojiParser);
+    final threadListAsync = ref.watch(fetchThreadsInfoProvider);
+    // final isLoading = threadListAsync.when(
+    //   data: (thread) => false,
+    //   loading: () => true,
+    //   error: (error, stack) => false,
+    // );
+    // final List<String> titlesList = threadListAsync.value?.keys.toList() ?? [];
+    return threadListAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(child: Text('Error: $error')),
+      data: (thread) => SizedBox(
+        width: containerWidth,
+        child: ListView.builder(
+          reverse: true,
+          controller: scrollController,
+          itemCount: thread.length,
+          padding: const EdgeInsets.only(bottom: 30),
+          itemBuilder: (context, index) {
+            return NewsCard(thread: {
+              thread.keys.elementAt(index): thread.values.elementAt(index),
+            });
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class NewsCard extends StatelessWidget {
+  const NewsCard({super.key, required this.thread});
+
+  final Map<String, String> thread;
+
+  @override
+  Widget build(BuildContext context) {
+    final type = thread.values.first.trimRight();
+    final title = thread.keys.first.trimRight();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: InkWell(
+        onTap: () {
+          Navigator.pushReplacement(
+              context, ThreadPage.launchRoute(title: title, type: type));
         },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.primary,
+              width: .3,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SelectableText(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'NotoEmoji',
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              SelectableText(
+                'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'NotoEmoji',
+                  fontWeight: FontWeight.w400,
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

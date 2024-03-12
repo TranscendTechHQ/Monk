@@ -99,8 +99,7 @@ class CommandParser {
           final threadType = command.substring(5);
           commandHintTextNotifier.set('New $threadType $title added');
         }
-      }
-      if (command == '/go') {
+      } else if (command == '/go') {
         if (!titlesList.contains(title)) {
           throw ArgumentError(
               'Thread $title does not exist. Please create it first usng "/new-*" commands');

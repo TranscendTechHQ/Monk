@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/splash_page.dart';
 import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:frontend/ui/pages/login_page.dart';
@@ -10,7 +11,9 @@ import 'helper/constants.dart';
 
 void main() {
   SuperTokens.init(apiDomain: apiDomain);
-  runApp(const ProviderScope(child: MonkApp()));
+  runApp(
+    const ProviderScope(child: MonkApp()),
+  );
 }
 
 class MonkApp extends ConsumerWidget {
@@ -32,6 +35,8 @@ class MonkApp extends ConsumerWidget {
         LoginPage.route: (context) => const LoginPage(),
         ThreadPage.route: (context) =>
             const ThreadPage(title: "journal", type: "/new-thread"),
+        NewsPage.route: (context) =>
+            const NewsPage(title: "journal", type: "/new-thread"),
       },
     );
   }

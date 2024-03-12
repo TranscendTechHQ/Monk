@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/ui/pages/login_page.dart';
+import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
@@ -124,10 +125,11 @@ class _HomePageState extends State<HomePage> {
                     Theme.of(context).colorScheme.tertiaryContainer),
               ),
               onPressed: () async {
-                Navigator.pushNamed(context, ThreadPage.route);
+                // Navigator.pushNamed(context, ThreadPage.route);
+                Navigator.pushNamed(context, NewsPage.route);
               },
               child: Text(
-                "Go to Journal",
+                "Go to News",
                 style: Theme.of(context).textTheme.labelSmall,
               ),
             ),
