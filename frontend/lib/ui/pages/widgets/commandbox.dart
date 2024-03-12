@@ -23,7 +23,6 @@ class ScreenVisibility extends _$ScreenVisibility {
   @override
   InputBoxType build({InputBoxType visibility = InputBoxType.thread}) =>
       visibility;
-  // void setVisibility(InputBoxType visibility) => state = visibility;
   void setVisibility(InputBoxType visibility) {
     state = visibility;
   }
@@ -35,8 +34,10 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
     String newThreadType) {
   final screenVisibility = ref.read(screenVisibilityProvider().notifier);
   screenVisibility.setVisibility(InputBoxType.thread);
-  Navigator.pushReplacement(context,
-      ThreadPage.launchRoute(title: newThreadTitle, type: newThreadType));
+  Navigator.pushReplacement(
+    context,
+    ThreadPage.launchRoute(title: newThreadTitle, type: newThreadType),
+  );
 }
 
 class CommandTypeAhead extends ConsumerWidget {
@@ -94,9 +95,6 @@ class CommandTypeAhead extends ConsumerWidget {
         focusNode: focusNode,
         autofocus: true,
         decoration: const InputDecoration(
-          filled: true,
-          fillColor: Color.fromARGB(255, 74, 21, 107),
-          border: InputBorder.none,
           hintText: 'press "/" for commands',
         ),
       ),
@@ -138,9 +136,9 @@ class CommandTypeAhead extends ConsumerWidget {
 }
 
 class CommandBox extends ConsumerWidget {
-  final TextEditingController _blockController = TextEditingController();
-  final FocusNode _searchFocusNode = FocusNode();
-  final FocusNode _commandFocusNode = FocusNode();
+  final _blockController = TextEditingController();
+  final _searchFocusNode = FocusNode();
+  final _commandFocusNode = FocusNode();
   final String title;
   final String type;
   final List<InputBoxType> allowedInputTypes;
@@ -168,30 +166,11 @@ class CommandBox extends ConsumerWidget {
     final threadInput = TextField(
       autofocus: true,
       controller: _blockController,
-      //keyboardType: TextInputType.multiline,
       minLines: 2,
       maxLines: 5,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: context.colorScheme.tertiaryContainer.withOpacity(.3),
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: context.colorScheme.tertiaryContainer,
-            width: 1,
-          ),
-          borderRadius: BorderRadius.circular(0),
-        ),
-        enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: context.disabledColor)),
-        focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-          color: context.disabledColor,
-        )),
+      decoration: const InputDecoration(
         hintText:
             'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
-        hintStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onTertiaryContainer,
-        ),
       ),
       onChanged: (text) async {
         if (text.isNotEmpty && text.startsWith('/')) {
@@ -211,7 +190,7 @@ class CommandBox extends ConsumerWidget {
 
     Widget callbackShortcutWrapper({required Widget child}) {
       Map<ShortcutActivator, VoidCallback> bindings = {
-        if (allowedInputTypes.contains(InputBoxType.thread))
+        if (allowedInputTypes.contains(InputBoxType.commandBox))
           const SingleActivator(LogicalKeyboardKey.keyK, meta: true): () {
             ref
                 .read(screenVisibilityProviderVal.notifier)
@@ -234,66 +213,62 @@ class CommandBox extends ConsumerWidget {
 
     return SizedBox(
       width: containerWidth,
-      child: RawKeyboardListener(
-        focusNode: FocusNode(),
-        onKey: (RawKeyEvent event) async {
-          if (!event.repeat) {
-            if (event is RawKeyDownEvent) {
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: KeyboardListener(
+          focusNode: FocusNode(),
+          onKeyEvent: (KeyEvent event) async {
+            if (event is KeyDownEvent) {
               if (event.logicalKey == LogicalKeyboardKey.escape) {
                 ref
                     .read(screenVisibilityProviderVal.notifier)
                     .setVisibility(allowedInputTypes.first);
               }
               // Handle key down
-            } else if (event is RawKeyUpEvent) {
+            } else if (event is KeyUpEvent) {
               // Handle key up
               // just chill
             }
-          }
-        },
-        child: callbackShortcutWrapper(
-          child: Stack(children: [
-            Visibility(
-              visible: (commandVisibility == InputBoxType.thread),
-              child: threadInput,
-              //  CallbackShortcuts(
-              //   bindings: {
-              //     const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
-              //         () {
-              //       ref
-              //           .read(screenVisibilityProvider().notifier)
-              //           .setVisibility(InputBoxType.searchBox);
-              //       _searchFocusNode.requestFocus();
-              //     },
-              //     const SingleActivator(LogicalKeyboardKey.enter, shift: true):
-              //         () {
-              //       String blockText = _blockController.text;
-              //       // Submit the text
+          },
+          child: callbackShortcutWrapper(
+            child: Stack(children: [
+              Visibility(
+                visible: (commandVisibility == InputBoxType.thread),
+                child: threadInput,
+                //  CallbackShortcuts(
+                //   bindings: {
+                //     const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
+                //         () {
+                //       ref
+                //           .read(screenVisibilityProvider().notifier)
+                //           .setVisibility(InputBoxType.searchBox);
+                //       _searchFocusNode.requestFocus();
+                //     },
+                //     const SingleActivator(LogicalKeyboardKey.enter, shift: true):
+                //         () {
+                //       String blockText = _blockController.text;
+                //       // Submit the text
 
-              //       threadNotifier.createBlock(blockText);
-              //       _blockController.clear();
-              //     },
-              //   },
-              //   child: threadInput,
-              // ),
-            ),
-            // COMMAND BOX
-            Visibility(
-              visible: (commandVisibility == InputBoxType.commandBox),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  // Text(commandHintTex),
-                  CommandTypeAhead(commandFocusNode: _commandFocusNode),
-                ],
+                //       threadNotifier.createBlock(blockText);
+                //       _blockController.clear();
+                //     },
+                //   },
+                //   child: threadInput,
+                // ),
               ),
-            ),
-            // SEARCH BOX
-            Visibility(
-              visible: (commandVisibility == InputBoxType.searchBox),
-              child: SearchModal(focusNode: _searchFocusNode),
-            ),
-          ]),
+              // COMMAND BOX
+              Visibility(
+                visible: (commandVisibility == InputBoxType.commandBox),
+                maintainState: true,
+                child: CommandTypeAhead(commandFocusNode: _commandFocusNode),
+              ),
+              // SEARCH BOX
+              Visibility(
+                visible: (commandVisibility == InputBoxType.searchBox),
+                child: SearchModal(focusNode: _searchFocusNode),
+              ),
+            ]),
+          ),
         ),
       ),
     );

@@ -1,5 +1,8 @@
+import 'package:frontend/helper/combine_async.dart';
+import 'package:frontend/repo/news_provider.dart';
 import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +12,7 @@ import 'package:frontend/repo/thread.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:openapi/openapi.dart';
 
-class NewsPage extends ConsumerWidget {
+class NewsPage extends StatelessWidget {
   final String title;
   final String type;
   const NewsPage({super.key, required this.title, required this.type});
@@ -18,41 +21,31 @@ class NewsPage extends ConsumerWidget {
 
   static Route launchRoute() {
     return MaterialPageRoute<void>(
-        builder: (_) => const NewsPage(title: "News", type: "/new-thread"));
+        builder: (_) => const NewsPage(title: "News", type: "/news"));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // _searchFocusNode.requestFocus();
-
-    final currentThread =
-        ref.watch(currentThreadProvider.call(title: title, type: type));
+  Widget build(BuildContext context) {
     final blockInput = CommandBox(
       title: title,
       type: type,
       allowedInputTypes: const [
         InputBoxType.commandBox,
         InputBoxType.searchBox,
-        // InputBoxType.thread,
       ],
     );
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${type.split('-')[1]} -: $title',
-          style: TextStyle(
-              fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
+          'News',
+          style: TextStyle(fontSize: 20, color: context.colorScheme.onSurface),
         ),
       ),
       body: Align(
         alignment: Alignment.center,
         child: Column(
           children: [
-            Expanded(
-              child: currentThread.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ChatListView(currentThread: currentThread),
-            ),
+            Expanded(child: ChatListView()),
             blockInput,
             const Padding(padding: EdgeInsets.all(8))
           ],
@@ -63,8 +56,7 @@ class NewsPage extends ConsumerWidget {
 }
 
 class ChatListView extends ConsumerWidget {
-  ChatListView({super.key, required this.currentThread});
-  final AsyncValue<ThreadModel> currentThread;
+  ChatListView({super.key});
 
   final scrollController = ScrollController();
 
@@ -72,169 +64,96 @@ class ChatListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final threadListAsync = ref.watch(fetchThreadsInfoProvider);
-    // final isLoading = threadListAsync.when(
-    //   data: (thread) => false,
-    //   loading: () => true,
-    //   error: (error, stack) => false,
-    // );
-    // final List<String> titlesList = threadListAsync.value?.keys.toList() ?? [];
-    return threadListAsync.when(
+    final threadHeadlineListAsync =
+        ref.watch(fetchThreadsHeadlinesAsyncProvider);
+    final threadHeadlineMetaDataAsync =
+        ref.watch(fetchThreadsMdMetaDataAsyncProvider);
+
+    final combo =
+        combineAsync2(threadHeadlineListAsync, threadHeadlineMetaDataAsync);
+
+    return combo.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Error: $error')),
-      data: (thread) => SizedBox(
-        width: containerWidth,
-        child: ListView.builder(
-          reverse: true,
-          controller: scrollController,
-          itemCount: thread.length,
-          padding: const EdgeInsets.only(bottom: 30),
-          itemBuilder: (context, index) {
-            return NewsCard(thread: {
-              thread.keys.elementAt(index): thread.values.elementAt(index),
-            });
-          },
-        ),
-      ),
+      data: (tuple) {
+        final threadHeadlineList = tuple.item1;
+        final threadMetaDataList = tuple.item2;
+        return SizedBox(
+          width: containerWidth,
+          child: ListView.builder(
+            reverse: true,
+            controller: scrollController,
+            itemCount: threadHeadlineList.length,
+            padding: const EdgeInsets.only(bottom: 30),
+            itemBuilder: (context, index) {
+              final headlineModel = threadHeadlineList[index];
+              final metaData = threadMetaDataList
+                  .firstWhere((element) => element.id == headlineModel.id);
+              return NewsCard(headlineModel: headlineModel, metaData: metaData);
+            },
+          ),
+        );
+      },
     );
   }
 }
 
 class NewsCard extends StatelessWidget {
-  const NewsCard({super.key, required this.thread});
+  const NewsCard(
+      {super.key, required this.headlineModel, required this.metaData});
 
-  final Map<String, String> thread;
+  final ThreadHeadlineModel headlineModel;
+  final ThreadMetaData metaData;
 
   @override
   Widget build(BuildContext context) {
-    final type = thread.values.first.trimRight();
-    final title = thread.keys.first.trimRight();
+    final title = headlineModel.title;
+    final headline = headlineModel.headline;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: InkWell(
         onTap: () {
           Navigator.pushReplacement(
-              context, ThreadPage.launchRoute(title: title, type: type));
+              context,
+              ThreadPage.launchRoute(
+                  title: metaData.title, type: metaData.type));
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: context.colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: Theme.of(context).colorScheme.primary,
+              color: context.colorScheme.primary,
               width: .3,
             ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SelectableText(
+              Text(
                 title,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontFamily: 'NotoEmoji',
                   fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: context.colorScheme.onSurface,
                 ),
               ),
-              SelectableText(
-                'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+              const SizedBox(height: 8),
+              Text(
+                headline,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 14,
                   fontFamily: 'NotoEmoji',
                   fontWeight: FontWeight.w400,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                  height: 1.5,
+                  color: context.colorScheme.onSurface.withOpacity(.6),
                 ),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ThreadCard extends StatelessWidget {
-  const ThreadCard({super.key, required this.block, required this.emojiParser});
-  final BlockModel block;
-  final EmojiParser emojiParser;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
-          width: .3,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image.network(
-                      block.creatorPicture!.startsWith('https')
-                          ? block.creatorPicture!
-                          : "https://api.dicebear.com/7.x/identicon/png?seed=${block.createdBy ?? "UN"}",
-                      width: 25,
-                      height: 25,
-                      cacheHeight: 30,
-                      cacheWidth: 30,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${block.createdBy}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      if (block.createdAt != null)
-                        Text(
-                          DateFormat('dd MMM yyyy')
-                              .format(block.createdAt!.toLocal()),
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(.6),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          SelectableText(
-            emojiParser.emojify(block.content.toString() ?? '').trimRight(),
-            style: TextStyle(
-              fontSize: 15,
-              fontFamily: 'NotoEmoji',
-              fontWeight: FontWeight.w400,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ],
       ),
     );
   }

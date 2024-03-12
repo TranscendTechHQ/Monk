@@ -43,7 +43,6 @@ class ThreadPage extends ConsumerWidget {
                   : ChatListView(currentThread: currentThread),
             ),
             blockInput,
-            const Padding(padding: EdgeInsets.all(8))
           ],
         ),
       ),
