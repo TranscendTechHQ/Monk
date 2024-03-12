@@ -63,6 +63,13 @@ void main() {
       // TODO
     });
 
+    // Th
+    //
+    //Future<ThreadHeadlinesModel> thThreadHeadlinesGet() async
+    test('test thThreadHeadlinesGet', () async {
+      // TODO
+    });
+
     // Ti
     //
     //Future<ThreadsInfo> tiThreadsInfoGet() async

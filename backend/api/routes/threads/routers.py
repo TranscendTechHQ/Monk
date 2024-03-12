@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from .search import thread_semantic_search
-from .models import THREADTYPES, ThreadModel, ThreadType, ThreadsInfo, UpdateThreadModel, CreateThreadModel, ThreadsModel
+from .models import THREADTYPES, ThreadHeadlinesModel, ThreadModel, ThreadType, ThreadsInfo, UpdateThreadModel, CreateThreadModel, ThreadsModel
 from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
 from utils.db import create_mongo_document, get_mongo_documents_by_date, get_user_name
 from supertokens_python.recipe.session.framework.fastapi import verify_session
@@ -64,7 +64,16 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     #print(return_threads)
     return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)
 
-
+@router.get("/threadHeadlines", response_model=ThreadHeadlinesModel, 
+            response_description="Get headlines for all threads")
+async def th(request: Request,
+             session : SessionContainer = Depends(verify_session())):
+    # Get all thread headlines from MongoDB
+    headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder(
+                                ThreadHeadlinesModel(headlines=headlines)))
+    
 @router.get("/threadTypes", response_model=List[ThreadType], 
             response_description="Get all thread types")
 async def tt(request: Request, 

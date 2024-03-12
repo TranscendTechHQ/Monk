@@ -4,6 +4,8 @@ import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/session_info.dart';
+import 'package:openapi/src/model/thread_headline_model.dart';
+import 'package:openapi/src/model/thread_headlines_model.dart';
 import 'package:openapi/src/model/thread_model.dart';
 import 'package:openapi/src/model/threads_info.dart';
 import 'package:openapi/src/model/threads_model.dart';
@@ -41,6 +43,10 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return ModelDate.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SessionInfo':
           return SessionInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'ThreadHeadlineModel':
+          return ThreadHeadlineModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'ThreadHeadlinesModel':
+          return ThreadHeadlinesModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadModel':
           return ThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadsInfo':

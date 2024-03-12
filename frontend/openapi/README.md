@@ -73,6 +73,7 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
+[*ThreadsApi*](doc/ThreadsApi.md) | [**thThreadHeadlinesGet**](doc/ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [*ThreadsApi*](doc/ThreadsApi.md) | [**ttThreadTypesGet**](doc/ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateThreadThreadsTitlePut**](doc/ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
@@ -86,6 +87,8 @@ Class | Method | HTTP request | Description
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
  - [SessionInfo](doc/SessionInfo.md)
+ - [ThreadHeadlineModel](doc/ThreadHeadlineModel.md)
+ - [ThreadHeadlinesModel](doc/ThreadHeadlinesModel.md)
  - [ThreadModel](doc/ThreadModel.md)
  - [ThreadsInfo](doc/ThreadsInfo.md)
  - [ThreadsModel](doc/ThreadsModel.md)

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/ui/pages/login_page.dart';
@@ -69,14 +71,19 @@ class _HomePageState extends State<HomePage> {
     //final api = Openapi().getPetApi();
 //    final taskApi = NetworkManager.instance.openApi.getTasksApi();
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    final response = await threadApi.searchTitlesSearchTitlesGet(
+    /*final response = await threadApi.searchTitlesSearchTitlesGet(
         query: "thw thread with link to jira dataset");
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch matching threads");
     }
     final results = response.data!;
-    print(results);
-    //print(results.threads.map((e) => e.title).toList());
+    print(results);*/
+    final response = await threadApi.thThreadHeadlinesGet();
+    if (response.statusCode != 200) {
+      throw Exception("Failed to fetch matching threads");
+    }
+    final results = response.data!;
+    results.headlines.map((e) => print(e));
   }
 
   Widget renderContent() {
@@ -124,7 +131,8 @@ class _HomePageState extends State<HomePage> {
                     Theme.of(context).colorScheme.tertiaryContainer),
               ),
               onPressed: () async {
-                Navigator.pushNamed(context, ThreadPage.route);
+                testOpenApi();
+                //Navigator.pushNamed(context, ThreadPage.route);
               },
               child: Text(
                 "Go to Journal",
