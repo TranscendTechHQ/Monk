@@ -203,6 +203,53 @@ class ThreadsModel(BaseModel):
                               }
                         )
 
+class ThreadMetaData(BaseModel):
+    id: str = Field(..., alias="_id")
+    title: str
+    type: str
+    created_date: str
+    creator: str
+    model_config = ConfigDict(extra='ignore',
+                                populate_by_name=True,
+                                arbitrary_types_allowed=True,
+                                json_schema_extra = {
+                                    "example": {
+                                    "id": "12345678-1234-5678-1234-567812345678",
+                                    "title": "This is the title of the thread",
+                                    "type": "/new-plan",
+                                    "created_date": "2021-01-01T00:00:00.000000",
+                                    "creator": "user1"
+                                    }
+                                }
+                            )
+    
+class ThreadsMetaData(BaseModel):
+    metadata: List[ThreadMetaData]
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              json_schema_extra = {
+                                "example": {
+                                "metadata": [
+                                    {
+                                        "id": "12345678-1234-5678-1234-567812345678",
+                                        "title": "This is the title of the thread",
+                                        "type": "/new-plan",
+                                        "created_date": "2021-01-01T00:00:00.000000",
+                                        "creator": "user1"
+                                    },
+                                    {
+                                        "id": "12345678-1234-5678-1234-567812345678",
+                                        "title": "This is the title of the thread",
+                                        "type": "/new-plan",
+                                        "created_date": "2021-01-01T00:00:00.000000",
+                                        "creator": "user1"
+                                    }
+                                ]
+                                }
+                              }
+                        )
+
 class ThreadsInfo(BaseModel):
     info: dict[str, ThreadType]
     model_config = ConfigDict(extra='ignore',

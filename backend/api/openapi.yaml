@@ -157,6 +157,37 @@ components:
       - headlines
       title: ThreadHeadlinesModel
       type: object
+    ThreadMetaData:
+      example:
+        created_date: '2021-01-01T00:00:00.000000'
+        creator: user1
+        id: 12345678-1234-5678-1234-567812345678
+        title: This is the title of the thread
+        type: /new-plan
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        created_date:
+          title: Created Date
+          type: string
+        creator:
+          title: Creator
+          type: string
+        title:
+          title: Title
+          type: string
+        type:
+          title: Type
+          type: string
+      required:
+      - _id
+      - title
+      - type
+      - created_date
+      - creator
+      title: ThreadMetaData
+      type: object
     ThreadModel:
       example:
         content:
@@ -212,6 +243,29 @@ components:
       required:
       - info
       title: ThreadsInfo
+      type: object
+    ThreadsMetaData:
+      example:
+        metadata:
+        - created_date: '2021-01-01T00:00:00.000000'
+          creator: user1
+          id: 12345678-1234-5678-1234-567812345678
+          title: This is the title of the thread
+          type: /new-plan
+        - created_date: '2021-01-01T00:00:00.000000'
+          creator: user1
+          id: 12345678-1234-5678-1234-567812345678
+          title: This is the title of the thread
+          type: /new-plan
+      properties:
+        metadata:
+          items:
+            $ref: '#/components/schemas/ThreadMetaData'
+          title: Metadata
+          type: array
+      required:
+      - metadata
+      title: ThreadsMetaData
       type: object
     ThreadsModel:
       example:
@@ -384,6 +438,19 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Date
+      tags:
+      - threads
+  /metadata:
+    get:
+      operationId: md_metadata_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadsMetaData'
+          description: Get meta data for all threads
+      summary: Md
       tags:
       - threads
   /searchThreads:

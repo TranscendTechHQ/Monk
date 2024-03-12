@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from .search import thread_semantic_search
-from .models import THREADTYPES, ThreadHeadlinesModel, ThreadModel, ThreadType, ThreadsInfo, UpdateThreadModel, CreateThreadModel, ThreadsModel
+from .models import THREADTYPES, ThreadHeadlinesModel, ThreadMetaData, ThreadModel, ThreadType, ThreadsInfo, ThreadsMetaData, UpdateThreadModel, CreateThreadModel, ThreadsModel
 from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
 from utils.db import create_mongo_document, get_mongo_documents_by_date, get_user_name
 from supertokens_python.recipe.session.framework.fastapi import verify_session
@@ -93,6 +93,22 @@ async def ti(request: Request,
         info[thread["title"]] = thread["type"] 
     return JSONResponse(status_code=status.HTTP_200_OK,
                           content=jsonable_encoder(ThreadsInfo(info=info)))
+
+
+@router.get("/metadata", response_model=ThreadsMetaData, 
+            response_description="Get meta data for all threads")
+async def md(request: Request, 
+                        session: SessionContainer = Depends(verify_session())):
+    # Get all thread titles from MongoDB
+    threads = await get_mongo_documents(request.app.mongodb["threads"])
+    threads_meta_data = []
+    for thread in threads:
+        metadata = ThreadMetaData(**thread)
+        threads_meta_data.append(metadata)
+        
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                          content=jsonable_encoder(ThreadsMetaData(metadata=threads_meta_data)))
+
 
 @router.post("/blocks", response_model=ThreadModel, response_description="Create a new block")
 async def create(request: Request, thread_title:str, block: UpdateBlockModel = Body(...),
