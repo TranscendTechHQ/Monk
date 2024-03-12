@@ -131,8 +131,8 @@ class _HomePageState extends State<HomePage> {
                     Theme.of(context).colorScheme.tertiaryContainer),
               ),
               onPressed: () async {
-                testOpenApi();
-                //Navigator.pushNamed(context, ThreadPage.route);
+                //testOpenApi();
+                Navigator.pushNamed(context, ThreadPage.route);
               },
               child: Text(
                 "Go to Journal",
