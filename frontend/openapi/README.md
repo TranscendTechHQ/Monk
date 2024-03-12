@@ -71,6 +71,7 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**dateJournalGet**](doc/ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksDateGet**](doc/ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
+[*ThreadsApi*](doc/ThreadsApi.md) | [**mdMetadataGet**](doc/ThreadsApi.md#mdmetadataget) | **GET** /metadata | Md
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [*ThreadsApi*](doc/ThreadsApi.md) | [**thThreadHeadlinesGet**](doc/ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
@@ -89,8 +90,10 @@ Class | Method | HTTP request | Description
  - [SessionInfo](doc/SessionInfo.md)
  - [ThreadHeadlineModel](doc/ThreadHeadlineModel.md)
  - [ThreadHeadlinesModel](doc/ThreadHeadlinesModel.md)
+ - [ThreadMetaData](doc/ThreadMetaData.md)
  - [ThreadModel](doc/ThreadModel.md)
  - [ThreadsInfo](doc/ThreadsInfo.md)
+ - [ThreadsMetaData](doc/ThreadsMetaData.md)
  - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateThreadModel](doc/UpdateThreadModel.md)

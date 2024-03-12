@@ -15,6 +15,7 @@ Method | HTTP request | Description
 [**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [**getBlocksByDateBlocksDateGet**](ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
+[**mdMetadataGet**](ThreadsApi.md#mdmetadataget) | **GET** /metadata | Md
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [**thThreadHeadlinesGet**](ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
@@ -255,6 +256,43 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **mdMetadataGet**
+> ThreadsMetaData mdMetadataGet()
+
+Md
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+
+try {
+    final response = api.mdMetadataGet();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->mdMetadataGet: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**ThreadsMetaData**](ThreadsMetaData.md)
 
 ### Authorization
 
