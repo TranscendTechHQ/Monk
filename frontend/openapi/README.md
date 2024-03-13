@@ -85,6 +85,7 @@ Class | Method | HTTP request | Description
  - [BlockCollection](doc/BlockCollection.md)
  - [BlockModel](doc/BlockModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
+ - [Creator](doc/Creator.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
  - [SessionInfo](doc/SessionInfo.md)

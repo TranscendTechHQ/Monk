@@ -1,6 +1,7 @@
 import 'package:openapi/src/model/block_collection.dart';
 import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
+import 'package:openapi/src/model/creator.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/session_info.dart';
@@ -39,6 +40,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return BlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CreateThreadModel':
           return CreateThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'Creator':
+          return Creator.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
           return HTTPValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ModelDate':

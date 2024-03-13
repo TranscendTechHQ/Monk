@@ -103,7 +103,19 @@ async def md(request: Request,
     threads = await get_mongo_documents(request.app.mongodb["threads"])
     threads_meta_data = []
     for thread in threads:
-        metadata = ThreadMetaData(**thread)
+        meta = {}
+        meta["title"] = thread["title"]
+        meta["type"] = thread["type"]
+        meta["id"] = thread["_id"]
+        meta["created_date"] = thread["created_date"]
+        userinfo = await request.app.mongodb["users"].find_one({"user_name": thread["creator"]})
+        creator = {}
+        creator["id"] = userinfo["_id"]
+        creator["name"] = userinfo["user_name"]
+        creator["picture"] = userinfo["user_picture"]
+        creator["email"] = userinfo["email"]
+        meta["creator"] = creator
+        metadata = ThreadMetaData(**meta)
         threads_meta_data.append(metadata)
         
     return JSONResponse(status_code=status.HTTP_200_OK,
