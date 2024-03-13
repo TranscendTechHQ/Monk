@@ -69,8 +69,9 @@ class CommandTypeAhead extends ConsumerWidget {
           try {
             // if the command is /news, then navigate to the news feed page
             if (value == '/news') {
-              Navigator.pushAndRemoveUntil(
-                  context, NewsPage.launchRoute(), (route) => false);
+              // Navigator.pushAndRemoveUntil(
+              //     context, NewsPage.launchRoute(), (route) => false);
+              Navigator.push(context, NewsPage.launchRoute());
               return;
             }
             final newThread = parser.validateCommand(

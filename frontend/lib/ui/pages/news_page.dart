@@ -1,15 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/combine_async.dart';
+import 'package:frontend/helper/constants.dart';
 import 'package:frontend/repo/news_provider.dart';
 import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/helper/constants.dart';
-import 'package:frontend/repo/thread.dart';
-
-import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:openapi/openapi.dart';
 
 class NewsPage extends StatelessWidget {
@@ -41,7 +39,8 @@ class NewsPage extends StatelessWidget {
           style: TextStyle(fontSize: 20, color: context.colorScheme.onSurface),
         ),
       ),
-      body: Align(
+      body: Container(
+        // constraints: const BoxConstraints(maxWidth: containerWidth),
         alignment: Alignment.center,
         child: Column(
           children: [
@@ -80,16 +79,26 @@ class ChatListView extends ConsumerWidget {
         final threadMetaDataList = tuple.item2;
         return SizedBox(
           width: containerWidth,
-          child: ListView.builder(
-            reverse: true,
-            controller: scrollController,
-            itemCount: threadHeadlineList.length,
-            padding: const EdgeInsets.only(bottom: 30),
-            itemBuilder: (context, index) {
-              final headlineModel = threadHeadlineList[index];
-              final metaData = threadMetaDataList
-                  .firstWhere((element) => element.id == headlineModel.id);
-              return NewsCard(headlineModel: headlineModel, metaData: metaData);
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return GridView.builder(
+                controller: scrollController,
+                itemCount: threadHeadlineList.length,
+                padding: const EdgeInsets.only(bottom: 30),
+                itemBuilder: (context, index) {
+                  final headlineModel = threadHeadlineList[index];
+                  final metaData = threadMetaDataList
+                      .firstWhere((element) => element.id == headlineModel.id);
+                  return NewsCard(
+                      headlineModel: headlineModel, metaData: metaData);
+                },
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: constraints.maxWidth > 600 ? 2 : 1,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 1.6,
+                ),
+              );
             },
           ),
         );
@@ -109,39 +118,86 @@ class NewsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = headlineModel.title;
     final headline = headlineModel.headline;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: InkWell(
-        onTap: () {
-          Navigator.pushReplacement(
-              context,
-              ThreadPage.launchRoute(
-                  title: metaData.title, type: metaData.type));
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          decoration: BoxDecoration(
-            color: context.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: context.colorScheme.primary,
-              width: .3,
-            ),
+    final creator = metaData.creator;
+    return InkWell(
+      onTap: () {
+        Navigator.push(context,
+            ThreadPage.launchRoute(title: metaData.title, type: metaData.type));
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          color: context.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: context.colorScheme.primary,
+            width: .3,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontFamily: 'NotoEmoji',
-                  fontWeight: FontWeight.w400,
-                  color: context.colorScheme.onSurface,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.network(
+                    creator.picture.startsWith('https')
+                        ? creator.picture!
+                        : "https://api.dicebear.com/7.x/identicon/png?seed=${creator.name ?? "UN"}",
+                    width: 35,
+                    height: 35,
+                    cacheHeight: 35,
+                    cacheWidth: 35,
+                    fit: BoxFit.fill,
+                  ),
                 ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      creator.name,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    if (metaData.createdDate != null)
+                      Text(
+                        DateFormat('dd MMM yyyy').format(
+                            DateTime.tryParse(metaData.createdDate)!.toLocal()),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(.6),
+                        ),
+                      ),
+                  ],
+                ),
+                Spacer(),
+                Icon(
+                  Icons.open_in_new_rounded,
+                  color: context.colorScheme.onSurface.withOpacity(.9),
+                  size: 16,
+                )
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 22,
+                fontFamily: 'NotoEmoji',
+                fontWeight: FontWeight.w400,
+                color: context.colorScheme.onSurface,
               ),
-              const SizedBox(height: 8),
-              Text(
+            ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: Text(
                 headline,
                 style: TextStyle(
                   fontSize: 14,
@@ -151,8 +207,8 @@ class NewsCard extends StatelessWidget {
                   color: context.colorScheme.onSurface.withOpacity(.6),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
