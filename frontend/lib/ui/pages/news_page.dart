@@ -45,7 +45,11 @@ class NewsPage extends StatelessWidget {
         child: Column(
           children: [
             Expanded(child: ChatListView()),
-            blockInput,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              width: containerWidth / 1.5,
+              child: blockInput,
+            ),
             const Padding(padding: EdgeInsets.all(8))
           ],
         ),
@@ -77,26 +81,24 @@ class ChatListView extends ConsumerWidget {
       data: (tuple) {
         final threadHeadlineList = tuple.item1;
         final threadMetaDataList = tuple.item2;
-        return SizedBox(
+        return Container(
           width: containerWidth,
+          alignment: Alignment.center,
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
-              return GridView.builder(
-                controller: scrollController,
-                itemCount: threadHeadlineList.length,
-                padding: const EdgeInsets.only(bottom: 30),
-                itemBuilder: (context, index) {
-                  final headlineModel = threadHeadlineList[index];
-                  final metaData = threadMetaDataList
-                      .firstWhere((element) => element.id == headlineModel.id);
-                  return NewsCard(
-                      headlineModel: headlineModel, metaData: metaData);
-                },
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: constraints.maxWidth > 600 ? 2 : 1,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 1.6,
+              return SizedBox(
+                width: constraints.maxWidth / 2,
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: threadHeadlineList.length,
+                  padding: const EdgeInsets.only(bottom: 30),
+                  itemBuilder: (context, index) {
+                    final headlineModel = threadHeadlineList[index];
+                    final metaData = threadMetaDataList.firstWhere(
+                        (element) => element.id == headlineModel.id);
+                    return NewsCard(
+                        headlineModel: headlineModel, metaData: metaData);
+                  },
                 ),
               );
             },
@@ -119,85 +121,90 @@ class NewsCard extends StatelessWidget {
     final title = headlineModel.title;
     final headline = headlineModel.headline;
     final creator = metaData.creator;
-    return InkWell(
-      onTap: () {
-        Navigator.push(context,
-            ThreadPage.launchRoute(title: metaData.title, type: metaData.type));
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        decoration: BoxDecoration(
-          color: context.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: context.colorScheme.primary,
-            width: .3,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+              context,
+              ThreadPage.launchRoute(
+                  title: metaData.title, type: metaData.type));
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24) +
+              const EdgeInsets.only(bottom: 22.0),
+          decoration: BoxDecoration(
+            color: context.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: context.colorScheme.primary,
+              width: .3,
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.network(
-                    creator.picture.startsWith('https')
-                        ? creator.picture!
-                        : "https://api.dicebear.com/7.x/identicon/png?seed=${creator.name ?? "UN"}",
-                    width: 35,
-                    height: 35,
-                    cacheHeight: 35,
-                    cacheWidth: 35,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      creator.name,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      creator.picture.startsWith('https')
+                          ? creator.picture!
+                          : "https://api.dicebear.com/7.x/identicon/png?seed=${creator.name ?? "UN"}",
+                      width: 35,
+                      height: 35,
+                      cacheHeight: 35,
+                      cacheWidth: 35,
+                      fit: BoxFit.fill,
                     ),
-                    if (metaData.createdDate != null)
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        DateFormat('dd MMM yyyy').format(
-                            DateTime.tryParse(metaData.createdDate)!.toLocal()),
+                        creator.name,
                         style: TextStyle(
-                          fontSize: 10,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(.6),
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
-                  ],
-                ),
-                Spacer(),
-                Icon(
-                  Icons.open_in_new_rounded,
-                  color: context.colorScheme.onSurface.withOpacity(.9),
-                  size: 16,
-                )
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 22,
-                fontFamily: 'NotoEmoji',
-                fontWeight: FontWeight.w400,
-                color: context.colorScheme.onSurface,
+                      if (metaData.createdDate != null)
+                        Text(
+                          DateFormat('dd MMM yyyy').format(
+                              DateTime.tryParse(metaData.createdDate)!
+                                  .toLocal()),
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(.6),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.open_in_new_rounded,
+                    color: context.colorScheme.onSurface.withOpacity(.9),
+                    size: 16,
+                  )
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Flexible(
-              child: Text(
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontFamily: 'NotoEmoji',
+                  fontWeight: FontWeight.w400,
+                  color: context.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
                 headline,
                 style: TextStyle(
                   fontSize: 14,
@@ -207,8 +214,9 @@ class NewsCard extends StatelessWidget {
                   color: context.colorScheme.onSurface.withOpacity(.6),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
