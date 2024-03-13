@@ -84,7 +84,26 @@ def allowed_thread_types(threadType: str) -> str:
     return threadType
 
 ThreadType = Annotated[str, AfterValidator(allowed_thread_types)]
-   
+
+class Creator(BaseModel):
+    name: str
+    picture: str
+    email: str
+    id: str
+    model_config = ConfigDict(extra='ignore',
+                                populate_by_name=True,
+                                arbitrary_types_allowed=True,
+                                json_schema_extra = {  
+                                    "example": {
+                                    "name": "firstname lastname",
+                                    "picture": "https://www.example.com/picture.jpg",
+                                    "email": "hey@abc.com",
+                                    "id": "12345678-1234-5678-1234-567812345678"
+                                    }
+                                }
+    )
+
+ 
 class CreateThreadModel(BaseModel):
     type: ThreadType
     title: str = Field(..., min_length=1, max_length=100, pattern="^[a-zA-Z0-9]+$")
@@ -208,7 +227,7 @@ class ThreadMetaData(BaseModel):
     title: str
     type: str
     created_date: str
-    creator: str
+    creator: Creator
     model_config = ConfigDict(extra='ignore',
                                 populate_by_name=True,
                                 arbitrary_types_allowed=True,
@@ -218,7 +237,12 @@ class ThreadMetaData(BaseModel):
                                     "title": "This is the title of the thread",
                                     "type": "/new-plan",
                                     "created_date": "2021-01-01T00:00:00.000000",
-                                    "creator": "user1"
+                                    "creator": {
+                                        "name": "firstname lastname",
+                                        "picture": "https://www.example.com/picture.jpg",
+                                        "email": "a@b.com",
+                                        "id": "12345678-123"
+                                    }
                                     }
                                 }
                             )

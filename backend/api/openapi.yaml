@@ -75,6 +75,32 @@ components:
       - title
       title: CreateThreadModel
       type: object
+    Creator:
+      example:
+        email: hey@abc.com
+        id: 12345678-1234-5678-1234-567812345678
+        name: firstname lastname
+        picture: https://www.example.com/picture.jpg
+      properties:
+        email:
+          title: Email
+          type: string
+        id:
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        picture:
+          title: Picture
+          type: string
+      required:
+      - name
+      - picture
+      - email
+      - id
+      title: Creator
+      type: object
     Date:
       properties:
         date:
@@ -160,7 +186,11 @@ components:
     ThreadMetaData:
       example:
         created_date: '2021-01-01T00:00:00.000000'
-        creator: user1
+        creator:
+          email: a@b.com
+          id: 12345678-123
+          name: firstname lastname
+          picture: https://www.example.com/picture.jpg
         id: 12345678-1234-5678-1234-567812345678
         title: This is the title of the thread
         type: /new-plan
@@ -172,8 +202,7 @@ components:
           title: Created Date
           type: string
         creator:
-          title: Creator
-          type: string
+          $ref: '#/components/schemas/Creator'
         title:
           title: Title
           type: string

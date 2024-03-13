@@ -6,6 +6,7 @@ from supertokens_python.recipe import thirdparty
 from supertokens_python import init, InputAppInfo, SupertokensConfig
 from supertokens_python.recipe import emailpassword, session
 from supertokens_python.recipe import dashboard
+from supertokens_python.recipe import usermetadata
 
 
 from supertokens_python.types import GeneralErrorResponse
@@ -179,6 +180,7 @@ init(
         ),
         emailpassword.init(),
         dashboard.init(),
+        usermetadata.init()
         #userroles.init(),
     ],
     mode='asgi' # use wsgi if you are running using gunicorn

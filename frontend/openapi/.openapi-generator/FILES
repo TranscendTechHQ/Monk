@@ -6,6 +6,7 @@ build.yaml
 doc/BlockCollection.md
 doc/BlockModel.md
 doc/CreateThreadModel.md
+doc/Creator.md
 doc/HTTPValidationError.md
 doc/ModelDate.md
 doc/SessionApi.md
@@ -34,6 +35,7 @@ lib/src/deserialize.dart
 lib/src/model/block_collection.dart
 lib/src/model/block_model.dart
 lib/src/model/create_thread_model.dart
+lib/src/model/creator.dart
 lib/src/model/http_validation_error.dart
 lib/src/model/model_date.dart
 lib/src/model/session_info.dart
@@ -51,6 +53,7 @@ pubspec.yaml
 test/block_collection_test.dart
 test/block_model_test.dart
 test/create_thread_model_test.dart
+test/creator_test.dart
 test/http_validation_error_test.dart
 test/model_date_test.dart
 test/session_api_test.dart

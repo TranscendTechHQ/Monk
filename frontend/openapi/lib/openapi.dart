@@ -14,6 +14,7 @@ export 'package:openapi/src/api/threads_api.dart';
 export 'package:openapi/src/model/block_collection.dart';
 export 'package:openapi/src/model/block_model.dart';
 export 'package:openapi/src/model/create_thread_model.dart';
+export 'package:openapi/src/model/creator.dart';
 export 'package:openapi/src/model/http_validation_error.dart';
 export 'package:openapi/src/model/model_date.dart';
 export 'package:openapi/src/model/session_info.dart';

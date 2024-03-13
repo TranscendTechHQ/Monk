@@ -17,7 +17,7 @@ void main() {
       // TODO
     });
 
-    // String creator
+    // Creator creator
     test('to test the property `creator`', () async {
       // TODO
     });

@@ -24,7 +24,8 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
         final val = ThreadMetaData(
           id: $checkedConvert('_id', (v) => v as String),
           createdDate: $checkedConvert('created_date', (v) => v as String),
-          creator: $checkedConvert('creator', (v) => v as String),
+          creator: $checkedConvert(
+              'creator', (v) => Creator.fromJson(v as Map<String, dynamic>)),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
         );
@@ -37,7 +38,7 @@ Map<String, dynamic> _$ThreadMetaDataToJson(ThreadMetaData instance) =>
     <String, dynamic>{
       '_id': instance.id,
       'created_date': instance.createdDate,
-      'creator': instance.creator,
+      'creator': instance.creator.toJson(),
       'title': instance.title,
       'type': instance.type,
     };
