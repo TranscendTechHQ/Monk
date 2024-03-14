@@ -20,15 +20,25 @@ class ThreadPage extends ConsumerWidget {
     );
   }
 
+  String get formatType {
+    if (type.contains('-')) {
+      return type.split('-')[1];
+    } else if (type.contains('/')) {
+      return type.split('/')[1];
+    }
+    return type;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentThread =
         ref.watch(currentThreadProvider.call(title: title, type: type));
     final blockInput = CommandBox(title: title, type: type);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${type.split('-')[1]} -: $title',
+          '$formatType -: $title',
           style: TextStyle(
               fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
         ),
