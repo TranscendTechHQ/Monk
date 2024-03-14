@@ -1,4 +1,6 @@
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
+import 'package:frontend/ui/theme/decorations.dart';
+import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,17 +45,19 @@ class ThreadPage extends ConsumerWidget {
               fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
         ),
       ),
-      body: Align(
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            Expanded(
-              child: currentThread.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ChatListView(currentThread: currentThread),
-            ),
-            blockInput,
-          ],
+      body: PageScaffold(
+        body: Align(
+          alignment: Alignment.center,
+          child: Column(
+            children: [
+              Expanded(
+                child: currentThread.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ChatListView(currentThread: currentThread),
+              ),
+              blockInput,
+            ],
+          ),
         ),
       ),
     );
@@ -100,14 +104,7 @@ class ThreadCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
-          width: .3,
-        ),
-      ),
+      decoration: BoxDecorations.cardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

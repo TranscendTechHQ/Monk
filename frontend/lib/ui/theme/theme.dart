@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-part 'color_scheme.dart';
+import 'package:frontend/ui/theme/color/custom_color.g.dart';
+import 'package:frontend/ui/theme/decorations.dart';
+// import 'color/color_schemes.g.dart';
+// import 'color/custom_color.g.dart';
+// part 'color_scheme.dart';
 part 'theme_extensions.dart';
 
 // enum ColorSeed {
@@ -19,52 +23,25 @@ part 'theme_extensions.dart';
 // }
 
 class AppTheme {
-  static ThemeData lightTheme = ThemeData.light().copyWith(
-    colorScheme: lightColorScheme,
-    inputDecorationTheme: ThemeData.light().inputDecorationTheme.copyWith(
-          filled: true,
-          fillColor: lightColorScheme.tertiaryContainer.withOpacity(.3),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: lightColorScheme.tertiaryContainer,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(0),
-          ),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: ThemeData.light().disabledColor)),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: ThemeData.light().disabledColor,
-            ),
-          ),
-          hintStyle: TextStyle(
-            color: lightColorScheme.onTertiaryContainer,
-          ),
-        ),
-  );
-  static ThemeData darkTheme = ThemeData.dark().copyWith(
-    colorScheme: darkColorScheme,
-    inputDecorationTheme: ThemeData.dark().inputDecorationTheme.copyWith(
-          filled: true,
-          fillColor: darkColorScheme.tertiaryContainer.withOpacity(.3),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: darkColorScheme.tertiaryContainer,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(0),
-          ),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: ThemeData.dark().disabledColor)),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: ThemeData.dark().disabledColor,
-            ),
-          ),
-          hintStyle: TextStyle(
-            color: darkColorScheme.onTertiaryContainer,
-          ),
-        ),
-  );
+  static ThemeData lightTheme(ColorScheme lightColorScheme) {
+    return ThemeData.light().copyWith(
+      colorScheme: lightColorScheme,
+      inputDecorationTheme: BoxDecorations.inputDecorationTheme(
+          ThemeData.light(), lightColorScheme),
+      cardColor: const Color(0xff182F61),
+      dividerColor: lightCustomColors.monkBlue,
+      extensions: [lightCustomColors],
+    );
+  }
+
+  static ThemeData darkTheme(ColorScheme darkColorScheme) {
+    return ThemeData.dark().copyWith(
+      colorScheme: darkColorScheme,
+      inputDecorationTheme: BoxDecorations.inputDecorationTheme(
+          ThemeData.dark(), darkColorScheme),
+      cardColor: const Color(0xff182F61),
+      dividerColor: lightCustomColors.monkBlueContainer,
+      extensions: [darkCustomColors],
+    );
+  }
 }

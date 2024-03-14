@@ -6,7 +6,9 @@ import 'package:frontend/helper/constants.dart';
 import 'package:frontend/repo/news_provider.dart';
 import 'package:frontend/ui/pages/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
+import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -33,25 +35,30 @@ class NewsPage extends StatelessWidget {
       ],
     );
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'News',
-          style: TextStyle(fontSize: 20, color: context.colorScheme.onSurface),
-        ),
-      ),
-      body: Container(
-        // constraints: const BoxConstraints(maxWidth: containerWidth),
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            Expanded(child: ChatListView()),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              width: containerWidth / 1.5,
-              child: blockInput,
+      // appBar: AppBar(
+      //   title: Text(
+      //     'News',
+      //     style: TextStyle(fontSize: 20, color: context.colorScheme.onSurface),
+      //   ),
+      // ),
+      body: PageScaffold(
+        body: WithMonkAppbar(
+          child: Container(
+            padding: const EdgeInsets.only(top: 16),
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                Expanded(child: ChatListView()),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  width: containerWidth / 1.5,
+                  child: blockInput,
+                ),
+                const Padding(padding: EdgeInsets.all(8))
+              ],
             ),
-            const Padding(padding: EdgeInsets.all(8))
-          ],
+          ),
         ),
       ),
     );
@@ -133,14 +140,7 @@ class NewsCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24) +
               const EdgeInsets.only(bottom: 22.0),
-          decoration: BoxDecoration(
-            color: context.colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: context.colorScheme.primary,
-              width: .3,
-            ),
-          ),
+          decoration: BoxDecorations.cardDecoration(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -150,7 +150,7 @@ class NewsCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     child: Image.network(
                       creator.picture.startsWith('https')
-                          ? creator.picture!
+                          ? creator.picture
                           : "https://api.dicebear.com/7.x/identicon/png?seed=${creator.name ?? "UN"}",
                       width: 35,
                       height: 35,
@@ -197,18 +197,16 @@ class NewsCard extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 22,
-                  fontFamily: 'NotoEmoji',
+                  fontSize: 26,
                   fontWeight: FontWeight.w400,
-                  color: context.colorScheme.onSurface,
+                  color: context.colorScheme.onPrimary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 headline,
                 style: TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'NotoEmoji',
+                  fontSize: 18,
                   fontWeight: FontWeight.w400,
                   height: 1.5,
                   color: context.colorScheme.onSurface.withOpacity(.6),

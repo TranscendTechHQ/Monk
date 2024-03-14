@@ -1,10 +1,9 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
-import 'package:frontend/ui/pages/thread_page.dart';
+import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
 class HomePage extends StatefulWidget {
@@ -93,97 +92,80 @@ class _HomePageState extends State<HomePage> {
     print(results);
   }
 
-  Widget renderContent() {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 16.0,
-      ),
-      child: Container(
-        padding: const EdgeInsets.only(
-          bottom: 16,
-        ),
-        width: double.infinity,
-        // clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 32),
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Hello, ",
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  TextSpan(
-                    text: fullName,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
-              ),
-            ),
-            Text(
-              'Welcome to Monk!',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 32),
-            FilledButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.tertiaryContainer),
-              ),
-              onPressed: () async {
-                // Navigator.pushNamed(context, ThreadPage.route);
-                Navigator.pushNamed(context, NewsPage.route);
-              },
-              child: Text(
-                "Go to News",
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PageScaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.error,
-                    shape: BoxShape.circle,
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Tooltip(
-                      message: "Sign Out",
-                      child: InkWell(
-                        onTap: () {
-                          signOut();
-                        },
-                        child: Icon(
-                          Icons.logout,
-                          color: Theme.of(context).colorScheme.onError,
-                          size: 18,
-                        ),
-                      )),
-                ),
+              Image.asset(
+                'assets/logo.png',
+                width: 240,
+                height: 240,
               ),
-              renderContent(),
+              const SizedBox(width: 32),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 32),
+                  Text(
+                    "Focus. Clarity Alignment",
+                    style: context.textTheme.displayMedium!.copyWith(
+                      color: context.customColors.sourceMonkBlue,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    "Welcome $fullName.",
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                  const SizedBox(height: 62),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 68,
+                        vertical: 18,
+                      ),
+                    ),
+                    onPressed: () async {
+                      // Navigator.pushNamed(context, ThreadPage.route);
+                      Navigator.pushNamed(context, NewsPage.route);
+                    },
+                    child: Text(
+                      "Continue",
+                      style: context.textTheme.bodyLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  TextButton.icon(
+                    onPressed: () {
+                      signOut();
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: context.customColors.sourceAlert,
+                    ),
+                    icon: const Icon(Icons.logout),
+                    label: Text(
+                      'Log out',
+                      style: context.textTheme.bodyLarge!.copyWith(
+                        color: context.customColors.sourceAlert,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
