@@ -19,7 +19,7 @@ def summarize_code_change(code_diff):
 
 
     system_prompt = """
-    you are an excellent programmer with expertise on version control management tool git.
+you are an excellent programmer with expertise on version control management tool git.
 
 You are presented with code diff of a git commit. The diff represents the code changes  made by a software developer. Git presents the code commit in the following json format:
 ```
@@ -37,20 +37,9 @@ Your job is to parse the content of this json and analyze the code changes.
 "commit_message" contains the description by the software developer as to what was changed. You can incorporate this in your analysis. 
 
 "code_diff" contains the changes to the code.
-From this content, figure out:
-1. Which files were changed?
-2. What were the code changes to each file?
-3.  What does the code change in each file accomplish?
+From this content, figure out what does the code change in each file accomplish and  combine the accomplishments of each file  along with content of "commit_message", and generate ONE description of overall accomplishment.
 
-Store the intermediate analysis results in the following format (but don't show to the user)
-```
-{"files_accomplishments":
-["accomplishment of file 1",
-"accomplishment of file 2",
-"accomplishment of file 3"]
-}
-```
-Then you combine the accomplishments of each file  along with content of "commit_message", and generate ONE description of overall accomplishment.
+Do NOT include individual file names in your output.
 
 Show final output in the following format to the user:
 ```
