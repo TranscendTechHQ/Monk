@@ -42,9 +42,12 @@ class OpenAISettings(BaseSettings):
     AZURE_OPENAI_KEY: str = os.getenv("AZURE_OPENAI_KEY")
     AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT")
     AZURE_OPENAI_EMB_DEPLOYMENT: str = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT")
-    API_VERSION: str = "2023-05-15"
+    API_VERSION: str = os.getenv("AZURE_OPENAPI_API_VERSION")
     AZURE_OPENAI_GPT_DEPLOYEMENT: str = os.getenv("AZURE_OPENAI_GPT_DEPLOYEMENT")
-    MONK_OPENAPI_KEY: str = os.getenv("MONK_OPENAPI_KEY")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
+    OPENAI_API_VERSION: str = os.getenv("OPENAI_API_VERSION")
+    OPENAI_API_ENDPOINT: str = os.getenv("OPENAI_API_ENDPOINT")
+    OPEN_API_GPT_MODEL: str = os.getenv("OPEN_API_GPT_MODEL")
     
 class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings):
     pass
