@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/combine_async.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/repo/news_provider.dart';
-import 'package:frontend/ui/pages/thread_page.dart';
+import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';

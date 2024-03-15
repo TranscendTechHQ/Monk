@@ -35,12 +35,11 @@ class BoxDecorations {
         colors: [
           Color(0xff102554),
           Color(0xff0B1836),
-          Color(0xff000000),
           Color(0xff051416),
-          Color(0xff000000),
           Color(0xff09122b),
+          Color(0xff000000),
         ],
-        stops: [.3, .5, .75, .85, .95, 1],
+        stops: [.3, .5, 65, .75, 1],
       ),
     );
   }

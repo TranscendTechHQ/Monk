@@ -1,3 +1,4 @@
+import 'package:frontend/ui/pages/thread/thread_detail_page.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
@@ -53,7 +54,11 @@ class ThreadPage extends ConsumerWidget {
               Expanded(
                 child: currentThread.isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : ChatListView(currentThread: currentThread),
+                    : ChatListView(
+                        currentThread: currentThread,
+                        title: title,
+                        type: type,
+                      ),
               ),
               blockInput,
             ],
@@ -65,8 +70,15 @@ class ThreadPage extends ConsumerWidget {
 }
 
 class ChatListView extends ConsumerWidget {
-  ChatListView({super.key, required this.currentThread});
+  ChatListView({
+    super.key,
+    required this.currentThread,
+    required this.title,
+    required this.type,
+  });
   final AsyncValue<ThreadModel> currentThread;
+  final String type;
+  final String title;
 
   final scrollController = ScrollController();
   scrollToBottom() {
@@ -87,7 +99,12 @@ class ChatListView extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: 30),
         itemBuilder: (context, index) {
           final block = blocks?[index];
-          return ThreadCard(block: block!, emojiParser: emojiParser);
+          return ThreadCard(
+            block: block!,
+            emojiParser: emojiParser,
+            title: title,
+            type: type,
+          );
         },
       ),
     );
@@ -95,8 +112,16 @@ class ChatListView extends ConsumerWidget {
 }
 
 class ThreadCard extends StatelessWidget {
-  const ThreadCard({super.key, required this.block, required this.emojiParser});
+  const ThreadCard({
+    super.key,
+    required this.block,
+    required this.emojiParser,
+    required this.title,
+    required this.type,
+  });
   final BlockModel block;
+  final String type;
+  final String title;
   final EmojiParser emojiParser;
 
   @override
@@ -160,11 +185,24 @@ class ThreadCard extends StatelessWidget {
             emojiParser.emojify(block.content.toString() ?? '').trimRight(),
             style: TextStyle(
               fontSize: 15,
-              fontFamily: 'NotoEmoji',
               fontWeight: FontWeight.w400,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
+          const SizedBox(height: 8),
+          TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  ThreadDetailPage.launchRoute(
+                    title: title,
+                    type: type,
+                    threadId: block.id ?? '',
+                    block: block,
+                  ),
+                );
+              },
+              child: const Text("Replies"))
         ],
       ),
     );
