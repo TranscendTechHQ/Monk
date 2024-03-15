@@ -46,7 +46,7 @@ Store the intermediate analysis results in the following format (but don't show 
 ```
 {"files_accomplishments":
 ["accomplishment of file 1",
-"accomplishment of file1",
+"accomplishment of file 2",
 "accomplishment of file 3"]
 }
 ```
@@ -63,7 +63,9 @@ Show final output in the following format to the user:
     """
     
     
-    user_prompt = code_diff[:16000]
+    user_prompt = json.dumps(code_diff)
+    
+    
     client = llms.openai()
 
     completion = client.chat.completions.create(
@@ -84,6 +86,7 @@ Show final output in the following format to the user:
     #return response
 
 def json_code_summarization(input_file, output_file):
+    output = []
     # Open the CSV file for reading and writing
     with open(input_file, 'r', newline='') as json_file:
         #read json file
@@ -92,15 +95,17 @@ def json_code_summarization(input_file, output_file):
         
         # Iterate over each row, summarize the code change, and add to the row
         for row in rows:  # Skip the header row
-            code_diff = row["code_diff"]  
+            code_diff = row['code_diff']
+            code_diff = code_diff[:16000] #truncate the code to 16000 characters, mainly due to model limitations
+            row['code_diff'] = code_diff
+            code_change = row  
             #print(code_diff)
-            summary = summarize_code_change(code_diff)
-            row["code_summary"] = summary
-            row["code_diff"] = ""
+            summary = summarize_code_change(code_change)
+            output.append(summary)
             
     #Write the updated rows back to the same CSV file
     with open(output_file, 'w', newline='') as json_file:
-        json.dump(json_data, json_file, indent=2)
+        json.dump(output, json_file, indent=2)
 
 def main():
     
