@@ -63,16 +63,48 @@ async def delete_mongo_document(query:dict, collection):
         return doc
 
 async def create_mongo_document(document: dict, collection):
+    #print(document)
+    #print(collection)
+    if collection is None:
+        print("collection is none")
+    if document is None:
+        print("document is none")
+    result =  collection.find_one(document)
+    
+    if result is not None:
+        await result
     ## if the document already exists, return the existing document
-    if (doc := await collection.find_one(document)) is not None:
-        return doc
+        return result
     
-    new_document = await collection.insert_one(document)
     
-    created_document = await collection.find_one(
+    new_document =  collection.insert_one(document)
+    
+    created_document =  collection.find_one(
         {"_id": new_document.inserted_id})
     
     return created_document
+
+async def get_block_by_id(block_id, thread_collection):
+    # Filter with unwind and match
+    pipeline = [
+        {
+            "$match": {"content.id": block_id}
+        },
+        {
+            "$unwind": "$content"
+        },
+        {
+            "$match": {"content.id": block_id}
+        }
+    ]
+
+    result = thread_collection.aggregate(pipeline)
+
+    # Fetch the first element (assuming there's only one matching block)
+    block = result.next()
+
+    # Access block content
+    return block
 
 async def update_block_child_id(threads_collection, 
                                 parent_block_id, 

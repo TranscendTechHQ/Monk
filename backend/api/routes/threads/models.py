@@ -25,24 +25,32 @@ THREADTYPES = [
                 "/new-experiment", 
                 "/go"]
 
+class Creator(BaseModel):
+    name: str = Field(default="unknown user")
+    picture: str = Field(default="unknown picture link")
+    email: str = Field(default="unknown email")
+    id: str = Field(default="unknown id")
+    model_config = ConfigDict(extra='ignore',
+                                populate_by_name=True,
+                                arbitrary_types_allowed=True,
+                                json_schema_extra = {  
+                                    "example": {
+                                    "name": "firstname lastname",
+                                    "picture": "https://www.example.com/picture.jpg",
+                                    "email": "hey@abc.com",
+                                    "id": "12345678-1234-5678-1234-567812345678"
+                                    }
+                                }
+    )
+
+
 class BlockModel(BaseModel):
-    id: UUID = Field(default_factory=uuid.uuid4, alias="_id")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
     created_at: datetime = Field(default_factory=datetime.now)
-    created_by: str = Field(default="unknown user")
-    creator_email: str = Field(default="unknown email")
-    creator_picture: str = Field(default="unknown picture link")
-    model_config = ConfigDict(extra='ignore',
-                              populate_by_name=True,
-                              arbitrary_types_allowed=True,
-                              json_schema_extra = {
-                                "example": {
-                                "id": "12345678-1234-5678-1234-567812345678",
-                                "content": "This is the content of the block",
-                                "created_at": "2021-01-01T00:00:00.000000",
-                                }
-                              }                     
-                        )
+    creator: Creator = Creator()
+    child_id: str = Field(default="")
+    
 
 class UpdateBlockModel(BaseModel):
     content: Union[str, SkipJsonSchema[None]] = None
@@ -85,23 +93,6 @@ def allowed_thread_types(threadType: str) -> str:
 
 ThreadType = Annotated[str, AfterValidator(allowed_thread_types)]
 
-class Creator(BaseModel):
-    name: str
-    picture: str
-    email: str
-    id: str
-    model_config = ConfigDict(extra='ignore',
-                                populate_by_name=True,
-                                arbitrary_types_allowed=True,
-                                json_schema_extra = {  
-                                    "example": {
-                                    "name": "firstname lastname",
-                                    "picture": "https://www.example.com/picture.jpg",
-                                    "email": "hey@abc.com",
-                                    "id": "12345678-1234-5678-1234-567812345678"
-                                    }
-                                }
-    )
 
  
 class CreateThreadModel(BaseModel):
@@ -128,8 +119,13 @@ class CreateThreadModel(BaseModel):
                                 }
                             )
 
+class CreateChildThreadModel(CreateThreadModel):
+    parent_block_id: str = Field(..., alias="parentBlockId")
+    parent_thread_id: str = Field(..., alias="parentThreadId")
+    
+    
 class ThreadModel(BaseModel):
-    id: UUID = Field(default_factory=uuid.uuid4, alias="_id")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     creator: str
     created_date: datetime = Field(default_factory=datetime.now)
     type: ThreadType
