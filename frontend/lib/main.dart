@@ -5,11 +5,10 @@ import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/splash_page.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
-import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/theme/theme_builder_app.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
 import 'helper/constants.dart';
-import 'ui/theme/color/color_schemes.g.dart';
 
 void main() {
   SuperTokens.init(apiDomain: apiDomain);
@@ -23,23 +22,26 @@ class MonkApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ;
-    return MaterialApp(
-      title: Constants.appName,
-      onGenerateTitle: (BuildContext context) => Constants.appName,
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      theme: AppTheme.lightTheme(lightColorScheme),
-      darkTheme: AppTheme.darkTheme(darkColorScheme),
-      initialRoute: '/',
-      routes: {
-        "/": (context) => const SplashPage(),
-        HomePage.route: (context) => const HomePage(),
-        LoginPage.route: (context) => const LoginPage(),
-        ThreadPage.route: (context) =>
-            const ThreadPage(title: "journal", type: "/new-thread"),
-        NewsPage.route: (context) =>
-            const NewsPage(title: "journal", type: "/new-thread"),
+    return ThemeBuilderApp(
+      builder: (context, darkTheme, lightTheme) {
+        return MaterialApp(
+          title: Constants.appName,
+          onGenerateTitle: (BuildContext context) => Constants.appName,
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.dark,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          initialRoute: '/',
+          routes: {
+            "/": (context) => const SplashPage(),
+            HomePage.route: (context) => const HomePage(),
+            LoginPage.route: (context) => const LoginPage(),
+            ThreadPage.route: (context) =>
+                const ThreadPage(title: "journal", type: "/new-thread"),
+            NewsPage.route: (context) =>
+                const NewsPage(title: "journal", type: "/new-thread"),
+          },
+        );
       },
     );
   }

@@ -19,7 +19,7 @@ class PageScaffold extends StatelessWidget {
               maxWidth: containerWidth,
               minWidth: 420,
             ),
-            alignment: Alignment.centerRight,
+            alignment: Alignment.center,
             child: body,
           ),
         ),
@@ -39,24 +39,30 @@ class WithMonkAppbar extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           alignment: Alignment.center,
-          child: Row(
-            children: [
-              Image.asset(
-                'assets/monk-small-logo.png',
-                width: 40,
-                height: 40,
-                cacheWidth: 50,
-                cacheHeight: 50,
-              ),
-              const SizedBox(width: 16),
-              Text(
-                'MONK',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: context.colorScheme.onPrimary,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/', (route) => false);
+            },
+            child: Row(
+              children: [
+                Image.asset(
+                  'assets/monk-small-logo.png',
+                  width: 40,
+                  height: 40,
+                  cacheWidth: 50,
+                  cacheHeight: 50,
                 ),
-              ),
-            ],
+                const SizedBox(width: 16),
+                Text(
+                  'MONK',
+                  style: TextStyle(
+                    fontSize: 28,
+                    color: context.colorScheme.onPrimary,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         Expanded(child: child),

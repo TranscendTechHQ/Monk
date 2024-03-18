@@ -21,8 +21,35 @@ extension MediaExtension on BuildContext {
   double get width => MediaQuery.of(this).size.width;
   double get height => MediaQuery.of(this).size.height;
   double get textScaleFactor => MediaQuery.of(this).textScaleFactor;
-  bool get isMobile => width < 600;
-  bool get isTablet => width >= 600 && width < 1200;
-  bool get isDesktop => width >= 1200;
-  bool get isLargeDesktop => width >= 1920;
+  bool get isMobile => width < Breakpoints.medium;
+  bool get isTablet => width >= Breakpoints.medium && width < Breakpoints.large;
+  bool get isDesktop => width >= Breakpoints.large;
+  bool get isLargeDesktop => width >= Breakpoints.extraLarges;
+  double scale(double large, double? medium, double? small) =>
+      width.scale(large, medium, small);
+}
+
+extension TextStyleExtension on TextStyle {
+  TextStyle scaleFont({
+    double? large,
+    double? medium,
+    double? small,
+  }) {
+    return copyWith(
+      fontSize: fontSize!
+          .scale(fontSize ?? large, fontSize ?? medium, fontSize ?? small),
+    );
+  }
+}
+
+extension DoubleExtension on double {
+  double scale(double? large, double? medium, double? small) {
+    if (this >= Breakpoints.large) {
+      return large!;
+    } else if (this >= Breakpoints.medium && this < Breakpoints.large) {
+      return medium ?? large!;
+    } else {
+      return small ?? large!;
+    }
+  }
 }

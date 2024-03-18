@@ -61,35 +61,22 @@ class _HomePageState extends State<HomePage> {
     return await SuperTokens.getUserId();
   }
 
-  // refresh session
-  Future<void> manualRefresh() async {
-    // Returns true if session was refreshed, false if session is expired
-    var success = await SuperTokens.attemptRefreshingSession();
-  }
-
-  Future<void> testOpenApi() async {
-    //final api = Openapi().getPetApi();
-//    final taskApi = NetworkManager.instance.openApi.getTasksApi();
-    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    /*final response = await threadApi.searchTitlesSearchTitlesGet(
-        query: "thw thread with link to jira dataset");
-    if (response.statusCode != 200) {
-      throw Exception("Failed to fetch matching threads");
+  Widget wrapper(
+      {required BuildContext context, required List<Widget> children}) {
+    if (context.isTablet || context.isMobile) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: children,
+      );
     }
-    final results = response.data!;
-    print(results);
-    final response = await threadApi.thThreadHeadlinesGet();
-    if (response.statusCode != 200) {
-      throw Exception("Failed to fetch matching threads");
-    }
-    final results = response.data!;
-    results.headlines.map((e) => print(e));*/
-    final response = await threadApi.mdMetadataGet();
-    if (response.statusCode != 200) {
-      throw Exception("Failed to fetch matching threads");
-    }
-    final results = response.data!;
-    print(results);
   }
 
   @override
@@ -98,32 +85,43 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: wrapper(
+            context: context,
             children: [
               Image.asset(
                 'assets/logo.png',
-                width: 240,
-                height: 240,
+                width: context.scale(240, 200, 160),
+                height: context.scale(240, 200, 160),
               ),
-              const SizedBox(width: 32),
+              const SizedBox(width: 100),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: context.isMobile || context.isTablet
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 32),
+                  const SizedBox(
+                    height: 32,
+                  ),
                   Text(
                     "Focus. Clarity Alignment",
-                    style: context.textTheme.displayMedium!.copyWith(
-                      color: context.customColors.sourceMonkBlue,
-                      fontWeight: FontWeight.w400,
-                    ),
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.displayMedium!
+                        .copyWith(
+                          color: context.customColors.sourceMonkBlue,
+                          fontWeight: FontWeight.w400,
+                        )
+                        .scaleFont(
+                          large: 32,
+                          medium: 28,
+                          small: 24,
+                        ),
                   ),
                   const SizedBox(height: 18),
                   Text(
                     "Welcome $fullName.",
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const SizedBox(height: 62),

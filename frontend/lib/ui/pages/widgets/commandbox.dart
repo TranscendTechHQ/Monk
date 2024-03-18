@@ -8,6 +8,7 @@ import 'package:frontend/repo/thread.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'commandbox.g.dart';
@@ -169,10 +170,10 @@ class CommandBox extends ConsumerWidget {
       controller: _blockController,
       minLines: 2,
       maxLines: 5,
-      decoration: const InputDecoration(
-        hintText:
-            'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
-      ),
+      decoration: InputDecoration(
+          hintText:
+              'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
+          hintStyle: context.textTheme.bodyMedium),
       onChanged: (text) async {
         if (text.isNotEmpty && text.startsWith('/')) {
           if (!context.mounted) return;
