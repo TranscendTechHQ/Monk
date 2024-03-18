@@ -70,36 +70,21 @@ async def update_block_child_id(threads_collection,
     # Fetch the document and find the block with "id" "3493"
     document = threads_collection.find_one(query)
     #print(parent_block_id)
-    block_to_update = next((block for block in document['content'] if block['id'] == parent_block_id), None)
-
     
-    # Update the block with the new 'child_id' field
-    if block_to_update:
-        block_to_update['child_id'] = child_thread_id
-        
-        # Replace the entire 'content' array in the document
-        update = {'$set': {'content': document['content']}}
-        threads_collection.update_one(query, update)
 
-        # Confirm the update
-        updated_document = threads_collection.find_one(query)
-        #print(updated_document)
-    else:
-        print("Block with 'id' {parent_block_id} not found in the document.")
-    # Update the document by replacing the 'content' array
-    #new_content = [
-    #{"id": "3493", "content": "hello", "child_id": "1234"},
-    #{"id": "3494", "content": "hey"}
-    #]
-    #update = {'$set': {'content': new_content}}
-
-    #update = {'$set': {'content.$[elem].child_id': child_thread_id}}
+    update = {'$set': {'content.$[elem].child_id': child_thread_id}}
     # Find the document with the "_id" of "385029"
     
-    #result = threads_collection.update_one(query, update, 
-    #                              array_filters=[{'elem.id': parent_block_id}],
-    #                              upsert=True)
-    #print(result)
+    result = threads_collection.update_one(query, update, 
+                                  array_filters=[{'elem.id': parent_block_id}],
+                                  upsert=True)
+    
+    if result.modified_count > 0:
+        print("Updated successfully")
+    else:
+        print("could not update the block with block_id: ", parent_block_id)
+    
+    
     
 def update_block() :
     threads_collection = app.mongodb["threads"]
@@ -118,7 +103,7 @@ async def main() :
     await update_block_child_id(app.mongodb["threads"],
                             "b342a310-cd4e-444e-8f0f-8e511d908b7f",
                             "713059f7-b4ca-49ed-a35c-d28e6569da81",
-                            "3678")
+                            "4564")
     
     
     shutdown_db_client()
