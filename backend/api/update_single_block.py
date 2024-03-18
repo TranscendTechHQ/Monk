@@ -3,6 +3,7 @@
 import pprint
 from uuid import UUID
 import uuid
+from routes.threads.child_thread import create_child_thread
 from routes.threads.models import BlockModel, ThreadModel
 from routes.threads.search import thread_semantic_search
 from utils.embedding import generate_embedding
@@ -27,37 +28,7 @@ class App:
 app = App()
 
 
-async def child_thread(thread_collection, 
-                       parent_block_id, 
-                       parent_thread_id):
-    
 
-    
-    # fetch the parent block
-    block = await get_block_by_id(parent_block_id, thread_collection)
-    if not block:
-        print("block with id ${parent_block_id} not found")
-        
-    
-    block = block["content"]
-    #print(block)
-    # create a new child thread
-    thread_title = "kuchbhi"
-    thread_type = "/new-thread"
-    parent_block = BlockModel(**block)
-    blocks = []
-    blocks.append(parent_block)
-    
-    new_thread = ThreadModel(creator="yogesh", title=thread_title, type=thread_type,
-                                 content=blocks)
-    created_child_thread = await create_mongo_document(new_thread.model_dump(), 
-                                          thread_collection)
-    
-    child_thread_id = created_child_thread["id"]
-    
-    # now update the parent block with the child thread id
-    await update_block_child_id(
-        thread_collection, parent_block_id, parent_thread_id, child_thread_id)
     
     
 
@@ -91,9 +62,12 @@ async def main() :
                             #"713059f7-b4ca-49ed-a35c-d28e6569da81",
                             #"4564")
     
-    await child_thread(app.mongodb["threads"],
+    await create_child_thread(app.mongodb["threads"],
                             "b342a310-cd4e-444e-8f0f-8e511d908b7f",
-                            "713059f7-b4ca-49ed-a35c-d28e6569da81")
+                            "713059f7-b4ca-49ed-a35c-d28e6569da81",
+                            "childThread",
+                            "/new-thread",
+                            "yogesh")
     shutdown_db_client()
 
 if __name__ == "__main__":
