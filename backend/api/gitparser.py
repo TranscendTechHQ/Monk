@@ -4,7 +4,7 @@ import git
 import json
 #import os
 # Path to the git repository
-repo_path = '.'
+repo_path = '../../'
 
 # Open the repository
 repo = git.Repo(repo_path)

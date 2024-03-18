@@ -6,7 +6,7 @@ from config import settings
 # Define prompt
 from langchain_openai import ChatOpenAI
 
-os.environ["OPENAI_API_KEY"] = settings.MONK_OPENAPI_KEY
+os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
 os.environ["OPENAI_API_ENDPOINT"] = "https://api.openai.com"
 os.environ["OPENAI_API_VERSION"] = "2023-05-15"
 
