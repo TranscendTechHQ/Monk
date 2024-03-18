@@ -1,0 +1,127 @@
+
+
+import pprint
+from uuid import UUID
+import uuid
+from routes.threads.search import thread_semantic_search
+from utils.embedding import generate_embedding
+from config import settings
+from pymongo import MongoClient, UpdateOne
+from pymongo import ReplaceOne
+import os
+import asyncio
+import threading
+
+
+def start_timer(delay, func):
+  # Simulate your event triggering the timer
+  print("Event triggered, starting timer!")
+  timer = threading.Timer(delay, func)
+  timer.start()
+
+class App:
+    pass
+
+app = App()
+
+
+
+
+def startup_db_client():
+    app.mongodb_client = MongoClient(settings.DB_URL)
+    app.mongodb = app.mongodb_client[settings.DB_NAME]
+
+
+
+def shutdown_db_client():
+    app.mongodb_client.close()
+
+async def get_block_by_id(block_id, thread_collection):
+    # Filter with unwind and match
+    pipeline = [
+        {
+            "$match": {"content.id": block_id}
+        },
+        {
+            "$unwind": "$content"
+        },
+        {
+            "$match": {"content.id": block_id}
+        }
+    ]
+
+    result = thread_collection.aggregate(pipeline)
+
+    # Fetch the first element (assuming there's only one matching block)
+    block = result.next()
+
+    # Access block content
+    return block
+
+
+async def update_block_child_id(threads_collection, 
+                                parent_block_id, 
+                                thread_id, 
+                                child_thread_id) :
+    
+    query = {'_id': thread_id}
+    
+    
+    # Fetch the document and find the block with "id" "3493"
+    document = threads_collection.find_one(query)
+    #print(parent_block_id)
+    block_to_update = next((block for block in document['content'] if block['id'] == parent_block_id), None)
+
+    
+    # Update the block with the new 'child_id' field
+    if block_to_update:
+        block_to_update['child_id'] = child_thread_id
+        
+        # Replace the entire 'content' array in the document
+        update = {'$set': {'content': document['content']}}
+        threads_collection.update_one(query, update)
+
+        # Confirm the update
+        updated_document = threads_collection.find_one(query)
+        #print(updated_document)
+    else:
+        print("Block with 'id' {parent_block_id} not found in the document.")
+    # Update the document by replacing the 'content' array
+    #new_content = [
+    #{"id": "3493", "content": "hello", "child_id": "1234"},
+    #{"id": "3494", "content": "hey"}
+    #]
+    #update = {'$set': {'content': new_content}}
+
+    #update = {'$set': {'content.$[elem].child_id': child_thread_id}}
+    # Find the document with the "_id" of "385029"
+    
+    #result = threads_collection.update_one(query, update, 
+    #                              array_filters=[{'elem.id': parent_block_id}],
+    #                              upsert=True)
+    #print(result)
+    
+def update_block() :
+    threads_collection = app.mongodb["threads"]
+    query = {'_id': "713059f7-b4ca-49ed-a35c-d28e6569da81"}
+    update = {'$set': {'content.$[elem].content': 'howdy'}}
+    # Find the document with the "_id" of "385029"
+    
+    threads_collection.update_one(query, update, 
+                                  array_filters=[{'elem.id': "605f037a-89a1-4d0a-8134-a1d6cbc240f9"}])
+    
+    
+    
+async def main() :
+    startup_db_client()
+    #update_block()
+    await update_block_child_id(app.mongodb["threads"],
+                            "b342a310-cd4e-444e-8f0f-8e511d908b7f",
+                            "713059f7-b4ca-49ed-a35c-d28e6569da81",
+                            "3678")
+    
+    
+    shutdown_db_client()
+
+if __name__ == "__main__":
+    asyncio.run(main())
