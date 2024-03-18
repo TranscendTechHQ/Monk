@@ -11,6 +11,7 @@ from pymongo import ReplaceOne
 import os
 import asyncio
 import threading
+from utils.db import update_block_child_id
 
 
 def start_timer(delay, func):
@@ -59,30 +60,7 @@ async def get_block_by_id(block_id, thread_collection):
     return block
 
 
-async def update_block_child_id(threads_collection, 
-                                parent_block_id, 
-                                thread_id, 
-                                child_thread_id) :
-    
-    query = {'_id': thread_id}
-    
-    
-    # Fetch the document and find the block with "id" "3493"
-    document = threads_collection.find_one(query)
-    #print(parent_block_id)
-    
 
-    update = {'$set': {'content.$[elem].child_id': child_thread_id}}
-    # Find the document with the "_id" of "385029"
-    
-    result = threads_collection.update_one(query, update, 
-                                  array_filters=[{'elem.id': parent_block_id}],
-                                  upsert=True)
-    
-    if result.modified_count > 0:
-        print("Updated successfully")
-    else:
-        print("could not update the block with block_id: ", parent_block_id)
     
     
     
