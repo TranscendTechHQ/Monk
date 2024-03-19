@@ -65,21 +65,22 @@ async def delete_mongo_document(query:dict, collection):
 async def create_mongo_document(document: dict, collection):
     #print(document)
     #print(collection)
+    
     if collection is None:
         print("collection is none")
     if document is None:
         print("document is none")
-    result =  collection.find_one(document)
+    result =  await collection.find_one(document)
     
     if result is not None:
-        await result
     ## if the document already exists, return the existing document
         return result
     
     
-    new_document =  collection.insert_one(document)
+    new_document =  await collection.insert_one(document)
     
-    created_document =  collection.find_one(
+    
+    created_document = await collection.find_one(
         {"_id": new_document.inserted_id})
     
     return created_document

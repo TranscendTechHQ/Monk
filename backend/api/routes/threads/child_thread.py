@@ -1,6 +1,6 @@
 from .models import BlockModel, ThreadModel
 from utils.db import create_mongo_document, get_block_by_id, update_block_child_id
-
+from fastapi.encoders import jsonable_encoder
 
 async def create_child_thread(thread_collection, 
                        parent_block_id, 
@@ -30,11 +30,13 @@ async def create_child_thread(thread_collection,
     
     new_thread = ThreadModel(creator=creator_name, title=thread_title, type=thread_type,
                                  content=blocks)
-    created_child_thread = await create_mongo_document(new_thread.model_dump(), 
+    created_child_thread = await create_mongo_document(jsonable_encoder(new_thread), 
                                           thread_collection)
     
-    child_thread_id = created_child_thread["id"]
+    child_thread_id = created_child_thread["_id"]
     
     # now update the parent block with the child thread id
     await update_block_child_id(
         thread_collection, parent_block_id, parent_thread_id, child_thread_id)
+    
+    return created_child_thread

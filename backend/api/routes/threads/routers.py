@@ -1,16 +1,17 @@
 import os
 from typing import List
+from .child_thread import create_child_thread
 from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from .search import thread_semantic_search
-from .models import THREADTYPES, ThreadHeadlinesModel, ThreadMetaData, ThreadModel, ThreadType, ThreadsInfo, ThreadsMetaData, UpdateThreadModel, CreateThreadModel, ThreadsModel
+from .models import THREADTYPES, CreateChildThreadModel, ThreadHeadlinesModel, ThreadMetaData, ThreadModel, ThreadType, ThreadsInfo, ThreadsMetaData, UpdateThreadModel, CreateThreadModel, ThreadsModel
 from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
-from utils.db import create_mongo_document, get_mongo_documents_by_date, get_user_name
+from utils.db import create_mongo_document, get_mongo_documents_by_date, get_user_name, get_block_by_id
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.session import SessionContainer
-from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields
+from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields, update_block_child_id
 from fastapi import status, Request
 from bson import json_util
 import datetime as dt
@@ -108,7 +109,11 @@ async def md(request: Request,
         meta["type"] = thread["type"]
         meta["id"] = thread["_id"]
         meta["created_date"] = thread["created_date"]
-        userinfo = await request.app.mongodb["users"].find_one({"user_name": thread["creator"]})
+        creator_name = thread["creator"]
+        #print(creator_name)
+        userinfo = await request.app.mongodb["users"].find_one({"user_name": creator_name})
+        if userinfo is None:
+            continue
         creator = {}
         creator["id"] = userinfo["_id"]
         creator["name"] = userinfo["user_name"]
@@ -136,7 +141,9 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     picture = userDoc['user_picture']
     new_block.created_by = fullName
     new_block.creator_email = email
-    new_block.creator_picture = picture
+    new_block.creator_email = picture
+    new_block.creator_id = userId
+    
     new_block_dict = new_block.model_dump()
     new_block_dict["id"] = str(new_block_dict["id"])
     ## to store the block as a json string in the db
@@ -159,7 +166,43 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
                        content=jsonable_encoder(updated_thread))
 
-  
+
+    
+@router.post("/blocks/child", response_model=ThreadModel)
+async def child_thread(request: Request, 
+                       child_thread_data: CreateChildThreadModel = Body(...), 
+                       session: SessionContainer = Depends(verify_session())):
+    
+    thread_collection = request.app.mongodb["threads"]
+    child_thread = child_thread_data.model_dump()
+    
+    parent_block_id = child_thread["parent_block_id"]
+    parent_thread_id = child_thread["parent_thread_id"]
+    
+    # fetch the parent block
+    block = await get_block_by_id(parent_block_id, thread_collection)
+    if not block:
+        return JSONResponse(status_code=404, content={"message": "block with id ${parent_block_id} not found"})
+    
+    # create a new child thread
+    thread_title = jsonable_encoder(child_thread)["title"]
+    thread_type = jsonable_encoder(child_thread)["type"]
+    user_id = session.get_user_id()
+    creator_name = await get_user_name(user_id, request.app.mongodb["users"])
+    
+    
+    created_child_thread = await create_child_thread(thread_collection=thread_collection,
+                              parent_block_id=parent_block_id,
+                              parent_thread_id=parent_thread_id,
+                              thread_title=thread_title,
+                              thread_type=thread_type,
+                              creator_name=creator_name)
+    
+    return JSONResponse(status_code=status.HTTP_201_CREATED,
+                          content=jsonable_encoder(created_child_thread))
+    
+    
+    
     
 # get blocks given a date
 @router.get("/blocksDate", response_model=BlockCollection,
@@ -230,6 +273,7 @@ async def create_new_thread(request: Request, session, title:str,
                                           request.app.mongodb["threads"])
     else:
         created_thread = old_thread
+    
     return created_thread
                     
 @router.post("/threads", response_model=ThreadModel)
@@ -242,24 +286,15 @@ async def create(request: Request, thread_data: CreateThreadModel = Body(...),
     
     thread_title = jsonable_encoder(thread_data)["title"]
     thread_type = jsonable_encoder(thread_data)["type"]
+    #content = jsonable_encoder(thread_data)["content"]
     
     created_thread = await create_new_thread(request, session, thread_title, thread_type) 
     
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
                        content=jsonable_encoder(created_thread))
 
-@router.put("/threads/{title}", response_model=ThreadModel)
-async def update_thread(request: Request, title: str, thread_data: UpdateThreadModel, 
-                        session: SessionContainer = Depends(verify_session())):
-    # Update an existing thread in MongoDB identified by the title
-    thread = jsonable_encoder(thread_data)
+
     
-    updated_thread = await update_mongo_document_fields(
-        {"title": title}, 
-        thread, 
-        request.app.mongodb["threads"])
-    return JSONResponse(status_code=status.HTTP_200_OK, 
-                       content=jsonable_encoder(updated_thread))
 
 @router.get("/threads/{title}", response_model=ThreadModel)
 async def get_thread(request: Request, title: str, 
