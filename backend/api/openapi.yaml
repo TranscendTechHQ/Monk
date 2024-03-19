@@ -16,14 +16,13 @@ components:
       title: BlockCollection
       type: object
     BlockModel:
-      example:
-        content: This is the content of the block
-        created_at: '2021-01-01T00:00:00.000000'
-        id: 12345678-1234-5678-1234-567812345678
       properties:
         _id:
-          format: uuid
           title: ' Id'
+          type: string
+        child_id:
+          default: ''
+          title: Child Id
           type: string
         content:
           title: Content
@@ -40,6 +39,10 @@ components:
           default: unknown email
           title: Creator Email
           type: string
+        creator_id:
+          default: unknown id
+          title: Creator Id
+          type: string
         creator_picture:
           default: unknown picture link
           title: Creator Picture
@@ -47,6 +50,41 @@ components:
       required:
       - content
       title: BlockModel
+      type: object
+    CreateChildThreadModel:
+      example:
+        content:
+        - content: This is the content of the block
+        - content: This is the content of the block
+        title: This is the title of the thread
+        type: /new-plan
+      properties:
+        content:
+          items:
+            $ref: '#/components/schemas/BlockModel'
+          title: Content
+          type: array
+        parentBlockId:
+          title: Parentblockid
+          type: string
+        parentThreadId:
+          title: Parentthreadid
+          type: string
+        title:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[a-zA-Z0-9]+$
+          title: Title
+          type: string
+        type:
+          title: Type
+          type: string
+      required:
+      - type
+      - title
+      - parentBlockId
+      - parentThreadId
+      title: CreateChildThreadModel
       type: object
     CreateThreadModel:
       example:
@@ -83,22 +121,21 @@ components:
         picture: https://www.example.com/picture.jpg
       properties:
         email:
+          default: unknown email
           title: Email
           type: string
         id:
+          default: unknown id
           title: Id
           type: string
         name:
+          default: unknown user
           title: Name
           type: string
         picture:
+          default: unknown picture link
           title: Picture
           type: string
-      required:
-      - name
-      - picture
-      - email
-      - id
       title: Creator
       type: object
     Date:
@@ -228,7 +265,6 @@ components:
         type: /new-plan
       properties:
         _id:
-          format: uuid
           title: ' Id'
           type: string
         content:
@@ -332,21 +368,6 @@ components:
           type: string
       title: UpdateBlockModel
       type: object
-    UpdateThreadModel:
-      example:
-        content:
-        - content: This is the content of the block
-        - content: This is the content of the block
-      properties:
-        content:
-          items:
-            $ref: '#/components/schemas/BlockModel'
-          title: Content
-          type: array
-      required:
-      - content
-      title: UpdateThreadModel
-      type: object
     ValidationError:
       properties:
         loc:
@@ -417,6 +438,31 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Create
+      tags:
+      - threads
+  /blocks/child:
+    post:
+      operationId: child_thread_blocks_child_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChildThreadModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadModel'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Child Thread
       tags:
       - threads
   /blocksDate:
@@ -628,37 +674,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Get Thread
-      tags:
-      - threads
-    put:
-      operationId: update_thread_threads__title__put
-      parameters:
-      - in: path
-        name: title
-        required: true
-        schema:
-          title: Title
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateThreadModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadModel'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Update Thread
       tags:
       - threads
   /threadsInfo:

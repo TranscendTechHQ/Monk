@@ -66,6 +66,7 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 [*SessionApi*](doc/SessionApi.md) | [**secureApiSessioninfoGet**](doc/SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
+[*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createThreadsPost**](doc/ThreadsApi.md#createthreadspost) | **POST** /threads | Create
 [*ThreadsApi*](doc/ThreadsApi.md) | [**dateJournalGet**](doc/ThreadsApi.md#datejournalget) | **GET** /journal | Date
@@ -77,13 +78,13 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**thThreadHeadlinesGet**](doc/ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [*ThreadsApi*](doc/ThreadsApi.md) | [**ttThreadTypesGet**](doc/ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
-[*ThreadsApi*](doc/ThreadsApi.md) | [**updateThreadThreadsTitlePut**](doc/ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
 ## Documentation For Models
 
  - [BlockCollection](doc/BlockCollection.md)
  - [BlockModel](doc/BlockModel.md)
+ - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [Creator](doc/Creator.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
@@ -97,7 +98,6 @@ Class | Method | HTTP request | Description
  - [ThreadsMetaData](doc/ThreadsMetaData.md)
  - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
- - [UpdateThreadModel](doc/UpdateThreadModel.md)
  - [ValidationError](doc/ValidationError.md)
 
 

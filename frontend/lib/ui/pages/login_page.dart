@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       String? authCode = account.serverAuthCode;
-
+      //print('authCode: $authCode');
       if (authCode == null) {
         print("Google sign in did not return a server auth code");
         return;

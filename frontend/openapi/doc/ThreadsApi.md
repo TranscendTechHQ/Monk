@@ -10,6 +10,7 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**atAllThreadsGet**](ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
+[**childThreadBlocksChildPost**](ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [**createThreadsPost**](ThreadsApi.md#createthreadspost) | **POST** /threads | Create
 [**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
@@ -21,7 +22,6 @@ Method | HTTP request | Description
 [**thThreadHeadlinesGet**](ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
-[**updateThreadThreadsTitlePut**](ThreadsApi.md#updatethreadthreadstitleput) | **PUT** /threads/{title} | Update Thread
 
 
 # **atAllThreadsGet**
@@ -57,6 +57,47 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **childThreadBlocksChildPost**
+> ThreadModel childThreadBlocksChildPost(createChildThreadModel)
+
+Child Thread
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final CreateChildThreadModel createChildThreadModel = ; // CreateChildThreadModel | 
+
+try {
+    final response = api.childThreadBlocksChildPost(createChildThreadModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->childThreadBlocksChildPost: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **createChildThreadModel** | [**CreateChildThreadModel**](CreateChildThreadModel.md)|  | 
+
+### Return type
+
+[**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -494,49 +535,6 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **updateThreadThreadsTitlePut**
-> ThreadModel updateThreadThreadsTitlePut(title, updateThreadModel)
-
-Update Thread
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final String title = title_example; // String | 
-final UpdateThreadModel updateThreadModel = ; // UpdateThreadModel | 
-
-try {
-    final response = api.updateThreadThreadsTitlePut(title, updateThreadModel);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->updateThreadThreadsTitlePut: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **title** | **String**|  | 
- **updateThreadModel** | [**UpdateThreadModel**](UpdateThreadModel.md)|  | 
-
-### Return type
-
-[**ThreadModel**](ThreadModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

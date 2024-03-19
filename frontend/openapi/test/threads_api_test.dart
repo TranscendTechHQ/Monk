@@ -14,6 +14,13 @@ void main() {
       // TODO
     });
 
+    // Child Thread
+    //
+    //Future<ThreadModel> childThreadBlocksChildPost(CreateChildThreadModel createChildThreadModel) async
+    test('test childThreadBlocksChildPost', () async {
+      // TODO
+    });
+
     // Create
     //
     //Future<ThreadModel> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
@@ -88,13 +95,6 @@ void main() {
     //
     //Future<List<String>> ttThreadTypesGet() async
     test('test ttThreadTypesGet', () async {
-      // TODO
-    });
-
-    // Update Thread
-    //
-    //Future<ThreadModel> updateThreadThreadsTitlePut(String title, UpdateThreadModel updateThreadModel) async
-    test('test updateThreadThreadsTitlePut', () async {
       // TODO
     });
 

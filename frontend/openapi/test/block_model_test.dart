@@ -12,6 +12,11 @@ void main() {
       // TODO
     });
 
+    // String childId (default value: '')
+    test('to test the property `childId`', () async {
+      // TODO
+    });
+
     // String content
     test('to test the property `content`', () async {
       // TODO
@@ -29,6 +34,11 @@ void main() {
 
     // String creatorEmail (default value: 'unknown email')
     test('to test the property `creatorEmail`', () async {
+      // TODO
+    });
+
+    // String creatorId (default value: 'unknown id')
+    test('to test the property `creatorId`', () async {
       // TODO
     });
 

@@ -149,8 +149,8 @@ class NewsCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: Image.network(
-                      creator.picture.startsWith('https')
-                          ? creator.picture
+                      creator.picture!.startsWith('https')
+                          ? creator.picture!
                           : "https://api.dicebear.com/7.x/identicon/png?seed=${creator.name ?? "UN"}",
                       width: 35,
                       height: 35,
@@ -164,7 +164,7 @@ class NewsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        creator.name,
+                        creator.name!,
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface,

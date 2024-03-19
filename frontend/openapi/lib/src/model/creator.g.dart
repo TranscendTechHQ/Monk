@@ -10,23 +10,30 @@ Creator _$CreatorFromJson(Map<String, dynamic> json) => $checkedCreate(
       'Creator',
       json,
       ($checkedConvert) {
-        $checkKeys(
-          json,
-          requiredKeys: const ['email', 'id', 'name', 'picture'],
-        );
         final val = Creator(
-          email: $checkedConvert('email', (v) => v as String),
-          id: $checkedConvert('id', (v) => v as String),
-          name: $checkedConvert('name', (v) => v as String),
-          picture: $checkedConvert('picture', (v) => v as String),
+          email:
+              $checkedConvert('email', (v) => v as String? ?? 'unknown email'),
+          id: $checkedConvert('id', (v) => v as String? ?? 'unknown id'),
+          name: $checkedConvert('name', (v) => v as String? ?? 'unknown user'),
+          picture: $checkedConvert(
+              'picture', (v) => v as String? ?? 'unknown picture link'),
         );
         return val;
       },
     );
 
-Map<String, dynamic> _$CreatorToJson(Creator instance) => <String, dynamic>{
-      'email': instance.email,
-      'id': instance.id,
-      'name': instance.name,
-      'picture': instance.picture,
-    };
+Map<String, dynamic> _$CreatorToJson(Creator instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('email', instance.email);
+  writeNotNull('id', instance.id);
+  writeNotNull('name', instance.name);
+  writeNotNull('picture', instance.picture);
+  return val;
+}

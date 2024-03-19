@@ -7,22 +7,22 @@ void main() {
   // TODO add properties to the entity
 
   group(Creator, () {
-    // String email
+    // String email (default value: 'unknown email')
     test('to test the property `email`', () async {
       // TODO
     });
 
-    // String id
+    // String id (default value: 'unknown id')
     test('to test the property `id`', () async {
       // TODO
     });
 
-    // String name
+    // String name (default value: 'unknown user')
     test('to test the property `name`', () async {
       // TODO
     });
 
-    // String picture
+    // String picture (default value: 'unknown picture link')
     test('to test the property `picture`', () async {
       // TODO
     });

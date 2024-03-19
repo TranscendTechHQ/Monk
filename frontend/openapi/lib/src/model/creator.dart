@@ -18,60 +18,60 @@ class Creator {
   /// Returns a new [Creator] instance.
   Creator({
 
-    required  this.email,
+     this.email = 'unknown email',
 
-    required  this.id,
+     this.id = 'unknown id',
 
-    required  this.name,
+     this.name = 'unknown user',
 
-    required  this.picture,
+     this.picture = 'unknown picture link',
   });
 
   @JsonKey(
-    
+    defaultValue: 'unknown email',
     name: r'email',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final String email;
+  final String? email;
 
 
 
   @JsonKey(
-    
+    defaultValue: 'unknown id',
     name: r'id',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final String id;
+  final String? id;
 
 
 
   @JsonKey(
-    
+    defaultValue: 'unknown user',
     name: r'name',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final String name;
+  final String? name;
 
 
 
   @JsonKey(
-    
+    defaultValue: 'unknown picture link',
     name: r'picture',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final String picture;
+  final String? picture;
 
 
 

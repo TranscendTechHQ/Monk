@@ -63,17 +63,75 @@ async def delete_mongo_document(query:dict, collection):
         return doc
 
 async def create_mongo_document(document: dict, collection):
-    ## if the document already exists, return the existing document
-    if (doc := await collection.find_one(document)) is not None:
-        return doc
+    #print(document)
+    #print(collection)
     
-    new_document = await collection.insert_one(document)
+    if collection is None:
+        print("collection is none")
+    if document is None:
+        print("document is none")
+    result =  await collection.find_one(document)
+    
+    if result is not None:
+    ## if the document already exists, return the existing document
+        return result
+    
+    
+    new_document =  await collection.insert_one(document)
+    
     
     created_document = await collection.find_one(
         {"_id": new_document.inserted_id})
     
     return created_document
 
+async def get_block_by_id(block_id, thread_collection):
+    # Filter with unwind and match
+    pipeline = [
+        {
+            "$match": {"content.id": block_id}
+        },
+        {
+            "$unwind": "$content"
+        },
+        {
+            "$match": {"content.id": block_id}
+        }
+    ]
+
+    result =  thread_collection.aggregate(pipeline)
+
+    # Fetch the first element (assuming there's only one matching block)
+    block = await result.next()
+
+    # Access block content
+    return block
+
+async def update_block_child_id(threads_collection, 
+                                parent_block_id, 
+                                thread_id, 
+                                child_thread_id) :
+    
+    query = {'_id': thread_id}
+    
+    
+    # Fetch the document and find the block with "id" "3493"
+    document = threads_collection.find_one(query)
+    #print(parent_block_id)
+    
+
+    update = {'$set': {'content.$[elem].child_id': child_thread_id}}
+    # Find the document with the "_id" of "385029"
+    
+    result = await threads_collection.update_one(query, update, 
+                                  array_filters=[{'elem.id': parent_block_id}],
+                                  upsert=True)
+    
+    if result.modified_count > 0:
+        print("Updated successfully")
+    else:
+        print("could not update the block with block_id: ", parent_block_id)
+        
 async def update_mongo_document_fields(query:dict, fields: dict, collection):
     fields_dict = {k: v for k, v in fields.items() if v is not None}
 
@@ -94,3 +152,5 @@ async def update_mongo_document_fields(query:dict, fields: dict, collection):
         return existing_doc
 
     return None
+
+

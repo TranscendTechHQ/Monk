@@ -4,6 +4,7 @@ import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
+import 'package:openapi/openapi.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,6 +30,38 @@ class _HomePageState extends State<HomePage> {
       });
     });
     getAndSetUserInfo().then((value) => null);
+  }
+
+  Future<void> testOpenApi() async {
+    //final api = Openapi().getPetApi();
+//    final taskApi = NetworkManager.instance.openApi.getTasksApi();
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    /*final response = await threadApi.searchTitlesSearchTitlesGet(
+        query: "thw thread with link to jira dataset");
+    if (response.statusCode != 200) {
+      throw Exception("Failed to fetch matching threads");
+    }
+    final results = response.data!;
+    print(results);
+    final response = await threadApi.thThreadHeadlinesGet();
+    if (response.statusCode != 200) {
+      throw Exception("Failed to fetch matching threads");
+    }
+    final results = response.data!;
+    results.headlines.map((e) => print(e));*/
+    /*final response = await threadApi.mdMetadataGet();
+    if (response.statusCode != 200) {
+      throw Exception("Failed to fetch matching threads");
+    }
+    final results = response.data!;*/
+    CreateChildThreadModel createChildThreadModel = CreateChildThreadModel(
+      title: "myownchildthread",
+      type: "/new-plan",
+      parentBlockId: "b342a310-cd4e-444e-8f0f-8e511d908b7f",
+      parentThreadId: "713059f7-b4ca-49ed-a35c-d28e6569da81",
+    );
+    await threadApi.childThreadBlocksChildPost(
+        createChildThreadModel: createChildThreadModel);
   }
 
   Future<void> signOut() async {
