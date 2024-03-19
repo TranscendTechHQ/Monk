@@ -99,10 +99,10 @@ async def get_block_by_id(block_id, thread_collection):
         }
     ]
 
-    result = thread_collection.aggregate(pipeline)
+    result =  thread_collection.aggregate(pipeline)
 
     # Fetch the first element (assuming there's only one matching block)
-    block = result.next()
+    block = await result.next()
 
     # Access block content
     return block
@@ -123,7 +123,7 @@ async def update_block_child_id(threads_collection,
     update = {'$set': {'content.$[elem].child_id': child_thread_id}}
     # Find the document with the "_id" of "385029"
     
-    result = threads_collection.update_one(query, update, 
+    result = await threads_collection.update_one(query, update, 
                                   array_filters=[{'elem.id': parent_block_id}],
                                   upsert=True)
     

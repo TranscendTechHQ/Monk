@@ -8,8 +8,7 @@ from routes.threads.models import BlockModel, ThreadModel
 from routes.threads.search import thread_semantic_search
 from utils.embedding import generate_embedding
 from config import settings
-from pymongo import MongoClient, UpdateOne
-from pymongo import ReplaceOne
+import motor.motor_asyncio
 import os
 import asyncio
 import threading
@@ -32,13 +31,14 @@ app = App()
     
     
 
-def startup_db_client():
-    app.mongodb_client = MongoClient(settings.DB_URL)
-    app.mongodb = app.mongodb_client[settings.DB_NAME]
+async def startup_db_client():
+    app.mongodb_client =   motor.motor_asyncio.AsyncIOMotorClient(settings.DB_URL)
+    #print(app.mongodb_client.list_database_names())
+    app.mongodb =  app.mongodb_client[settings.DB_NAME]
 
 
 
-def shutdown_db_client():
+async def shutdown_db_client():
     app.mongodb_client.close()
 
     
@@ -55,20 +55,21 @@ def update_block() :
     
     
 async def main() :
-    startup_db_client()
+    await startup_db_client()
+
     #update_block()
     #await update_block_child_id(app.mongodb["threads"],
                            # "b342a310-cd4e-444e-8f0f-8e511d908b7f",
                             #"713059f7-b4ca-49ed-a35c-d28e6569da81",
                             #"4564")
     
-    await create_child_thread(app.mongodb["threads"],
+    child_thread = await create_child_thread(app.mongodb["threads"],
                             "b342a310-cd4e-444e-8f0f-8e511d908b7f",
                             "713059f7-b4ca-49ed-a35c-d28e6569da81",
                             "childThread",
                             "/new-thread",
                             "yogesh")
-    shutdown_db_client()
+    await shutdown_db_client()
 
 if __name__ == "__main__":
     asyncio.run(main())

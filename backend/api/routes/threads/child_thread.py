@@ -15,7 +15,7 @@ async def create_child_thread(thread_collection,
     block = await get_block_by_id(parent_block_id, thread_collection)
     if not block:
         print("block with id ${parent_block_id} not found")
-        
+    #print(block)
     block = block["content"]
     if "child_id" in block.keys():
         if block["child_id"] != "":
