@@ -94,8 +94,8 @@ class _HomePageState extends State<HomePage> {
     CreateChildThreadModel createChildThreadModel = CreateChildThreadModel(
       title: "myownchildthread",
       type: "/new-plan",
-      parentBlockId: "b342a310-cd4e-444e-8f0f-8e511d908b7f",
-      parentThreadId: "713059f7-b4ca-49ed-a35c-d28e6569da81",
+      parentBlockId: "a73a294e-367a-437d-b71e-e53f7058b49f",
+      parentThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
     );
     await threadApi.childThreadBlocksChildPost(
         createChildThreadModel: createChildThreadModel);
