@@ -141,7 +141,7 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     picture = userDoc['user_picture']
     new_block.created_by = fullName
     new_block.creator_email = email
-    new_block.creator_email = picture
+    new_block.creator_picture = picture
     new_block.creator_id = userId
     
     #new_block_dict = new_block.model_dump()
