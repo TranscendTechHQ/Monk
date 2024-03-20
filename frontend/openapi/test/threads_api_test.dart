@@ -28,10 +28,10 @@ void main() {
       // TODO
     });
 
-    // Create
+    // Create Th
     //
-    //Future<ThreadModel> createThreadsPost(CreateThreadModel createThreadModel) async
-    test('test createThreadsPost', () async {
+    //Future<ThreadModel> createThThreadsPost(CreateThreadModel createThreadModel) async
+    test('test createThThreadsPost', () async {
       // TODO
     });
 
@@ -46,6 +46,13 @@ void main() {
     //
     //Future<BlockCollection> getBlocksByDateBlocksDateGet(ModelDate modelDate) async
     test('test getBlocksByDateBlocksDateGet', () async {
+      // TODO
+    });
+
+    // Get Thread Id
+    //
+    //Future<ThreadModel> getThreadIdThreadsIdGet(String id) async
+    test('test getThreadIdThreadsIdGet', () async {
       // TODO
     });
 

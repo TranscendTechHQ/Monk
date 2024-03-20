@@ -34,11 +34,22 @@ Future<List<String>> fetchThreadTypes(FetchThreadTypesRef ref) async {
   return response.data!;
 }
 
+Future<ThreadModel> fetchThreadFromId({required String id}) async {
+  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+
+  final response = await threadApi.getThreadIdThreadsIdGet(id: id);
+
+  if (response.statusCode != 200) {
+    throw Exception("Failed to get thread");
+  }
+  return response.data!;
+}
+
 Future<ThreadModel> createOrGetThread(
     {required String title, required String type}) async {
   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
 
-  final response = await threadApi.createThreadsPost(
+  final response = await threadApi.createThThreadsPost(
       createThreadModel: CreateThreadModel(title: title, type: type));
 
   if (response.statusCode != 201) {

@@ -68,9 +68,10 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
-[*ThreadsApi*](doc/ThreadsApi.md) | [**createThreadsPost**](doc/ThreadsApi.md#createthreadspost) | **POST** /threads | Create
+[*ThreadsApi*](doc/ThreadsApi.md) | [**createThThreadsPost**](doc/ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
 [*ThreadsApi*](doc/ThreadsApi.md) | [**dateJournalGet**](doc/ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksDateGet**](doc/ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
+[*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadIdThreadsIdGet**](doc/ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**mdMetadataGet**](doc/ThreadsApi.md#mdmetadataget) | **GET** /metadata | Md
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads

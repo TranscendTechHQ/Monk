@@ -12,9 +12,10 @@ Method | HTTP request | Description
 [**atAllThreadsGet**](ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [**childThreadBlocksChildPost**](ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
-[**createThreadsPost**](ThreadsApi.md#createthreadspost) | **POST** /threads | Create
+[**createThThreadsPost**](ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
 [**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [**getBlocksByDateBlocksDateGet**](ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
+[**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
 [**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
 [**mdMetadataGet**](ThreadsApi.md#mdmetadataget) | **GET** /metadata | Md
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
@@ -145,10 +146,10 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **createThreadsPost**
-> ThreadModel createThreadsPost(createThreadModel)
+# **createThThreadsPost**
+> ThreadModel createThThreadsPost(createThreadModel)
 
-Create
+Create Th
 
 ### Example
 ```dart
@@ -158,10 +159,10 @@ final api = Openapi().getThreadsApi();
 final CreateThreadModel createThreadModel = ; // CreateThreadModel | 
 
 try {
-    final response = api.createThreadsPost(createThreadModel);
+    final response = api.createThThreadsPost(createThreadModel);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling ThreadsApi->createThreadsPost: $e\n');
+    print('Exception when calling ThreadsApi->createThThreadsPost: $e\n');
 }
 ```
 
@@ -264,6 +265,47 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getThreadIdThreadsIdGet**
+> ThreadModel getThreadIdThreadsIdGet(id)
+
+Get Thread Id
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+
+try {
+    final response = api.getThreadIdThreadsIdGet(id);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->getThreadIdThreadsIdGet: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+
+### Return type
+
+[**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
