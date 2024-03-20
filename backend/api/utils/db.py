@@ -124,7 +124,7 @@ async def update_block_child_id(threads_collection,
     # Find the document with the "_id" of "385029"
     
     result = await threads_collection.update_one(query, update, 
-                                  array_filters=[{'elem.id': parent_block_id}],
+                                  array_filters=[{'elem._id': parent_block_id}],
                                   upsert=True)
     
     if result.modified_count > 0:
