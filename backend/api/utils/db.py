@@ -89,13 +89,13 @@ async def get_block_by_id(block_id, thread_collection):
     # Filter with unwind and match
     pipeline = [
         {
-            "$match": {"content.id": block_id}
+            "$match": {"content._id": block_id}
         },
         {
             "$unwind": "$content"
         },
         {
-            "$match": {"content.id": block_id}
+            "$match": {"content._id": block_id}
         }
     ]
 
