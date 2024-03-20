@@ -38,7 +38,7 @@ final fetchThreadTypesProvider =
 );
 
 typedef FetchThreadTypesRef = AutoDisposeFutureProviderRef<List<String>>;
-String _$currentThreadHash() => r'52c65ebf9201f75d3312222dc2eb4830fd11c868';
+String _$currentThreadHash() => r'a17a3790e66bd957afd312d45654d66cdb0ac2d3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -62,11 +62,11 @@ class _SystemHash {
 }
 
 abstract class _$CurrentThread
-    extends BuildlessAutoDisposeAsyncNotifier<ThreadModel> {
+    extends BuildlessAutoDisposeAsyncNotifier<ThreadModel?> {
   late final String title;
   late final String type;
 
-  FutureOr<ThreadModel> build({
+  FutureOr<ThreadModel?> build({
     required String title,
     required String type,
   });
@@ -77,7 +77,7 @@ abstract class _$CurrentThread
 const currentThreadProvider = CurrentThreadFamily();
 
 /// See also [CurrentThread].
-class CurrentThreadFamily extends Family<AsyncValue<ThreadModel>> {
+class CurrentThreadFamily extends Family<AsyncValue<ThreadModel?>> {
   /// See also [CurrentThread].
   const CurrentThreadFamily();
 
@@ -119,7 +119,7 @@ class CurrentThreadFamily extends Family<AsyncValue<ThreadModel>> {
 
 /// See also [CurrentThread].
 class CurrentThreadProvider
-    extends AutoDisposeAsyncNotifierProviderImpl<CurrentThread, ThreadModel> {
+    extends AutoDisposeAsyncNotifierProviderImpl<CurrentThread, ThreadModel?> {
   /// See also [CurrentThread].
   CurrentThreadProvider({
     required String title,
@@ -156,7 +156,7 @@ class CurrentThreadProvider
   final String type;
 
   @override
-  FutureOr<ThreadModel> runNotifierBuild(
+  FutureOr<ThreadModel?> runNotifierBuild(
     covariant CurrentThread notifier,
   ) {
     return notifier.build(
@@ -185,7 +185,7 @@ class CurrentThreadProvider
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<CurrentThread, ThreadModel>
+  AutoDisposeAsyncNotifierProviderElement<CurrentThread, ThreadModel?>
       createElement() {
     return _CurrentThreadProviderElement(this);
   }
@@ -207,7 +207,7 @@ class CurrentThreadProvider
   }
 }
 
-mixin CurrentThreadRef on AutoDisposeAsyncNotifierProviderRef<ThreadModel> {
+mixin CurrentThreadRef on AutoDisposeAsyncNotifierProviderRef<ThreadModel?> {
   /// The parameter `title` of this provider.
   String get title;
 
@@ -216,7 +216,7 @@ mixin CurrentThreadRef on AutoDisposeAsyncNotifierProviderRef<ThreadModel> {
 }
 
 class _CurrentThreadProviderElement
-    extends AutoDisposeAsyncNotifierProviderElement<CurrentThread, ThreadModel>
+    extends AutoDisposeAsyncNotifierProviderElement<CurrentThread, ThreadModel?>
     with CurrentThreadRef {
   _CurrentThreadProviderElement(super.provider);
 

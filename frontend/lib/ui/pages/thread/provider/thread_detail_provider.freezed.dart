@@ -16,8 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ThreadDetailState {
-  BlockModel? get block => throw _privateConstructorUsedError;
-  List<BlockModel> get replies => throw _privateConstructorUsedError;
+  String? get error => throw _privateConstructorUsedError;
+  ThreadModel? get thread => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ThreadDetailStateCopyWith<ThreadDetailState> get copyWith =>
@@ -30,7 +30,7 @@ abstract class $ThreadDetailStateCopyWith<$Res> {
           ThreadDetailState value, $Res Function(ThreadDetailState) then) =
       _$ThreadDetailStateCopyWithImpl<$Res, ThreadDetailState>;
   @useResult
-  $Res call({BlockModel? block, List<BlockModel> replies});
+  $Res call({String? error, ThreadModel? thread});
 }
 
 /// @nodoc
@@ -46,18 +46,18 @@ class _$ThreadDetailStateCopyWithImpl<$Res, $Val extends ThreadDetailState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? block = freezed,
-    Object? replies = null,
+    Object? error = freezed,
+    Object? thread = freezed,
   }) {
     return _then(_value.copyWith(
-      block: freezed == block
-          ? _value.block
-          : block // ignore: cast_nullable_to_non_nullable
-              as BlockModel?,
-      replies: null == replies
-          ? _value.replies
-          : replies // ignore: cast_nullable_to_non_nullable
-              as List<BlockModel>,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
+      thread: freezed == thread
+          ? _value.thread
+          : thread // ignore: cast_nullable_to_non_nullable
+              as ThreadModel?,
     ) as $Val);
   }
 }
@@ -70,7 +70,7 @@ abstract class _$$ThreadDetailStateImplCopyWith<$Res>
       __$$ThreadDetailStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({BlockModel? block, List<BlockModel> replies});
+  $Res call({String? error, ThreadModel? thread});
 }
 
 /// @nodoc
@@ -84,18 +84,18 @@ class __$$ThreadDetailStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? block = freezed,
-    Object? replies = null,
+    Object? error = freezed,
+    Object? thread = freezed,
   }) {
     return _then(_$ThreadDetailStateImpl(
-      block: freezed == block
-          ? _value.block
-          : block // ignore: cast_nullable_to_non_nullable
-              as BlockModel?,
-      replies: null == replies
-          ? _value._replies
-          : replies // ignore: cast_nullable_to_non_nullable
-              as List<BlockModel>,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
+      thread: freezed == thread
+          ? _value.thread
+          : thread // ignore: cast_nullable_to_non_nullable
+              as ThreadModel?,
     ));
   }
 }
@@ -103,23 +103,16 @@ class __$$ThreadDetailStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ThreadDetailStateImpl implements _ThreadDetailState {
-  const _$ThreadDetailStateImpl(
-      {required this.block, required final List<BlockModel> replies})
-      : _replies = replies;
+  const _$ThreadDetailStateImpl({this.error, required this.thread});
 
   @override
-  final BlockModel? block;
-  final List<BlockModel> _replies;
+  final String? error;
   @override
-  List<BlockModel> get replies {
-    if (_replies is EqualUnmodifiableListView) return _replies;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_replies);
-  }
+  final ThreadModel? thread;
 
   @override
   String toString() {
-    return 'ThreadDetailState(block: $block, replies: $replies)';
+    return 'ThreadDetailState(error: $error, thread: $thread)';
   }
 
   @override
@@ -127,13 +120,12 @@ class _$ThreadDetailStateImpl implements _ThreadDetailState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ThreadDetailStateImpl &&
-            (identical(other.block, block) || other.block == block) &&
-            const DeepCollectionEquality().equals(other._replies, _replies));
+            (identical(other.error, error) || other.error == error) &&
+            (identical(other.thread, thread) || other.thread == thread));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, block, const DeepCollectionEquality().hash(_replies));
+  int get hashCode => Object.hash(runtimeType, error, thread);
 
   @JsonKey(ignore: true)
   @override
@@ -145,13 +137,13 @@ class _$ThreadDetailStateImpl implements _ThreadDetailState {
 
 abstract class _ThreadDetailState implements ThreadDetailState {
   const factory _ThreadDetailState(
-      {required final BlockModel? block,
-      required final List<BlockModel> replies}) = _$ThreadDetailStateImpl;
+      {final String? error,
+      required final ThreadModel? thread}) = _$ThreadDetailStateImpl;
 
   @override
-  BlockModel? get block;
+  String? get error;
   @override
-  List<BlockModel> get replies;
+  ThreadModel? get thread;
   @override
   @JsonKey(ignore: true)
   _$$ThreadDetailStateImplCopyWith<_$ThreadDetailStateImpl> get copyWith =>

@@ -101,10 +101,14 @@ class ChatListView extends ConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 30),
                   itemBuilder: (context, index) {
                     final headlineModel = threadHeadlineList[index];
-                    final metaData = threadMetaDataList.firstWhere(
+                    if (threadMetaDataList.isEmpty) return const SizedBox();
+                    final metaData = threadMetaDataList.firstWhereOrNull(
                         (element) => element.id == headlineModel.id);
+                    if (metaData == null) return const SizedBox();
                     return NewsCard(
-                        headlineModel: headlineModel, metaData: metaData);
+                      headlineModel: headlineModel,
+                      metaData: metaData,
+                    );
                   },
                 ),
               );

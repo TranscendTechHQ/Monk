@@ -95,12 +95,12 @@ Future<BlockCollection> journalBlocksDate(DateTime date) async {
 @riverpod
 class CurrentThread extends _$CurrentThread {
   @override
-  Future<ThreadModel> build(
+  Future<ThreadModel?> build(
       {required String title, required String type}) async {
     state = const AsyncValue.loading();
     final response = await createOrGetThread(title: title, type: type);
     state = AsyncValue.data(response);
-    return state.value!;
+    return state.value;
   }
 
   Future<ThreadModel> createBlock(String text) async {

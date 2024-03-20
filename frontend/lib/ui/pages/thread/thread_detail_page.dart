@@ -5,35 +5,40 @@ import 'package:frontend/helper/constants.dart';
 import 'package:frontend/ui/pages/thread/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/decorations.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
 class ThreadDetailPage extends ConsumerWidget {
   final BlockModel? block;
-  final String threadId;
+  final String parentBlockId;
   final String type;
+  final String parentThreadId;
   final String title;
   const ThreadDetailPage({
     super.key,
     required this.title,
     required this.type,
     this.block,
-    required this.threadId,
+    required this.parentBlockId,
+    required this.parentThreadId,
   });
 
   static String route = "/thread-detail";
   static Route launchRoute(
       {required String title,
       required String type,
-      required String threadId,
+      required String parentBlockId,
+      required String parentThreadId,
       BlockModel? block}) {
     return MaterialPageRoute<void>(
       builder: (_) => ThreadDetailPage(
         title: title,
         type: type,
-        threadId: threadId,
+        parentBlockId: parentBlockId,
         block: block,
+        parentThreadId: parentThreadId,
       ),
     );
   }
@@ -49,8 +54,20 @@ class ThreadDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentThread =
-        ref.watch(threadDetailProvider.call(threadId: threadId, block: block));
+    final createChildThreadModel = CreateChildThreadModel(
+      title: title,
+      type: type,
+      parentBlockId: parentBlockId,
+      parentThreadId: parentThreadId,
+    );
+    final provider = threadDetailProvider.call(
+      createChildThreadModel:
+          block!.childId.isNullOrEmpty ? createChildThreadModel : null,
+      childThreadId: block!.childId.isNullOrEmpty ? '' : block!.childId!,
+    );
+
+    final currentThread = ref.watch(provider);
+
     final blockInput = CommandBox(title: title, type: type);
 
     return Scaffold(
@@ -66,25 +83,32 @@ class ThreadDetailPage extends ConsumerWidget {
           alignment: Alignment.center,
           child: Column(
             children: [
-              SizedBox(
-                width: containerWidth,
-                child: currentThread.when(
-                  data: (state) => ReplyCard(
-                    block: state.block!,
-                    emojiParser: EmojiParser(init: true),
-                  ),
-                  error: (error, stack) => Center(child: Text('Error: $error')),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                ),
-              ),
+              // SizedBox(
+              //   width: containerWidth,
+              //   child: currentThread.when(
+              //     data: (state) => ReplyCard(
+              //       // block: state.thread.!,
+              //       emojiParser: EmojiParser(init: true),
+              //     ),
+              //     error: (error, stack) => Center(child: Text('Error: $error')),
+              //     loading: () =>
+              //         const Center(child: CircularProgressIndicator()),
+              //   ),
+              // ),
               Expanded(
                   child: currentThread.when(
                 data: (state) => ChatListView(
-                  replies: state.replies,
+                  replies: state.thread?.content?.reversed.toList(),
                 ),
-                error: (error, stack) => Center(child: Text('Error: $error')),
-                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Text(
+                    error.toString().replaceFirst('Exception: ', ''),
+                    style: context.textTheme.bodySmall,
+                  ),
+                ),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
               )),
               blockInput,
             ],

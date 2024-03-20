@@ -1,6 +1,7 @@
 import 'package:frontend/ui/pages/thread/thread_detail_page.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/decorations.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ class ChatListView extends ConsumerWidget {
     required this.title,
     required this.type,
   });
-  final AsyncValue<ThreadModel> currentThread;
+  final AsyncValue<ThreadModel?> currentThread;
   final String type;
   final String title;
 
@@ -90,6 +91,7 @@ class ChatListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final blocks = currentThread.value?.content?.reversed.toList();
+    final parentThreadId = currentThread.value?.id;
     return SizedBox(
       width: containerWidth,
       child: ListView.builder(
@@ -104,6 +106,7 @@ class ChatListView extends ConsumerWidget {
             emojiParser: emojiParser,
             title: title,
             type: type,
+            parentThreadId: parentThreadId,
           );
         },
       ),
@@ -118,11 +121,13 @@ class ThreadCard extends StatelessWidget {
     required this.emojiParser,
     required this.title,
     required this.type,
+    required this.parentThreadId,
   });
   final BlockModel block;
   final String type;
   final String title;
   final EmojiParser emojiParser;
+  final String? parentThreadId;
 
   @override
   Widget build(BuildContext context) {
@@ -191,18 +196,35 @@ class ThreadCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  ThreadDetailPage.launchRoute(
-                    title: title,
-                    type: type,
-                    threadId: block.id ?? '',
-                    block: block,
+            onPressed: () {
+              if (block.id.isNullOrEmpty || parentThreadId.isNullOrEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Thread Id or Block Id is missing'),
                   ),
                 );
-              },
-              child: const Text("Replies"))
+                return;
+              }
+              // print(block.toJson());
+              Navigator.push(
+                context,
+                ThreadDetailPage.launchRoute(
+                  title: ("Reply$title${block.id?.substring(0, 9)}")
+                      .replaceAll('-', ''),
+                  type: type,
+                  parentBlockId: block.id!,
+                  block: block,
+                  parentThreadId: parentThreadId!,
+                ),
+              );
+            },
+            child: Text(
+              block.childId.isNotNullEmpty ? "Replies" : 'Reply in Thread',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.customColors.sourceMonkBlue,
+              ),
+            ),
+          )
         ],
       ),
     );

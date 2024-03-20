@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -5,47 +7,59 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'thread_detail_provider.freezed.dart';
 part 'thread_detail_provider.g.dart';
 
-// @riverpod
-// Future<Map<String, String>> fetchThreadDetailAsync(fetchThreadDetailAsyncRef ref) async {
-//   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-//   final response = await threadApi.tiThreadsInfoGet();
-//   if (response.statusCode != 200) {
-//     throw Exception("Failed to fetch titles");
-//   }
-//   return response.data!.info!;
-// }
-
 @riverpod
 class ThreadDetail extends _$ThreadDetail {
   @override
-  Future<ThreadDetailState> build(
-      {required String threadId, BlockModel? block}) async {
-    state = const AsyncLoading();
-    await Future.delayed(const Duration(seconds: 2));
-    return ThreadDetailState.result(block: block, replies: [
-      block!,
-      block,
-      block,
-      block,
-      block,
-      block,
-      block,
-      block,
-      block,
-      block
-    ]);
+  Future<ThreadDetailState> build({
+    required String childThreadId,
+    CreateChildThreadModel? createChildThreadModel,
+  }) async {
+    if (createChildThreadModel != null) {
+      return createChildThread(createChildThreadModel);
+    } else {
+      return fetchThreadFromIdAsync(childThreadId);
+    }
+  }
+
+  Future<ThreadDetailState> fetchThreadFromIdAsync(String id) async {
+    return MonkException.handle(() async {
+      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+      final response = await threadApi.getThreadIdThreadsIdGet(id: id);
+      if (response.statusCode == 404) {
+        throw Exception("Thread not found");
+      } else if (response.statusCode != 200) {
+        throw Exception("Failed to get thread");
+      }
+      return ThreadDetailState.result(thread: response.data!);
+    });
+  }
+
+  Future<ThreadDetailState> createChildThread(
+      CreateChildThreadModel createChildThreadModel) async {
+    return MonkException.handle(() async {
+      state = const AsyncLoading();
+      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+      final response = await threadApi.childThreadBlocksChildPost(
+        createChildThreadModel: createChildThreadModel,
+      );
+      if (response.statusCode == 200) {
+        return ThreadDetailState.result(thread: response.data!);
+      } else {
+        return ThreadDetailState.error("Failed to create child thread");
+      }
+    });
   }
 }
 
 @freezed
 class ThreadDetailState with _$ThreadDetailState {
   const factory ThreadDetailState({
-    required BlockModel? block,
-    required List<BlockModel> replies,
+    String? error,
+    required ThreadModel? thread,
   }) = _ThreadDetailState;
-  factory ThreadDetailState.initial({BlockModel? block}) =>
-      ThreadDetailState(block: block, replies: []);
-  factory ThreadDetailState.result(
-          {BlockModel? block, required List<BlockModel> replies}) =>
-      ThreadDetailState(block: block, replies: replies);
+  factory ThreadDetailState.result({required ThreadModel thread}) =>
+      ThreadDetailState(thread: thread);
+
+  factory ThreadDetailState.error(String error) =>
+      ThreadDetailState(thread: null, error: error);
 }
