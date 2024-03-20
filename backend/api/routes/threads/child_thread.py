@@ -26,7 +26,7 @@ async def create_child_thread(thread_collection,
 
     parent_block = BlockModel(**block)
     blocks = []
-    blocks.append(parent_block)
+    blocks.append(jsonable_encoder(parent_block))
     
     new_thread = ThreadModel(creator=creator_name, title=thread_title, type=thread_type,
                                  content=blocks)
