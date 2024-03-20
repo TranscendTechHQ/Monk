@@ -277,7 +277,7 @@ async def create_new_thread(request: Request, session, title:str,
     return created_thread
                     
 @router.post("/threads", response_model=ThreadModel)
-async def create(request: Request, thread_data: CreateThreadModel = Body(...), 
+async def create_th(request: Request, thread_data: CreateThreadModel = Body(...), 
                         session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data
     # Index the thread by userId
@@ -294,7 +294,17 @@ async def create(request: Request, thread_data: CreateThreadModel = Body(...),
                        content=jsonable_encoder(created_thread))
 
 
-    
+@router.get("/threads/{id}", response_model=ThreadModel)
+async def get_thread_id(request: Request, id: str, 
+                     session: SessionContainer = Depends(verify_session())):
+    # Get a thread from MongoDB by title
+
+    old_thread = await get_mongo_document({"_id": id}, request.app.mongodb["threads"])
+    if not old_thread:
+        return JSONResponse(status_code=404, content={"message": "Thread not found"})
+    return JSONResponse(status_code=status.HTTP_200_OK, 
+                       content=jsonable_encoder(old_thread))
+   
 
 @router.get("/threads/{title}", response_model=ThreadModel)
 async def get_thread(request: Request, title: str, 

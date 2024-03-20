@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch matching threads");
     }
-    final results = response.data!;*/
+    final results = response.data!;
     CreateChildThreadModel createChildThreadModel = CreateChildThreadModel(
       title: "myownchildthread",
       type: "/new-plan",
@@ -98,7 +98,13 @@ class _HomePageState extends State<HomePage> {
       parentThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
     );
     await threadApi.childThreadBlocksChildPost(
-        createChildThreadModel: createChildThreadModel);
+        createChildThreadModel: createChildThreadModel);*/
+    final response = await threadApi.getThreadIdThreadsIdGet(
+        id: "2bcad996-8391-4ddf-a274-bf84d6904906");
+
+    if (response.statusCode != 200) {
+      throw Exception("Failed to get thread");
+    }
   }
 
   Widget renderContent() {
