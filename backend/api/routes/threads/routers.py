@@ -144,8 +144,8 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     new_block.creator_email = picture
     new_block.creator_id = userId
     
-    new_block_dict = new_block.model_dump()
-    new_block_dict["id"] = str(new_block_dict["id"])
+    #new_block_dict = new_block.model_dump()
+    #new_block_dict["id"] = str(new_block_dict["id"])
     ## to store the block as a json string in the db
     ## we need the following. We have chose to insert 
     ## the block as a dictionary object in the db
@@ -156,7 +156,7 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
    
     #change new_block_dict to json_new_block if you want to store
     ## block as a json string in the db
-    thread["content"].append(new_block_dict)
+    thread["content"].append(jsonable_encoder(new_block))
    
     updated_thread = await update_mongo_document_fields(
     {"title": thread_title}, 
