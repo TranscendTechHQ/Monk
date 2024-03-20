@@ -50,7 +50,7 @@ def update_block() :
     # Find the document with the "_id" of "385029"
     
     threads_collection.update_one(query, update, 
-                                  array_filters=[{'elem.id': "605f037a-89a1-4d0a-8134-a1d6cbc240f9"}])
+                                  array_filters=[{'elem._id': "605f037a-89a1-4d0a-8134-a1d6cbc240f9"}])
     
     
     
