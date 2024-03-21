@@ -6,7 +6,7 @@ part of 'thread_detail_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$threadDetailHash() => r'81cf7c1613df917ef6e96a5d8b498a0a5f98f679';
+String _$threadDetailHash() => r'bd8b570dc567dc5e50442255a2295bc5bbca46b5';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,12 +31,10 @@ class _SystemHash {
 
 abstract class _$ThreadDetail
     extends BuildlessAutoDisposeAsyncNotifier<ThreadDetailState> {
-  late final String childThreadId;
-  late final CreateChildThreadModel? createChildThreadModel;
+  late final String? childThreadId;
 
   FutureOr<ThreadDetailState> build({
-    required String childThreadId,
-    CreateChildThreadModel? createChildThreadModel,
+    String? childThreadId,
   });
 }
 
@@ -51,12 +49,10 @@ class ThreadDetailFamily extends Family<AsyncValue<ThreadDetailState>> {
 
   /// See also [ThreadDetail].
   ThreadDetailProvider call({
-    required String childThreadId,
-    CreateChildThreadModel? createChildThreadModel,
+    String? childThreadId,
   }) {
     return ThreadDetailProvider(
       childThreadId: childThreadId,
-      createChildThreadModel: createChildThreadModel,
     );
   }
 
@@ -66,7 +62,6 @@ class ThreadDetailFamily extends Family<AsyncValue<ThreadDetailState>> {
   ) {
     return call(
       childThreadId: provider.childThreadId,
-      createChildThreadModel: provider.createChildThreadModel,
     );
   }
 
@@ -90,12 +85,9 @@ class ThreadDetailProvider extends AutoDisposeAsyncNotifierProviderImpl<
     ThreadDetail, ThreadDetailState> {
   /// See also [ThreadDetail].
   ThreadDetailProvider({
-    required String childThreadId,
-    CreateChildThreadModel? createChildThreadModel,
+    String? childThreadId,
   }) : this._internal(
-          () => ThreadDetail()
-            ..childThreadId = childThreadId
-            ..createChildThreadModel = createChildThreadModel,
+          () => ThreadDetail()..childThreadId = childThreadId,
           from: threadDetailProvider,
           name: r'threadDetailProvider',
           debugGetCreateSourceHash:
@@ -106,7 +98,6 @@ class ThreadDetailProvider extends AutoDisposeAsyncNotifierProviderImpl<
           allTransitiveDependencies:
               ThreadDetailFamily._allTransitiveDependencies,
           childThreadId: childThreadId,
-          createChildThreadModel: createChildThreadModel,
         );
 
   ThreadDetailProvider._internal(
@@ -117,11 +108,9 @@ class ThreadDetailProvider extends AutoDisposeAsyncNotifierProviderImpl<
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.childThreadId,
-    required this.createChildThreadModel,
   }) : super.internal();
 
-  final String childThreadId;
-  final CreateChildThreadModel? createChildThreadModel;
+  final String? childThreadId;
 
   @override
   FutureOr<ThreadDetailState> runNotifierBuild(
@@ -129,7 +118,6 @@ class ThreadDetailProvider extends AutoDisposeAsyncNotifierProviderImpl<
   ) {
     return notifier.build(
       childThreadId: childThreadId,
-      createChildThreadModel: createChildThreadModel,
     );
   }
 
@@ -138,16 +126,13 @@ class ThreadDetailProvider extends AutoDisposeAsyncNotifierProviderImpl<
     return ProviderOverride(
       origin: this,
       override: ThreadDetailProvider._internal(
-        () => create()
-          ..childThreadId = childThreadId
-          ..createChildThreadModel = createChildThreadModel,
+        () => create()..childThreadId = childThreadId,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         childThreadId: childThreadId,
-        createChildThreadModel: createChildThreadModel,
       ),
     );
   }
@@ -161,15 +146,13 @@ class ThreadDetailProvider extends AutoDisposeAsyncNotifierProviderImpl<
   @override
   bool operator ==(Object other) {
     return other is ThreadDetailProvider &&
-        other.childThreadId == childThreadId &&
-        other.createChildThreadModel == createChildThreadModel;
+        other.childThreadId == childThreadId;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, childThreadId.hashCode);
-    hash = _SystemHash.combine(hash, createChildThreadModel.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -178,10 +161,7 @@ class ThreadDetailProvider extends AutoDisposeAsyncNotifierProviderImpl<
 mixin ThreadDetailRef
     on AutoDisposeAsyncNotifierProviderRef<ThreadDetailState> {
   /// The parameter `childThreadId` of this provider.
-  String get childThreadId;
-
-  /// The parameter `createChildThreadModel` of this provider.
-  CreateChildThreadModel? get createChildThreadModel;
+  String? get childThreadId;
 }
 
 class _ThreadDetailProviderElement
@@ -190,10 +170,7 @@ class _ThreadDetailProviderElement
   _ThreadDetailProviderElement(super.provider);
 
   @override
-  String get childThreadId => (origin as ThreadDetailProvider).childThreadId;
-  @override
-  CreateChildThreadModel? get createChildThreadModel =>
-      (origin as ThreadDetailProvider).createChildThreadModel;
+  String? get childThreadId => (origin as ThreadDetailProvider).childThreadId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

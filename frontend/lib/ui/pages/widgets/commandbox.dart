@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/repo/commandparser.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:frontend/ui/pages/news_page.dart';
@@ -202,7 +203,7 @@ class CommandBox extends ConsumerWidget {
         if (allowedInputTypes.contains(InputBoxType.thread))
           const SingleActivator(LogicalKeyboardKey.enter, meta: true): () {
             String blockText = _blockController.text;
-            threadNotifier.createBlock(blockText);
+            threadNotifier.createBlock(blockText, customTitle: title);
             _blockController.clear();
           },
       };

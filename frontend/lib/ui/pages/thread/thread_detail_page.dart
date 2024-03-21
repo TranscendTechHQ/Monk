@@ -60,12 +60,10 @@ class ThreadDetailPage extends ConsumerWidget {
       parentBlockId: parentBlockId,
       parentThreadId: parentThreadId,
     );
-    final provider = threadDetailProvider.call(
-      createChildThreadModel:
-          block!.childId.isNullOrEmpty ? createChildThreadModel : null,
-      childThreadId: block!.childId.isNullOrEmpty ? '' : block!.childId!,
-    );
+    final provider = threadDetailProvider.call();
+    // provider.fetchThreadFromIdAsync(parentBlockId);createChildThreadModel:
 
+    // ref.read(provider.notifier).createOrFetchReplyThread({});
     final currentThread = ref.watch(provider);
 
     final blockInput = CommandBox(title: title, type: type);
@@ -83,21 +81,9 @@ class ThreadDetailPage extends ConsumerWidget {
           alignment: Alignment.center,
           child: Column(
             children: [
-              // SizedBox(
-              //   width: containerWidth,
-              //   child: currentThread.when(
-              //     data: (state) => ReplyCard(
-              //       // block: state.thread.!,
-              //       emojiParser: EmojiParser(init: true),
-              //     ),
-              //     error: (error, stack) => Center(child: Text('Error: $error')),
-              //     loading: () =>
-              //         const Center(child: CircularProgressIndicator()),
-              //   ),
-              // ),
               Expanded(
                   child: currentThread.when(
-                data: (state) => ChatListView(
+                data: (state) => RepliesListView(
                   replies: state.thread?.content?.reversed.toList(),
                 ),
                 error: (error, stack) => Center(
@@ -119,9 +105,9 @@ class ThreadDetailPage extends ConsumerWidget {
   }
 }
 
-class ChatListView extends ConsumerWidget {
-  ChatListView({super.key, required this.replies});
-  // final AsyncValue<ThreadModel> currentThread;
+class RepliesListView extends ConsumerWidget {
+  RepliesListView({super.key, required this.replies});
+
   final List<BlockModel>? replies;
 
   final scrollController = ScrollController();
@@ -133,7 +119,6 @@ class ChatListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final blocks = currentThread.value?.content?.reversed.toList();
     return Container(
       margin: const EdgeInsets.only(left: 60),
       width: containerWidth - 60,

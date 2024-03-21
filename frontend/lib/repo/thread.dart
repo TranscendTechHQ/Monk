@@ -8,7 +8,11 @@
 //  - the backend will store the journal entry in the database
 // ...
 
+import 'dart:convert';
+
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/main.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -100,15 +104,23 @@ class CurrentThread extends _$CurrentThread {
     state = const AsyncValue.loading();
     final response = await createOrGetThread(title: title, type: type);
     state = AsyncValue.data(response);
+    logger.f('CurrentThread.build: response: ${state.value?.toJson()}');
+    // print(state.value?.toJson());
+    // print(new JsonEncoder.withIndent(" ").convert(state.value?.toJson()));
     return state.value;
   }
 
-  Future<ThreadModel> createBlock(String text) async {
-    String threadTitle = state.value!.title;
+  Future<ThreadModel> createBlock(String text, {String? customTitle}) async {
+    String? threadTitle = state.value?.title ?? customTitle;
+    if (threadTitle.isNullOrEmpty) {
+      logger.e("Thread title is null");
+      throw Exception("Thread title is null");
+    }
+    logger.e("creating new Thread title $threadTitle");
     final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
     final newThreadState = await blockApi.createBlocksPost(
-        threadTitle: threadTitle,
+        threadTitle: threadTitle!,
         updateBlockModel: UpdateBlockModel(content: text));
 
     if (newThreadState.statusCode != 201) {
@@ -129,6 +141,31 @@ class CurrentThread extends _$CurrentThread {
     }
     state = AsyncValue.data(response.data!);
     return state.value!;
+  }
+
+  void addChildThreadIdToBlock(String childThreadId, String blockId) {
+    final thread = state.value;
+    if (thread == null) {
+      logger.e("Thread is null");
+      throw Exception("Thread is null");
+    }
+    logger.i("Adding childThreadId $childThreadId to blockId $blockId");
+    var block = thread.content?.firstWhere((element) => element.id == blockId);
+    if (block != null) {
+      block = BlockModel.fromJson(
+          block.toJson()..addAll({"child_d": childThreadId}));
+      final newContent = thread.content?.map((e) {
+        if (e.id == blockId) {
+          return block;
+        }
+        return e;
+      }).toList();
+      final updatedModel = ThreadModel.fromJson(
+          thread.toJson()..addAll({"content": newContent}));
+      state = AsyncValue.data(updatedModel);
+    } else {
+      logger.e("Block is null");
+    }
   }
 
   List<String> getBlocks() {

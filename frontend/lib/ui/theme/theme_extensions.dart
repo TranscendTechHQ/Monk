@@ -42,6 +42,75 @@ extension TextStyleExtension on TextStyle {
   }
 }
 
+extension PaddingHelper on Widget {
+  Padding get p16 => Padding(padding: const EdgeInsets.all(16), child: this);
+
+  /// Set all side padding according to `value`
+  Padding p(double value) =>
+      Padding(padding: EdgeInsets.all(value), child: this);
+
+  /// Set all side padding according to `value`
+  Padding pH(double value) =>
+      Padding(padding: EdgeInsets.symmetric(horizontal: value), child: this);
+
+  Padding pV(double value) =>
+      Padding(padding: EdgeInsets.symmetric(vertical: value), child: this);
+
+  /// set padding for all sides
+  Padding pOnly({double? top, double? bottom, double? left, double? right}) =>
+      Padding(
+          padding: EdgeInsets.only(
+              top: top ?? 0,
+              bottom: bottom ?? 0,
+              left: left ?? 0,
+              right: right ?? 0),
+          child: this);
+
+  /// Horizontal Padding 16
+  Padding get hP4 =>
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 4), child: this);
+  Padding get hP8 =>
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: this);
+  Padding get hP16 =>
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: this);
+
+  /// Vertical Padding 16
+  Padding get vP16 =>
+      Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: this);
+  Padding get vP8 =>
+      Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: this);
+  Padding get vP12 =>
+      Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: this);
+  Padding get vP4 =>
+      Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: this);
+
+  ///Horizontal Padding for Title
+  Padding get hP30 => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30.0), child: this);
+
+  /// Set right side padding according to `value`
+  Padding pR(double value) =>
+      Padding(padding: EdgeInsets.only(right: value), child: this);
+
+  /// Set left side padding according to `value`
+  Padding pL(double value) =>
+      Padding(padding: EdgeInsets.only(left: value), child: this);
+
+  /// Set Top side padding according to `value`
+  Padding pT(double value) =>
+      Padding(padding: EdgeInsets.only(top: value), child: this);
+
+  /// Set bottom side padding according to `value`
+  Padding pB(double value) =>
+      Padding(padding: EdgeInsets.only(bottom: value), child: this);
+}
+
+extension Extended on Widget {
+  Expanded get extended => Expanded(
+        child: this,
+      );
+}
+
 extension DoubleExtension on double {
   double scale(double? large, double? medium, double? small) {
     if (this >= Breakpoints.large) {

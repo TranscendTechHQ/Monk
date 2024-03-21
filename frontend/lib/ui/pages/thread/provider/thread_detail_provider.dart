@@ -10,7 +10,11 @@ part 'thread_detail_provider.g.dart';
 @riverpod
 class ThreadDetail extends _$ThreadDetail {
   @override
-  Future<ThreadDetailState> build({
+  Future<ThreadDetailState> build({String? childThreadId}) async {
+    return ThreadDetailState.initial();
+  }
+
+  Future<ThreadDetailState> createOrFetchReplyThread({
     required String childThreadId,
     CreateChildThreadModel? createChildThreadModel,
   }) async {
@@ -42,11 +46,7 @@ class ThreadDetail extends _$ThreadDetail {
       final response = await threadApi.childThreadBlocksChildPost(
         createChildThreadModel: createChildThreadModel,
       );
-      if (response.statusCode == 200) {
-        return ThreadDetailState.result(thread: response.data!);
-      } else {
-        return ThreadDetailState.error("Failed to create child thread");
-      }
+      return ThreadDetailState.result(thread: response.data!);
     });
   }
 }
@@ -57,6 +57,10 @@ class ThreadDetailState with _$ThreadDetailState {
     String? error,
     required ThreadModel? thread,
   }) = _ThreadDetailState;
+
+  factory ThreadDetailState.initial() =>
+      const ThreadDetailState(thread: null, error: null);
+
   factory ThreadDetailState.result({required ThreadModel thread}) =>
       ThreadDetailState(thread: thread);
 
