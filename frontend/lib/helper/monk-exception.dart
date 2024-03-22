@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:frontend/main.dart';
 
 class MonkException {
   static Future<T> handle<T>(Future<T> Function() callback) async {
@@ -14,6 +15,7 @@ class MonkException {
       }
       throw Exception(e.toString());
     } catch (e) {
+      logger.e(e.toString());
       throw Exception(e.toString());
     }
   }

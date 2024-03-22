@@ -104,9 +104,6 @@ class CurrentThread extends _$CurrentThread {
     state = const AsyncValue.loading();
     final response = await createOrGetThread(title: title, type: type);
     state = AsyncValue.data(response);
-    logger.f('CurrentThread.build: response: ${state.value?.toJson()}');
-    // print(state.value?.toJson());
-    // print(new JsonEncoder.withIndent(" ").convert(state.value?.toJson()));
     return state.value;
   }
 
@@ -116,7 +113,7 @@ class CurrentThread extends _$CurrentThread {
       logger.e("Thread title is null");
       throw Exception("Thread title is null");
     }
-    logger.e("creating new Thread title $threadTitle");
+    logger.d("creating new Thread title $threadTitle");
     final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
     final newThreadState = await blockApi.createBlocksPost(
@@ -146,25 +143,35 @@ class CurrentThread extends _$CurrentThread {
   void addChildThreadIdToBlock(String childThreadId, String blockId) {
     final thread = state.value;
     if (thread == null) {
-      logger.e("Thread is null");
-      throw Exception("Thread is null");
+      logger.e("There is no thread to add child thread id to");
+      return;
     }
-    logger.i("Adding childThreadId $childThreadId to blockId $blockId");
+
     var block = thread.content?.firstWhere((element) => element.id == blockId);
+
     if (block != null) {
-      block = BlockModel.fromJson(
-          block.toJson()..addAll({"child_d": childThreadId}));
+      final map = block.toJson()
+        ..putIfAbsent("child_id", () => childThreadId)
+        ..update("child_id", (value) => childThreadId);
+
+      block = BlockModel.fromJson(map);
       final newContent = thread.content?.map((e) {
         if (e.id == blockId) {
-          return block;
+          return block!;
         }
         return e;
       }).toList();
-      final updatedModel = ThreadModel.fromJson(
-          thread.toJson()..addAll({"content": newContent}));
-      state = AsyncValue.data(updatedModel);
+      final updatedThreadModel = ThreadModel(
+          title: thread.title,
+          type: thread.type,
+          content: newContent!,
+          creator: thread.creator,
+          id: thread.id,
+          createdDate: thread.createdDate);
+
+      state = AsyncValue.data(updatedThreadModel);
     } else {
-      logger.e("Block is null");
+      logger.e("Can't find block with id $blockId");
     }
   }
 

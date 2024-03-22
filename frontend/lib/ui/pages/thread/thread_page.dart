@@ -179,27 +179,32 @@ class ThreadCard extends ConsumerWidget {
         final state = await ref
             .read(replyProvider.notifier)
             .createOrFetchReplyThread(
-                createChildThreadModel:
-                    block.childId.isNullOrEmpty ? createChildThreadModel : null,
-                childThreadId:
-                    block.childId.isNullOrEmpty ? '' : block.childId!);
+              createChildThreadModel:
+                  block.childId.isNullOrEmpty ? createChildThreadModel : null,
+              childThreadId: block.childId.isNullOrEmpty ? '' : block.childId!,
+            );
 
-        // final provider = threadDetailProvider.call();
-
-        // final state = await ref.read(provider.future);
         if (state.thread != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Thread created successfully'),
             ),
           );
-          // Navigator.push(
-          //     context,
-          //     ThreadPage.launchRoute(
-          //       title: ("Reply$title${block.id?.substring(0, 9)}")
-          //           .replaceAll('-', ''),
-          //       type: type,
-          //     ));
+          Navigator.push(
+              context,
+              ThreadPage.launchRoute(
+                title: ("Reply$title${block.id?.substring(0, 4)}")
+                    .replaceAll('-', ''),
+                type: type,
+                threadType: ThreadType.reply,
+              ));
+          ref
+              .read(
+                  currentThreadProvider.call(title: title, type: type).notifier)
+              .addChildThreadIdToBlock(
+                state.thread!.id!,
+                block.id!,
+              );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -218,17 +223,6 @@ class ThreadCard extends ConsumerWidget {
           ),
         );
       }
-      // Navigator.push(
-      //   context,
-      //   ThreadDetailPage.launchRoute(
-      //     title: ("Reply$title${block.id?.substring(0, 9)}")
-      //         .replaceAll('-', ''),
-      //     type: type,
-      //     parentBlockId: block.id!,
-      //     block: block,
-      //     parentThreadId: parentThreadId!,
-      //   ),
-      // );
     } catch (e) {
       logger.e('Error onReplyClick: $e');
     } finally {
@@ -239,24 +233,26 @@ class ThreadCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final replyProvider = threadDetailProvider.call();
+    ref.listen(replyProvider, (previous, next) {
+      if (next is AsyncData) {
+        final data = next.value;
 
-    // final replyThread = ref.watch(replyProvider);
-    // replyThread.maybeWhen(
-    //   orElse: () {},
-    //   data: (state) {
-    //     print(
-    //         'Initiating Adding childThreadId ${state.thread?.id} to blockId ${block.id}');
-    //     if (state.thread != null && state.thread!.id.isNotNullEmpty) {
-    //       ref
-    //           .read(
-    //               currentThreadProvider.call(title: title, type: type).notifier)
-    //           .addChildThreadIdToBlock(
-    //             state.thread!.id!,
-    //             block.id!,
-    //           );
-    //     }
-    //   },
-    // );
+        // Add childThreadId in block when child thread is created
+        if (data?.thread != null && data!.thread!.id.isNotNullEmpty) {
+          ref
+              .read(
+                  currentThreadProvider.call(title: title, type: type).notifier)
+              .addChildThreadIdToBlock(
+                data.thread!.id!,
+                block.id!,
+              );
+        }
+      }
+    });
+    // final replyThread = ref.listen(replyProvider);
+    // if(replyThread != null && replyThread.state. != null) {
+    //   print('replyThread.thread: ${replyThread.thread}');
+    // }
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
