@@ -1,58 +1,114 @@
-import 'package:frontend/ui/pages/widgets/commandbox.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
-import 'package:frontend/repo/thread.dart';
-
-import 'package:flutter_emoji/flutter_emoji.dart';
+import 'package:frontend/ui/pages/thread/provider/thread_detail_provider.dart';
+import 'package:frontend/ui/pages/widgets/commandbox.dart';
+import 'package:frontend/ui/theme/decorations.dart';
+import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/bg_wrapper.dart';
+import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
-class ThreadPage extends ConsumerWidget {
-  final String title;
+class ThreadDetailPage extends ConsumerWidget {
+  final BlockModel? block;
+  final String parentBlockId;
   final String type;
-  const ThreadPage({super.key, required this.title, required this.type});
+  final String parentThreadId;
+  final String title;
+  const ThreadDetailPage({
+    super.key,
+    required this.title,
+    required this.type,
+    this.block,
+    required this.parentBlockId,
+    required this.parentThreadId,
+  });
 
-  static String route = "/journal";
-  static Route launchRoute({required String title, required String type}) {
+  static String route = "/thread-detail";
+  static Route launchRoute(
+      {required String title,
+      required String type,
+      required String parentBlockId,
+      required String parentThreadId,
+      BlockModel? block}) {
     return MaterialPageRoute<void>(
-      builder: (_) => ThreadPage(title: title, type: type),
+      builder: (_) => ThreadDetailPage(
+        title: title,
+        type: type,
+        parentBlockId: parentBlockId,
+        block: block,
+        parentThreadId: parentThreadId,
+      ),
     );
+  }
+
+  String get formatType {
+    if (type.contains('-')) {
+      return type.split('-')[1];
+    } else if (type.contains('/')) {
+      return type.split('/')[1];
+    }
+    return type;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentThread =
-        ref.watch(currentThreadProvider.call(title: title, type: type));
+    final createChildThreadModel = CreateChildThreadModel(
+      title: title,
+      type: type,
+      parentBlockId: parentBlockId,
+      parentThreadId: parentThreadId,
+    );
+    final provider = threadDetailProvider.call();
+    // provider.fetchThreadFromIdAsync(parentBlockId);createChildThreadModel:
+
+    // ref.read(provider.notifier).createOrFetchReplyThread({});
+    final currentThread = ref.watch(provider);
+
     final blockInput = CommandBox(title: title, type: type);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${type.split('-')[1]} -: $title',
+          '$formatType -: $title',
           style: TextStyle(
               fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
         ),
       ),
-      body: Align(
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            Expanded(
-              child: currentThread.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ChatListView(currentThread: currentThread),
-            ),
-            blockInput,
-          ],
+      body: PageScaffold(
+        body: Container(
+          alignment: Alignment.center,
+          child: Column(
+            children: [
+              Expanded(
+                  child: currentThread.when(
+                data: (state) => RepliesListView(
+                  replies: state.thread?.content?.reversed.toList(),
+                ),
+                error: (error, stack) => Center(
+                  child: Text(
+                    error.toString().replaceFirst('Exception: ', ''),
+                    style: context.textTheme.bodySmall,
+                  ),
+                ),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )),
+              blockInput,
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class ChatListView extends ConsumerWidget {
-  ChatListView({super.key, required this.currentThread});
-  final AsyncValue<ThreadModel> currentThread;
+class RepliesListView extends ConsumerWidget {
+  RepliesListView({super.key, required this.replies});
+
+  final List<BlockModel>? replies;
 
   final scrollController = ScrollController();
   scrollToBottom() {
@@ -63,25 +119,25 @@ class ChatListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blocks = currentThread.value?.content?.reversed.toList();
-    return SizedBox(
-      width: containerWidth,
+    return Container(
+      margin: const EdgeInsets.only(left: 60),
+      width: containerWidth - 60,
+      alignment: Alignment.topLeft,
       child: ListView.builder(
-        reverse: true,
         controller: scrollController,
-        itemCount: blocks?.length ?? 0,
+        itemCount: replies?.length ?? 0,
         padding: const EdgeInsets.only(bottom: 30),
         itemBuilder: (context, index) {
-          final block = blocks?[index];
-          return ThreadCard(block: block!, emojiParser: emojiParser);
+          final block = replies?[index];
+          return ReplyCard(block: block!, emojiParser: emojiParser);
         },
       ),
     );
   }
 }
 
-class ThreadCard extends StatelessWidget {
-  const ThreadCard({super.key, required this.block, required this.emojiParser});
+class ReplyCard extends StatelessWidget {
+  const ReplyCard({super.key, required this.block, required this.emojiParser});
   final BlockModel block;
   final EmojiParser emojiParser;
 
@@ -90,14 +146,7 @@ class ThreadCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
-          width: .3,
-        ),
-      ),
+      decoration: BoxDecorations.cardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

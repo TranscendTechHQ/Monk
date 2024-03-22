@@ -2,7 +2,7 @@ name: frontend
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.5 <4.0.0'
+  sdk: ">=3.1.5 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -56,12 +55,15 @@ dependencies:
   dio: any
   web: ^0.5.0
   intl: ^0.19.0
+  dynamic_color: ^1.7.0
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  logger: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.7
+  build_runner: ^2.4.8
   riverpod_generator: ^2.3.9
-  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -71,13 +73,14 @@ dev_dependencies:
   flutter_lints: ^3.0.1
   custom_lint: ^0.6.2
   riverpod_lint: ^2.3.7
+  freezed: ^2.4.7
+  json_serializable: ^6.7.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -85,7 +88,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-     - assets/
+    - assets/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

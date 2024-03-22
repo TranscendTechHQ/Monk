@@ -8,7 +8,11 @@
 //  - the backend will store the journal entry in the database
 // ...
 
+import 'dart:convert';
+
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/main.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -95,20 +99,25 @@ Future<BlockCollection> journalBlocksDate(DateTime date) async {
 @riverpod
 class CurrentThread extends _$CurrentThread {
   @override
-  Future<ThreadModel> build(
+  Future<ThreadModel?> build(
       {required String title, required String type}) async {
     state = const AsyncValue.loading();
     final response = await createOrGetThread(title: title, type: type);
     state = AsyncValue.data(response);
-    return state.value!;
+    return state.value;
   }
 
-  Future<ThreadModel> createBlock(String text) async {
-    String threadTitle = state.value!.title;
+  Future<ThreadModel> createBlock(String text, {String? customTitle}) async {
+    String? threadTitle = state.value?.title ?? customTitle;
+    if (threadTitle.isNullOrEmpty) {
+      logger.e("Thread title is null");
+      throw Exception("Thread title is null");
+    }
+    logger.d("creating new Thread title $threadTitle");
     final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
     final newThreadState = await blockApi.createBlocksPost(
-        threadTitle: threadTitle,
+        threadTitle: threadTitle!,
         updateBlockModel: UpdateBlockModel(content: text));
 
     if (newThreadState.statusCode != 201) {
@@ -129,6 +138,41 @@ class CurrentThread extends _$CurrentThread {
     }
     state = AsyncValue.data(response.data!);
     return state.value!;
+  }
+
+  void addChildThreadIdToBlock(String childThreadId, String blockId) {
+    final thread = state.value;
+    if (thread == null) {
+      logger.e("There is no thread to add child thread id to");
+      return;
+    }
+
+    var block = thread.content?.firstWhere((element) => element.id == blockId);
+
+    if (block != null) {
+      final map = block.toJson()
+        ..putIfAbsent("child_id", () => childThreadId)
+        ..update("child_id", (value) => childThreadId);
+
+      block = BlockModel.fromJson(map);
+      final newContent = thread.content?.map((e) {
+        if (e.id == blockId) {
+          return block!;
+        }
+        return e;
+      }).toList();
+      final updatedThreadModel = ThreadModel(
+          title: thread.title,
+          type: thread.type,
+          content: newContent!,
+          creator: thread.creator,
+          id: thread.id,
+          createdDate: thread.createdDate);
+
+      state = AsyncValue.data(updatedThreadModel);
+    } else {
+      logger.e("Can't find block with id $blockId");
+    }
   }
 
   List<String> getBlocks() {
