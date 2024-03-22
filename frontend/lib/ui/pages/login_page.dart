@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart' as prefix;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
 //import 'package:flutter/services.dart';
 
@@ -37,17 +38,20 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     try {
+      loader.showLoader(context, message: "processing.");
       GoogleSignInAccount? account = await googleSignIn.signIn();
 
       if (account == null) {
-        print("Google sign in was aborted");
+        logger.i("Google sign in was aborted");
+        loader.hideLoader();
         return;
       }
 
       String? authCode = account.serverAuthCode;
       //print('authCode: $authCode');
       if (authCode == null) {
-        print("Google sign in did not return a server auth code");
+        logger.e("Google sign in did not return a server auth code");
+        loader.hideLoader();
         return;
       }
 
@@ -63,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
           },
         },
       );
-
+      loader.hideLoader();
       if (result.statusCode == 200) {
         Future.delayed(Duration.zero, () {
           // ...
@@ -72,7 +76,8 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     } on DioExceptionType {
-      print("Google sign in failed");
+      logger.e("Google sign in failed");
+      loader.hideLoader();
     }
   }
 

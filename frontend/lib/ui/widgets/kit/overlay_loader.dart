@@ -143,15 +143,13 @@ class _CustomScreenLoader extends StatelessWidget {
                             theme.colorScheme.primary,
                           ),
                         ),
-                      if (Platform.isAndroid)
-                        Center(
-                          child: Image.asset(
-                            'assets/logo.png',
-                            height: 30,
-                            width: 30,
-                            fit: BoxFit.fitHeight,
-                          ),
-                        )
+                      Center(
+                        child: Image.asset(
+                          'assets/logo.png',
+                          width: 50,
+                          height: 50,
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -169,14 +167,12 @@ class _CustomScreenLoader extends StatelessWidget {
                           }
                           return Text(
                             "${snapshot.data} ",
-                            // style: TextStyles.subtitle14(context),
                             overflow: TextOverflow.ellipsis,
                           );
                         },
                       ),
                       Text(
                         message ?? "",
-                        // style: TextStyles.subtitle14(context),
                         overflow: TextOverflow.ellipsis,
                       )
                     ],
