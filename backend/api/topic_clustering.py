@@ -1,11 +1,12 @@
 import asyncio
+import json
 import pprint
 
 from pymongo import MongoClient
 from config import settings
 from utils.headline import generate_headline
 import os 
-
+import re
 
 from openai import OpenAI
 
@@ -72,6 +73,14 @@ app = App()
 
 
 
+def remove_triple_quote_blocks(text):
+    pattern = r'```(.*?)```'
+    cleaned_text = re.sub(pattern, '', text, flags=re.DOTALL)
+    return cleaned_text
+
+
+
+
 def startup_db_client():
     app.mongodb_client = MongoClient(settings.DB_URL)
     app.mongodb = app.mongodb_client[settings.DB_NAME]
@@ -118,17 +127,51 @@ def openai_completion(system_text, user_text):
         }
     ],
     temperature=1,
-    max_tokens=256,
+    max_tokens=4096,
     top_p=1
     )
     return response.choices[0].message.content
 
-   
+def messages_to_topics():
+    topics = []
+    topic = {}
+    topic["topic"] = "topic name 1"
+    topic["message_ids"] = []
+     # File path to write the JSON data
+    file_path = "messages.json"  # Replace with your desired file name
+    data = {}
+    user_text = ""
+    # Write the dictionary as JSON to the file
+    with open(file_path, "r") as infile:
+        data = json.load(infile)
+    messages = data["messages"]
+    for message in messages:
+        cleaned_text = remove_triple_quote_blocks(message["text"])
+        user_text= user_text + "- " + message["creator_id"] +":" + cleaned_text +"\n"
+    #print(user_text)
+    return user_text
+    
 async def main() :
     startup_db_client()
+
+    sample_text = """
+    This is a sample text.
+    ```
+    This is a block of text inside triple quotes.
+    ```
+    Another paragraph of text.
+    ```
+    Another block of text inside triple quotes.
+    ```
+    """
+
+    #cleaned_text = remove_triple_quote_blocks(sample_text)
+    #print(cleaned_text)
+    user_text = messages_to_topics()
     assistant_text = openai_completion(system_text, user_text)
-    print(assistant_text)
-    
+    with open("assistant_text.json", "w") as json_file:
+        json_file.write(assistant_text)
+    #print(assistant_text)
     shutdown_db_client()
     
     

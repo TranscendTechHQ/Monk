@@ -1,0 +1,36 @@
+{
+"topics": [
+  {
+   "topic": "SlackIntegration feature",
+   "message_ids: [
+     "U066Q9JAU3B:We need to carefully trade-off these optimizations with SlackIntegration feature...",
+     "U066Q9JAU3B:Also, I see some lag in loading the Newsfeed...",
+     "U066Q9JAU3B:I am engaging with a contractor to build AI knowledge graph on top of slack messages...",
+     "U066Q9JAU3B:There is one small enhancement..."
+   ]
+  },
+  {
+   "topic": "Reply in thread button",
+   "message_ids": [
+     "U06M70HTC7Q:Currently, when a user clicks on the 'Reply in thread' button...",
+     "U066Q9JAU3B:The issue we were experiencing yesterday has been resolved...",
+     "U06M70HTC7Q:After slack login we receive a token..."
+   ]
+  },
+  {
+   "topic": "Firebase authentication",
+   "message_ids": [
+     "U066Q9JAU3B:Google Firebase documentation is bad!...",
+     "U066Q9JAU3B:renamed all the 'id' fields in all blocks to '_id' in the database...",
+     "U066Q9JAU3B:Ok, I did a small firebase PoC..."
+   ]
+  },
+  {
+   "topic": "Frontend implementation",
+   "message_ids": [
+     "U06M70HTC7Q:Ok, I'll check this API today...",
+     "U066Q9JAU3B:sure. That makes sense. I suggest that you build out the frontend UI based on the data from 'ai_learning' channel..."
+   ]
+  }
+]
+}
