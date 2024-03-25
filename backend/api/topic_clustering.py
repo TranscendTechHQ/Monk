@@ -123,7 +123,7 @@ def openai_completion(system_text, user_text):
         },
         {
         "role": "user",
-        "content": user_text
+        "content": user_text[:16385]  # Limiting the user text to 16385 characters because of openai limit
         }
     ],
     temperature=1,
@@ -160,7 +160,7 @@ def print_clustered_messages():
     assistant_file_path = "assistant_text.json"
     with open(assistant_file_path, "r") as assistant_file, open(message_file_path, "r") as infile:
         file_data = json.load(assistant_file)
-        print(file_data.keys())
+        #print(file_data.keys())
         topics = file_data["topics"]
         file_data = json.load(infile)
         messages = file_data["messages"]

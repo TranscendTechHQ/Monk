@@ -6,3 +6,6 @@
 **/.DS_Store
 **/git_commits.json
 **/git_commits_summarized.json
+backend/api/clustered_messages.txt
+backend/api/messages.json
+backend/api/assistant_text.json
