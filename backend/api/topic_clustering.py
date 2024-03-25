@@ -147,10 +147,36 @@ def messages_to_topics():
     messages = data["messages"]
     for message in messages:
         cleaned_text = remove_triple_quote_blocks(message["text"])
-        user_text= user_text + "- " + message["creator_id"] +":" + cleaned_text +"\n"
+        user_text= user_text + "- " + message["message_id"] +":" + cleaned_text +"\n"
     #print(user_text)
     return user_text
+
+def print_clustered_messages():
+    topics = []
     
+     # File path to write the JSON data
+    message_file_path = "messages.json"  # Replace with your desired file name
+    data = {}
+    assistant_file_path = "assistant_text.json"
+    with open(assistant_file_path, "r") as assistant_file, open(message_file_path, "r") as infile:
+        file_data = json.load(assistant_file)
+        print(file_data.keys())
+        topics = file_data["topics"]
+        file_data = json.load(infile)
+        messages = file_data["messages"]
+        for topic in topics:
+            print(topic["topic"])
+            for msgid in topic["message_ids"]:
+                for message in messages:
+                    if message["message_id"] == msgid:
+                        print(message["text"])
+                        break
+            #print(topic["message_ids"])
+            print("\n\n")
+    
+        
+  
+
 async def main() :
     startup_db_client()
 
@@ -172,6 +198,7 @@ async def main() :
     with open("assistant_text.json", "w") as json_file:
         json_file.write(assistant_text)
     #print(assistant_text)
+    print_clustered_messages()
     shutdown_db_client()
     
     
