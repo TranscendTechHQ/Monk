@@ -27,6 +27,7 @@
 			<string>monk_frontend</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>app.heymonk</string>
 				<string>com.googleusercontent.apps.337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56</string>
 			</array>
 		</dict>
@@ -41,5 +42,11 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>io.flutter.embedded_views_preview</key>
+	<string>YES</string>
+	<key>GIDClientID</key>
+  <string>337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com</string>
 </dict>
 </plist>
