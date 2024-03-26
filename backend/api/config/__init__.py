@@ -171,7 +171,7 @@ init(
                                     scope=["openid", "email", "profile"],
                                 ),
                             ],
-                            oidc_discovery_endpoint="https://slack.com/.well-known/openid-configuration",
+                            oidc_discovery_endpoint="https://slack.com",
                             
                         ),
                     ),
