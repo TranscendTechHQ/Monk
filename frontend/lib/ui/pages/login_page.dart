@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as prefix;
 import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:frontend/helper/constants.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
 //import 'package:flutter/services.dart';
@@ -121,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 final result1 = await appAuth.authorizeAndExchangeCode(
                   AuthorizationTokenRequest(
-                    '337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com',
+                    Constants.googleClientId,
                     'app.heymonk:/oauthredirect',
                     serviceConfiguration:
                         const AuthorizationServiceConfiguration(
@@ -134,7 +135,8 @@ class _LoginPageState extends State<LoginPage> {
                     scopes: ['email', 'openid', 'profile'],
                   ),
                 );
-                // print(result1?.);
+                print(result1 != null ? result1.accessToken : "null");
+                print(result1 != null ? result1.idToken : "null");
                 var result = await NetworkManager.instance.client.post(
                   "/auth/signinup",
                   data: {
@@ -144,9 +146,9 @@ class _LoginPageState extends State<LoginPage> {
                       "id_token": result1?.idToken
                     },
                   },
-                  options: Options(
+                  /* options: Options(
                     headers: {'rid': 'thirdpartypasswordless'},
-                  ),
+                  ),*/
                 );
                 loader.hideLoader();
                 if (result.statusCode == 200) {

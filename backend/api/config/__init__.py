@@ -11,6 +11,7 @@ from supertokens_python.recipe import usermetadata
 
 from supertokens_python.types import GeneralErrorResponse
 from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOptions, SignInUpPostOkResult, SignInUpPostNoEmailGivenByProviderResponse
+from supertokens_python.recipe import thirdpartypasswordless
 from typing import Optional, Union, Dict, Any
 from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
 from supertokens_python.recipe.usermetadata.asyncio import update_user_metadata
@@ -24,6 +25,7 @@ load_dotenv()
 
 CLIENT_ID="337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com"
 CLIENT_SECRET="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"
+FRONTEND_CLIENT_ID="337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com"
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE") == "True"
@@ -147,10 +149,31 @@ init(
                         third_party_id="google",
                         clients=[
                             ProviderClientConfig(
-                                client_id=CLIENT_ID,
-                                client_secret=CLIENT_SECRET,
+                                client_id=FRONTEND_CLIENT_ID,
+                                #client_secret=CLIENT_SECRET,
+                                scope=["openid", "email", "profile"],
                             ),
                         ],
+                        authorization_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
+                        #authorization_endpoint_query_params={
+                        #    "someKey1": "value1",
+                        #    "someKey2": None,
+                        #},
+                        token_endpoint="https://oauth2.googleapis.com/token",
+                        #token_endpoint_body_params={
+                        #    "someKey1": "value1",
+                        #},
+                        user_info_endpoint="https://openidconnect.googleapis.com/v1/userinfo",
+                        jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
+                        #user_info_map=UserInfoMap(
+                        #    from_id_token_payload=UserFields(
+                        #        user_id="id",
+                        #        email="email",
+                        #        email_verified="email_verified",
+                        #    ),
+                        #    from_user_info_api=UserFields(),
+                        #),
+                        oidc_discovery_endpoint="https://accounts.google.com",
                     ),
                 ),
                 ProviderInput(
