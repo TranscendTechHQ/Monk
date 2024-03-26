@@ -22,8 +22,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 load_dotenv()
 
 
-CLIENT_ID="337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com"
-CLIENT_SECRET="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"
+
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE") == "True"
@@ -49,7 +48,15 @@ class OpenAISettings(BaseSettings):
     OPENAI_API_ENDPOINT: str = os.getenv("OPENAI_API_ENDPOINT")
     OPEN_API_GPT_MODEL: str = os.getenv("OPEN_API_GPT_MODEL")
     
-class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings):
+class SlackSettings(BaseSettings):
+    SLACK_CLIENT_ID: str = os.getenv("SLACK_CLIENT_ID")
+    SLACK_CLIENT_SECRET: str = os.getenv("SLACK_CLIENT_SECRET")
+    
+class GoogleSettings(BaseSettings):
+    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
+    
+class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, SlackSettings, GoogleSettings):
     pass
 
 
@@ -147,12 +154,27 @@ init(
                         third_party_id="google",
                         clients=[
                             ProviderClientConfig(
-                                client_id=CLIENT_ID,
-                                client_secret=CLIENT_SECRET,
+                                client_id=settings.GOOGLE_CLIENT_ID,
+                                client_secret=settings.GOOGLE_CLIENT_SECRET,
                             ),
                         ],
                     ),
                 ),
+                ProviderInput(
+                        config=ProviderConfig(
+                            third_party_id="slack",
+                            name="Slack Provider",
+                            clients=[
+                                ProviderClientConfig(
+                                    client_id= settings.SLACK_CLIENT_ID,
+                                    client_secret= settings.SLACK_CLIENT_SECRET,
+                                    scope=["openid", "email", "profile"],
+                                ),
+                            ],
+                            oidc_discovery_endpoint="https://slack.com/.well-known/openid-configuration",
+                            
+                        ),
+                    ),
                 ProviderInput(
                     config=ProviderConfig(
                         third_party_id="github",
