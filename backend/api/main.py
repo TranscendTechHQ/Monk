@@ -1,10 +1,12 @@
 import datetime
+import json
 from pydantic import BaseModel
 from supertokens_python import SupertokensConfig, get_all_cors_headers
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from supertokens_python.framework.fastapi import get_middleware
-
+from fastapi.responses import JSONResponse
+from fastapi import status, Request
 import uvicorn
 from motor.motor_asyncio import AsyncIOMotorClient
 from config import settings
@@ -21,6 +23,11 @@ from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 from supertokens_python.recipe.thirdparty.types import User, ThirdPartyInfo
 
 
+from slack_sdk.web import WebClient
+
+# Set your Slack client ID and client secret
+SLACK_CLIENT_ID = settings.SLACK_CLIENT_ID
+SLACK_CLIENT_SECRET = settings.SLACK_CLIENT_SECRET
    
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -92,8 +99,78 @@ app.add_middleware(
     allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
 
+def get_slack_access_token(code):
+    """
+    Exchanges an OAuth authorization code for an access token.
+    
+    Args:
+        code (str): The authorization code received from the Slack OAuth flow.
+    
+    Returns:
+        dict: The response from the Slack `oauth.v2.access` API, containing the access token and other details.
+    """
+    client = WebClient()
+    response = client.oauth_v2_access(
+        client_id=SLACK_CLIENT_ID,
+        client_secret=SLACK_CLIENT_SECRET,
+        code=code
+    )
+    
+    return response
 
+class TenantModel(BaseModel):
+    tenant_id: str
+    tenant_name: str
+    user_id: str
+    user_token: str
+    bot_token: str
+    token_response: dict
 
+@app.post("/slack_user_token")
+async def slack_user_token(request: Request, authcode: str):
+    
+    token_response = get_slack_access_token(authcode)
+    #print(token_response.__dict__)
+    
+    if "error" in token_response:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Invalid auth code"})
+    
+    if token_response["ok"] == False:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Invalid auth code"})
+    
+    token_data = token_response.data
+    #print(token_data)
+    
+    tenant ={}
+    tenant_id = token_data["team"]["id"]
+    tenant["tenant_id"] = tenant_id
+    tenant["tenant_name"] = token_data["team"]["name"]
+    tenant["user_id"] = token_data["authed_user"]["id"]
+    tenant["user_token"] = token_data["authed_user"]["access_token"]
+    tenant["bot_user_id"] = token_data["bot_user_id"]
+    tenant["bot_token"] = token_data["access_token"]
+    tenant["token_response"] = token_data
+    
+    
+    tenant_model = TenantModel(**tenant)
+    
+    #print(token_response)
+    tenant_collection = request.app.mongodb["tenants"]
+    
+    # Replace the document if it exists, otherwise insert it
+    result = await tenant_collection.replace_one(
+        filter={"tenant_id": tenant_id},
+        replacement=tenant,
+        upsert=True
+    )
+
+    # Check if a new document was inserted
+    if result.upserted_id is not None:
+        print(f"New document inserted with ID: {result.upserted_id}")
+    else:
+        print("Document replaced successfully")
+    
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Monk added successfully"})
 
 async def startup_db_client():
     app.mongodb_client = AsyncIOMotorClient(settings.DB_URL)

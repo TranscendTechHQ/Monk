@@ -10,4 +10,4 @@ pip_tools
 openai
 langchain
 langchain-openai
-
+slack-sdk
