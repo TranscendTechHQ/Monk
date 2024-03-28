@@ -167,28 +167,6 @@ init(
                 # to exchange the auth code for access token
                 # When frontend sends access token using signinup API,
                 # use FRONTEND_CLIENT_ID to validate the access token
-                
-                ProviderInput(
-                    config=ProviderConfig(
-                        third_party_id="google_authcode",
-                        clients=[
-                            ProviderClientConfig(
-                                client_id=BACKEND_CLIENT_ID, 
-                                client_secret=BACKEND_CLIENT_SECRET,
-                                scope=["openid", "email", "profile"],
-                            ),
-                        ],
-                        authorization_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
-                        
-                        token_endpoint="https://oauth2.googleapis.com/token",
-                        
-                        user_info_endpoint="https://openidconnect.googleapis.com/v1/userinfo",
-                        jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
-                        
-                        oidc_discovery_endpoint="https://accounts.google.com",
-                    ),
-                ),
-                
                 ProviderInput(
                     config=ProviderConfig(
                         third_party_id="google",

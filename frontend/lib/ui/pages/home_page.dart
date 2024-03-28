@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                     height: 32,
                   ),
                   Text(
-                    "Focus. Clarity. Alignment.",
+                    "Focus. Clarity Alignment",
                     textAlign: TextAlign.center,
                     style: context.textTheme.displayMedium!
                         .copyWith(

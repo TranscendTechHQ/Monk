@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
       var result = await NetworkManager.instance.client.post(
         "/auth/signinup",
         data: {
-          "thirdPartyId": "google_authcode",
+          "thirdPartyId": "google",
           "redirectURIInfo": {
             "redirectURIOnProviderDashboard": "",
             "redirectURIQueryParams": {
