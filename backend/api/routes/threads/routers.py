@@ -70,11 +70,11 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 async def th(request: Request,
              session : SessionContainer = Depends(verify_session())):
     # Get all thread headlines from MongoDB
-    print("Getting headlines")
+    
     headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
-    print("read headlines from db")
+    
     thread_headlines = ThreadHeadlinesModel(headlines=headlines)
-    print("returning headlines")
+    
     return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(
                                 thread_headlines))
@@ -92,14 +92,13 @@ async def tt(request: Request,
 async def ti(request: Request, 
                         session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
-    print("Getting threads info")
+
     threads = await get_mongo_documents(request.app.mongodb["threads"])
-    print("read threads info from db")
+
     info:dict[str, ThreadType] = {}
     for thread in threads:
         info[thread["title"]] = thread["type"] 
         
-    print("returning threads info")
     return JSONResponse(status_code=status.HTTP_200_OK,
                           content=jsonable_encoder(ThreadsInfo(info=info)))
 
@@ -109,20 +108,9 @@ async def ti(request: Request,
 async def md(request: Request, 
                         session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
-    print("Getting threads metadata")
-    threads = await get_mongo_documents(request.app.mongodb["threads"])
-    print("read threads metadata from db, now iterating")
-    threads_meta_data = []
-    
-    #for thread in threads:
-        
-        #threads_meta_data.append(metadata)
-    print("returning threads metadata")
-    
-    #await metadata_collection.insert_many(threads_meta_data)
-     
+    metadata = await get_mongo_documents(request.app.mongodb["threads_metadata"])
     return JSONResponse(status_code=status.HTTP_200_OK,
-                          content=jsonable_encoder(ThreadsMetaData(metadata=threads_meta_data)))
+                          content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
 
 @router.post("/blocks", response_model=ThreadModel, response_description="Create a new block")
@@ -268,7 +256,8 @@ async def create_new_thread(request: Request, session, title:str,
         fullName = await get_user_name(user_id, request.app.mongodb["users"])
         new_thread = ThreadModel(creator=fullName, title=title, type=thread_type,
                                  content=content)
-        created_thread = await create_mongo_document(jsonable_encoder(new_thread), 
+        new_thread_jsonable = jsonable_encoder(new_thread)
+        created_thread = await create_mongo_document(new_thread_jsonable, 
                                           request.app.mongodb["threads"])
         
         
@@ -284,10 +273,10 @@ async def create_new_thread(request: Request, session, title:str,
             creator["email"] = userinfo["email"]
        
         meta = {}
-        meta["_id"] = new_thread.id
-        meta["title"] = new_thread.title
-        meta["type"] = new_thread.type
-        meta["created_date"] = new_thread.created_date
+        meta["_id"] = new_thread_jsonable["_id"]
+        meta["title"] = new_thread_jsonable["title"]
+        meta["type"] = new_thread_jsonable["type"]
+        meta["created_date"] = new_thread_jsonable["created_date"]
         meta["creator"] = creator
         
         #metadata = (metadata_model).model_dump()
@@ -313,7 +302,7 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
     thread_title = jsonable_encoder(thread_data)["title"]
     thread_type = jsonable_encoder(thread_data)["type"]
     #content = jsonable_encoder(thread_data)["content"]
-    print("Creating thread with title: ", thread_title)
+    
     created_thread = await create_new_thread(request, session, thread_title, thread_type) 
     
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
