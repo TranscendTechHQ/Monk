@@ -8,6 +8,13 @@ class Constants {
 
   static String backendGoogleClientId =
       "337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com";
+
+  static String slackLogin =
+      "https://slack.com/oauth/v2/authorize?client_id=4287010774055.6810855127681&scope=channels:history,groups:history,im:history,mpim:history,channels:read,groups:read&user_scope=channels:history,groups:history,im:history,mpim:history,channels:read,groups:read";
+
+  static String AUTH0_DOMAIN = "dev-17s0i0aukvst4yiv.us.auth0.com";
+  static String AUTH0_CLIENT_ID = "KdrFUiiWInZY8PXlnZw0dzbrxK4sjwq6";
+  static String AUTH0_CUSTOM_SCHEME = "com.auth0.sample";
 }
 
 const containerWidth = 800.0; //TODO: make this a provider

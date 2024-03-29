@@ -70,10 +70,14 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 async def th(request: Request,
              session : SessionContainer = Depends(verify_session())):
     # Get all thread headlines from MongoDB
+    
     headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
+    
+    thread_headlines = ThreadHeadlinesModel(headlines=headlines)
+    
     return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(
-                                ThreadHeadlinesModel(headlines=headlines)))
+                                thread_headlines))
     
 @router.get("/threadTypes", response_model=List[ThreadType], 
             response_description="Get all thread types")
@@ -88,10 +92,13 @@ async def tt(request: Request,
 async def ti(request: Request, 
                         session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
+
     threads = await get_mongo_documents(request.app.mongodb["threads"])
+
     info:dict[str, ThreadType] = {}
     for thread in threads:
         info[thread["title"]] = thread["type"] 
+        
     return JSONResponse(status_code=status.HTTP_200_OK,
                           content=jsonable_encoder(ThreadsInfo(info=info)))
 
@@ -101,30 +108,9 @@ async def ti(request: Request,
 async def md(request: Request, 
                         session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
-    threads = await get_mongo_documents(request.app.mongodb["threads"])
-    threads_meta_data = []
-    for thread in threads:
-        meta = {}
-        meta["title"] = thread["title"]
-        meta["type"] = thread["type"]
-        meta["id"] = thread["_id"]
-        meta["created_date"] = thread["created_date"]
-        creator_name = thread["creator"]
-        #print(creator_name)
-        userinfo = await request.app.mongodb["users"].find_one({"user_name": creator_name})
-        if userinfo is None:
-            continue
-        creator = {}
-        creator["id"] = userinfo["_id"]
-        creator["name"] = userinfo["user_name"]
-        creator["picture"] = userinfo["user_picture"]
-        creator["email"] = userinfo["email"]
-        meta["creator"] = creator
-        metadata = ThreadMetaData(**meta)
-        threads_meta_data.append(metadata)
-        
+    metadata = await get_mongo_documents(request.app.mongodb["threads_metadata"])
     return JSONResponse(status_code=status.HTTP_200_OK,
-                          content=jsonable_encoder(ThreadsMetaData(metadata=threads_meta_data)))
+                          content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
 
 @router.post("/blocks", response_model=ThreadModel, response_description="Create a new block")
@@ -228,6 +214,7 @@ async def date(request: Request,
                                 date: Date,
                                 session: SessionContainer = Depends(verify_session())
                                 ):
+    print("Getting journal for date: ", date.date)
     # get journal thread. If it does not exist, create it
     journal_thread  = await create_new_thread(request, session, "journal", "/new-thread") 
     ## get the blocks that have created_at date equal to the date
@@ -269,8 +256,36 @@ async def create_new_thread(request: Request, session, title:str,
         fullName = await get_user_name(user_id, request.app.mongodb["users"])
         new_thread = ThreadModel(creator=fullName, title=title, type=thread_type,
                                  content=content)
-        created_thread = await create_mongo_document(jsonable_encoder(new_thread), 
+        new_thread_jsonable = jsonable_encoder(new_thread)
+        created_thread = await create_mongo_document(new_thread_jsonable, 
                                           request.app.mongodb["threads"])
+        
+        
+        metadata_collection = request.app.mongodb["threads_metadata"]
+        creator_name = fullName
+        #print(creator_name)
+        userinfo = await request.app.mongodb["users"].find_one({"user_name": creator_name})
+        creator = {}
+        if userinfo is not None:
+            creator["id"] = userinfo["_id"]
+            creator["name"] = userinfo["user_name"]
+            creator["picture"] = userinfo["user_picture"]
+            creator["email"] = userinfo["email"]
+       
+        meta = {}
+        meta["_id"] = new_thread_jsonable["_id"]
+        meta["title"] = new_thread_jsonable["title"]
+        meta["type"] = new_thread_jsonable["type"]
+        meta["created_date"] = new_thread_jsonable["created_date"]
+        meta["creator"] = creator
+        
+        #metadata = (metadata_model).model_dump()
+        await metadata_collection.replace_one(
+            filter={"_id": meta["_id"]},
+            replacement=meta,
+            upsert=True
+            )
+        
     else:
         created_thread = old_thread
     

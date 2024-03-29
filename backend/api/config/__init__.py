@@ -11,6 +11,7 @@ from supertokens_python.recipe import usermetadata
 
 from supertokens_python.types import GeneralErrorResponse
 from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOptions, SignInUpPostOkResult, SignInUpPostNoEmailGivenByProviderResponse
+from supertokens_python.recipe import thirdpartypasswordless
 from typing import Optional, Union, Dict, Any
 from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
 from supertokens_python.recipe.usermetadata.asyncio import update_user_metadata
@@ -48,20 +49,33 @@ class OpenAISettings(BaseSettings):
     OPENAI_API_ENDPOINT: str = os.getenv("OPENAI_API_ENDPOINT")
     OPEN_API_GPT_MODEL: str = os.getenv("OPEN_API_GPT_MODEL")
     
-class SlackSettings(BaseSettings):
-    SLACK_CLIENT_ID: str = os.getenv("SLACK_CLIENT_ID")
-    SLACK_CLIENT_SECRET: str = os.getenv("SLACK_CLIENT_SECRET")
-    
-class GoogleSettings(BaseSettings):
+
+class ClientSettings(BaseSettings):
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
-    
-class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, SlackSettings, GoogleSettings):
+    SLACK_CLIENT_ID: str = os.getenv("SLACK_CLIENT_ID")
+    SLACK_CLIENT_SECRET: str = os.getenv("SLACK_CLIENT_SECRET")
+    AUTH0_CLIENT_ID: str = os.getenv("AUTH0_CLIENT_ID")
+    AUTH0_CLIENT_SECRET: str = os.getenv("AUTH0_CLIENT_SECRET")
+    FRONTEND_CLIENT_ID: str = os.getenv("FRONTEND_CLIENT_ID")
+    BACKEND_CLIENT_ID: str = os.getenv("BACKEND_CLIENT_ID")
+    BACKEND_CLIENT_SECRET: str = os.getenv("BACKEND_CLIENT_SECRET")
+    SLACK_BOT_TOKEN: str = os.getenv("SLACK_BOT_TOKEN")
+    SLACK_USER_TOKEN: str = os.getenv("SLACK_USER_TOKEN")
+        
+class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings):
     pass
 
 
 settings = Settings()
 
+BACKEND_CLIENT_ID=settings.BACKEND_CLIENT_ID
+BACKEND_CLIENT_SECRET=settings.BACKEND_CLIENT_SECRET
+FRONTEND_CLIENT_ID=settings.FRONTEND_CLIENT_ID
+SLACK_CLIENT_ID=settings.SLACK_CLIENT_ID
+SLACK_CLIENT_SECRET=settings.SLACK_CLIENT_SECRET
+AUTH0_CLIENT_ID=settings.AUTH0_CLIENT_ID
+AUTH0_CLIENT_SECRET=settings.AUTH0_CLIENT_SECRET
 
 
 
@@ -147,17 +161,97 @@ init(
                 apis=override_thirdparty_apis
             ),
             sign_in_and_up_feature=thirdparty.SignInAndUpFeature(providers=[
-                # We have provided you with development keys which you can use for testing.
-                # IMPORTANT: Please replace them with your own OAuth keys for production use.
+
+                # When frontend sends auth code using signinup API, 
+                # use BACKEND_CLIENT_ID and BACKEND_CLIENT_SECRET 
+                # to exchange the auth code for access token
+                # When frontend sends access token using signinup API,
+                # use FRONTEND_CLIENT_ID to validate the access token
+                ProviderInput(
+                    config=ProviderConfig(
+                        third_party_id="google_authcode",
+                        clients=[
+                            ProviderClientConfig(
+                                client_id=BACKEND_CLIENT_ID, 
+                                client_secret=BACKEND_CLIENT_SECRET,
+                                scope=["openid", "email", "profile"],
+                            ),
+                        ],
+                        authorization_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
+                        
+                        token_endpoint="https://oauth2.googleapis.com/token",
+                        
+                        user_info_endpoint="https://openidconnect.googleapis.com/v1/userinfo",
+                        jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
+                        
+                        oidc_discovery_endpoint="https://accounts.google.com",
+                    ),
+                ),
                 ProviderInput(
                     config=ProviderConfig(
                         third_party_id="google",
                         clients=[
                             ProviderClientConfig(
-                                client_id=settings.GOOGLE_CLIENT_ID,
-                                client_secret=settings.GOOGLE_CLIENT_SECRET,
+
+                                client_id=FRONTEND_CLIENT_ID,
+                                #client_id=BACKEND_CLIENT_ID, 
+                                #client_secret=BACKEND_CLIENT_SECRET,
+                                scope=["openid", "email", "profile"],
                             ),
                         ],
+                        authorization_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
+                        #authorization_endpoint_query_params={
+                        #    "someKey1": "value1",
+                        #    "someKey2": None,
+                        #},
+                        token_endpoint="https://oauth2.googleapis.com/token",
+                        #token_endpoint_body_params={
+                        #    "someKey1": "value1",
+                        #},
+                        user_info_endpoint="https://openidconnect.googleapis.com/v1/userinfo",
+                        jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
+                        #user_info_map=UserInfoMap(
+                        #    from_id_token_payload=UserFields(
+                        #        user_id="id",
+                        #        email="email",
+                        #        email_verified="email_verified",
+                        #    ),
+                        #    from_user_info_api=UserFields(),
+                        #),
+                        oidc_discovery_endpoint="https://accounts.google.com",
+                    ),
+                ),
+                ProviderInput(
+                    config=ProviderConfig(
+                        third_party_id="auth0",
+                        clients=[
+                            ProviderClientConfig(
+                                client_id=AUTH0_CLIENT_ID,
+                                client_secret=AUTH0_CLIENT_SECRET,
+                                scope=["openid", "email", "profile"],
+
+                            ),
+                        ],
+                        authorization_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com/authorize",
+                        #authorization_endpoint_query_params={
+                        #    "someKey1": "value1",
+                        #    "someKey2": None,
+                        #},
+                        token_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com/oauth/token",
+                        #token_endpoint_body_params={
+                        #    "someKey1": "value1",
+                        #},
+                        user_info_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com/userinfo",
+                        jwks_uri="https://dev-17s0i0aukvst4yiv.us.auth0.com/.well-known/jwks.json",
+                        #user_info_map=UserInfoMap(
+                        #    from_id_token_payload=UserFields(
+                        #        user_id="id",
+                        #        email="email",
+                        #        email_verified="email_verified",
+                        #    ),
+                        #    from_user_info_api=UserFields(),
+                        #),
+                        oidc_discovery_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com",
                     ),
                 ),
                 ProviderInput(
