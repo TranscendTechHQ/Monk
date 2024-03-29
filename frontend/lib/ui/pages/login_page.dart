@@ -14,6 +14,10 @@ import 'package:google_sign_in/google_sign_in.dart';
     hide AuthorizationRequest;*/
 import '../../helper/network.dart';
 
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+
+const bool kIsWeb = bool.fromEnvironment('dart.library.js_util');
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -26,11 +30,23 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   FlutterAppAuth appAuth = FlutterAppAuth();
   late Auth0 auth0;
-
+  late Auth0Web auth0Web;
+  UserProfile? _user;
+  Credentials? _credentials;
   @override
   void initState() {
     super.initState();
     auth0 = Auth0(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
+    auth0Web = Auth0Web(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
+
+    print("here 1");
+    if (kIsWeb) {
+      print("here 2");
+      auth0Web.onLoad().then((final credentials) => setState(() {
+            _user = credentials?.user;
+            _credentials = credentials;
+          }));
+    }
   }
 
   Future<void> loginWithGoogle() async {
@@ -97,30 +113,41 @@ class _LoginPageState extends State<LoginPage> {
     loader.showLoader(context, message: "processing.");
     // await logout();
     try {
-      var credentials = await auth0
-          .webAuthentication(scheme: Constants.AUTH0_CUSTOM_SCHEME)
-          // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
-          // useHTTPS is ignored on Android
-          .login(useHTTPS: true);
-      loader.hideLoader();
-      loader.showLoader(context, message: "processing.");
-      var result = await NetworkManager.instance.client.post(
-        "/auth/signinup",
-        data: {
-          "thirdPartyId": "auth0",
-          "oAuthTokens": {
-            "access_token": credentials.accessToken,
-            "id_token": credentials.idToken
-          },
-        },
-      );
-      if (result.statusCode == 200) {
-        Future.delayed(
-          Duration.zero,
-          () {
-            prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
+      if (kIsWeb) {
+        print("here 3");
+
+        auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        print("here 4");
+        print(_credentials
+            ?.accessToken); // we need to pass this credential to signinup api below
+
+        return;
+      } else {
+        var credentials = await auth0
+            .webAuthentication(scheme: Constants.AUTH0_CUSTOM_SCHEME)
+            // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
+            // useHTTPS is ignored on Android
+            .login(useHTTPS: true);
+        loader.hideLoader();
+        loader.showLoader(context, message: "processing.");
+        var result = await NetworkManager.instance.client.post(
+          "/auth/signinup",
+          data: {
+            "thirdPartyId": "auth0",
+            "oAuthTokens": {
+              "access_token": credentials.accessToken,
+              "id_token": credentials.idToken
+            },
           },
         );
+        if (result.statusCode == 200) {
+          Future.delayed(
+            Duration.zero,
+            () {
+              prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
+            },
+          );
+        }
       }
     } catch (e) {
       print(e);
