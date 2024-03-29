@@ -24,7 +24,6 @@ load_dotenv()
 
 
 
-
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE") == "True"
@@ -50,6 +49,7 @@ class OpenAISettings(BaseSettings):
     OPENAI_API_ENDPOINT: str = os.getenv("OPENAI_API_ENDPOINT")
     OPEN_API_GPT_MODEL: str = os.getenv("OPEN_API_GPT_MODEL")
     
+
 class ClientSettings(BaseSettings):
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
@@ -192,6 +192,7 @@ init(
                         third_party_id="google",
                         clients=[
                             ProviderClientConfig(
+
                                 client_id=FRONTEND_CLIENT_ID,
                                 #client_id=BACKEND_CLIENT_ID, 
                                 #client_secret=BACKEND_CLIENT_SECRET,
@@ -228,6 +229,7 @@ init(
                                 client_id=AUTH0_CLIENT_ID,
                                 client_secret=AUTH0_CLIENT_SECRET,
                                 scope=["openid", "email", "profile"],
+
                             ),
                         ],
                         authorization_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com/authorize",
@@ -252,6 +254,21 @@ init(
                         oidc_discovery_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com",
                     ),
                 ),
+                ProviderInput(
+                        config=ProviderConfig(
+                            third_party_id="slack",
+                            name="Slack Provider",
+                            clients=[
+                                ProviderClientConfig(
+                                    client_id= settings.SLACK_CLIENT_ID,
+                                    client_secret= settings.SLACK_CLIENT_SECRET,
+                                    scope=["openid", "email", "profile"],
+                                ),
+                            ],
+                            oidc_discovery_endpoint="https://slack.com",
+                            
+                        ),
+                    ),
                 ProviderInput(
                     config=ProviderConfig(
                         third_party_id="github",
