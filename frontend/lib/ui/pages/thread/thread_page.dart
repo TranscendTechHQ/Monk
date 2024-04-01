@@ -21,22 +21,30 @@ enum ThreadType { thread, reply }
 class ThreadPage extends ConsumerWidget {
   final String title;
   final String type;
+  final String? threadChildId;
   final ThreadType threadType;
   const ThreadPage({
     super.key,
     required this.title,
     required this.type,
+    this.threadChildId,
     this.threadType = ThreadType.thread,
   });
 
   static String route = "/journal";
-  static Route launchRoute(
-      {required String title,
-      required String type,
-      ThreadType threadType = ThreadType.thread}) {
+  static Route launchRoute({
+    required String title,
+    required String type,
+    String? threadChildId,
+    ThreadType threadType = ThreadType.thread,
+  }) {
     return MaterialPageRoute<void>(
-      builder: (_) =>
-          ThreadPage(title: title, type: type, threadType: threadType),
+      builder: (_) => ThreadPage(
+        title: title,
+        type: type,
+        threadType: threadType,
+        threadChildId: threadChildId,
+      ),
     );
   }
 
@@ -51,8 +59,12 @@ class ThreadPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentThread =
-        ref.watch(currentThreadProvider.call(title: title, type: type));
+    final currentThread = ref.watch(currentThreadProvider.call(
+      title: title,
+      type: type,
+      // threadType: threadType,
+      // threadChildId: threadChildId,
+    ));
     final blockInput = CommandBox(title: title, type: type);
 
     return Scaffold(
@@ -213,6 +225,9 @@ class ThreadCard extends ConsumerWidget {
           );
         }
       } else {
+        final id =
+            "Reply$title${block.id?.substring(0, 9)}".replaceAll('-', '');
+        print('Launch Replies Page: $id');
         Navigator.push(
           context,
           ThreadPage.launchRoute(
@@ -220,6 +235,7 @@ class ThreadCard extends ConsumerWidget {
                 ("Reply$title${block.id?.substring(0, 9)}").replaceAll('-', ''),
             type: type,
             threadType: ThreadType.reply,
+            threadChildId: block.childId,
           ),
         );
       }

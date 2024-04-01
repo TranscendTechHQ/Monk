@@ -10,8 +10,10 @@
 
 import 'dart:convert';
 
+import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -99,15 +101,25 @@ Future<BlockCollection> journalBlocksDate(DateTime date) async {
 @riverpod
 class CurrentThread extends _$CurrentThread {
   @override
-  Future<ThreadModel?> build(
-      {required String title, required String type}) async {
+  Future<ThreadModel?> build({
+    required String title,
+    required String type,
+    ThreadType threadType = ThreadType.thread,
+    String? threadChildId,
+  }) async {
     state = const AsyncValue.loading();
-    final response = await createOrGetThread(title: title, type: type);
-    state = AsyncValue.data(response);
+    ThreadModel? thread;
+    if (threadType == ThreadType.thread) {
+      thread = await createOrGetThread(title: title, type: type);
+    } else {
+      thread = await fetchThreadFromIdAsync(threadChildId!);
+    }
+
+    state = AsyncValue.data(thread);
     return state.value;
   }
 
-  Future<ThreadModel> createBlock(String text, {String? customTitle}) async {
+  Future<void> createBlock(String text, {String? customTitle}) async {
     String? threadTitle = state.value?.title ?? customTitle;
     if (threadTitle.isNullOrEmpty) {
       logger.e("Thread title is null");
@@ -125,7 +137,10 @@ class CurrentThread extends _$CurrentThread {
     }
 
     state = AsyncValue.data(newThreadState.data!);
-    return state.value!;
+    // if (state.value != null) {
+    //   return state.value!;
+    // }
+    // return state.value;
   }
 
   Future<ThreadModel> getThread(String title) async {
@@ -138,6 +153,24 @@ class CurrentThread extends _$CurrentThread {
     }
     state = AsyncValue.data(response.data!);
     return state.value!;
+  }
+
+  Future<ThreadModel?> fetchThreadFromIdAsync(String id) async {
+    return MonkException.handle(() async {
+      logger.d("Fetching child thread. id: $id");
+      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+      final response = await threadApi.getThreadIdThreadsIdGet(id: id);
+      if (response.statusCode == 404) {
+        throw Exception("Thread not found");
+      } else if (response.statusCode != 200) {
+        throw Exception("Failed to get thread");
+      }
+      logger.d("Child thread. fetched success fully: $id");
+      if (response.data != null) {
+        // return response.data.content;
+      }
+      return response.data;
+    });
   }
 
   void addChildThreadIdToBlock(String childThreadId, String blockId) {
