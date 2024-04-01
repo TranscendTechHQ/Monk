@@ -180,9 +180,11 @@ class ThreadCard extends ConsumerWidget {
       return;
     }
     try {
+      final childThreadName =
+          ("Reply$title${block.id?.substring(0, 4)}").replaceAll('-', '');
       if (block.childId.isNullOrEmpty) {
         final createChildThreadModel = CreateChildThreadModel(
-          title: title,
+          title: childThreadName,
           type: type,
           parentBlockId: block.id!,
           parentThreadId: parentThreadId!,
@@ -205,8 +207,7 @@ class ThreadCard extends ConsumerWidget {
           Navigator.push(
               context,
               ThreadPage.launchRoute(
-                title: ("Reply$title${block.id?.substring(0, 4)}")
-                    .replaceAll('-', ''),
+                title: childThreadName,
                 type: type,
                 threadType: ThreadType.reply,
               ));
@@ -225,14 +226,10 @@ class ThreadCard extends ConsumerWidget {
           );
         }
       } else {
-        final id =
-            "Reply$title${block.id?.substring(0, 9)}".replaceAll('-', '');
-        print('Launch Replies Page: $id');
         Navigator.push(
           context,
           ThreadPage.launchRoute(
-            title:
-                ("Reply$title${block.id?.substring(0, 9)}").replaceAll('-', ''),
+            title: childThreadName,
             type: type,
             threadType: ThreadType.reply,
             threadChildId: block.childId,
