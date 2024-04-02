@@ -71,12 +71,22 @@ def generate_all_thread_headlines(num_thread_limit):
                                       {'$set': {'headline': headline['text'], 
                                                 'title': title}}, upsert=True)
         pprint.pprint(headline['text'])
+
+def cleanup_zombie_threads():
+    thread_collection = app.mongodb["threads"]
     
+    for doc in thread_collection.find({}):
+        if len(doc["content"]) < 2:
+            print(f"Deleting thread {doc['_id']}, {doc['title']}")
+            thread_collection.delete_one({'_id': doc['_id']})
+            #print(f"Deleted thread {doc['_id']}")
+ 
 async def main() :
     startup_db_client()
     #result =  generate_headline(text)
     #pprint.pprint(result)
     generate_all_thread_headlines(50)
+    #cleanup_zombie_threads()
     shutdown_db_client()
     
     
