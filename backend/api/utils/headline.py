@@ -36,3 +36,23 @@ def generate_headline(text: str) -> str:
     #print(summary)
     return headline
 
+
+def generate_single_thread_headline(thread_doc, useAI=False):   
+    blocks = thread_doc['content']
+    if useAI:
+        text = ""
+        for block in blocks:
+            #print(block['content'])
+            text += block['content'] + " " 
+        headline = generate_headline(text)
+        return headline
+    else:
+        headline = {}
+        #print(thread_doc['title'])
+        
+        if len(blocks) > 0:
+            headline['text'] = blocks[0]['content']
+        else:
+            headline['text'] = "blank thread"
+        return headline
+

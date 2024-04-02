@@ -3,7 +3,7 @@ import pprint
 
 from pymongo import MongoClient
 from config import settings
-from utils.headline import generate_headline
+from utils.headline import generate_headline, generate_single_thread_headline
 
 text = """
 
@@ -52,25 +52,18 @@ def shutdown_db_client():
     app.mongodb_client.close()
     
     
-def generate_single_thread_headline(thread_doc):   
-    blocks = thread_doc['content']
-    text = ""
-    for block in blocks:
-        #print(block['content'])
-        text += block['content'] + " " 
-    headline = generate_headline(text)
-    return headline
 
-def generate_all_thread_headlines(num_thread_limit):
+
+def generate_all_thread_headlines(num_thread_limit, useAI=False):
     thread_collection = app.mongodb["threads"]
     headline_collection = app.mongodb["thread_headlines"]
     for doc in thread_collection.find({'title':{"$exists": True}}).limit(num_thread_limit):
-        headline = generate_single_thread_headline(doc)
+        headline = generate_single_thread_headline(doc, useAI=useAI)
         title = doc['title']
         headline_collection.update_one({'_id': doc['_id']}, 
                                       {'$set': {'headline': headline['text'], 
                                                 'title': title}}, upsert=True)
-        pprint.pprint(headline['text'])
+        #pprint.pprint(headline['text'])
 
 def cleanup_zombie_threads():
     thread_collection = app.mongodb["threads"]
@@ -85,10 +78,9 @@ async def main() :
     startup_db_client()
     #result =  generate_headline(text)
     #pprint.pprint(result)
-    generate_all_thread_headlines(50)
+    generate_all_thread_headlines(500, useAI=False)
     #cleanup_zombie_threads()
     shutdown_db_client()
-    
     
     
 if __name__ == "__main__":
