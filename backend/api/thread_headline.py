@@ -58,6 +58,9 @@ def generate_all_thread_headlines(num_thread_limit, useAI=False):
     thread_collection = app.mongodb["threads"]
     headline_collection = app.mongodb["thread_headlines"]
     for doc in thread_collection.find({'title':{"$exists": True}}).limit(num_thread_limit):
+        content = doc['content']
+        if len(content) < 1:
+            continue
         headline = generate_single_thread_headline(doc, useAI=useAI)
         title = doc['title']
         headline_collection.update_one({'_id': doc['_id']}, 
