@@ -37,22 +37,30 @@ def generate_headline(text: str) -> str:
     return headline
 
 
-def generate_single_thread_headline(thread_doc, useAI=False):   
+def generate_single_thread_headline(thread_doc, headline_collection,
+                                    useAI=False):   
     blocks = thread_doc['content']
+    headline = {}
     if useAI:
         text = ""
         for block in blocks:
             #print(block['content'])
             text += block['content'] + " " 
         headline = generate_headline(text)
-        return headline
+        
     else:
-        headline = {}
         #print(thread_doc['title'])
         
         if len(blocks) > 0:
             headline['text'] = blocks[0]['content']
+            headline['last_modified'] = str(blocks[-1]['created_at'])
         else:
             headline['text'] = "blank thread"
-        return headline
+            
+        title = thread_doc['title']
+        headline_collection.update_one({'_id': thread_doc['_id']}, 
+                                      {'$set': {'headline': headline['text'], 
+                                                'title': title,
+                                                'last_modified':headline['last_modified']}}, upsert=True)
+        
 

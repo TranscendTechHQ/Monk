@@ -61,11 +61,10 @@ def generate_all_thread_headlines(num_thread_limit, useAI=False):
         content = doc['content']
         if len(content) < 1:
             continue
-        headline = generate_single_thread_headline(doc, useAI=useAI)
-        title = doc['title']
-        headline_collection.update_one({'_id': doc['_id']}, 
-                                      {'$set': {'headline': headline['text'], 
-                                                'title': title}}, upsert=True)
+        generate_single_thread_headline(doc, 
+                                        headline_collection,
+                                        useAI=useAI)
+
         #pprint.pprint(headline['text'])
 
 def cleanup_zombie_threads():
