@@ -19,6 +19,7 @@ import datetime as dt
 from config import settings
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 from utils.embedding import generate_embedding
+from utils.headline import generate_single_thread_headline
 
 
 router = APIRouter()
@@ -70,10 +71,27 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 async def th(request: Request,
              session : SessionContainer = Depends(verify_session())):
     # Get all thread headlines from MongoDB
+    collection = request.app.mongodb["thread_headlines"]
+    #headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
     
-    headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
+    # Convert string datetimes to actual datetime objects during sorting
+    sort_criteria = [{ 
+                     "$addFields": 
+                         { "last_modified_date": 
+                             { "$toDate": "$last_modified" }
+                         }
+                    },
+                    { "$sort": { "last_modified_date": -1 }}]
+
+    # Fetch all documents with the sort criteria (using aggregation for sorting)
     
-    thread_headlines = ThreadHeadlinesModel(headlines=headlines)
+    cursor = collection.aggregate(sort_criteria)
+    
+    sorted_headlines = []
+    async for document in cursor:
+        sorted_headlines.append(document)
+
+    thread_headlines = ThreadHeadlinesModel(headlines=sorted_headlines)
     
     return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(
@@ -139,10 +157,14 @@ async def create(request: Request, thread_title:str, block: UpdateBlockModel = B
     thread = await get_mongo_document({"title": thread_title}, request.app.mongodb["threads"])
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
-   
+    
     #change new_block_dict to json_new_block if you want to store
     ## block as a json string in the db
     thread["content"].append(jsonable_encoder(new_block))
+    
+    headline_collection = request.app.mongodb["thread_headlines"]
+    generate_single_thread_headline(thread, headline_collection, useAI=False)
+    
    
     updated_thread = await update_mongo_document_fields(
     {"title": thread_title}, 
