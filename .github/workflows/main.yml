@@ -19,4 +19,4 @@ jobs:
       run: |
         echo "API_KEY=$API_KEY" >> $GITHUB_OUTPUT
         mkdir -p config
-        echo "API_KEY=$API_KEY" > backend/api/config/.env.example
+        echo "API_KEY=$API_KEY" > backend/api/config/.envtest
