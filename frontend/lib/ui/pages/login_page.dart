@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as prefix;
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -215,13 +216,17 @@ class _LoginPageState extends State<LoginPage> {
       logger.e('Access token or idToken is null. Can not proceed');
       return;
     }
-    var result = await NetworkManager.instance.client.post(
-      "/auth/signinup",
-      data: {
-        "thirdPartyId": "auth0",
-        "oAuthTokens": {"access_token": accessToken, "id_token": idToken},
-      },
-    );
+    var result =
+        await MonkException.handle(() => NetworkManager.instance.client.post(
+              "/auth/signinup",
+              data: {
+                "thirdPartyId": "auth0",
+                "oAuthTokens": {
+                  "access_token": accessToken,
+                  "id_token": idToken
+                },
+              },
+            ));
     if (result.statusCode == 200) {
       Future.delayed(
         Duration.zero,
@@ -229,6 +234,8 @@ class _LoginPageState extends State<LoginPage> {
           prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
         },
       );
+    } else {
+      logger.e('Failed to verify credentials', error: result.data);
     }
   }
 

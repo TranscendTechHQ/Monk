@@ -1,10 +1,23 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+part 'commandparser.freezed.dart';
 part 'commandparser.g.dart';
 
 @riverpod
 class CommandHintText extends _$CommandHintText {
   @override
   String build() => 'press "/" for commands';
+  void set(String text) {
+    state = text;
+  }
+
+  String get() => state;
+}
+
+@riverpod
+class MainCommandText extends _$MainCommandText {
+  @override
+  String build() => '';
   void set(String text) {
     state = text;
   }
@@ -119,4 +132,52 @@ class CommandParser {
   bool isUnique(String argument, List<String> titlesList) {
     return !titlesList.contains(argument);
   }
+}
+
+@riverpod
+class CustomCommandInput extends _$CustomCommandInput {
+  @override
+  CustomCommandInputState build(
+    @Default([]) List<String> list,
+    @Default([]) List<String> filtered,
+    String? selected,
+    @Default('') String query,
+  ) {
+    return CustomCommandInputState.initial(
+      list: list,
+      filtered: filtered,
+      selected: selected,
+      query: query,
+    );
+  }
+
+  void setList(List<String> list) {
+    state = state.copyWith(
+      list: List.from(list),
+      filtered: List.from(list),
+    );
+    print(state.filtered.length);
+  }
+}
+
+@freezed
+class CustomCommandInputState with _$CustomCommandInputState {
+  const factory CustomCommandInputState({
+    @Default([]) List<String> list,
+    @Default([]) List<String> filtered,
+    String? selected,
+    @Default('') String query,
+  }) = _CustomCommandInputState;
+
+  factory CustomCommandInputState.initial(
+          {List<String> list = const [],
+          List<String> filtered = const [],
+          String? selected,
+          String query = ''}) =>
+      CustomCommandInputState(
+        list: list,
+        filtered: filtered,
+        selected: selected,
+        query: query,
+      );
 }

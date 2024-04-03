@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,7 @@ import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:searchfield/searchfield.dart';
 
 part 'commandbox.g.dart';
 
@@ -36,106 +39,11 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
     String newThreadType) {
   final screenVisibility = ref.read(screenVisibilityProvider().notifier);
   screenVisibility.setVisibility(InputBoxType.thread);
+  // logger.v('Switching to thread $newThreadTitle of type $newThreadType');
   Navigator.pushReplacement(
     context,
     ThreadPage.launchRoute(title: newThreadTitle, type: newThreadType),
   );
-}
-
-class CommandTypeAhead extends ConsumerWidget {
-  final _typeAheadController = TextEditingController(text: "");
-  final FocusNode commandFocusNode;
-
-  CommandTypeAhead({super.key, required this.commandFocusNode});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final commandList = ref.watch(fetchThreadTypesProvider);
-    final parser = CommandParser(commandList.value ?? []);
-    final threadList = ref.watch(fetchThreadsInfoProvider);
-    final List<String> titlesList = threadList.value?.keys.toList() ?? [];
-
-    final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
-
-    return TypeAheadField<String>(
-      focusNode: commandFocusNode,
-      hideOnEmpty: true,
-      direction: VerticalDirection.up,
-      controller: _typeAheadController,
-      builder: (context, controller, focusNode) => TextField(
-        controller: controller,
-        onSubmitted: (value) {
-          // if value is present in the commandList,
-          //then set the current command to value
-          // and set the visibility to false
-          try {
-            // if the command is /news, then navigate to the news feed page
-            if (value == '/news') {
-              // Navigator.pushAndRemoveUntil(
-              //     context, NewsPage.launchRoute(), (route) => false);
-              Navigator.push(context, NewsPage.launchRoute());
-              return;
-            }
-            final newThread = parser.validateCommand(
-                value, titlesList, commandHintTextNotifier);
-            String newThreadType;
-            if (threadList.value!.containsKey(newThread["title"])) {
-              newThreadType = threadList.value![newThread["title"]]!;
-            } else {
-              newThreadType = newThread["type"]!;
-            }
-            switchThread(ref, context, newThread["title"]!, newThreadType);
-            // only if the command was successfully validated
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-                  Text(e.toString().replaceAll('Invalid argument(s):', '')),
-              duration: const Duration(seconds: 2),
-            ));
-            return;
-          }
-        },
-        focusNode: focusNode,
-        autofocus: true,
-        decoration: const InputDecoration(
-          hintText: 'press "/" for commands',
-        ),
-      ),
-      suggestionsCallback: (pattern) async {
-        List<String> suggestions = [];
-        if (pattern.isEmpty) {
-          //suggestions.add('');
-          return suggestions;
-        }
-        List<String> parts = pattern.split(' ');
-        if (parts.length == 1) {
-          // we are displaying a list of commands now
-          return parser.patternMatchingCommands(pattern);
-        }
-        if (parts.length == 2) {
-          return parser.patternMatchingTitles(pattern, titlesList);
-        }
-        return suggestions;
-      },
-      itemBuilder: (context, suggestion) {
-        return ListTile(
-          title: Text(suggestion),
-        );
-      },
-      onSelected: (suggestion) {
-        if (suggestion.startsWith('/')) {
-          // this is a command
-          _typeAheadController.text = suggestion;
-        } else {
-          String firstHalf = _typeAheadController.text.split('#')[0];
-          // this is a title
-          // set the current title
-          _typeAheadController.text = "$firstHalf#$suggestion";
-        }
-        return;
-      },
-    );
-  }
 }
 
 class CommandBox extends ConsumerWidget {
@@ -274,6 +182,566 @@ class CommandBox extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CommandTypeAhead extends ConsumerWidget {
+  final _typeAheadController = TextEditingController(text: "");
+  final FocusNode commandFocusNode;
+
+  CommandTypeAhead({super.key, required this.commandFocusNode});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final commandList = ref.watch(fetchThreadTypesProvider);
+    final parser = CommandParser(commandList.value ?? []);
+    final threadList = ref.watch(fetchThreadsInfoProvider);
+    final List<String> titlesList = threadList.value?.keys.toList() ?? [];
+
+    final commandHintTextNotifier = ref.read(commandHintTextProvider.notifier);
+    // final mainCommandText = ref.watch(mainCommandTextProvider);
+    // final mainCommandTextNotifier = ref.read(mainCommandTextProvider.notifier);
+
+    return Column(
+      children: [
+        // SearchField(
+        //   controller: _typeAheadController,
+
+        //   hint: 'press "/" for commands',
+        //   itemHeight: 50,
+        //   scrollbarDecoration: ScrollbarDecoration(),
+        //   suggestionStyle: const TextStyle(fontSize: 24, color: Colors.white),
+        //   suggestions: titlesList
+        //       .map((e) => SearchFieldListItem<String>(e, child: Text(e)))
+        //       .toList(),
+        //   // offset: const Offset(0, -250),
+        //   focusNode: commandFocusNode,
+        //   suggestionState: Suggestion.expand,
+        //   suggestionDirection: SuggestionDirection.up,
+        //   onSearchTextChanged: (pattern) {
+        //     if (pattern.isEmpty) {
+        //       //suggestions.add('');
+        //       // return suggestions;
+        //       return titlesList
+        //           .map((e) => SearchFieldListItem<String>(e, child: Text(e)))
+        //           .toList();
+        //     }
+        //     List<String> parts = pattern.split(' ');
+        //     if (parts.length == 1) {
+        //       // we are displaying a list of commands now
+        //       ref.read(mainCommandTextProvider.notifier).set('$pattern ');
+        //       return parser
+        //           .patternMatchingCommands(pattern)
+        //           .map((e) => SearchFieldListItem<String>(e, child: Text(e)))
+        //           .toList();
+        //     }
+        //     if (parts.length == 2) {
+        //       return parser
+        //           .patternMatchingTitles(pattern, titlesList)
+        //           .map((e) => SearchFieldListItem<String>(e, child: Text(e)))
+        //           .toList();
+        //     }
+        //     return titlesList
+        //         .map((e) => SearchFieldListItem<String>(e, child: Text(e)))
+        //         .toList();
+        //   },
+
+        //   onSuggestionTap: (SearchFieldListItem<String> x) {
+        //     commandFocusNode.unfocus();
+        //     final suggestion = x.searchKey;
+        //     ref.watch(mainCommandTextProvider);
+        //     String firstHalf = ref.read(mainCommandTextProvider);
+
+        //     print('-------------------- START ---------------- ');
+        //     print(
+        //         'searchKey [$suggestion], main command:[$firstHalf], text:[${_typeAheadController.text}]');
+
+        //     if (suggestion.startsWith('/')) {
+        //       // this suggestion contains a command
+        //       if (suggestion.contains(' ')) {
+        //         final command = suggestion.split(' ')[0];
+        //         final title = suggestion.split(' ')[1];
+        //         _typeAheadController.text = '$suggestion ';
+        //         ref.read(mainCommandTextProvider.notifier).set('$command ');
+        //         print('command:[ $command], title:[$title');
+        //         return;
+        //       }
+        //       // this is a command
+        //       _typeAheadController.text = '$suggestion ';
+        //       ref.read(mainCommandTextProvider.notifier).set('$suggestion ');
+
+        //       print('command $suggestion');
+        //     } else {
+        //       //  _typeAheadController.text.split('#')[0];
+        //       // this is a title
+        //       // set the current title
+        //       _typeAheadController.text = "$firstHalf#$suggestion";
+
+        //       print('Sub command ${"$firstHalf#$suggestion"}');
+        //     }
+        //     print('-------------------- END ---------------- ');
+        //     return;
+        //   },
+        //   onSubmit: (value) {
+        //     print('Submitted $value');
+
+        //     // if value is present in the commandList,
+        //     //then set the current command to value
+        //     // and set the visibility to false
+        //     ref.read(mainCommandTextProvider.notifier).set('');
+        //     _typeAheadController.text = '';
+        //     try {
+        //       // if the command is /news, then navigate to the news feed page
+        //       if (value == '/news') {
+        //         // Navigator.pushAndRemoveUntil(
+        //         //     context, NewsPage.launchRoute(), (route) => false);
+        //         Navigator.push(context, NewsPage.launchRoute());
+        //         return;
+        //       }
+        //       final newThread = parser.validateCommand(
+        //           value, titlesList, commandHintTextNotifier);
+        //       String newThreadType;
+        //       if (threadList.value!.containsKey(newThread["title"])) {
+        //         newThreadType = threadList.value![newThread["title"]]!;
+        //       } else {
+        //         newThreadType = newThread["type"]!;
+        //       }
+        //       // switchThread(ref, context, newThread["title"]!, newThreadType);
+        //       print(
+        //           'Switching to thread ${newThread["title"]} of type $newThreadType');
+        //       // only iommand was successfully validated
+        //     } catch (e) {
+        //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //         content:
+        //             Text(e.toString().replaceAll('Invalid argument(s):', '')),
+        //         duration: const Duration(seconds: 2),
+        //       ));
+        //       return;
+        //     }
+        //   },
+        // ),
+        // TypeAheadField<String>(
+        //   focusNode: commandFocusNode,
+        //   hideOnEmpty: true,
+        //   direction: VerticalDirection.up,
+        //   controller: _typeAheadController,
+        //   builder: (context, controller, focusNode) => TextField(
+        //     controller: controller,
+        //     onSubmitted: (value) {
+        // // if value is present in the commandList,
+        // //then set the current command to value
+        // // and set the visibility to false
+        // try {
+        //   // if the command is /news, then navigate to the news feed page
+        //   if (value == '/news') {
+        //     // Navigator.pushAndRemoveUntil(
+        //     //     context, NewsPage.launchRoute(), (route) => false);
+        //     Navigator.push(context, NewsPage.launchRoute());
+        //     return;
+        //   }
+        //   final newThread = parser.validateCommand(
+        //       value, titlesList, commandHintTextNotifier);
+        //   String newThreadType;
+        //   if (threadList.value!.containsKey(newThread["title"])) {
+        //     newThreadType = threadList.value![newThread["title"]]!;
+        //   } else {
+        //     newThreadType = newThread["type"]!;
+        //   }
+        //   switchThread(ref, context, newThread["title"]!, newThreadType);
+        //   // only iommand was successfully validated
+        // } catch (e) {
+        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //     content:
+        //         Text(e.toString().replaceAll('Invalid argument(s):', '')),
+        //     duration: const Duration(seconds: 2),
+        //   ));
+        //   return;
+        // }
+        //     },
+        //     focusNode: focusNode,
+        //     autofocus: true,
+        //     onChanged: (text) {},
+        //     decoration: const InputDecoration(
+        //       hintText: 'press "/" for commands',
+        //     ),
+        //   ),
+        //   suggestionsCallback: (pattern) async {
+        // List<String> suggestions = [];
+        // if (pattern.isEmpty) {
+        //   //suggestions.add('');
+        //   return suggestions;
+        // }
+        // List<String> parts = pattern.split(' ');
+        // if (parts.length == 1) {
+        //   // we are displaying a list of commands now
+        //   return parser.patternMatchingCommands(pattern);
+        // }
+        // if (parts.length == 2) {
+        //   return parser.patternMatchingTitles(pattern, titlesList);
+        // }
+        // return suggestions;
+        // },
+        // itemBuilder: (context, suggestion) {
+        //   return ListTile(
+        //     title: Text(suggestion),
+        //   );
+        //   },
+        //   onSelected: (suggestion) {
+        // print(
+        //     '---------------------------------------------------------------- START ----------------------------------------------------------------');
+        // print(suggestion);
+        // if (suggestion.startsWith('/')) {
+        //   // this is a command
+        //   _typeAheadController.text = suggestion;
+
+        //   print('command $suggestion');
+        //   SuggestionsController.of(context).refresh();
+        // } else {
+        //   // SuggestionsController.of(context).refresh();
+        //   String firstHalf = _typeAheadController.text.split('#')[0];
+        //   // this is a title
+        //   // set the current title
+        //   String? fullCommand =
+        //       ("$firstHalf #$suggestion").replaceAll(RegExp(r"\s+"), ' ');
+        //   _typeAheadController.text = fullCommand;
+
+        //   print('Sub command $fullCommand');
+        // }
+        // print(
+        //     '---------------------------------------------------------------- END ---------------------------------------------------------------- \n');
+        // return;
+        //   },
+        //   errorBuilder: (context, error) => Text(error.toString()),
+        // ),
+        CustomCommandInput2(
+          controller: _typeAheadController,
+          suggestions: titlesList,
+          onSuggestionTap: (suggestion) {},
+          focusNode: commandFocusNode,
+          onSearchTextChanged: (text) {},
+          parser: parser,
+          titlesList: titlesList,
+          onSubmit: (value) {
+            // if value is present in the commandList,
+            //then set the current command to value
+            // and set the visibility to false
+            try {
+              // if the command is /news, then navigate to the news feed page
+              if (value == '/news') {
+                // Navigator.pushAndRemoveUntil(
+                //     context, NewsPage.launchRoute(), (route) => false);
+                Navigator.push(context, NewsPage.launchRoute());
+                return;
+              }
+              final newThread = parser.validateCommand(
+                  value, titlesList, commandHintTextNotifier);
+              String newThreadType;
+              if (threadList.value!.containsKey(newThread["title"])) {
+                newThreadType = threadList.value![newThread["title"]]!;
+              } else {
+                newThreadType = newThread["type"]!;
+              }
+              logger.e(
+                  'Switching to thread ${newThread["title"]} of type $newThreadType');
+              switchThread(ref, context, newThread["title"]!, newThreadType);
+              // only iommand was successfully validated
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content:
+                    Text(e.toString().replaceAll('Invalid argument(s):', '')),
+                duration: const Duration(seconds: 2),
+              ));
+              return;
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class CustomCommandInput2 extends StatefulWidget {
+  const CustomCommandInput2(
+      {super.key,
+      this.suggestions = const [],
+      this.onSuggestionTap,
+      this.onSearchTextChanged,
+      this.onSubmit,
+      this.onChanged,
+      this.focusNode,
+      required this.controller,
+      required this.parser,
+      required this.titlesList});
+  final List<String> suggestions;
+  final ValueChanged<String>? onSuggestionTap;
+  final ValueChanged<String>? onSearchTextChanged;
+  final ValueChanged<String>? onSubmit;
+  final ValueChanged<String>? onChanged;
+  final FocusNode? focusNode;
+  final TextEditingController controller;
+  final CommandParser parser;
+  final List<String> titlesList;
+
+  @override
+  State<CustomCommandInput2> createState() => _CustomCommandInputState2();
+}
+
+class _CustomCommandInputState2 extends State<CustomCommandInput2> {
+  late ValueChanged<String>? onSearchTextChanged;
+  late FocusNode? focusNode;
+  // late TextEditingController controller;
+  late List<String> filtered;
+
+  CommandParser get parser => widget.parser;
+  List<String> get titlesList => widget.titlesList;
+  List<String> get suggestions => widget.suggestions;
+
+  @override
+  void initState() {
+    super.initState();
+    onSearchTextChanged = widget.onSearchTextChanged;
+    focusNode = widget.focusNode;
+    filtered = [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        TextFormField(
+          autofocus: true,
+          onFieldSubmitted: (val) {
+            logger.f('Submitted $val');
+            widget.onSubmit!(val);
+          },
+          focusNode: focusNode,
+          controller: widget.controller,
+          decoration: const InputDecoration(
+            hintText: 'press "/" for commands',
+          ),
+          onChanged: (pattern) {
+            if (pattern.isEmpty) {
+              setState(() {
+                filtered = suggestions;
+              });
+              return;
+            }
+            List<String> parts = pattern.split(' ');
+            if (parts.length == 1) {
+              // we are displaying a list of commands now
+              final list = parser.patternMatchingCommands(pattern);
+              setState(() {
+                filtered = list;
+                print(
+                    'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
+              });
+              return;
+            }
+            if (parts.length == 2) {
+              final list = parser.patternMatchingTitles(pattern, titlesList);
+              setState(() {
+                filtered = list;
+                print(
+                    'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
+              });
+              return;
+            }
+            // return suggestions;
+            setState(() {
+              print('Setting All suggestions, ${suggestions.length}');
+              filtered = suggestions;
+            });
+          },
+        ),
+        if (filtered.isNotNullEmpty)
+          AnimatedContainer(
+            constraints: BoxConstraints(
+              maxHeight: min(context.height * 0.5, filtered.length * 50.0),
+            ),
+            decoration: BoxDecoration(
+              color: context.colorScheme.surface,
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(10),
+                right: Radius.circular(10),
+              ),
+            ),
+            margin: const EdgeInsets.only(bottom: 65),
+            duration: Durations.short1,
+            child: ListView.separated(
+              itemCount: filtered.length,
+              itemBuilder: (context, index) {
+                final title = filtered[index];
+                return ListTile(
+                  title: Text(title),
+                  onTap: () {
+                    widget.onSuggestionTap!(title);
+                    setState(() {
+                      filtered = [];
+                    });
+
+                    print(
+                        '---------------------------------------------------------------- START ----------------------------------------------------------------');
+                    print(title);
+                    if (title.startsWith('/')) {
+                      // this is a command
+                      widget.controller.text = title;
+
+                      print('command $title');
+                    } else {
+                      String firstHalf = widget.controller.text.split('#')[0];
+                      // this is a title
+                      // set the current title
+                      String? fullCommand = ("$firstHalf #$title")
+                          .replaceAll(RegExp(r"\s+"), ' ');
+                      widget.controller.text = fullCommand;
+
+                      print('Sub command $fullCommand');
+                    }
+                    print(
+                        '---------------------------------------------------------------- END ---------------------------------------------------------------- \n');
+                    focusNode?.requestFocus();
+                  },
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return const Divider();
+              },
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class CustomCommandInput extends ConsumerWidget {
+  const CustomCommandInput(
+      {super.key,
+      this.suggestions = const [],
+      this.onSuggestionTap,
+      this.onSearchTextChanged,
+      this.onSubmit,
+      this.onChanged,
+      this.focusNode,
+      required this.controller,
+      required this.parser,
+      required this.titlesList});
+  final List<String> suggestions;
+  final ValueChanged<String>? onSuggestionTap;
+  final ValueChanged<String>? onSearchTextChanged;
+  final ValueChanged<String>? onSubmit;
+  final ValueChanged<String>? onChanged;
+  final FocusNode? focusNode;
+
+  final TextEditingController controller;
+  final CommandParser parser;
+  final List<String> titlesList;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = customCommandInputProvider.call(
+      suggestions,
+      suggestions,
+      null,
+      '',
+    );
+
+    final state = ref.watch(provider);
+
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        TextFormField(
+          onFieldSubmitted: (val) {
+            onSubmit!(val);
+            logger.e('Submitted $val');
+            // ref.read(provider.notifier).setList([]);
+          },
+          focusNode: focusNode,
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: 'press "/" for commands',
+          ),
+          onChanged: (pattern) {
+            if (pattern.isEmpty) {
+              //suggestions.add('');
+              // return suggestions;
+              ref.read(provider.notifier).setList(suggestions);
+              return;
+            }
+            List<String> parts = pattern.split(' ');
+            if (parts.length == 1) {
+              // we are displaying a list of commands now
+              final list = parser.patternMatchingCommands(pattern);
+              ref.read(provider.notifier).setList(list);
+              return;
+            }
+            if (parts.length == 2) {
+              final list = parser.patternMatchingTitles(pattern, titlesList);
+              ref.read(provider.notifier).setList(list);
+              return;
+            }
+            // return suggestions;
+            ref.read(provider.notifier).setList(suggestions);
+          },
+        ),
+        if (state.filtered.isNotNullEmpty)
+          AnimatedContainer(
+            constraints: BoxConstraints(
+              maxHeight:
+                  min(context.height * 0.5, state.filtered.length * 50.0),
+            ),
+            decoration: BoxDecoration(
+              color: context.colorScheme.surface,
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(10),
+                right: Radius.circular(10),
+              ),
+            ),
+            margin: const EdgeInsets.only(bottom: 65),
+            duration: Durations.short1,
+            child: ListView.separated(
+              itemCount: state.filtered.length,
+              itemBuilder: (context, index) {
+                final title = state.filtered[index];
+                return ListTile(
+                  title: Text(title),
+                  onTap: () {
+                    onSuggestionTap!(title);
+                    ref.read(provider.notifier).setList([]);
+
+                    print(
+                        '---------------------------------------------------------------- START ----------------------------------------------------------------');
+                    print(title);
+                    if (title.startsWith('/')) {
+                      // this is a command
+                      controller.text = title;
+
+                      print('command $title');
+                    } else {
+                      // SuggestionsController.of(context).refresh();
+                      String firstHalf = controller.text.split('#')[0];
+                      // this is a title
+                      // set the current title
+                      String? fullCommand = ("$firstHalf #$title")
+                          .replaceAll(RegExp(r"\s+"), ' ');
+                      controller.text = fullCommand;
+
+                      print('Sub command $fullCommand');
+                    }
+                    print(
+                        '---------------------------------------------------------------- END ---------------------------------------------------------------- \n');
+                    focusNode?.requestFocus();
+                  },
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return const Divider();
+              },
+            ),
+          ),
+      ],
     );
   }
 }
