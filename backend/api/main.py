@@ -95,9 +95,14 @@ app.add_middleware(
         "http://localhost:8000",
         "http://localhost:3000"
         "http://heymonk.app",
-        "https://heymonk.app"
+        "https://heymonk.app",
+        "http://monk.heymonk.app",
+        "http://api.heymonk.app",
+        "http://www.heymonk.app",
     ],
     allow_credentials=True,
+    #allow_methods=["*"],
+    #allow_headers=["*"],
     allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
@@ -194,4 +199,5 @@ if __name__ == "__main__":
         host=settings.HOST,
         reload=settings.DEBUG_MODE,
         port=settings.PORT,
+        #proxy_headers=True,
     )

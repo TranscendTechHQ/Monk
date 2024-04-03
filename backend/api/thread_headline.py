@@ -59,8 +59,8 @@ def generate_all_thread_headlines(num_thread_limit, useAI=False):
     headline_collection = app.mongodb["thread_headlines"]
     for doc in thread_collection.find({'title':{"$exists": True}}).limit(num_thread_limit):
         content = doc['content']
-        if len(content) < 1:
-            continue
+        #if len(content) < 1:
+        #    continue
         generate_single_thread_headline(doc, 
                                         headline_collection,
                                         useAI=useAI)
@@ -69,18 +69,42 @@ def generate_all_thread_headlines(num_thread_limit, useAI=False):
 
 def cleanup_zombie_threads():
     thread_collection = app.mongodb["threads"]
+    headline_collection = app.mongodb["thread_headlines"]
+    metadata_collection = app.mongodb["threads_metadata"]
     
     for doc in thread_collection.find({}):
         if len(doc["content"]) < 2:
             print(f"Deleting thread {doc['_id']}, {doc['title']}")
             thread_collection.delete_one({'_id': doc['_id']})
+            headline_collection.delete_one({'_id': doc['_id']})
+            metadata_collection.delete_one({'_id': doc['_id']})
             #print(f"Deleted thread {doc['_id']}")
- 
+    for doc in metadata_collection.find({}):
+        if doc['_id'] not in [x['_id'] for x in thread_collection.find({})]:
+            print(f"Deleting metadata {doc['_id']}, {doc['_id']}")
+            metadata_collection.delete_one({'_id': doc['_id']})
+            #print(f"Deleted metadata {doc['_id']}")
+
+def detect_zombie_threads():
+    thread_collection = app.mongodb["threads"]
+    metadata_collection = app.mongodb["threads_metadata"]
+    for doc in thread_collection.find({}):
+        if doc["_id"] not in [x['_id'] for x in metadata_collection.find({})]:
+            print(f"Zombie thread {doc['_id']}, {doc['title']}")
+            thread_collection.delete_one({'_id': doc['_id']})
+            #print(f"Deleted thread {doc['_id']}")
+    
+    for doc in metadata_collection.find({}):
+        if doc['_id'] not in [x['_id'] for x in thread_collection.find({})]:
+            print(f"Zombie thread {doc['_id']}, {doc['_id']}")
+            metadata_collection.delete_one({'_id': doc['_id']})
+            #print(f"Deleted metadata {doc['_id']}")
 async def main() :
     startup_db_client()
     #result =  generate_headline(text)
     #pprint.pprint(result)
     generate_all_thread_headlines(500, useAI=False)
+    #detect_zombie_threads()
     #cleanup_zombie_threads()
     shutdown_db_client()
     

@@ -56,6 +56,7 @@ def generate_single_thread_headline(thread_doc, headline_collection,
             headline['last_modified'] = str(blocks[-1]['created_at'])
         else:
             headline['text'] = "blank thread"
+            headline['last_modified']= str(thread_doc['created_date'])
             
         title = thread_doc['title']
         headline_collection.update_one({'_id': thread_doc['_id']}, 
