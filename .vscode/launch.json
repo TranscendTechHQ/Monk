@@ -5,6 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "backend",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/api/main.py",
+      "cwd": "${workspaceFolder}/backend/api",
+      "pythonPath": "${workspaceFolder}/backend/api/env/bin/python"
+    },
+
+    {
       "name": "frontend",
       "cwd": "frontend",
       "request": "launch",
