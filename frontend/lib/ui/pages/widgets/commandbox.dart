@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/commandparser.dart';
@@ -13,7 +12,6 @@ import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:searchfield/searchfield.dart';
 
 part 'commandbox.g.dart';
 
@@ -50,6 +48,7 @@ class CommandBox extends ConsumerWidget {
   final _blockController = TextEditingController();
   final _searchFocusNode = FocusNode();
   final _commandFocusNode = FocusNode();
+  final _blockFocusNode = FocusNode();
   final String title;
   final String type;
   final List<InputBoxType> allowedInputTypes;
@@ -79,6 +78,7 @@ class CommandBox extends ConsumerWidget {
       controller: _blockController,
       minLines: 2,
       maxLines: 5,
+      focusNode: _blockFocusNode,
       decoration: InputDecoration(
           hintText:
               'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
@@ -134,6 +134,9 @@ class CommandBox extends ConsumerWidget {
                 ref
                     .read(screenVisibilityProviderVal.notifier)
                     .setVisibility(allowedInputTypes.first);
+                if (allowedInputTypes.first == InputBoxType.thread) {
+                  _blockFocusNode.requestFocus();
+                }
               }
               // Handle key down
             } else if (event is KeyUpEvent) {
@@ -187,7 +190,7 @@ class CommandBox extends ConsumerWidget {
 }
 
 class CommandTypeAhead extends ConsumerWidget {
-  final _typeAheadController = TextEditingController(text: "");
+  final _typeAheadController = TextEditingController();
   final FocusNode commandFocusNode;
 
   CommandTypeAhead({super.key, required this.commandFocusNode});
@@ -489,128 +492,290 @@ class CustomCommandInput2 extends StatefulWidget {
 
 class _CustomCommandInputState2 extends State<CustomCommandInput2> {
   late ValueChanged<String>? onSearchTextChanged;
-  late FocusNode? focusNode;
-  // late TextEditingController controller;
-  late List<String> filtered;
 
+  late List<String> filtered;
   CommandParser get parser => widget.parser;
   List<String> get titlesList => widget.titlesList;
   List<String> get suggestions => widget.suggestions;
+  FocusNode? get inputFocusNode => widget.focusNode;
+  late FocusNode keyboardFocusNode;
+  int? selectedIndex;
+  late ScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
+    scrollController = ScrollController();
+    keyboardFocusNode = FocusNode();
     onSearchTextChanged = widget.onSearchTextChanged;
-    focusNode = widget.focusNode;
     filtered = [];
+  }
+
+  Widget Wrapper({required Widget child}) {
+    return (KeyboardListener(
+        focusNode: keyboardFocusNode,
+        autofocus: true,
+        onKeyEvent: (value) {
+          if (value.logicalKey == LogicalKeyboardKey.escape) {
+            keyboardFocusNode.unfocus();
+            setState(() {
+              filtered = [];
+            });
+            print('Escape');
+          } else if (value.logicalKey == LogicalKeyboardKey.enter) {
+            // onSubmit!(controller.text);
+            // ref.read(provider.notifier).setList([]);
+            print('Enter: text: ${widget.controller.text}');
+          } else if (value.logicalKey == LogicalKeyboardKey.arrowUp) {
+            print('Arrow up');
+            setState(() {
+              if (selectedIndex == null) {
+                selectedIndex = filtered.length - 1;
+              } else {
+                selectedIndex = (selectedIndex! - 1) % filtered.length;
+              }
+            });
+
+            // inputFocusNode?.requestFocus();
+          } else if (value.logicalKey == LogicalKeyboardKey.arrowDown) {
+            print('Arrow down');
+            setState(() {
+              if (selectedIndex == null) {
+                selectedIndex = 0;
+              } else {
+                selectedIndex = (selectedIndex! + 1) % filtered.length;
+              }
+            });
+          } else if (value.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            print('Arrow left');
+          } else if (value.logicalKey == LogicalKeyboardKey.arrowRight) {
+            print('Arrow right');
+          } else {
+            // print('Key: ${value.logicalKey.keyLabel}');
+          }
+        },
+        child: child));
+  }
+
+  Widget callbackShortcutWrapper({required Widget child}) {
+    Map<ShortcutActivator, VoidCallback> bindings = {
+      const SingleActivator(LogicalKeyboardKey.keyA, meta: true): () {
+        print('Meta + A');
+        widget.controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: widget.controller.text.length,
+        );
+      },
+      const SingleActivator(LogicalKeyboardKey.arrowUp, meta: false): () {
+        print('Arrow up');
+        if (filtered.isNullOrEmpty) {
+          return;
+        }
+        final hasFirstCommand = widget.controller.text.contains(' #');
+        final firstCommand =
+            hasFirstCommand ? '${widget.controller.text.split(' #')[0]} #' : '';
+        setState(() {
+          if (selectedIndex == null) {
+            selectedIndex = filtered.length - 1;
+
+            // widget.controller.text = '$firstCommand${filtered[selectedIndex!]}';
+          } else {
+            selectedIndex = (selectedIndex! - 1) % filtered.length;
+            // widget.controller.text = filtered[selectedIndex!];
+          }
+          widget.controller.text = '$firstCommand${filtered[selectedIndex!]}';
+          final selectIndexOutOfListViewPort =
+              selectedIndex! * 50.0 < scrollController.position.pixels;
+          if (selectIndexOutOfListViewPort) {
+            scrollController.animateTo(
+              selectedIndex! * 50.0,
+              duration: Durations.long1,
+              curve: Curves.linear,
+            );
+          }
+          // scrollController.animateTo(
+          //   selectedIndex! * 50.0,
+          //   duration: Durations.long1,
+          //   curve: Curves.linear,
+          // );
+          // scrollController.jumpTo(scrollController.position.maxScrollExtent /
+          //     (filtered.length - 1) *
+          //     selectedIndex!);
+        });
+      },
+      const SingleActivator(LogicalKeyboardKey.arrowDown, meta: false): () {
+        print('Arrow down');
+        if (filtered.isNullOrEmpty) {
+          return;
+        }
+        final hasFirstCommand = widget.controller.text.contains(' #');
+        final firstCommand =
+            hasFirstCommand ? '${widget.controller.text.split(' #')[0]} #' : '';
+        setState(() {
+          if (selectedIndex == null) {
+            selectedIndex = 0;
+            // widget.controller.text = filtered[selectedIndex!];
+          } else {
+            selectedIndex = (selectedIndex! + 1) % filtered.length;
+          }
+
+          widget.controller.text = '$firstCommand${filtered[selectedIndex!]}';
+          final selectIndexOutOfListViewPort = selectedIndex! * 50.0 >
+              scrollController.position.pixels + context.height * 0.5;
+
+          if (selectIndexOutOfListViewPort) {
+            scrollController.animateTo(
+              selectedIndex! * 50.0,
+              duration: Durations.long1,
+              curve: Curves.linear,
+            );
+          }
+          // scrollController.jumpTo(scrollController.position.maxScrollExtent /
+          //     (filtered.length - 1) *
+          //     selectedIndex!);
+        });
+      },
+      const SingleActivator(LogicalKeyboardKey.enter, meta: false): () {
+        widget.onSubmit!(widget.controller.text);
+        print('Submitted ${widget.controller.text}');
+      },
+    };
+
+    return CallbackShortcuts(
+      bindings: bindings,
+      child: child,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        TextFormField(
-          autofocus: true,
-          onFieldSubmitted: (val) {
-            logger.f('Submitted $val');
-            widget.onSubmit!(val);
-          },
-          focusNode: focusNode,
-          controller: widget.controller,
-          decoration: const InputDecoration(
-            hintText: 'press "/" for commands',
-          ),
-          onChanged: (pattern) {
-            if (pattern.isEmpty) {
-              setState(() {
-                filtered = suggestions;
-              });
-              return;
-            }
-            List<String> parts = pattern.split(' ');
-            if (parts.length == 1) {
-              // we are displaying a list of commands now
-              final list = parser.patternMatchingCommands(pattern);
-              setState(() {
-                filtered = list;
-                print(
-                    'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
-              });
-              return;
-            }
-            if (parts.length == 2) {
-              final list = parser.patternMatchingTitles(pattern, titlesList);
-              setState(() {
-                filtered = list;
-                print(
-                    'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
-              });
-              return;
-            }
-            // return suggestions;
-            setState(() {
-              print('Setting All suggestions, ${suggestions.length}');
-              filtered = suggestions;
-            });
-          },
-        ),
-        if (filtered.isNotNullEmpty)
-          AnimatedContainer(
-            constraints: BoxConstraints(
-              maxHeight: min(context.height * 0.5, filtered.length * 50.0),
+    return callbackShortcutWrapper(
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            child: TextFormField(
+              autofocus: true,
+              onFieldSubmitted: (val) {
+                logger.f('Submitted $val');
+                widget.onSubmit!(val);
+              },
+              focusNode: inputFocusNode,
+              controller: widget.controller,
+              decoration: const InputDecoration(
+                hintText: 'press "/" for commands',
+              ),
+              onChanged: (pattern) {
+                if (pattern.isEmpty) {
+                  setState(() {
+                    // filtered = suggestions;
+                    filtered = [];
+                  });
+                  return;
+                }
+                List<String> parts = pattern.split(' ');
+                if (parts.length == 1) {
+                  // we are displaying a list of commands now
+                  final list = parser.patternMatchingCommands(pattern);
+                  setState(() {
+                    filtered = list;
+                    // print(
+                    //     'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
+                  });
+                  return;
+                }
+                if (parts.length == 2) {
+                  final list =
+                      parser.patternMatchingTitles(pattern, titlesList);
+                  setState(() {
+                    filtered = list;
+                    // print(
+                    //     'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
+                  });
+                  return;
+                }
+                // return suggestions;
+                setState(() {
+                  // print('Setting All suggestions, ${suggestions.length}');
+                  filtered = suggestions;
+                });
+              },
             ),
-            decoration: BoxDecoration(
-              color: context.colorScheme.surface,
-              borderRadius: const BorderRadius.horizontal(
-                left: Radius.circular(10),
-                right: Radius.circular(10),
+          ),
+          if (filtered.isNotNullEmpty)
+            AnimatedContainer(
+              constraints: BoxConstraints(
+                maxHeight: min(context.height * 0.5, filtered.length * 50.0),
+              ),
+              decoration: BoxDecoration(
+                color: context.colorScheme.surface,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(10),
+                  right: Radius.circular(10),
+                ),
+              ),
+              margin: const EdgeInsets.only(bottom: 75),
+              duration: Durations.short1,
+              child: ListView.separated(
+                controller: scrollController,
+                itemCount: filtered.length,
+                padding: const EdgeInsets.symmetric(vertical: 21),
+                itemBuilder: (context, index) {
+                  final title = filtered[index];
+                  final selected = selectedIndex == index;
+                  return Material(
+                    color: selected
+                        ? context.colorScheme.onSurface.withOpacity(.2)
+                        : context.colorScheme.surface,
+                    child: ListTile(
+                      title: Text(title),
+                      tileColor:
+                          selected ? Colors.red : context.colorScheme.surface,
+                      selected: selected,
+                      selectedColor: Colors.blue,
+                      hoverColor: context.colorScheme.primary.withOpacity(0.2),
+                      onTap: () {
+                        widget.onSuggestionTap!(title);
+                        setState(() {
+                          filtered = [];
+                        });
+
+                        print(
+                            '---------------------------------------------------------------- START ----------------------------------------------------------------');
+                        print(title);
+                        if (title.startsWith('/')) {
+                          // this is a command
+                          widget.controller.text = title;
+
+                          print('command $title');
+                        } else {
+                          String firstHalf =
+                              widget.controller.text.split('#')[0];
+                          // this is a title
+                          // set the current title
+                          String? fullCommand = ("$firstHalf #$title")
+                              .replaceAll(RegExp(r"\s+"), ' ');
+                          widget.controller.text = fullCommand;
+
+                          print('Sub command $fullCommand');
+                        }
+                        print(
+                            '---------------------------------------------------------------- END ---------------------------------------------------------------- \n');
+                        inputFocusNode?.requestFocus();
+                      },
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider(
+                    height: 1,
+                    color: context.colorScheme.onSurface.withOpacity(.2),
+                  );
+                },
               ),
             ),
-            margin: const EdgeInsets.only(bottom: 65),
-            duration: Durations.short1,
-            child: ListView.separated(
-              itemCount: filtered.length,
-              itemBuilder: (context, index) {
-                final title = filtered[index];
-                return ListTile(
-                  title: Text(title),
-                  onTap: () {
-                    widget.onSuggestionTap!(title);
-                    setState(() {
-                      filtered = [];
-                    });
-
-                    print(
-                        '---------------------------------------------------------------- START ----------------------------------------------------------------');
-                    print(title);
-                    if (title.startsWith('/')) {
-                      // this is a command
-                      widget.controller.text = title;
-
-                      print('command $title');
-                    } else {
-                      String firstHalf = widget.controller.text.split('#')[0];
-                      // this is a title
-                      // set the current title
-                      String? fullCommand = ("$firstHalf #$title")
-                          .replaceAll(RegExp(r"\s+"), ' ');
-                      widget.controller.text = fullCommand;
-
-                      print('Sub command $fullCommand');
-                    }
-                    print(
-                        '---------------------------------------------------------------- END ---------------------------------------------------------------- \n');
-                    focusNode?.requestFocus();
-                  },
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return const Divider();
-              },
-            ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -706,6 +871,7 @@ class CustomCommandInput extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final title = state.filtered[index];
                 return ListTile(
+                  autofocus: true,
                   title: Text(title),
                   onTap: () {
                     onSuggestionTap!(title);

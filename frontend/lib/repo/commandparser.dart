@@ -156,7 +156,10 @@ class CustomCommandInput extends _$CustomCommandInput {
       list: List.from(list),
       filtered: List.from(list),
     );
-    print(state.filtered.length);
+  }
+
+  void setSelectedItem(String? selected) {
+    state = state.copyWith(selected: selected);
   }
 }
 
