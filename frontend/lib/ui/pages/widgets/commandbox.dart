@@ -502,6 +502,8 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
   int? selectedIndex;
   late ScrollController scrollController;
 
+  double get tileHeight => 50;
+
   @override
   void initState() {
     super.initState();
@@ -585,16 +587,16 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
           }
           widget.controller.text = '$firstCommand${filtered[selectedIndex!]}';
           final selectIndexOutOfListViewPort =
-              selectedIndex! * 50.0 < scrollController.position.pixels;
+              selectedIndex! * tileHeight < scrollController.position.pixels;
           if (selectIndexOutOfListViewPort) {
             scrollController.animateTo(
-              selectedIndex! * 50.0,
+              selectedIndex! * tileHeight,
               duration: Durations.long1,
               curve: Curves.linear,
             );
           }
           // scrollController.animateTo(
-          //   selectedIndex! * 50.0,
+          //   selectedIndex! *tileHeight,
           //   duration: Durations.long1,
           //   curve: Curves.linear,
           // );
@@ -620,12 +622,12 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
           }
 
           widget.controller.text = '$firstCommand${filtered[selectedIndex!]}';
-          final selectIndexOutOfListViewPort = selectedIndex! * 50.0 >
+          final selectIndexOutOfListViewPort = selectedIndex! * tileHeight >
               scrollController.position.pixels + context.height * 0.5;
 
           if (selectIndexOutOfListViewPort) {
             scrollController.animateTo(
-              selectedIndex! * 50.0,
+              selectedIndex! * tileHeight,
               duration: Durations.long1,
               curve: Curves.linear,
             );
@@ -636,8 +638,21 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
         });
       },
       const SingleActivator(LogicalKeyboardKey.enter, meta: false): () {
-        widget.onSubmit!(widget.controller.text);
-        print('Submitted ${widget.controller.text}');
+        if (widget.controller.text.isEmpty) {
+          widget.controller.text = '/';
+          return;
+        }
+        if (!widget.controller.text.contains('#') && filtered.isNotEmpty) {
+          widget.controller.text = '${widget.controller.text} #';
+          setState(() {
+            filtered = [];
+            selectedIndex = null;
+          });
+          return;
+        } else if (widget.controller.text.contains((' #'))) {
+          widget.onSubmit!(widget.controller.text);
+          print('Submitted ${widget.controller.text}');
+        }
       },
     };
 
@@ -653,59 +668,57 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Container(
-            child: TextFormField(
-              autofocus: true,
-              onFieldSubmitted: (val) {
-                logger.f('Submitted $val');
-                widget.onSubmit!(val);
-              },
-              focusNode: inputFocusNode,
-              controller: widget.controller,
-              decoration: const InputDecoration(
-                hintText: 'press "/" for commands',
-              ),
-              onChanged: (pattern) {
-                if (pattern.isEmpty) {
-                  setState(() {
-                    // filtered = suggestions;
-                    filtered = [];
-                  });
-                  return;
-                }
-                List<String> parts = pattern.split(' ');
-                if (parts.length == 1) {
-                  // we are displaying a list of commands now
-                  final list = parser.patternMatchingCommands(pattern);
-                  setState(() {
-                    filtered = list;
-                    // print(
-                    //     'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
-                  });
-                  return;
-                }
-                if (parts.length == 2) {
-                  final list =
-                      parser.patternMatchingTitles(pattern, titlesList);
-                  setState(() {
-                    filtered = list;
-                    // print(
-                    //     'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
-                  });
-                  return;
-                }
-                // return suggestions;
-                setState(() {
-                  // print('Setting All suggestions, ${suggestions.length}');
-                  filtered = suggestions;
-                });
-              },
+          TextFormField(
+            autofocus: true,
+            onFieldSubmitted: (val) {
+              logger.f('Submitted $val');
+              widget.onSubmit!(val);
+            },
+            focusNode: inputFocusNode,
+            controller: widget.controller,
+            decoration: const InputDecoration(
+              hintText: 'press "/" for commands',
             ),
+            onChanged: (pattern) {
+              if (pattern.isEmpty) {
+                setState(() {
+                  // filtered = suggestions;
+                  filtered = [];
+                });
+                return;
+              }
+              List<String> parts = pattern.split(' ');
+              if (parts.length == 1) {
+                // we are displaying a list of commands now
+                final list = parser.patternMatchingCommands(pattern);
+                setState(() {
+                  filtered = list;
+                  // print(
+                  //     'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
+                });
+                return;
+              }
+              if (parts.length == 2) {
+                final list = parser.patternMatchingTitles(pattern, titlesList);
+                setState(() {
+                  filtered = list;
+                  // print(
+                  //     'Setting Part 1 suggestions, ${list.length}, titleList: ${titlesList.length}');
+                });
+                return;
+              }
+              // return suggestions;
+              setState(() {
+                // print('Setting All suggestions, ${suggestions.length}');
+                filtered = suggestions;
+              });
+            },
           ),
           if (filtered.isNotNullEmpty)
             AnimatedContainer(
               constraints: BoxConstraints(
-                maxHeight: min(context.height * 0.5, filtered.length * 50.0),
+                maxHeight:
+                    min(context.height * 0.5, filtered.length * tileHeight),
               ),
               decoration: BoxDecoration(
                 color: context.colorScheme.surface,
@@ -719,7 +732,6 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
               child: ListView.separated(
                 controller: scrollController,
                 itemCount: filtered.length,
-                padding: const EdgeInsets.symmetric(vertical: 21),
                 itemBuilder: (context, index) {
                   final title = filtered[index];
                   final selected = selectedIndex == index;
@@ -733,6 +745,9 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
                           selected ? Colors.red : context.colorScheme.surface,
                       selected: selected,
                       selectedColor: Colors.blue,
+                      // dense: true,
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 16),
                       hoverColor: context.colorScheme.primary.withOpacity(0.2),
                       onTap: () {
                         widget.onSuggestionTap!(title);
