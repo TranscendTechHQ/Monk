@@ -21,6 +21,7 @@ from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 from utils.embedding import generate_embedding
 from utils.headline import generate_single_thread_headline
 from utils.db import asyncdb
+from .child_thread import create_new_thread
 
 
 router = APIRouter()
@@ -205,7 +206,7 @@ async def child_thread(request: Request,
                               parent_thread_id=parent_thread_id,
                               thread_title=thread_title,
                               thread_type=thread_type,
-                              creator_name=creator_name)
+                              user_id=user_id,)
     
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                           content=jsonable_encoder(created_child_thread))
@@ -268,55 +269,7 @@ async def date(request: Request,
     return JSONResponse(status_code=status.HTTP_200_OK,
                           content=jsonable_encoder(ret_thread))
     
-## creates a new thread or returns an existing thread. Content
-## is blank for the new thread
-async def create_new_thread( 
-                            user_id, title:str, 
-                            thread_type:ThreadType, content:List[BlockModel] = []):
 
-    old_thread = await get_mongo_document({"title": title}, asyncdb.threads_collection)
-    if not old_thread:
-        
-        fullName = await get_user_name(user_id, asyncdb.users_collection)
-        new_thread = ThreadModel(creator=fullName, title=title, type=thread_type,
-                                 content=content)
-        new_thread_jsonable = jsonable_encoder(new_thread)
-        created_thread = await create_mongo_document(new_thread_jsonable, 
-                                          asyncdb.threads_collection)
-        
-        creator_name = fullName
-        #print(creator_name)
-        userinfo = await asyncdb.users_collection.find_one({"_id": user_id})
-        if not userinfo:
-            print("User not found")
-            return None
-        creator = {}
-        if userinfo is not None:
-            creator["id"] = userinfo["_id"]
-            creator["name"] = userinfo["user_name"]
-            creator["picture"] = userinfo["user_picture"]
-            creator["email"] = userinfo["email"]
-       
-        meta = {}
-        meta["_id"] = new_thread_jsonable["_id"]
-        meta["title"] = new_thread_jsonable["title"]
-        meta["type"] = new_thread_jsonable["type"]
-        meta["created_date"] = new_thread_jsonable["created_date"]
-        meta["creator"] = creator
-        
-        #metadata = (metadata_model).model_dump()
-        await asyncdb.metadata_collection.replace_one(
-            filter={"_id": meta["_id"]},
-            replacement=meta,
-            upsert=True
-            )
-        
-        generate_single_thread_headline(created_thread, asyncdb.headlines_collection, useAI=False)
-        
-    else:
-        created_thread = old_thread
-    
-    return created_thread
                     
 @router.post("/threads", response_model=ThreadModel)
 async def create_th(request: Request, thread_data: CreateThreadModel = Body(...), 
