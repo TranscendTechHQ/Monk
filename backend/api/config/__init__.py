@@ -1,31 +1,31 @@
-from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
 import os
-from supertokens_python.recipe.thirdparty.provider import ProviderInput, ProviderConfig, ProviderClientConfig
-from supertokens_python.recipe import thirdparty
-from supertokens_python import init, InputAppInfo, SupertokensConfig
-from supertokens_python.recipe import emailpassword, session
-from supertokens_python.recipe import dashboard
-from supertokens_python.recipe import usermetadata
-
-
-from supertokens_python.types import GeneralErrorResponse
-from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOptions, SignInUpPostOkResult, SignInUpPostNoEmailGivenByProviderResponse
-from supertokens_python.recipe import thirdpartypasswordless
 from typing import Optional, Union, Dict, Any
-from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
-from supertokens_python.recipe.usermetadata.asyncio import update_user_metadata
+
+from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic_settings import BaseSettings
+from supertokens_python import init, InputAppInfo, SupertokensConfig
+from supertokens_python.recipe import dashboard
+from supertokens_python.recipe import emailpassword, session
+from supertokens_python.recipe import thirdparty
+from supertokens_python.recipe import usermetadata
+from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOptions, SignInUpPostOkResult, \
+    SignInUpPostNoEmailGivenByProviderResponse
+from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
+from supertokens_python.recipe.thirdparty.provider import ProviderInput, ProviderConfig, ProviderClientConfig
+from supertokens_python.types import GeneralErrorResponse
 
-
-
+from utils.hashicorp_api import get_access_token, get_secret
 
 load_dotenv()
+HCP_ACCESS_TOKEN = get_access_token()
+
 
 class SuperTokensSettings(BaseSettings):
-    SUPERTOKENS_CORE_CONNECTION_URI: str = os.getenv("SUPERTOKENS_CORE_CONNECTION_URI")
-    SUPERTOKENS_CORE_API_KEY: str = os.getenv("SUPERTOKENS_CORE_API_KEY")
-    
+    SUPERTOKENS_CORE_CONNECTION_URI: str = get_secret("SUPERTOKENS_CORE_CONNECTION_URI", HCP_ACCESS_TOKEN)
+    SUPERTOKENS_CORE_API_KEY: str = get_secret("SUPERTOKENS_CORE_API_KEY", HCP_ACCESS_TOKEN)
+
+
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE") == "True"
@@ -37,106 +37,107 @@ class ServerSettings(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    DB_URL: str = os.getenv("DB_URL")
-    DB_NAME: str = os.getenv("DB_NAME")
+    DB_URL: str = get_secret('DB_URL', HCP_ACCESS_TOKEN)
+    DB_NAME: str = get_secret('DB_NAME', HCP_ACCESS_TOKEN)
+
 
 class OpenAISettings(BaseSettings):
-    AZURE_OPENAI_KEY: str = os.getenv("AZURE_OPENAI_KEY")
-    AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT")
-    AZURE_OPENAI_EMB_DEPLOYMENT: str = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT")
-    API_VERSION: str = os.getenv("AZURE_OPENAPI_API_VERSION")
-    AZURE_OPENAI_GPT_DEPLOYEMENT: str = os.getenv("AZURE_OPENAI_GPT_DEPLOYEMENT")
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
-    OPENAI_API_VERSION: str = os.getenv("OPENAI_API_VERSION")
-    OPENAI_API_ENDPOINT: str = os.getenv("OPENAI_API_ENDPOINT")
-    OPEN_API_GPT_MODEL: str = os.getenv("OPEN_API_GPT_MODEL")
-    
+    AZURE_OPENAI_KEY: str = get_secret('AZURE_OPENAI_KEY', HCP_ACCESS_TOKEN)
+    AZURE_OPENAI_ENDPOINT: str = get_secret('AZURE_OPENAI_ENDPOINT', HCP_ACCESS_TOKEN)
+    AZURE_OPENAI_EMB_DEPLOYMENT: str = get_secret("AZURE_OPENAI_EMB_DEPLOYMENT", HCP_ACCESS_TOKEN)
+    API_VERSION: str = get_secret("AZURE_OPENAPI_API_VERSION", HCP_ACCESS_TOKEN)
+    AZURE_OPENAI_GPT_DEPLOYEMENT: str = get_secret("AZURE_OPENAI_GPT_DEPLOYEMENT", HCP_ACCESS_TOKEN)
+    OPENAI_API_KEY: str = get_secret("OPENAI_API_KEY", HCP_ACCESS_TOKEN)
+    OPENAI_API_VERSION: str = get_secret("OPENAI_API_VERSION", HCP_ACCESS_TOKEN)
+    OPENAI_API_ENDPOINT: str = get_secret("OPENAI_API_ENDPOINT", HCP_ACCESS_TOKEN)
+    OPEN_API_GPT_MODEL: str = get_secret("OPEN_API_GPT_MODEL", HCP_ACCESS_TOKEN)
+
 
 class ClientSettings(BaseSettings):
-    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
-    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
-    SLACK_CLIENT_ID: str = os.getenv("SLACK_CLIENT_ID")
-    SLACK_CLIENT_SECRET: str = os.getenv("SLACK_CLIENT_SECRET")
-    AUTH0_CLIENT_ID: str = os.getenv("AUTH0_CLIENT_ID")
-    AUTH0_CLIENT_SECRET: str = os.getenv("AUTH0_CLIENT_SECRET")
-    FRONTEND_CLIENT_ID: str = os.getenv("FRONTEND_CLIENT_ID")
-    BACKEND_CLIENT_ID: str = os.getenv("BACKEND_CLIENT_ID")
-    BACKEND_CLIENT_SECRET: str = os.getenv("BACKEND_CLIENT_SECRET")
-    SLACK_BOT_TOKEN: str = os.getenv("SLACK_BOT_TOKEN")
-    SLACK_USER_TOKEN: str = os.getenv("SLACK_USER_TOKEN")
-        
+    GOOGLE_CLIENT_ID: str = get_secret("GOOGLE_CLIENT_ID", HCP_ACCESS_TOKEN)
+    GOOGLE_CLIENT_SECRET: str = get_secret("GOOGLE_CLIENT_SECRET", HCP_ACCESS_TOKEN)
+    SLACK_CLIENT_ID: str = get_secret("SLACK_CLIENT_ID", HCP_ACCESS_TOKEN)
+    SLACK_CLIENT_SECRET: str = get_secret("SLACK_CLIENT_SECRET", HCP_ACCESS_TOKEN)
+    AUTH0_CLIENT_ID: str = get_secret("AUTH0_CLIENT_ID", HCP_ACCESS_TOKEN)
+    AUTH0_CLIENT_SECRET: str = get_secret("AUTH0_CLIENT_SECRET", HCP_ACCESS_TOKEN)
+    FRONTEND_CLIENT_ID: str = get_secret("FRONTEND_CLIENT_ID", HCP_ACCESS_TOKEN)
+    BACKEND_CLIENT_ID: str = get_secret("BACKEND_CLIENT_ID", HCP_ACCESS_TOKEN)
+    BACKEND_CLIENT_SECRET: str = get_secret("BACKEND_CLIENT_SECRET", HCP_ACCESS_TOKEN)
+    SLACK_BOT_TOKEN: str = get_secret("SLACK_BOT_TOKEN", HCP_ACCESS_TOKEN)
+    SLACK_USER_TOKEN: str = get_secret("SLACK_USER_TOKEN", HCP_ACCESS_TOKEN)
+
+
 class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings):
     pass
 
 
 settings = Settings()
 
-BACKEND_CLIENT_ID=settings.BACKEND_CLIENT_ID
-BACKEND_CLIENT_SECRET=settings.BACKEND_CLIENT_SECRET
-FRONTEND_CLIENT_ID=settings.FRONTEND_CLIENT_ID
-SLACK_CLIENT_ID=settings.SLACK_CLIENT_ID
-SLACK_CLIENT_SECRET=settings.SLACK_CLIENT_SECRET
-AUTH0_CLIENT_ID=settings.AUTH0_CLIENT_ID
-AUTH0_CLIENT_SECRET=settings.AUTH0_CLIENT_SECRET
-
+BACKEND_CLIENT_ID = settings.BACKEND_CLIENT_ID
+BACKEND_CLIENT_SECRET = settings.BACKEND_CLIENT_SECRET
+FRONTEND_CLIENT_ID = settings.FRONTEND_CLIENT_ID
+SLACK_CLIENT_ID = settings.SLACK_CLIENT_ID
+SLACK_CLIENT_SECRET = settings.SLACK_CLIENT_SECRET
+AUTH0_CLIENT_ID = settings.AUTH0_CLIENT_ID
+AUTH0_CLIENT_SECRET = settings.AUTH0_CLIENT_SECRET
 
 
 def override_thirdparty_apis(original_implementation: APIInterface):
     original_thirdparty_sign_in_up_post = original_implementation.sign_in_up_post
-    
+
     async def thirdparty_sign_in_up_post(
-        provider: Provider,
-        redirect_uri_info: Optional[RedirectUriInfo],
-        oauth_tokens: Optional[Dict[str, Any]],
-        tenant_id: str,
-        api_options: APIOptions,
-        user_context: Dict[str, Any]
+            provider: Provider,
+            redirect_uri_info: Optional[RedirectUriInfo],
+            oauth_tokens: Optional[Dict[str, Any]],
+            tenant_id: str,
+            api_options: APIOptions,
+            user_context: Dict[str, Any]
     ) -> Union[
         SignInUpPostOkResult,
         SignInUpPostNoEmailGivenByProviderResponse,
         GeneralErrorResponse,
     ]:
         # call the default behaviour as show below
-        result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id, api_options, user_context)
-        
+        result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
+                                                           api_options, user_context)
+
         if isinstance(result, SignInUpPostOkResult):
-            #print(result.user)
+            # print(result.user)
 
             # This is the response from the OAuth tokens provided by the third party provider
-            #print(result.oauth_tokens["access_token"])
+            # print(result.oauth_tokens["access_token"])
             # other tokens like the refresh_token or id_token are also 
             # available in the OAuthTokens object.
 
             # This gives the user's info as returned by the provider's user profile endpoint.
             if result.raw_user_info_from_provider.from_user_info_api is not None:
-                #print(result.raw_user_info_from_provider.from_user_info_api['name'])
+                # print(result.raw_user_info_from_provider.from_user_info_api['name'])
                 user_id = result.user.user_id
                 user_name = result.raw_user_info_from_provider.from_user_info_api['name']
                 user_picture = result.raw_user_info_from_provider.from_user_info_api['picture']
-                #email = result.raw_user_info_from_provider.from_user_info_api['email']
+                # email = result.raw_user_info_from_provider.from_user_info_api['email']
                 email = result.user.email
                 mongodb_client = AsyncIOMotorClient(settings.DB_URL)
                 mongodb = mongodb_client[settings.DB_NAME]
-                
+
                 mongodb_users = mongodb["users"]
-                update_result = await mongodb_users.update_one({"_id": user_id}, 
-                                                               {"$set": {"user_name": user_name, 
+                update_result = await mongodb_users.update_one({"_id": user_id},
+                                                               {"$set": {"user_name": user_name,
                                                                          "user_picture": user_picture,
                                                                          "email": email}}, upsert=True)
-                
-                #await update_user_metadata(user_id=user_id, metadata_update={
-                 #   "user_name": user_name
-                #})
+
+                # await update_user_metadata(user_id=user_id, metadata_update={
+                #   "user_name": user_name
+                # })
             # This gives the user's info from the returned ID token 
             # if the provider gave us an ID token
-            #if result.raw_user_info_from_provider.from_id_token_payload is not None:
-             #   print(result.raw_user_info_from_provider.from_id_token_payload["name"])
-        
+            # if result.raw_user_info_from_provider.from_id_token_payload is not None:
+            #   print(result.raw_user_info_from_provider.from_id_token_payload["name"])
+
         return result
 
     original_implementation.sign_in_up_post = thirdparty_sign_in_up_post
     return original_implementation
-
 
 
 init(
@@ -148,13 +149,13 @@ init(
         website_base_path="/auth"
     ),
     supertokens_config=SupertokensConfig(
-        #connection_uri="http://localhost:3567/",
-        connection_uri = settings.SUPERTOKENS_CORE_CONNECTION_URI,
-        api_key = settings.SUPERTOKENS_CORE_API_KEY
+        # connection_uri="http://localhost:3567/",
+        connection_uri=settings.SUPERTOKENS_CORE_CONNECTION_URI,
+        api_key=settings.SUPERTOKENS_CORE_API_KEY
     ),
     framework='fastapi',
     recipe_list=[
-        session.init(), # initializes session features
+        session.init(),  # initializes session features
         # Inside init
         thirdparty.init(
             override=thirdparty.InputOverrideConfig(
@@ -172,18 +173,18 @@ init(
                         third_party_id="google_authcode",
                         clients=[
                             ProviderClientConfig(
-                                client_id=BACKEND_CLIENT_ID, 
+                                client_id=BACKEND_CLIENT_ID,
                                 client_secret=BACKEND_CLIENT_SECRET,
                                 scope=["openid", "email", "profile"],
                             ),
                         ],
                         authorization_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
-                        
+
                         token_endpoint="https://oauth2.googleapis.com/token",
-                        
+
                         user_info_endpoint="https://openidconnect.googleapis.com/v1/userinfo",
                         jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
-                        
+
                         oidc_discovery_endpoint="https://accounts.google.com",
                     ),
                 ),
@@ -194,30 +195,30 @@ init(
                             ProviderClientConfig(
 
                                 client_id=FRONTEND_CLIENT_ID,
-                                #client_id=BACKEND_CLIENT_ID, 
-                                #client_secret=BACKEND_CLIENT_SECRET,
+                                # client_id=BACKEND_CLIENT_ID,
+                                # client_secret=BACKEND_CLIENT_SECRET,
                                 scope=["openid", "email", "profile"],
                             ),
                         ],
                         authorization_endpoint="https://accounts.google.com/o/oauth2/v2/auth",
-                        #authorization_endpoint_query_params={
+                        # authorization_endpoint_query_params={
                         #    "someKey1": "value1",
                         #    "someKey2": None,
-                        #},
+                        # },
                         token_endpoint="https://oauth2.googleapis.com/token",
-                        #token_endpoint_body_params={
+                        # token_endpoint_body_params={
                         #    "someKey1": "value1",
-                        #},
+                        # },
                         user_info_endpoint="https://openidconnect.googleapis.com/v1/userinfo",
                         jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
-                        #user_info_map=UserInfoMap(
+                        # user_info_map=UserInfoMap(
                         #    from_id_token_payload=UserFields(
                         #        user_id="id",
                         #        email="email",
                         #        email_verified="email_verified",
                         #    ),
                         #    from_user_info_api=UserFields(),
-                        #),
+                        # ),
                         oidc_discovery_endpoint="https://accounts.google.com",
                     ),
                 ),
@@ -233,42 +234,42 @@ init(
                             ),
                         ],
                         authorization_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com/authorize",
-                        #authorization_endpoint_query_params={
+                        # authorization_endpoint_query_params={
                         #    "someKey1": "value1",
                         #    "someKey2": None,
-                        #},
+                        # },
                         token_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com/oauth/token",
-                        #token_endpoint_body_params={
+                        # token_endpoint_body_params={
                         #    "someKey1": "value1",
-                        #},
+                        # },
                         user_info_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com/userinfo",
                         jwks_uri="https://dev-17s0i0aukvst4yiv.us.auth0.com/.well-known/jwks.json",
-                        #user_info_map=UserInfoMap(
+                        # user_info_map=UserInfoMap(
                         #    from_id_token_payload=UserFields(
                         #        user_id="id",
                         #        email="email",
                         #        email_verified="email_verified",
                         #    ),
                         #    from_user_info_api=UserFields(),
-                        #),
+                        # ),
                         oidc_discovery_endpoint="https://dev-17s0i0aukvst4yiv.us.auth0.com",
                     ),
                 ),
                 ProviderInput(
-                        config=ProviderConfig(
-                            third_party_id="slack",
-                            name="Slack Provider",
-                            clients=[
-                                ProviderClientConfig(
-                                    client_id= settings.SLACK_CLIENT_ID,
-                                    client_secret= settings.SLACK_CLIENT_SECRET,
-                                    scope=["openid", "email", "profile"],
-                                ),
-                            ],
-                            oidc_discovery_endpoint="https://slack.com",
-                            
-                        ),
+                    config=ProviderConfig(
+                        third_party_id="slack",
+                        name="Slack Provider",
+                        clients=[
+                            ProviderClientConfig(
+                                client_id=settings.SLACK_CLIENT_ID,
+                                client_secret=settings.SLACK_CLIENT_SECRET,
+                                scope=["openid", "email", "profile"],
+                            ),
+                        ],
+                        oidc_discovery_endpoint="https://slack.com",
+
                     ),
+                ),
                 ProviderInput(
                     config=ProviderConfig(
                         third_party_id="github",
@@ -300,11 +301,7 @@ init(
         emailpassword.init(),
         dashboard.init(),
         usermetadata.init()
-        #userroles.init(),
+        # userroles.init(),
     ],
-    mode='asgi' # use wsgi if you are running using gunicorn
+    mode='asgi'  # use wsgi if you are running using gunicorn
 )
-
-
-
-
