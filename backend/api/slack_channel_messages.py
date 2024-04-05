@@ -87,8 +87,8 @@ def print_channel_messages(slack_client, channel_id, write_to_json=False, limit=
 async def main():
     await startup_async_db_client()
     #print(db.mongodb_client.list_database_names())
-    tenant_collection = asyncdb.mongodb["tenants"]
-    doc = await tenant_collection.find_one({"tenant_name": "Monk"})
+    
+    doc = await asyncdb.tenants_collection.find_one({"tenant_name": "Monk"})
     if doc is None:
         print("No tenant found")
         return

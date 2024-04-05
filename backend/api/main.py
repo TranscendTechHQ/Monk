@@ -10,7 +10,7 @@ from fastapi import status, Request
 import uvicorn
 from motor.motor_asyncio import AsyncIOMotorClient
 from config import settings
-
+from utils.db import startup_async_db_client, shutdown_async_db_client
 
 from routes.threads.routers import router as threads_router
 
@@ -33,9 +33,11 @@ SLACK_CLIENT_SECRET = settings.SLACK_CLIENT_SECRET
 async def lifespan(app: FastAPI):
     # Code to be executed before the application starts up
     await startup_db_client()
+    await startup_async_db_client()
     yield
     # Code to be executed after the application shuts down
     await shutdown_db_client()
+    await shutdown_async_db_client()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -183,7 +185,6 @@ async def slack_user_token(request: Request, authcode: str):
 async def startup_db_client():
     app.mongodb_client = AsyncIOMotorClient(settings.DB_URL)
     app.mongodb = app.mongodb_client[settings.DB_NAME]
-
 
 
 async def shutdown_db_client():

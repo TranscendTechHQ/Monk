@@ -14,6 +14,11 @@ async def startup_async_db_client():
     asyncdb.mongodb_client =   motor.motor_asyncio.AsyncIOMotorClient(settings.DB_URL)
     #print(app.mongodb_client.list_database_names())
     asyncdb.mongodb =  asyncdb.mongodb_client[settings.DB_NAME]
+    asyncdb.threads_collection = asyncdb.mongodb["threads"]
+    asyncdb.users_collection = asyncdb.mongodb["users"]
+    asyncdb.tenants_collection = asyncdb.mongodb["tenants"]
+    asyncdb.metadata_collection = asyncdb.mongodb["threads_metadata"]
+    asyncdb.headlines_collection = asyncdb.mongodb["thread_headlines"]
 
 
 

@@ -20,6 +20,7 @@ from config import settings
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 from utils.embedding import generate_embedding
 from utils.headline import generate_single_thread_headline
+from utils.db import asyncdb
 
 
 router = APIRouter()
@@ -237,8 +238,9 @@ async def date(request: Request,
                                 session: SessionContainer = Depends(verify_session())
                                 ):
     print("Getting journal for date: ", date.date)
+    userId = session.get_user_id()
     # get journal thread. If it does not exist, create it
-    journal_thread  = await create_new_thread(request, session, "journal", "/new-thread") 
+    journal_thread  = await create_new_thread(userId, "journal", "/new-thread") 
     ## get the blocks that have created_at date equal to the date
     ## doing this query in the db directly will be much faster than doing this 
     ## in the python application
@@ -268,25 +270,26 @@ async def date(request: Request,
     
 ## creates a new thread or returns an existing thread. Content
 ## is blank for the new thread
-async def create_new_thread(request: Request, session, title:str, 
+async def create_new_thread( 
+                            user_id, title:str, 
                             thread_type:ThreadType, content:List[BlockModel] = []):
 
-    old_thread = await get_mongo_document({"title": title}, request.app.mongodb["threads"])
+    old_thread = await get_mongo_document({"title": title}, asyncdb.threads_collection)
     if not old_thread:
         
-        user_id = session.get_user_id()
-        fullName = await get_user_name(user_id, request.app.mongodb["users"])
+        fullName = await get_user_name(user_id, asyncdb.users_collection)
         new_thread = ThreadModel(creator=fullName, title=title, type=thread_type,
                                  content=content)
         new_thread_jsonable = jsonable_encoder(new_thread)
         created_thread = await create_mongo_document(new_thread_jsonable, 
-                                          request.app.mongodb["threads"])
+                                          asyncdb.users_collection)
         
-        
-        metadata_collection = request.app.mongodb["threads_metadata"]
         creator_name = fullName
         #print(creator_name)
-        userinfo = await request.app.mongodb["users"].find_one({"user_name": creator_name})
+        userinfo = await asyncdb.users_collection.find_one({"_id": user_id})
+        if not userinfo:
+            print("User not found")
+            return None
         creator = {}
         if userinfo is not None:
             creator["id"] = userinfo["_id"]
@@ -302,11 +305,13 @@ async def create_new_thread(request: Request, session, title:str,
         meta["creator"] = creator
         
         #metadata = (metadata_model).model_dump()
-        await metadata_collection.replace_one(
+        await asyncdb.metadata_collection.replace_one(
             filter={"_id": meta["_id"]},
             replacement=meta,
             upsert=True
             )
+        
+        generate_single_thread_headline(created_thread, asyncdb.headlines_collection, useAI=False)
         
     else:
         created_thread = old_thread
@@ -325,7 +330,7 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
     thread_type = jsonable_encoder(thread_data)["type"]
     #content = jsonable_encoder(thread_data)["content"]
     
-    created_thread = await create_new_thread(request, session, thread_title, thread_type) 
+    created_thread = await create_new_thread(userId, thread_title, thread_type) 
     
     return JSONResponse(status_code=status.HTTP_201_CREATED, 
                        content=jsonable_encoder(created_thread))
