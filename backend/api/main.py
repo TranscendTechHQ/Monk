@@ -136,6 +136,10 @@ class TenantModel(BaseModel):
     bot_token: str
     token_response: dict
 
+@app.get("/healthcheck")
+async def healthcheck():
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "API is running"})
+
 @app.post("/slack_user_token")
 async def slack_user_token(request: Request, authcode: str):
     

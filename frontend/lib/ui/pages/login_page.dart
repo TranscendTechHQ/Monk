@@ -216,6 +216,7 @@ class _LoginPageState extends State<LoginPage> {
       logger.e('Access token or idToken is null. Can not proceed');
       return;
     }
+    await NetworkManager.instance.client.get("/healthcheck");
     var result =
         await MonkException.handle(() => NetworkManager.instance.client.post(
               "/auth/signinup",
