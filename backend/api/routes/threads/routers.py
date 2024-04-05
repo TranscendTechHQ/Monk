@@ -282,7 +282,7 @@ async def create_new_thread(
                                  content=content)
         new_thread_jsonable = jsonable_encoder(new_thread)
         created_thread = await create_mongo_document(new_thread_jsonable, 
-                                          asyncdb.users_collection)
+                                          asyncdb.threads_collection)
         
         creator_name = fullName
         #print(creator_name)
