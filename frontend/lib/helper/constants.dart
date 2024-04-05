@@ -14,7 +14,7 @@ class Constants {
 
   static String AUTH0_DOMAIN = "dev-17s0i0aukvst4yiv.us.auth0.com";
   static String AUTH0_CLIENT_ID = "KdrFUiiWInZY8PXlnZw0dzbrxK4sjwq6";
-  static String AUTH0_CUSTOM_SCHEME = "com.auth0.sample";
+  static String AUTH0_CUSTOM_SCHEME = "app.heymonk";
 }
 
 const containerWidth = 800.0; //TODO: make this a provider

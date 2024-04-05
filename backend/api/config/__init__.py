@@ -22,8 +22,10 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 load_dotenv()
 
-
-
+class SuperTokensSettings(BaseSettings):
+    SUPERTOKENS_CORE_CONNECTION_URI: str = os.getenv("SUPERTOKENS_CORE_CONNECTION_URI")
+    SUPERTOKENS_CORE_API_KEY: str = os.getenv("SUPERTOKENS_CORE_API_KEY")
+    
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = os.getenv("DEBUG_MODE") == "True"
@@ -63,7 +65,7 @@ class ClientSettings(BaseSettings):
     SLACK_BOT_TOKEN: str = os.getenv("SLACK_BOT_TOKEN")
     SLACK_USER_TOKEN: str = os.getenv("SLACK_USER_TOKEN")
         
-class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings):
+class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings):
     pass
 
 
@@ -146,11 +148,9 @@ init(
         website_base_path="/auth"
     ),
     supertokens_config=SupertokensConfig(
-        # https://try.supertokens.com is for demo purposes. Replace this with the address of your core instance (sign up on supertokens.com), or self host a core.
-        #connection_uri="https://try.supertokens.com",
-        connection_uri="http://localhost:3567/",
-        #connection_uri="http://supertokens:3567",
-        # api_key=<API_KEY(if configured)>
+        #connection_uri="http://localhost:3567/",
+        connection_uri = settings.SUPERTOKENS_CORE_CONNECTION_URI,
+        api_key = settings.SUPERTOKENS_CORE_API_KEY
     ),
     framework='fastapi',
     recipe_list=[

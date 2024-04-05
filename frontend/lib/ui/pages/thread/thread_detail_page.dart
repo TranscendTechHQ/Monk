@@ -120,12 +120,12 @@ class RepliesListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      margin: const EdgeInsets.only(left: 60),
-      width: containerWidth - 60,
+      width: containerWidth,
       alignment: Alignment.topLeft,
       child: ListView.builder(
         controller: scrollController,
         itemCount: replies?.length ?? 0,
+        reverse: true,
         padding: const EdgeInsets.only(bottom: 30),
         itemBuilder: (context, index) {
           final block = replies?[index];

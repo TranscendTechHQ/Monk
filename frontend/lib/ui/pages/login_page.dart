@@ -1,12 +1,15 @@
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as prefix;
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:auth0_flutter/auth0_flutter_web.dart';
 //import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -24,13 +27,29 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  FlutterAppAuth appAuth = FlutterAppAuth();
+  late FlutterAppAuth appAuth;
   late Auth0 auth0;
+  late Auth0Web auth0Web;
 
   @override
   void initState() {
     super.initState();
+    appAuth = const FlutterAppAuth();
     auth0 = Auth0(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
+    auth0Web = Auth0Web(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
+    if (kIsWeb) {
+      auth0Web.onLoad().then(
+            (final credentials) => setState(
+              () {
+                if (credentials != null) {
+                  verifyCredentials(
+                          credentials.accessToken, credentials.idToken)
+                      .then((value) => null);
+                }
+              },
+            ),
+          );
+    }
   }
 
   Future<void> loginWithGoogle() async {
@@ -97,33 +116,21 @@ class _LoginPageState extends State<LoginPage> {
     loader.showLoader(context, message: "processing.");
     // await logout();
     try {
-      var credentials = await auth0
-          .webAuthentication(scheme: Constants.AUTH0_CUSTOM_SCHEME)
-          // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
-          // useHTTPS is ignored on Android
-          .login(useHTTPS: true);
-      loader.hideLoader();
-      loader.showLoader(context, message: "processing.");
-      var result = await NetworkManager.instance.client.post(
-        "/auth/signinup",
-        data: {
-          "thirdPartyId": "auth0",
-          "oAuthTokens": {
-            "access_token": credentials.accessToken,
-            "id_token": credentials.idToken
-          },
-        },
-      );
-      if (result.statusCode == 200) {
-        Future.delayed(
-          Duration.zero,
-          () {
-            prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
-          },
-        );
+      if (kIsWeb) {
+        await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        return;
+      } else {
+        var credentials = await auth0
+            .webAuthentication(scheme: Constants.AUTH0_CUSTOM_SCHEME)
+            // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
+            // useHTTPS is ignored on Android
+            .login(useHTTPS: true);
+        loader.hideLoader();
+        loader.showLoader(context, message: "processing.");
+        await verifyCredentials(credentials.accessToken, credentials.idToken);
       }
     } catch (e) {
-      print(e);
+      logger.e(e);
     } finally {
       loader.hideLoader();
     }
@@ -201,6 +208,35 @@ class _LoginPageState extends State<LoginPage> {
           prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
         },
       );
+    }
+  }
+
+  Future<void> verifyCredentials(String? accessToken, String? idToken) async {
+    if (idToken.isNullOrEmpty || accessToken.isNullOrEmpty) {
+      logger.e('Access token or idToken is null. Can not proceed');
+      return;
+    }
+    await NetworkManager.instance.client.get("/healthcheck");
+    var result =
+        await MonkException.handle(() => NetworkManager.instance.client.post(
+              "/auth/signinup",
+              data: {
+                "thirdPartyId": "auth0",
+                "oAuthTokens": {
+                  "access_token": accessToken,
+                  "id_token": idToken
+                },
+              },
+            ));
+    if (result.statusCode == 200) {
+      Future.delayed(
+        Duration.zero,
+        () {
+          prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
+        },
+      );
+    } else {
+      logger.e('Failed to verify credentials', error: result.data);
     }
   }
 

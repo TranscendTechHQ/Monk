@@ -2,9 +2,28 @@ import datetime as dt
 
 from .embedding import generate_embedding
 from config import settings
+import motor.motor_asyncio
+
+class AsyncDbClient:
+    pass
+
+asyncdb = AsyncDbClient()
+
+
+async def startup_async_db_client():
+    asyncdb.mongodb_client =   motor.motor_asyncio.AsyncIOMotorClient(settings.DB_URL)
+    #print(app.mongodb_client.list_database_names())
+    asyncdb.mongodb =  asyncdb.mongodb_client[settings.DB_NAME]
+    asyncdb.threads_collection = asyncdb.mongodb["threads"]
+    asyncdb.users_collection = asyncdb.mongodb["users"]
+    asyncdb.tenants_collection = asyncdb.mongodb["tenants"]
+    asyncdb.metadata_collection = asyncdb.mongodb["threads_metadata"]
+    asyncdb.headlines_collection = asyncdb.mongodb["thread_headlines"]
 
 
 
+async def shutdown_async_db_client():
+    asyncdb.mongodb_client.close()
 
 
 async def get_user_name(user_id, collection) -> str:

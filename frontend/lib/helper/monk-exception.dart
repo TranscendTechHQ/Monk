@@ -6,12 +6,16 @@ class MonkException {
     try {
       return await callback();
     } on DioException catch (e) {
-      final rawData = e.response?.data as Map<String, dynamic>;
-      if (e.response?.statusCode == 404) {
-        if (rawData['message'] != null) {
-          throw Exception(rawData['message']);
+      logger.e('API ERROR: status: ${e.response?.statusCode}',
+          error: e.message ?? e.error);
+      if (e.response != null && e.response?.data != null) {
+        final rawData = e.response?.data as Map<String, dynamic>;
+        if (e.response?.statusCode == 404) {
+          if (rawData['message'] != null) {
+            throw Exception(rawData['message']);
+          }
+          throw Exception(e.toString());
         }
-        throw Exception(e.toString());
       }
       throw Exception(e.toString());
     } catch (e) {

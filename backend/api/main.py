@@ -10,7 +10,7 @@ from fastapi import status, Request
 import uvicorn
 from motor.motor_asyncio import AsyncIOMotorClient
 from config import settings
-
+from utils.db import startup_async_db_client, shutdown_async_db_client
 
 from routes.threads.routers import router as threads_router
 
@@ -33,9 +33,11 @@ SLACK_CLIENT_SECRET = settings.SLACK_CLIENT_SECRET
 async def lifespan(app: FastAPI):
     # Code to be executed before the application starts up
     await startup_db_client()
+    await startup_async_db_client()
     yield
     # Code to be executed after the application shuts down
     await shutdown_db_client()
+    await shutdown_async_db_client()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -93,8 +95,16 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8000",
+        "http://localhost:3000",
+        "http://heymonk.app",
+        "https://heymonk.app",
+        "http://monk.heymonk.app",
+        "http://api.heymonk.app",
+        "http://www.heymonk.app",
     ],
     allow_credentials=True,
+    #allow_methods=["*"],
+    #allow_headers=["*"],
     allow_methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Content-Type"] + get_all_cors_headers(),
 )
@@ -125,6 +135,10 @@ class TenantModel(BaseModel):
     user_token: str
     bot_token: str
     token_response: dict
+
+@app.get("/healthcheck")
+async def healthcheck():
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "API is running"})
 
 @app.post("/slack_user_token")
 async def slack_user_token(request: Request, authcode: str):
@@ -177,7 +191,6 @@ async def startup_db_client():
     app.mongodb = app.mongodb_client[settings.DB_NAME]
 
 
-
 async def shutdown_db_client():
     app.mongodb_client.close()
 
@@ -191,4 +204,5 @@ if __name__ == "__main__":
         host=settings.HOST,
         reload=settings.DEBUG_MODE,
         port=settings.PORT,
+        #proxy_headers=True,
     )
