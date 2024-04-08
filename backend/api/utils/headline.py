@@ -39,8 +39,12 @@ def generate_headline(text: str) -> str:
     return headline
 
 
+<<<<<<< Updated upstream
 def generate_single_thread_headline(thread_doc, headline_collection,
                                     useAI=False):
+=======
+def generate_single_thread_headline(thread_doc, threads_collection, useAI=False):
+>>>>>>> Stashed changes
     blocks = thread_doc['content']
     headline = {}
     if useAI:
@@ -58,7 +62,16 @@ def generate_single_thread_headline(thread_doc, headline_collection,
             headline['last_modified'] = str(blocks[-1]['created_at'])
         else:
             headline['text'] = "blank thread"
+<<<<<<< Updated upstream
             headline['last_modified'] = str(thread_doc['created_date'])
+=======
+            headline['last_modified']= str(thread_doc['created_date'])
+
+        threads_collection.update_one({'_id': thread_doc['_id']},
+                                      {'$set': {'headline': headline['text'],
+                                                'last_modified': headline['last_modified']}}, upsert=True)
+        
+>>>>>>> Stashed changes
 
         title = thread_doc['title']
         headline_collection.update_one({'_id': thread_doc['_id']},
