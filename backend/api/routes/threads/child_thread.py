@@ -10,9 +10,7 @@ from .models import BlockModel, ThreadModel, ThreadType
 
 # creates a new thread or returns an existing thread. Content
 # is blank for the new thread
-async def create_new_thread(
-        user_id, title: str,
-        thread_type: ThreadType, content: List[BlockModel] = []):
+async def create_new_thread(user_id, title: str, thread_type: ThreadType, content: List[BlockModel] = []):
     old_thread = await get_mongo_document({"title": title}, asyncdb.threads_collection)
     if not old_thread:
 
@@ -56,12 +54,7 @@ async def create_new_thread(
     return created_thread
 
 
-async def create_child_thread(thread_collection,
-                              parent_block_id,
-                              parent_thread_id,
-                              thread_title,
-                              thread_type,
-                              user_id):
+async def create_child_thread(thread_collection, parent_block_id, parent_thread_id, thread_title, thread_type, user_id):
     # fetch the parent block
     block = await get_block_by_id(parent_block_id, thread_collection)
     if not block:
@@ -76,8 +69,7 @@ async def create_child_thread(thread_collection,
     # create a new child thread
 
     parent_block = BlockModel(**block)
-    blocks = []
-    blocks.append(jsonable_encoder(parent_block))
+    blocks = [jsonable_encoder(parent_block)]
 
     created_child_thread = await create_new_thread(user_id, thread_title, thread_type, blocks)
 

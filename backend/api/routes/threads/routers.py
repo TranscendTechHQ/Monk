@@ -1,23 +1,3 @@
-from typing import List
-from .child_thread import create_child_thread
-from fastapi import APIRouter, Body, Depends
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-
-from .search import thread_semantic_search
-from .models import THREADTYPES, CreateChildThreadModel, ThreadHeadlinesModel, ThreadModel, ThreadType, \
-    ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
-from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
-from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
-from supertokens_python.recipe.session.framework.fastapi import verify_session
-from supertokens_python.recipe.session import SessionContainer
-from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields
-from fastapi import status, Request
-import datetime as dt
-
-from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
-from utils.headline import generate_single_thread_headline
-from .child_thread import create_new_thread
 import datetime as dt
 from typing import List
 
@@ -63,9 +43,10 @@ async def keyword_search(query, collection):
     return threads
 
 
-@router.get("/searchTitles", response_model=list[str], response_description="Search threads by query and get title")
-async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> list[
-    str]:
+@router.get("/searchTitles", response_model=list[str], 
+            response_description="Search threads by query and get title")
+async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
+        (list)[str]:
     result = await thread_semantic_search(query)
     titles = [doc["title"] for doc in result]
     return JSONResponse(status_code=status.HTTP_200_OK, content=titles)
@@ -174,16 +155,16 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
 
     # new_block_dict = new_block.model_dump()
     # new_block_dict["id"] = str(new_block_dict["id"])
-    ## to store the block as a json string in the db
-    ## we need the following. We have chose to insert 
-    ## the block as a dictionary object in the db
+    # to store the block as a json string in the db
+    # we need the following. We have chose to insert 
+    # the block as a dictionary object in the db
     # json_new_block = json_util.dumps(new_block_dict)
     thread = await get_mongo_document({"title": thread_title}, request.app.mongodb["threads"])
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
 
     # change new_block_dict to json_new_block if you want to store
-    ## block as a json string in the db
+    # block as a json string in the db
     thread["content"].append(jsonable_encoder(new_block))
 
     headline_collection = request.app.mongodb["thread_headlines"]
@@ -243,7 +224,7 @@ async def get_blocks_by_date(request: Request,
 
     ret_block = BlockCollection(blocks=blocks)
 
-    ## retun the block in json format
+    # retun the block in json format
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ret_block))
 
@@ -258,12 +239,12 @@ async def date(request: Request,
     userId = session.get_user_id()
     # get journal thread. If it does not exist, create it
     journal_thread = await create_new_thread(userId, "journal", "/new-thread")
-    ## get the blocks that have created_at date equal to the date
-    ## doing this query in the db directly will be much faster than doing this 
-    ## in the python application
+    # get the blocks that have created_at date equal to the date
+    # doing this query in the db directly will be much faster than doing this 
+    # in the python application
 
-    ## build a pymongo query to get the list of blocks from a thread that have the created_at date equal to the date
-    ## provided date:
+    # build a pymongo query to get the list of blocks from a thread that have the created_at date equal to the date
+    # provided date:
     d = date.date.date()
     from_date = dt.datetime.combine(d, dt.datetime.min.time())
     to_date = dt.datetime.combine(d, dt.datetime.max.time())
