@@ -91,9 +91,9 @@ class Date(BaseModel):
     date: dt.datetime
 
 
-def allowed_thread_types(threadType: str) -> str:
-    assert threadType in THREADTYPES, f'{threadType} Unknown ThreadType'
-    return threadType
+def allowed_thread_types(thread_type: str) -> str:
+    assert thread_type in THREADTYPES, f'{thread_type} Unknown ThreadType'
+    return thread_type
 
 
 ThreadType = Annotated[str, AfterValidator(allowed_thread_types)]
