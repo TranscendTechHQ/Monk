@@ -1,9 +1,9 @@
 import asyncio
-import pprint
 
 from pymongo import MongoClient
+
 from config import settings
-from utils.headline import generate_headline, generate_single_thread_headline
+from utils.headline import generate_single_thread_headline
 
 text = """
 
@@ -34,12 +34,12 @@ You don't need to have a complete thesis; you just need some kind of gap you can
 If you come across a question that's sufficiently puzzling, it could be worth exploring even if it doesn't seem very momentous. Many an important discovery has been made by pulling on a thread that seemed insignificant at first. How can they all be finches?
 """
 
+
 class App:
     pass
 
+
 app = App()
-
-
 
 
 def startup_db_client():
@@ -47,43 +47,42 @@ def startup_db_client():
     app.mongodb = app.mongodb_client[settings.DB_NAME]
 
 
-
 def shutdown_db_client():
     app.mongodb_client.close()
-    
-    
 
 
 def generate_all_thread_headlines(num_thread_limit, useAI=False):
     thread_collection = app.mongodb["threads"]
     headline_collection = app.mongodb["thread_headlines"]
-    for doc in thread_collection.find({'title':{"$exists": True}}).limit(num_thread_limit):
+    for doc in thread_collection.find({'title': {"$exists": True}}).limit(num_thread_limit):
         content = doc['content']
-        #if len(content) < 1:
+        # if len(content) < 1:
         #    continue
-        generate_single_thread_headline(doc, 
+        generate_single_thread_headline(doc,
                                         headline_collection,
                                         useAI=useAI)
 
-        #pprint.pprint(headline['text'])
+        # pprint.pprint(headline['text'])
+
 
 def cleanup_zombie_threads():
     thread_collection = app.mongodb["threads"]
     headline_collection = app.mongodb["thread_headlines"]
     metadata_collection = app.mongodb["threads_metadata"]
-    
+
     for doc in thread_collection.find({}):
         if len(doc["content"]) < 2:
             print(f"Deleting thread {doc['_id']}, {doc['title']}")
             thread_collection.delete_one({'_id': doc['_id']})
             headline_collection.delete_one({'_id': doc['_id']})
             metadata_collection.delete_one({'_id': doc['_id']})
-            #print(f"Deleted thread {doc['_id']}")
+            # print(f"Deleted thread {doc['_id']}")
     for doc in metadata_collection.find({}):
         if doc['_id'] not in [x['_id'] for x in thread_collection.find({})]:
             print(f"Deleting metadata {doc['_id']}, {doc['_id']}")
             metadata_collection.delete_one({'_id': doc['_id']})
-            #print(f"Deleted metadata {doc['_id']}")
+            # print(f"Deleted metadata {doc['_id']}")
+
 
 def detect_zombie_threads():
     thread_collection = app.mongodb["threads"]
@@ -92,22 +91,24 @@ def detect_zombie_threads():
         if doc["_id"] not in [x['_id'] for x in metadata_collection.find({})]:
             print(f"Zombie thread {doc['_id']}, {doc['title']}")
             thread_collection.delete_one({'_id': doc['_id']})
-            #print(f"Deleted thread {doc['_id']}")
-    
+            # print(f"Deleted thread {doc['_id']}")
+
     for doc in metadata_collection.find({}):
         if doc['_id'] not in [x['_id'] for x in thread_collection.find({})]:
             print(f"Zombie thread {doc['_id']}, {doc['_id']}")
             metadata_collection.delete_one({'_id': doc['_id']})
-            #print(f"Deleted metadata {doc['_id']}")
-async def main() :
+            # print(f"Deleted metadata {doc['_id']}")
+
+
+async def main():
     startup_db_client()
-    #result =  generate_headline(text)
-    #pprint.pprint(result)
+    # result =  generate_headline(text)
+    # pprint.pprint(result)
     generate_all_thread_headlines(500, useAI=False)
-    #detect_zombie_threads()
-    #cleanup_zombie_threads()
+    # detect_zombie_threads()
+    # cleanup_zombie_threads()
     shutdown_db_client()
-    
-    
+
+
 if __name__ == "__main__":
     asyncio.run(main())
