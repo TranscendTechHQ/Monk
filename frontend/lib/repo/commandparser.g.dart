@@ -39,7 +39,7 @@ final mainCommandTextProvider =
 
 typedef _$MainCommandText = AutoDisposeNotifier<String>;
 String _$customCommandInputHash() =>
-    r'357bb5ce37d0d5406b541d293ae25d8a28ff795d';
+    r'08d5c2113ada3ce0d5fcd4672ec91c4033f570e3';
 
 /// Copied from Dart SDK
 class _SystemHash {

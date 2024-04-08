@@ -1,4 +1,5 @@
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +10,10 @@ import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
-import 'package:auth0_flutter/auth0_flutter_web.dart';
 //import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
+
 /*import 'package:sign_in_with_apple/sign_in_with_apple.dart'
     hide AuthorizationRequest;*/
 import '../../helper/network.dart';
@@ -127,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
             .login(useHTTPS: true);
         loader.hideLoader();
         loader.showLoader(context, message: "processing.");
+        // print(const JsonEncoder.withIndent(' ',).convert(credentials.toMap()));
         await verifyCredentials(credentials.accessToken, credentials.idToken);
       }
     } catch (e) {

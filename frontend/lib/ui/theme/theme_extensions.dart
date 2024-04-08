@@ -25,7 +25,7 @@ extension MediaExtension on BuildContext {
   bool get isTablet => width >= Breakpoints.medium && width < Breakpoints.large;
   bool get isDesktop => width >= Breakpoints.large;
   bool get isLargeDesktop => width >= Breakpoints.extraLarges;
-  double scale(double large, double? medium, double? small) =>
+  double scale(double large, [double? medium, double? small]) =>
       width.scale(large, medium, small);
 }
 
