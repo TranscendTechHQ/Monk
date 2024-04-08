@@ -57,7 +57,9 @@ def unsupervised_cluster(embeddings, n_clusters):
       A list of cluster labels for each data point.
   """
   # KMeans clustering
-  kmeans = KMeans(n_clusters=n_clusters, random_state=0)
+  kmeans = KMeans(n_clusters=n_clusters, random_state=1, 
+                  #algorithm='elkan'
+                  )
   kmeans.fit(embeddings)
 
   # Get cluster labels
@@ -112,22 +114,35 @@ def embedding_array(text_array_input):
     
 
 def main():
-
-
+    input_array = ["Hey how are you?",
+         "How is the weather today?", 
+         "I am fine",
+         "It is sunny today.", 
+         "good.", 
+         "How about you?", 
+         "what is your name?", 
+         "My name is Monk."
+         ]
     # Example usage
     # Assuming you have your text vector embeddings in a numpy array named 'embeddings'
     embeddings = embedding_array(
-        ["Hey how are you?", "I am fine", "How about you?", "good.", "what is your name?", "My name is Monk.", "How is the weather today?", "It is sunny today."]
+        input_array
         )  # Your embedding data
 
     # Set the desired number of clusters
-    n_clusters = 3
+    n_clusters = 2
 
     # Get cluster labels for each text embedding
     cluster_labels = unsupervised_cluster(embeddings, n_clusters)
 
+    for i in range (0, n_clusters):
+        print(f"Cluster {i}:")
+        for j in range (0, len(input_array)):
+            if cluster_labels[j] == i:
+                print(input_array[j])
+        print("\n\n")
     # Print the cluster labels
-    print(cluster_labels)
+    #print(cluster_labels)
 
 
 
