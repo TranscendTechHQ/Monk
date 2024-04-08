@@ -46,7 +46,7 @@ async def create_new_thread(user_id, title: str, thread_type: ThreadType, conten
             upsert=True
             )
         
-        generate_single_thread_headline(created_thread, asyncdb.threads_collection, useAI=False)
+        generate_single_thread_headline(created_thread, asyncdb.threads_collection, use_ai=False)
     else:
         created_thread = old_thread
 

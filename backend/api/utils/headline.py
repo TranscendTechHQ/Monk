@@ -30,7 +30,7 @@ def generate_headline(text: str) -> str:
     llm_chain = LLMChain(llm=llm, prompt=prompt)
 
     # Define StuffDocumentsChain
-    ##stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+    # stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
 
     # docs = loader.load()
 
@@ -39,15 +39,10 @@ def generate_headline(text: str) -> str:
     return headline
 
 
-<<<<<<< Updated upstream
-def generate_single_thread_headline(thread_doc, headline_collection,
-                                    useAI=False):
-=======
-def generate_single_thread_headline(thread_doc, threads_collection, useAI=False):
->>>>>>> Stashed changes
+def generate_single_thread_headline(thread_doc, threads_collection, use_ai=False):
     blocks = thread_doc['content']
     headline = {}
-    if useAI:
+    if use_ai:
         text = ""
         for block in blocks:
             # print(block['content'])
@@ -62,19 +57,8 @@ def generate_single_thread_headline(thread_doc, threads_collection, useAI=False)
             headline['last_modified'] = str(blocks[-1]['created_at'])
         else:
             headline['text'] = "blank thread"
-<<<<<<< Updated upstream
             headline['last_modified'] = str(thread_doc['created_date'])
-=======
-            headline['last_modified']= str(thread_doc['created_date'])
 
         threads_collection.update_one({'_id': thread_doc['_id']},
                                       {'$set': {'headline': headline['text'],
                                                 'last_modified': headline['last_modified']}}, upsert=True)
-        
->>>>>>> Stashed changes
-
-        title = thread_doc['title']
-        headline_collection.update_one({'_id': thread_doc['_id']},
-                                       {'$set': {'headline': headline['text'],
-                                                 'title': title,
-                                                 'last_modified': headline['last_modified']}}, upsert=True)

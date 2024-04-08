@@ -168,7 +168,7 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     thread["content"].append(jsonable_encoder(new_block))
 
     headline_collection = request.app.mongodb["thread_headlines"]
-    generate_single_thread_headline(thread, headline_collection, useAI=False)
+    generate_single_thread_headline(thread, headline_collection, use_ai=False)
 
     updated_thread = await update_mongo_document_fields(
         {"title": thread_title},
