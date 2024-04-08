@@ -9,3 +9,4 @@
 backend/api/clustered_messages.txt
 backend/api/messages.json
 backend/api/assistant_text.json
+.idea
