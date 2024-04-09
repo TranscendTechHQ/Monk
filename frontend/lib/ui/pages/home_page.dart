@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/ui/pages/login_page.dart';
+import 'package:frontend/ui/pages/news_page.dart';
+import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
@@ -89,7 +93,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         fullName = sessionInfo.fullName;
         email = sessionInfo.email;
-        print(sessionInfo.toJson());
+        // print(JsonEncoder.withIndent(' ').convert(sessionInfo.toJson()));
       });
       return true;
     }
@@ -177,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () async {
                       // Navigator.pushNamed(context, ThreadPage.route);
-                      Navigator.pushNamed(context, VerifyOrganization.route);
+                      Navigator.pushNamed(context, NewsPage.route);
                     },
                     child: Text(
                       "Continue",

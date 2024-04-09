@@ -45,7 +45,7 @@ class MonkApp extends ConsumerWidget {
                 const ThreadPage(title: "journal", type: "/new-thread"),
             NewsPage.route: (context) =>
                 const NewsPage(title: "journal", type: "/new-thread"),
-            VerifyOrganization.route: (context) => const VerifyOrganization(),
+            // VerifyOrganization.route: (context) => const VerifyOrganization(),
           },
         );
       },

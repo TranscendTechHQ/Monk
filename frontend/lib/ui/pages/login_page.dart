@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:dio/dio.dart';
@@ -9,6 +11,8 @@ import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
+import 'package:frontend/ui/pages/news_page.dart';
+import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 //import 'package:flutter/services.dart';
 
@@ -219,8 +223,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     await NetworkManager.instance.client.get("/healthcheck");
-    var result =
-        await MonkException.handle(() => NetworkManager.instance.client.post(
+    var result = await MonkException.handle<Response<dynamic>>(
+        () => NetworkManager.instance.client.post(
               "/auth/signinup",
               data: {
                 "thirdPartyId": "auth0",
@@ -230,13 +234,27 @@ class _LoginPageState extends State<LoginPage> {
                 },
               },
             ));
+    final map = result.data as Map<String, dynamic>?;
+    final userId = map?['user']?['thirdParty']?['userId'];
+
+    // print(JsonEncoder.withIndent(' ').convert(map?['user']));
     if (result.statusCode == 200) {
-      Future.delayed(
-        Duration.zero,
-        () {
-          prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
-        },
-      );
+      // For slack authentication we don't need to verify the organization
+      if (userId is String && userId.startsWith("oauth2|sign-in-with-slack")) {
+        prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
+      } else {
+        logger.i(
+            'Google sign in was successful. Verifying if user is a part of an client workspace.');
+        final email = map?['user']?['email'];
+        Navigator.of(context)
+            .push(VerifyOrganization.launchRoute(email, onVerified: () {
+          logger.i('✅ Verification success. Redirecting to news page');
+          Navigator.pushNamed(context, NewsPage.route);
+        }, onVerifyFailed: () {
+          logger.i(
+              '❌ Verification failed. Perhaps user is not affiliated with the client workspace.');
+        }));
+      }
     } else {
       logger.e('Failed to verify credentials', error: result.data);
     }

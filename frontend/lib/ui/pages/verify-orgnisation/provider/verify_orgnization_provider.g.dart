@@ -7,7 +7,7 @@ part of 'verify_orgnization_provider.dart';
 // **************************************************************************
 
 String _$verifyOrganizationHash() =>
-    r'4e6e9174c075f356cc464c3c40ec3f652cfb078c';
+    r'1c5d0738d28c1b5165f3fa731e3a8055ff70ceaf';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,10 +32,10 @@ class _SystemHash {
 
 abstract class _$VerifyOrganization
     extends BuildlessAutoDisposeAsyncNotifier<bool> {
-  late final String teamId;
+  late final String email;
 
   FutureOr<bool> build({
-    required String teamId,
+    required String email,
   });
 }
 
@@ -50,10 +50,10 @@ class VerifyOrganizationFamily extends Family<AsyncValue<bool>> {
 
   /// See also [VerifyOrganization].
   VerifyOrganizationProvider call({
-    required String teamId,
+    required String email,
   }) {
     return VerifyOrganizationProvider(
-      teamId: teamId,
+      email: email,
     );
   }
 
@@ -62,7 +62,7 @@ class VerifyOrganizationFamily extends Family<AsyncValue<bool>> {
     covariant VerifyOrganizationProvider provider,
   ) {
     return call(
-      teamId: provider.teamId,
+      email: provider.email,
     );
   }
 
@@ -86,9 +86,9 @@ class VerifyOrganizationProvider
     extends AutoDisposeAsyncNotifierProviderImpl<VerifyOrganization, bool> {
   /// See also [VerifyOrganization].
   VerifyOrganizationProvider({
-    required String teamId,
+    required String email,
   }) : this._internal(
-          () => VerifyOrganization()..teamId = teamId,
+          () => VerifyOrganization()..email = email,
           from: verifyOrganizationProvider,
           name: r'verifyOrganizationProvider',
           debugGetCreateSourceHash:
@@ -98,7 +98,7 @@ class VerifyOrganizationProvider
           dependencies: VerifyOrganizationFamily._dependencies,
           allTransitiveDependencies:
               VerifyOrganizationFamily._allTransitiveDependencies,
-          teamId: teamId,
+          email: email,
         );
 
   VerifyOrganizationProvider._internal(
@@ -108,17 +108,17 @@ class VerifyOrganizationProvider
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.teamId,
+    required this.email,
   }) : super.internal();
 
-  final String teamId;
+  final String email;
 
   @override
   FutureOr<bool> runNotifierBuild(
     covariant VerifyOrganization notifier,
   ) {
     return notifier.build(
-      teamId: teamId,
+      email: email,
     );
   }
 
@@ -127,13 +127,13 @@ class VerifyOrganizationProvider
     return ProviderOverride(
       origin: this,
       override: VerifyOrganizationProvider._internal(
-        () => create()..teamId = teamId,
+        () => create()..email = email,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        teamId: teamId,
+        email: email,
       ),
     );
   }
@@ -146,21 +146,21 @@ class VerifyOrganizationProvider
 
   @override
   bool operator ==(Object other) {
-    return other is VerifyOrganizationProvider && other.teamId == teamId;
+    return other is VerifyOrganizationProvider && other.email == email;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, teamId.hashCode);
+    hash = _SystemHash.combine(hash, email.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
 mixin VerifyOrganizationRef on AutoDisposeAsyncNotifierProviderRef<bool> {
-  /// The parameter `teamId` of this provider.
-  String get teamId;
+  /// The parameter `email` of this provider.
+  String get email;
 }
 
 class _VerifyOrganizationProviderElement
@@ -169,7 +169,7 @@ class _VerifyOrganizationProviderElement
   _VerifyOrganizationProviderElement(super.provider);
 
   @override
-  String get teamId => (origin as VerifyOrganizationProvider).teamId;
+  String get email => (origin as VerifyOrganizationProvider).email;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

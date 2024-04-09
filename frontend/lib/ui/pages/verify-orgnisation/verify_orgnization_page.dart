@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/ui/pages/login_page.dart';
-import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/verify-orgnisation/provider/verify_orgnization_provider.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
 class VerifyOrganization extends ConsumerWidget {
-  const VerifyOrganization({super.key});
+  const VerifyOrganization(this.email,
+      {required this.onVerified, this.onVerifyFailed, super.key});
+  final String email;
+  final VoidCallback onVerified;
+  final VoidCallback? onVerifyFailed;
 
   static String route = "/verify-organization";
-  static Route launchRoute() {
+  static Route launchRoute(String email,
+      {required VoidCallback onVerified, VoidCallback? onVerifyFailed}) {
     return MaterialPageRoute<void>(
-      builder: (_) => const VerifyOrganization(),
+      builder: (_) => VerifyOrganization(
+        email,
+        onVerified: onVerified,
+        onVerifyFailed: onVerifyFailed,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = verifyOrganizationProvider(teamId: '');
+    final provider = verifyOrganizationProvider(email: email);
     final verifyOrganization = ref.watch(provider);
 
     Future<void> signOut() async {
@@ -36,7 +44,9 @@ class VerifyOrganization extends ConsumerWidget {
       if (next is AsyncData) {
         final data = next.value;
         if (data != null && data) {
-          Navigator.pushNamed(context, NewsPage.route);
+          onVerified.call();
+        } else {
+          onVerifyFailed?.call();
         }
       }
     });
