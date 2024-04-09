@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/ui/pages/login_page.dart';
+import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/verify-orgnisation/provider/verify_orgnization_provider.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:supertokens_flutter/supertokens.dart';
@@ -31,14 +32,14 @@ class VerifyOrganization extends ConsumerWidget {
       });
     }
 
-    // ref.listen(provider, (previous, next) {
-    //   if (next is AsyncData) {
-    //     final data = next.value;
-    //     if (data != null && data) {
-    //       Navigator.pushNamed(context, NewsPage.route);
-    //     }
-    //   }
-    // });
+    ref.listen(provider, (previous, next) {
+      if (next is AsyncData) {
+        final data = next.value;
+        if (data != null && data) {
+          Navigator.pushNamed(context, NewsPage.route);
+        }
+      }
+    });
     return Scaffold(
       body: Center(
         child: verifyOrganization.maybeWhen(
