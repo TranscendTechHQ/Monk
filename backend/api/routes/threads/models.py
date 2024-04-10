@@ -5,6 +5,7 @@ from typing import Annotated, List, Union
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
+from sqlalchemy.orm import relationship
 
 THREADTYPES = [
     "/new-thread",
@@ -136,7 +137,7 @@ class ThreadModel(BaseModel):
     type: ThreadType
     title: str = Field(..., min_length=1, max_length=100, pattern="^[a-zA-Z0-9]+$")
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
-    headline: str
+    headline: str = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

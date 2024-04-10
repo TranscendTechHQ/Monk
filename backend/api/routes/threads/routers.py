@@ -74,7 +74,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 async def th(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread headlines from MongoDB
-    collection = request.app.mongodb["thread_headlines"]
+    collection = request.app.mongodb["threads"]
     # headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
 
     # Convert string datetimes to actual datetime objects during sorting
@@ -92,7 +92,13 @@ async def th(request: Request,
 
     sorted_headlines = []
     async for document in cursor:
-        sorted_headlines.append(document)
+        headline = {
+            "id": document['_id'],
+            "title": document['title'],
+            "headline": document['headline'],
+            "last_modified": document['last_modified']
+        }
+        sorted_headlines.append(headline)
 
     thread_headlines = ThreadHeadlinesModel(headlines=sorted_headlines)
 
@@ -167,8 +173,8 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     # block as a json string in the db
     thread["content"].append(jsonable_encoder(new_block))
 
-    headline_collection = request.app.mongodb["thread_headlines"]
-    generate_single_thread_headline(thread, headline_collection, use_ai=False)
+    thread_collection = request.app.mongodb["threads"]
+    generate_single_thread_headline(thread, thread_collection, use_ai=False)
 
     updated_thread = await update_mongo_document_fields(
         {"title": thread_title},
