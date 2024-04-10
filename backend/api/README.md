@@ -19,18 +19,25 @@ vi config/.env
 `python main.py`
 
 ## Extract openapi.yaml from the FastAPI app
-`python extract-openapi.py main:app`
-`./generate_yaml.sh`
-### Edit the openapi.yaml file
-Replace
+One time install
+```bash
+brew install openapi-generator
 ```
+Each time you update API endpoints
+```bash
+python extract-openapi.py main:app
+./generate_yaml.sh
+```
+Edit the openapi.yaml file (temporary hack)
+```yaml
+# Replace
           items:
             anyOf:
             - type: string
             - type: integer
 ```
-### with
 ```
+# with
           items:
             type: string
 ```
