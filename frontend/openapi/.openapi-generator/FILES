@@ -8,6 +8,7 @@ doc/BlockModel.md
 doc/CreateChildThreadModel.md
 doc/CreateThreadModel.md
 doc/Creator.md
+doc/DefaultApi.md
 doc/HTTPValidationError.md
 doc/ModelDate.md
 doc/SessionApi.md
@@ -24,6 +25,7 @@ doc/UpdateBlockModel.md
 doc/ValidationError.md
 lib/openapi.dart
 lib/src/api.dart
+lib/src/api/default_api.dart
 lib/src/api/session_api.dart
 lib/src/api/threads_api.dart
 lib/src/auth/api_key_auth.dart
@@ -55,6 +57,7 @@ test/block_model_test.dart
 test/create_child_thread_model_test.dart
 test/create_thread_model_test.dart
 test/creator_test.dart
+test/default_api_test.dart
 test/http_validation_error_test.dart
 test/model_date_test.dart
 test/session_api_test.dart

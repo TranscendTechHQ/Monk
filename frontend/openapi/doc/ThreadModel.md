@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
 **createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **creator** | **String** |  | 
+**headline** | **String** |  | [optional] 
 **title** | **String** |  | 
 **type** | **String** |  | 
 

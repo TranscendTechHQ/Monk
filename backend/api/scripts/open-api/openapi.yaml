@@ -296,7 +296,6 @@ components:
       - creator
       - type
       - title
-      - headline
       title: ThreadModel
       type: object
     ThreadsInfo:
