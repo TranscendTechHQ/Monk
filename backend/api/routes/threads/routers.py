@@ -9,7 +9,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
-from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields
+from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields, asyncdb
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
@@ -74,7 +74,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 async def th(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread headlines from MongoDB
-    collection = request.app.mongodb["thread_headlines"]
+    collection = request.app.mongodb["threads"]
     # headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
 
     # Convert string datetimes to actual datetime objects during sorting
@@ -92,7 +92,13 @@ async def th(request: Request,
 
     sorted_headlines = []
     async for document in cursor:
-        sorted_headlines.append(document)
+        headline = {
+            "id": document['_id'],
+            "title": document['title'],
+            "headline": document['headline'],
+            "last_modified": document['last_modified']
+        }
+        sorted_headlines.append(headline)
 
     thread_headlines = ThreadHeadlinesModel(headlines=sorted_headlines)
 
@@ -131,7 +137,28 @@ async def ti(request: Request,
 async def md(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
-    metadata = await get_mongo_documents(request.app.mongodb["threads_metadata"])
+    threads = await get_mongo_documents(request.app.mongodb["threads"])
+    metadata = []
+    for doc in threads:
+        userinfo = await asyncdb.users_collection.find_one({"_id": doc['creator']})
+        if not userinfo:
+            userinfo = await asyncdb.users_collection.find_one({"user_name": doc['creator']})
+            if not userinfo:
+                print("User not found")
+                return None
+        creator = {}
+        if userinfo is not None:
+            creator["id"] = userinfo["_id"]
+            creator["name"] = userinfo["user_name"]
+            creator["picture"] = userinfo["user_picture"]
+            creator["email"] = userinfo["email"]
+        metadata.append({
+            "_id": doc["_id"],
+            "title": doc["title"],
+            "type": doc["type"],
+            "created_date": doc["created_date"],
+            "creator": creator
+        })
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
@@ -167,8 +194,8 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     # block as a json string in the db
     thread["content"].append(jsonable_encoder(new_block))
 
-    headline_collection = request.app.mongodb["thread_headlines"]
-    generate_single_thread_headline(thread, headline_collection, useAI=False)
+    thread_collection = request.app.mongodb["threads"]
+    generate_single_thread_headline(thread, thread_collection, use_ai=False)
 
     updated_thread = await update_mongo_document_fields(
         {"title": thread_title},
@@ -292,8 +319,12 @@ async def get_thread_id(request: Request, id: str,
     old_thread = await get_mongo_document({"_id": id}, request.app.mongodb["threads"])
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
+
+    thread_content = jsonable_encoder(old_thread)
+    user = get_user_by_id(thread_content['creator'])
+    thread_content['creator'] = jsonable_encoder(user)['user_name']
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(old_thread))
+                        content=thread_content)
 
 
 @router.get("/threads/{title}", response_model=ThreadModel)

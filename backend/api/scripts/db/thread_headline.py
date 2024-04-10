@@ -51,16 +51,14 @@ def shutdown_db_client():
     app.mongodb_client.close()
 
 
-def generate_all_thread_headlines(num_thread_limit, useAI=False):
+def generate_all_thread_headlines(num_thread_limit, use_ai=False):
     thread_collection = app.mongodb["threads"]
-    headline_collection = app.mongodb["thread_headlines"]
+    # headline_collection = app.mongodb["thread_headlines"]
     for doc in thread_collection.find({'title': {"$exists": True}}).limit(num_thread_limit):
         content = doc['content']
         # if len(content) < 1:
         #    continue
-        generate_single_thread_headline(doc,
-                                        headline_collection,
-                                        useAI=useAI)
+        generate_single_thread_headline(doc, thread_collection, use_ai=use_ai)
 
         # pprint.pprint(headline['text'])
 
@@ -104,7 +102,7 @@ async def main():
     startup_db_client()
     # result =  generate_headline(text)
     # pprint.pprint(result)
-    generate_all_thread_headlines(500, useAI=False)
+    generate_all_thread_headlines(500, use_ai=False)
     # detect_zombie_threads()
     # cleanup_zombie_threads()
     shutdown_db_client()
