@@ -9,7 +9,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
-from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields
+from utils.db import get_mongo_document, get_mongo_documents, update_mongo_document_fields, asyncdb
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
@@ -137,7 +137,28 @@ async def ti(request: Request,
 async def md(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
-    metadata = await get_mongo_documents(request.app.mongodb["threads_metadata"])
+    threads = await get_mongo_documents(request.app.mongodb["threads"])
+    metadata = []
+    for doc in threads:
+        userinfo = await asyncdb.users_collection.find_one({"_id": doc['creator']})
+        if not userinfo:
+            userinfo = await asyncdb.users_collection.find_one({"user_name": doc['creator']})
+            if not userinfo:
+                print("User not found")
+                return None
+        creator = {}
+        if userinfo is not None:
+            creator["id"] = userinfo["_id"]
+            creator["name"] = userinfo["user_name"]
+            creator["picture"] = userinfo["user_picture"]
+            creator["email"] = userinfo["email"]
+        metadata.append({
+            "_id": doc["_id"],
+            "title": doc["title"],
+            "type": doc["type"],
+            "created_date": doc["created_date"],
+            "creator": creator
+        })
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
@@ -298,8 +319,12 @@ async def get_thread_id(request: Request, id: str,
     old_thread = await get_mongo_document({"_id": id}, request.app.mongodb["threads"])
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
+
+    thread_content = jsonable_encoder(old_thread)
+    user = get_user_by_id(thread_content['creator'])
+    thread_content['creator'] = jsonable_encoder(user)['user_name']
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(old_thread))
+                        content=thread_content)
 
 
 @router.get("/threads/{title}", response_model=ThreadModel)

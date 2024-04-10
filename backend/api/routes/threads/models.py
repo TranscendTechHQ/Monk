@@ -5,7 +5,6 @@ from typing import Annotated, List, Union
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
-from sqlalchemy.orm import relationship
 
 THREADTYPES = [
     "/new-thread",

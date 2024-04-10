@@ -13,14 +13,6 @@ from .models import BlockModel, ThreadModel, ThreadType
 async def create_new_thread(user_id, title: str, thread_type: ThreadType, content: List[BlockModel] = []):
     old_thread = await get_mongo_document({"title": title}, asyncdb.threads_collection)
     if not old_thread:
-
-        full_name = await get_user_name(user_id, asyncdb.users_collection)
-        new_thread = ThreadModel(creator=full_name, title=title, type=thread_type,
-                                 content=content)
-        new_thread_jsonable = jsonable_encoder(new_thread)
-        created_thread = await create_mongo_document(new_thread_jsonable,
-                                                     asyncdb.threads_collection)
-
         userinfo = await asyncdb.users_collection.find_one({"_id": user_id})
         if not userinfo:
             print("User not found")
@@ -32,19 +24,11 @@ async def create_new_thread(user_id, title: str, thread_type: ThreadType, conten
             creator["picture"] = userinfo["user_picture"]
             creator["email"] = userinfo["email"]
 
-        meta = {}
-        meta["_id"] = new_thread_jsonable["_id"]
-        meta["title"] = new_thread_jsonable["title"]
-        meta["type"] = new_thread_jsonable["type"]
-        meta["created_date"] = new_thread_jsonable["created_date"]
-        meta["creator"] = creator
-
-        # metadata = (metadata_model).model_dump()
-        await asyncdb.metadata_collection.replace_one(
-            filter={"_id": meta["_id"]},
-            replacement=meta,
-            upsert=True
-            )
+        new_thread = ThreadModel(creator=creator['id'], title=title, type=thread_type,
+                                 content=content)
+        new_thread_jsonable = jsonable_encoder(new_thread)
+        created_thread = await create_mongo_document(new_thread_jsonable,
+                                                     asyncdb.threads_collection)
         
         generate_single_thread_headline(created_thread, asyncdb.threads_collection, use_ai=False)
     else:
