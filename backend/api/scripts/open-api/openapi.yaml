@@ -261,6 +261,7 @@ components:
         - content: This is the content of the block
         created_date: '2021-01-01T00:00:00.000000'
         creator: user1
+        headline: This is the headline of the thread
         title: This is the title of the thread
         type: /new-plan
       properties:
@@ -279,6 +280,9 @@ components:
         creator:
           title: Creator
           type: string
+        headline:
+          title: Headline
+          type: string
         title:
           maxLength: 100
           minLength: 1
@@ -292,6 +296,7 @@ components:
       - creator
       - type
       - title
+      - headline
       title: ThreadModel
       type: object
     ThreadsInfo:
@@ -490,6 +495,16 @@ paths:
       summary: Get Blocks By Date
       tags:
       - threads
+  /healthcheck:
+    get:
+      operationId: healthcheck_healthcheck_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Healthcheck
   /journal:
     get:
       operationId: date_journal_get
@@ -596,6 +611,29 @@ paths:
       summary: Secure Api
       tags:
       - session
+  /slack_user_token:
+    post:
+      operationId: slack_user_token_slack_user_token_post
+      parameters:
+      - in: query
+        name: authcode
+        required: true
+        schema:
+          title: Authcode
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Slack User Token
   /threadHeadlines:
     get:
       operationId: th_threadHeadlines_get
