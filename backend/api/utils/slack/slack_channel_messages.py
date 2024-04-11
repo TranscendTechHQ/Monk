@@ -2,7 +2,8 @@ from slack_sdk import WebClient
 import asyncio
 import json
 import uuid
-from pydantic import BaseModel
+
+from routes.slack.models import ChannelModel, PublicChannelList
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -11,12 +12,7 @@ from utils.db import startup_async_db_client, shutdown_async_db_client, asyncdb
 
 overall_list = []
 
-class ChannelModel(BaseModel):
-    id: str
-    name: str
-    
-class ChannelList(BaseModel):
-    channels: list[ChannelModel]
+
 # count = 0
 
 # Function to fetch and print replies to a message in a Slack channel
@@ -104,7 +100,7 @@ def get_channel_list(slack_client):
             this_channel = ChannelModel(id=channel['id'], name=channel['name'])
             channel_list.append(this_channel)
             #print(channel['name'] + ' - ' + channel['id'])
-        return ChannelList(channels=channel_list)
+        return PublicChannelList(public_channels=channel_list)
     except SlackApiError as e:
         print(f"Error fetching channel list: {e.response['error']}")
         
