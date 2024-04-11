@@ -61,11 +61,13 @@ dependencies:
   logger: ^2.1.0
   auth0_flutter: ^1.6.0
   searchfield: ^1.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.8
   riverpod_generator: ^2.3.9
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -77,6 +79,14 @@ dev_dependencies:
   riverpod_lint: ^2.3.7
   freezed: ^2.4.7
   json_serializable: ^6.7.1
+
+flutter_launcher_icons:
+  web:
+    generate: true
+    image_path: "assets/monk_logo_blue.png"
+  macos:
+    generate: true
+    image_path: "assets/monk_logo_blue.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -92,12 +102,6 @@ flutter:
   assets:
     - assets/
   #   - images/a_dot_ham.jpeg
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -116,5 +120,3 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages

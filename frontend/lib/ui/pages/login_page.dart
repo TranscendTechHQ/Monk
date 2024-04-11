@@ -14,6 +14,7 @@ import 'package:frontend/ui/pages/home_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/bg_wrapper.dart';
 //import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
@@ -264,34 +265,86 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Widget wrapper(
+      {required BuildContext context, required List<Widget> children}) {
+    if (context.isTablet || context.isMobile) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: children,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // IconButton(
-            //   icon: Image.asset(
-            //     "assets/signin_with_google_small.png",
-            //     //width: 100,
-            //   ),
-            //   onPressed: () {
-            //     loginWithGoogle();
-            //   },
-            // ),
-            FilledButton.tonal(
-              onPressed: () async => loginWithOauth(),
-              style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-              )),
-              child: Text(
-                'Login with Auth0',
-                style: context.textTheme.labelSmall,
+    return PageScaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: wrapper(
+            context: context,
+            children: [
+              Image.asset(
+                'assets/logo.png',
+                width: context.scale(240, 200, 160),
+                height: context.scale(240, 200, 160),
               ),
-            ),
-          ],
+              const SizedBox(width: 100),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: context.isMobile || context.isTablet
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  Text(
+                    "Welcome to Monk",
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.displayMedium!
+                        .copyWith(
+                          color: context.customColors.sourceMonkBlue,
+                          fontWeight: FontWeight.w400,
+                        )
+                        .scaleFont(
+                          large: 32,
+                          medium: 28,
+                          small: 24,
+                        ),
+                  ),
+                  const SizedBox(height: 62),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 68,
+                        vertical: 18,
+                      ),
+                    ),
+                    onPressed: () => loginWithOauth(),
+                    child: Text(
+                      "Login",
+                      style: context.textTheme.bodyLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

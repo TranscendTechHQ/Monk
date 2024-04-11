@@ -133,7 +133,7 @@ extension StringHelper on String? {
   DateTime? get toDateTime => this != null ? DateTime.tryParse(this!) : null;
 }
 
-extension ListHelper<T> on List<T>? {
+extension ListHelper<T> on Iterable<T>? {
   bool get isNotNullEmpty => this != null && this!.isNotEmpty;
 
   /// Checks if the list is null or empty. If it is null or empty, it returns the true value.
@@ -161,6 +161,22 @@ extension ListHelper<T> on List<T>? {
       return ifValue();
     }
   }
+
+  /// Returns the absolute value of the list or null value.
+  /// ```dart
+  /// final list1 = [1, 2, 3];
+  /// final result = List<int>.from(list1);
+  /// print(result); // [1, 2, 3]
+  ///
+  /// OR
+  ///
+  /// final list1 = [1, 2, 3];
+  /// final result = lis1.getAbsoluteOrNull;
+  /// print(result); // [1, 2, 3]
+  /// ```
+  /// Both above examples will return the same result.
+  List<T>? get getAbsoluteOrNull => this == null ? null : List<T>.from(this!);
+  // value.fold(() => null, (a) => List<T>.from(a));
 }
 
 extension on String? {

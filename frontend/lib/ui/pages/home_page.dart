@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
-import 'package:frontend/ui/pages/thread/thread_page.dart';
-import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:supertokens_flutter/supertokens.dart';
+
+import 'subscribed-channels/channels_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -181,7 +179,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () async {
                       // Navigator.pushNamed(context, ThreadPage.route);
-                      Navigator.pushNamed(context, NewsPage.route);
+                      Navigator.push(
+                        context,
+                        SubscribedChannelsPage.launchRoute(
+                          ifAlreadySubscribed: () => Navigator.pushNamed(
+                            context,
+                            NewsPage.route,
+                          ),
+                        ),
+                      );
                     },
                     child: Text(
                       "Continue",

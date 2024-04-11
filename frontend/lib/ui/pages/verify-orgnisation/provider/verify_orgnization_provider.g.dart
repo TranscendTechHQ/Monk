@@ -7,7 +7,7 @@ part of 'verify_orgnization_provider.dart';
 // **************************************************************************
 
 String _$verifyOrganizationHash() =>
-    r'1c5d0738d28c1b5165f3fa731e3a8055ff70ceaf';
+    r'620a6d33315e281a546c13a2ab50060eefb3acba';
 
 /// Copied from Dart SDK
 class _SystemHash {
