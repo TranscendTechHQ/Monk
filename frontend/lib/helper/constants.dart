@@ -1,4 +1,4 @@
-const apiDomain = "http://35.209.147.65:8000";
+const apiDomain = "https://api.heymonk.app";
 //const apiDomain = "http://0.0.0.0:8000";
 
 class Constants {

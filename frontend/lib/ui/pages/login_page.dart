@@ -122,7 +122,11 @@ class _LoginPageState extends State<LoginPage> {
     // await logout();
     try {
       if (kIsWeb) {
-        await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        await auth0Web.loginWithRedirect(
+            redirectUrl: kDebugMode
+                ? 'http://localhost:3000'
+                : 'https://web.heymonk.app/');
+
         return;
       } else {
         var credentials = await auth0
