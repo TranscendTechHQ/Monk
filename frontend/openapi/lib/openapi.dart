@@ -8,6 +8,7 @@ export 'package:openapi/src/auth/basic_auth.dart';
 export 'package:openapi/src/auth/oauth.dart';
 
 
+export 'package:openapi/src/api/default_api.dart';
 export 'package:openapi/src/api/session_api.dart';
 export 'package:openapi/src/api/threads_api.dart';
 

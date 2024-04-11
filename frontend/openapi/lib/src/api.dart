@@ -7,6 +7,7 @@ import 'package:openapi/src/auth/api_key_auth.dart';
 import 'package:openapi/src/auth/basic_auth.dart';
 import 'package:openapi/src/auth/bearer_auth.dart';
 import 'package:openapi/src/auth/oauth.dart';
+import 'package:openapi/src/api/default_api.dart';
 import 'package:openapi/src/api/session_api.dart';
 import 'package:openapi/src/api/threads_api.dart';
 
@@ -59,6 +60,12 @@ class Openapi {
     if (this.dio.interceptors.any((i) => i is ApiKeyAuthInterceptor)) {
       (this.dio.interceptors.firstWhere((element) => element is ApiKeyAuthInterceptor) as ApiKeyAuthInterceptor).apiKeys[name] = apiKey;
     }
+  }
+
+  /// Get DefaultApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  DefaultApi getDefaultApi() {
+    return DefaultApi(dio);
   }
 
   /// Get SessionApi instance, base route and serializer can be overridden by a given but be careful,

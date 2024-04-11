@@ -1,5 +1,6 @@
-import requests
 import os
+
+import requests
 
 
 def get_access_token():
@@ -32,4 +33,3 @@ def get_secret(secret, token):
     response = requests.request("GET", url, headers=headers, data=payload)
 
     return response.json()['secret']['version']['value']
-

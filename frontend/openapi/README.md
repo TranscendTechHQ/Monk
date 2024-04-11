@@ -47,13 +47,13 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:openapi/openapi.dart';
 
 
-final api = Openapi().getSessionApi();
+final api = Openapi().getDefaultApi();
 
 try {
-    final response = await api.secureApiSessioninfoGet();
+    final response = await api.healthcheckHealthcheckGet();
     print(response);
 } catch on DioException (e) {
-    print("Exception when calling SessionApi->secureApiSessioninfoGet: $e\n");
+    print("Exception when calling DefaultApi->healthcheckHealthcheckGet: $e\n");
 }
 
 ```
@@ -64,6 +64,8 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*DefaultApi*](doc/DefaultApi.md) | [**healthcheckHealthcheckGet**](doc/DefaultApi.md#healthcheckhealthcheckget) | **GET** /healthcheck | Healthcheck
+[*DefaultApi*](doc/DefaultApi.md) | [**slackUserTokenSlackUserTokenPost**](doc/DefaultApi.md#slackusertokenslackusertokenpost) | **POST** /slack_user_token | Slack User Token
 [*SessionApi*](doc/SessionApi.md) | [**secureApiSessioninfoGet**](doc/SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread

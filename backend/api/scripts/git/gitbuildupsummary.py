@@ -5,6 +5,7 @@ from langchain.prompts import PromptTemplate
 
 myLLm = llms.langchain_openai()
 
+
 def combine_summaries():
     prompt_template = """
     You are trying to cumulativeluy build your knowledge of a code base.
