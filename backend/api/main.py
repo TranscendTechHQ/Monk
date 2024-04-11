@@ -92,12 +92,15 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8000",
+        "http://localhost:8001",
         "http://localhost:3000",
         "http://heymonk.app",
         "https://heymonk.app",
         "http://monk.heymonk.app",
         "http://api.heymonk.app",
         "http://www.heymonk.app",
+        "https://web.heymonk.app",
+
     ],
     allow_credentials=True,
     # allow_methods=["*"],
