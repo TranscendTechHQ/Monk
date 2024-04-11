@@ -83,6 +83,16 @@ def print_channel_messages(slack_client, channel_id, write_to_json=False, limit=
     except SlackApiError as e:
         print(f"Error: {e}")
 
+def get_channel_list(slack_client):
+    try:
+        # Call conversations.list method using the WebClient
+        result = slack_client.conversations_list()
+
+        # Print the list of channels
+        for channel in result['channels']:
+            print(channel['name'] + ' - ' + channel['id'])
+    except SlackApiError as e:
+        print(f"Error fetching channel list: {e.response['error']}")
 
 async def main():
     await startup_async_db_client()
@@ -97,10 +107,9 @@ async def main():
     CHANNEL_ID = "C06SRQHNQDR"  # monk_zignite
     # Create a Slack client instance
     slack_client = WebClient(token=SLACK_USER_TOKEN)
-    print_channel_messages(slack_client,
-                           CHANNEL_ID,
-                           write_to_json=False,
-                           limit=1000)
+    get_channel_list(slack_client)
+    #print_channel_messages(slack_client, CHANNEL_ID, write_to_json=False,
+    #                       limit=1000)
 
     await shutdown_async_db_client()
 
