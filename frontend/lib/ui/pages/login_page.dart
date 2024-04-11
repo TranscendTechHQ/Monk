@@ -35,8 +35,8 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     appAuth = const FlutterAppAuth();
-    auth0 = Auth0(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
-    auth0Web = Auth0Web(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
+    auth0 = Auth0(Constants.auth0Domain, Constants.auth0ClientId);
+    auth0Web = Auth0Web(Constants.auth0Domain, Constants.auth0ClientId);
     if (kIsWeb) {
       auth0Web.onLoad().then(
             (final credentials) => setState(
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
         return;
       } else {
         var credentials = await auth0
-            .webAuthentication(scheme: Constants.AUTH0_CUSTOM_SCHEME)
+            .webAuthentication(scheme: Constants.auth0CustomScheme)
             // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
             // useHTTPS is ignored on Android
             .login(useHTTPS: true);

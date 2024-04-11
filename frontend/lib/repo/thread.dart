@@ -8,8 +8,6 @@
 //  - the backend will store the journal entry in the database
 // ...
 
-import 'dart:convert';
-
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/main.dart';

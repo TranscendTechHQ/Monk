@@ -4,7 +4,7 @@ import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
-import 'package:openapi/openapi.dart';
+
 import 'package:supertokens_flutter/supertokens.dart';
 
 class HomePage extends StatefulWidget {
