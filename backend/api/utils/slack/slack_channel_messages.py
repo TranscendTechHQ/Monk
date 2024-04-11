@@ -2,6 +2,7 @@ from slack_sdk import WebClient
 import asyncio
 import json
 import uuid
+from pydantic import BaseModel
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -10,7 +11,12 @@ from utils.db import startup_async_db_client, shutdown_async_db_client, asyncdb
 
 overall_list = []
 
-
+class ChannelModel(BaseModel):
+    id: str
+    name: str
+    
+class ChannelList(BaseModel):
+    channels: list[ChannelModel]
 # count = 0
 
 # Function to fetch and print replies to a message in a Slack channel
@@ -85,28 +91,41 @@ def print_channel_messages(slack_client, channel_id, write_to_json=False, limit=
 
 def get_channel_list(slack_client):
     try:
+        channel_list = []
+        #channel_map = {}
         # Call conversations.list method using the WebClient
+        print("Fetching channel list...")
         result = slack_client.conversations_list()
-
+        print("Channel list fetched successfully.")
         # Print the list of channels
         for channel in result['channels']:
+            #print(channel.keys())
             print(channel['name'] + ' - ' + channel['id'])
+            this_channel = ChannelModel(id=channel['id'], name=channel['name'])
+            channel_list.append(this_channel)
+            #print(channel['name'] + ' - ' + channel['id'])
+        return ChannelList(channels=channel_list)
     except SlackApiError as e:
         print(f"Error fetching channel list: {e.response['error']}")
+        
 
 async def main():
+    print("Starting db client...")
     await startup_async_db_client()
+    print("DB client started successfully.")
     # print(db.mongodb_client.list_database_names())
-
+    print("Fetching tenant...")
     doc = await asyncdb.tenants_collection.find_one({"tenant_name": "Monk"})
     if doc is None:
         print("No tenant found")
         return
-
+    print("Tenant found successfully.")
     SLACK_USER_TOKEN = doc["user_token"]
     CHANNEL_ID = "C06SRQHNQDR"  # monk_zignite
     # Create a Slack client instance
+    print("Creating Slack client...")
     slack_client = WebClient(token=SLACK_USER_TOKEN)
+    print("Slack client created successfully.")
     get_channel_list(slack_client)
     #print_channel_messages(slack_client, CHANNEL_ID, write_to_json=False,
     #                       limit=1000)
