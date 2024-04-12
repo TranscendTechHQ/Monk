@@ -3,30 +3,10 @@
 part of 'channels_provider.dart';
 
 // **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-_$ChannelImpl _$$ChannelImplFromJson(Map<String, dynamic> json) =>
-    _$ChannelImpl(
-      id: json['id'] as String?,
-      name: json['name'] as String?,
-      channelId: json['channelId'] as String?,
-      subscribed: json['subscribed'] as bool? ?? false,
-    );
-
-Map<String, dynamic> _$$ChannelImplToJson(_$ChannelImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'channelId': instance.channelId,
-      'subscribed': instance.subscribed,
-    };
-
-// **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$channelsHash() => r'f14d944e1aea2a88146fe0980c02925570233b88';
+String _$channelsHash() => r'21037e0cccf9b40289e68340f28a7e89d16dab24';
 
 /// See also [Channels].
 @ProviderFor(Channels)

@@ -182,7 +182,8 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         SubscribedChannelsPage.launchRoute(
-                          ifAlreadySubscribed: () => Navigator.pushNamed(
+                          ifAlreadySubscribed: () =>
+                              Navigator.pushReplacementNamed(
                             context,
                             NewsPage.route,
                           ),

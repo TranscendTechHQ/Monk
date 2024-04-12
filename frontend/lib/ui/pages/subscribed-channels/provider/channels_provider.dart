@@ -1,6 +1,7 @@
-import 'package:flutter/rendering.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/helper/network.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'channels_provider.freezed.dart';
@@ -10,26 +11,20 @@ part 'channels_provider.g.dart';
 class Channels extends _$Channels {
   @override
   Future<ChannelsState> build() async {
-    return await Future.delayed(
-      const Duration(seconds: 1),
-      () {
-        return ChannelsState.result(
-          publicChannels: List.generate(
-            25,
-            (index) => Channel(
-              id: index.toString(),
-              name: '#Channel ${index + 1}',
-              channelId: 'channel-${index + 1}',
-              subscribed: true,
-            ),
-          ),
-          subscribedChannels: [],
-        );
-      },
-    );
+    final slackApi = NetworkManager.instance.openApi.getSlackApi();
+    final res = await slackApi.chChannelListGet();
+    if (res.data != null) {
+      final composite = res.data!;
+      return ChannelsState.result(
+        publicChannels: composite.publicChannels,
+        // selectedChannels: composite.subscribedChannels,
+        subscribedChannels: composite.subscribedChannels,
+      );
+    }
+    return ChannelsState.initial();
   }
 
-  void addToSubscribedChannels(Channel channel) {
+  void addToSubscribedChannels(ChannelModel channel) {
     final dd = state.value;
     final selectedChannels = dd!.selectedChannels.getAbsoluteOrNull ?? [];
 
@@ -48,12 +43,17 @@ class Channels extends _$Channels {
     final selectedChannels = dd!.selectedChannels.getAbsoluteOrNull ?? [];
 
     if (selectedChannels.isNotNullEmpty) {
-      await Future.delayed(const Duration(seconds: 1), () {
+      final slackApi = NetworkManager.instance.openApi.getSlackApi();
+      final res = await slackApi.subscribeChannelSubscribeChannelPost(
+        subcribeChannelRequest: SubcribeChannelRequest(
+          channelIds: selectedChannels.map((e) => e.id).toList(),
+        ),
+      );
+      if (res.data != null) {
         state = AsyncData(dd.copyWith(
-          subscribedChannels: selectedChannels,
-          selectedChannels: [],
+          subscribedChannels: res.data!.subscribedChannels,
         ));
-      });
+      }
     }
   }
 }
@@ -61,71 +61,19 @@ class Channels extends _$Channels {
 @freezed
 class ChannelsState with _$ChannelsState {
   const factory ChannelsState({
-    @Default([]) List<Channel> publicChannels,
-    @Default([]) List<Channel> subscribedChannels,
-    @Default([]) List<Channel> selectedChannels,
+    @Default([]) List<ChannelModel> publicChannels,
+    @Default([]) List<ChannelModel> subscribedChannels,
+    @Default([]) List<ChannelModel> selectedChannels,
     String? message,
   }) = _ChannelsState;
   factory ChannelsState.initial() => const ChannelsState();
-  factory ChannelsState.result(
-          {required List<Channel> publicChannels,
-          List<Channel> subscribedChannels = const []}) =>
+  factory ChannelsState.result({
+    required List<ChannelModel> publicChannels,
+    List<ChannelModel> subscribedChannels = const [],
+    List<ChannelModel> selectedChannels = const [],
+  }) =>
       ChannelsState(
-        publicChannels: publicChannels,
-        subscribedChannels: subscribedChannels,
-      );
+          publicChannels: publicChannels,
+          subscribedChannels: subscribedChannels,
+          selectedChannels: selectedChannels);
 }
-
-@freezed
-class Channel with _$Channel {
-  const factory Channel({
-    String? id,
-    String? name,
-    String? channelId,
-    @Default(false) bool subscribed,
-  }) = _Channel;
-  factory Channel.fromJson(Map<String, dynamic> json) =>
-      _$ChannelFromJson(json);
-}
-
-const publicChannels = [
-  Channel(
-    id: '1',
-    name: '#Channel 1',
-    channelId: 'channel-1',
-    subscribed: false,
-  ),
-  Channel(
-    id: '2',
-    name: '#Channel 2',
-    channelId: 'channel-2',
-    subscribed: false,
-  ),
-  Channel(
-    id: '3',
-    name: '#Channel 3',
-    channelId: 'channel-3',
-    subscribed: false,
-  ),
-];
-
-const subscribedChannels = [
-  Channel(
-    id: '4',
-    name: '#Channel 4',
-    channelId: 'channel-4',
-    subscribed: true,
-  ),
-  Channel(
-    id: '5',
-    name: '#Channel 5',
-    channelId: 'channel-5',
-    subscribed: true,
-  ),
-  Channel(
-    id: '6',
-    name: '#Channel 6',
-    channelId: 'channel-6',
-    subscribed: true,
-  ),
-];

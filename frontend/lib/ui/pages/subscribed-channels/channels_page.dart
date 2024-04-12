@@ -107,7 +107,7 @@ class SubscribedChannelsPage extends ConsumerWidget {
               );
             },
             error: (error, stackTrace) {
-              return const Text('Error verifying organization');
+              return const Text('An error occurred. Please try again later.');
             },
           ),
         ),
@@ -164,30 +164,32 @@ class PublicChannelList extends ConsumerWidget {
               )
             ],
           ).pB(8),
-          ListView.separated(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            itemBuilder: (context, index) {
-              final channel = publicChannels[index];
-              final isSelected = selectedChannels
-                  .where((element) => element.id == channel.id)
-                  .isNotEmpty;
+          SizedBox(
+            width: context.scale(containerWidth) / 2,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              itemBuilder: (context, index) {
+                final channel = publicChannels[index];
+                final isSelected = selectedChannels
+                    .where((element) => element.id == channel.id)
+                    .isNotEmpty;
 
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                decoration: BoxDecorations.cardDecoration(context),
-                child: CheckboxListTile(
-                  value: isSelected,
-                  onChanged: (value) {
-                    ref.read(provider.notifier).addToSubscribedChannels(
-                          channel,
-                        );
-                  },
-                  title: Text(channel.name!),
-                ),
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-            itemCount: publicChannels.length,
+                return Container(
+                  decoration: BoxDecorations.cardDecoration(context),
+                  child: CheckboxListTile(
+                    value: isSelected,
+                    onChanged: (value) {
+                      ref.read(provider.notifier).addToSubscribedChannels(
+                            channel,
+                          );
+                    },
+                    title: Text(channel.name),
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              itemCount: publicChannels.length,
+            ),
           ).extended,
         ],
       ),

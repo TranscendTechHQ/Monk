@@ -16,9 +16,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ChannelsState {
-  List<Channel> get publicChannels => throw _privateConstructorUsedError;
-  List<Channel> get subscribedChannels => throw _privateConstructorUsedError;
-  List<Channel> get selectedChannels => throw _privateConstructorUsedError;
+  List<ChannelModel> get publicChannels => throw _privateConstructorUsedError;
+  List<ChannelModel> get subscribedChannels =>
+      throw _privateConstructorUsedError;
+  List<ChannelModel> get selectedChannels => throw _privateConstructorUsedError;
   String? get message => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -33,9 +34,9 @@ abstract class $ChannelsStateCopyWith<$Res> {
       _$ChannelsStateCopyWithImpl<$Res, ChannelsState>;
   @useResult
   $Res call(
-      {List<Channel> publicChannels,
-      List<Channel> subscribedChannels,
-      List<Channel> selectedChannels,
+      {List<ChannelModel> publicChannels,
+      List<ChannelModel> subscribedChannels,
+      List<ChannelModel> selectedChannels,
       String? message});
 }
 
@@ -61,15 +62,15 @@ class _$ChannelsStateCopyWithImpl<$Res, $Val extends ChannelsState>
       publicChannels: null == publicChannels
           ? _value.publicChannels
           : publicChannels // ignore: cast_nullable_to_non_nullable
-              as List<Channel>,
+              as List<ChannelModel>,
       subscribedChannels: null == subscribedChannels
           ? _value.subscribedChannels
           : subscribedChannels // ignore: cast_nullable_to_non_nullable
-              as List<Channel>,
+              as List<ChannelModel>,
       selectedChannels: null == selectedChannels
           ? _value.selectedChannels
           : selectedChannels // ignore: cast_nullable_to_non_nullable
-              as List<Channel>,
+              as List<ChannelModel>,
       message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -87,9 +88,9 @@ abstract class _$$ChannelsStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<Channel> publicChannels,
-      List<Channel> subscribedChannels,
-      List<Channel> selectedChannels,
+      {List<ChannelModel> publicChannels,
+      List<ChannelModel> subscribedChannels,
+      List<ChannelModel> selectedChannels,
       String? message});
 }
 
@@ -113,15 +114,15 @@ class __$$ChannelsStateImplCopyWithImpl<$Res>
       publicChannels: null == publicChannels
           ? _value._publicChannels
           : publicChannels // ignore: cast_nullable_to_non_nullable
-              as List<Channel>,
+              as List<ChannelModel>,
       subscribedChannels: null == subscribedChannels
           ? _value._subscribedChannels
           : subscribedChannels // ignore: cast_nullable_to_non_nullable
-              as List<Channel>,
+              as List<ChannelModel>,
       selectedChannels: null == selectedChannels
           ? _value._selectedChannels
           : selectedChannels // ignore: cast_nullable_to_non_nullable
-              as List<Channel>,
+              as List<ChannelModel>,
       message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -134,37 +135,37 @@ class __$$ChannelsStateImplCopyWithImpl<$Res>
 
 class _$ChannelsStateImpl implements _ChannelsState {
   const _$ChannelsStateImpl(
-      {final List<Channel> publicChannels = const [],
-      final List<Channel> subscribedChannels = const [],
-      final List<Channel> selectedChannels = const [],
+      {final List<ChannelModel> publicChannels = const [],
+      final List<ChannelModel> subscribedChannels = const [],
+      final List<ChannelModel> selectedChannels = const [],
       this.message})
       : _publicChannels = publicChannels,
         _subscribedChannels = subscribedChannels,
         _selectedChannels = selectedChannels;
 
-  final List<Channel> _publicChannels;
+  final List<ChannelModel> _publicChannels;
   @override
   @JsonKey()
-  List<Channel> get publicChannels {
+  List<ChannelModel> get publicChannels {
     if (_publicChannels is EqualUnmodifiableListView) return _publicChannels;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_publicChannels);
   }
 
-  final List<Channel> _subscribedChannels;
+  final List<ChannelModel> _subscribedChannels;
   @override
   @JsonKey()
-  List<Channel> get subscribedChannels {
+  List<ChannelModel> get subscribedChannels {
     if (_subscribedChannels is EqualUnmodifiableListView)
       return _subscribedChannels;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_subscribedChannels);
   }
 
-  final List<Channel> _selectedChannels;
+  final List<ChannelModel> _selectedChannels;
   @override
   @JsonKey()
-  List<Channel> get selectedChannels {
+  List<ChannelModel> get selectedChannels {
     if (_selectedChannels is EqualUnmodifiableListView)
       return _selectedChannels;
     // ignore: implicit_dynamic_type
@@ -210,209 +211,21 @@ class _$ChannelsStateImpl implements _ChannelsState {
 
 abstract class _ChannelsState implements ChannelsState {
   const factory _ChannelsState(
-      {final List<Channel> publicChannels,
-      final List<Channel> subscribedChannels,
-      final List<Channel> selectedChannels,
+      {final List<ChannelModel> publicChannels,
+      final List<ChannelModel> subscribedChannels,
+      final List<ChannelModel> selectedChannels,
       final String? message}) = _$ChannelsStateImpl;
 
   @override
-  List<Channel> get publicChannels;
+  List<ChannelModel> get publicChannels;
   @override
-  List<Channel> get subscribedChannels;
+  List<ChannelModel> get subscribedChannels;
   @override
-  List<Channel> get selectedChannels;
+  List<ChannelModel> get selectedChannels;
   @override
   String? get message;
   @override
   @JsonKey(ignore: true)
   _$$ChannelsStateImplCopyWith<_$ChannelsStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-Channel _$ChannelFromJson(Map<String, dynamic> json) {
-  return _Channel.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Channel {
-  String? get id => throw _privateConstructorUsedError;
-  String? get name => throw _privateConstructorUsedError;
-  String? get channelId => throw _privateConstructorUsedError;
-  bool get subscribed => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $ChannelCopyWith<Channel> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ChannelCopyWith<$Res> {
-  factory $ChannelCopyWith(Channel value, $Res Function(Channel) then) =
-      _$ChannelCopyWithImpl<$Res, Channel>;
-  @useResult
-  $Res call({String? id, String? name, String? channelId, bool subscribed});
-}
-
-/// @nodoc
-class _$ChannelCopyWithImpl<$Res, $Val extends Channel>
-    implements $ChannelCopyWith<$Res> {
-  _$ChannelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? channelId = freezed,
-    Object? subscribed = null,
-  }) {
-    return _then(_value.copyWith(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String?,
-      name: freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      channelId: freezed == channelId
-          ? _value.channelId
-          : channelId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      subscribed: null == subscribed
-          ? _value.subscribed
-          : subscribed // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$ChannelImplCopyWith<$Res> implements $ChannelCopyWith<$Res> {
-  factory _$$ChannelImplCopyWith(
-          _$ChannelImpl value, $Res Function(_$ChannelImpl) then) =
-      __$$ChannelImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String? id, String? name, String? channelId, bool subscribed});
-}
-
-/// @nodoc
-class __$$ChannelImplCopyWithImpl<$Res>
-    extends _$ChannelCopyWithImpl<$Res, _$ChannelImpl>
-    implements _$$ChannelImplCopyWith<$Res> {
-  __$$ChannelImplCopyWithImpl(
-      _$ChannelImpl _value, $Res Function(_$ChannelImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = freezed,
-    Object? name = freezed,
-    Object? channelId = freezed,
-    Object? subscribed = null,
-  }) {
-    return _then(_$ChannelImpl(
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String?,
-      name: freezed == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      channelId: freezed == channelId
-          ? _value.channelId
-          : channelId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      subscribed: null == subscribed
-          ? _value.subscribed
-          : subscribed // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$ChannelImpl implements _Channel {
-  const _$ChannelImpl(
-      {this.id, this.name, this.channelId, this.subscribed = false});
-
-  factory _$ChannelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ChannelImplFromJson(json);
-
-  @override
-  final String? id;
-  @override
-  final String? name;
-  @override
-  final String? channelId;
-  @override
-  @JsonKey()
-  final bool subscribed;
-
-  @override
-  String toString() {
-    return 'Channel(id: $id, name: $name, channelId: $channelId, subscribed: $subscribed)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ChannelImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.channelId, channelId) ||
-                other.channelId == channelId) &&
-            (identical(other.subscribed, subscribed) ||
-                other.subscribed == subscribed));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, id, name, channelId, subscribed);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ChannelImplCopyWith<_$ChannelImpl> get copyWith =>
-      __$$ChannelImplCopyWithImpl<_$ChannelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ChannelImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Channel implements Channel {
-  const factory _Channel(
-      {final String? id,
-      final String? name,
-      final String? channelId,
-      final bool subscribed}) = _$ChannelImpl;
-
-  factory _Channel.fromJson(Map<String, dynamic> json) = _$ChannelImpl.fromJson;
-
-  @override
-  String? get id;
-  @override
-  String? get name;
-  @override
-  String? get channelId;
-  @override
-  bool get subscribed;
-  @override
-  @JsonKey(ignore: true)
-  _$$ChannelImplCopyWith<_$ChannelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
