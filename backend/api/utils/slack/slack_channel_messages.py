@@ -90,13 +90,13 @@ def get_channel_list(slack_client):
         channel_list = []
         #channel_map = {}
         # Call conversations.list method using the WebClient
-        print("Fetching channel list...")
+        #print("Fetching channel list...")
         result = slack_client.conversations_list()
-        print("Channel list fetched successfully.")
+        #print("Channel list fetched successfully.")
         # Print the list of channels
         for channel in result['channels']:
             #print(channel.keys())
-            print(channel['name'] + ' - ' + channel['id'])
+            #print(channel['name'] + ' - ' + channel['id'])
             this_channel = ChannelModel(id=channel['id'], name=channel['name'])
             channel_list.append(this_channel)
             #print(channel['name'] + ' - ' + channel['id'])
