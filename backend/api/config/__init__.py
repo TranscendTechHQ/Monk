@@ -33,8 +33,9 @@ class CommonSettings(BaseSettings):
 
 class ServerSettings(BaseSettings):
     HOST: str = "0.0.0.0"
-    PORT: int = 8000
-
+    PORT: int = os.getenv("FASTAPI_PORT", 8000)
+    API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
+    WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:8000")
 
 class DatabaseSettings(BaseSettings):
     DB_URL: str = get_secret('DB_URL', HCP_ACCESS_TOKEN)
@@ -143,8 +144,8 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 init(
     app_info=InputAppInfo(
         app_name="Monk",
-        api_domain="http://localhost:8000",
-        website_domain="http://localhost:8000",
+        api_domain=settings.API_DOMAIN,
+        website_domain=settings.WEBSITE_DOMAIN,
         api_base_path="/auth",
         website_base_path="/auth"
     ),

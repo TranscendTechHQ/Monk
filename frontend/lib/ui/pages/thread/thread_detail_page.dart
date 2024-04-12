@@ -54,7 +54,7 @@ class ThreadDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final createChildThreadModel = CreateChildThreadModel(
+    CreateChildThreadModel(
       title: title,
       type: type,
       parentBlockId: parentBlockId,

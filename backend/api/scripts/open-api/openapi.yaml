@@ -51,6 +51,40 @@ components:
       - content
       title: BlockModel
       type: object
+    ChannelModel:
+      properties:
+        id:
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: ChannelModel
+      type: object
+    CompositeChannelList:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        public_channels:
+          items:
+            $ref: '#/components/schemas/ChannelModel'
+          title: Public Channels
+          type: array
+        subscribed_channels:
+          items:
+            $ref: '#/components/schemas/ChannelModel'
+          title: Subscribed Channels
+          type: array
+      required:
+      - _id
+      - subscribed_channels
+      - public_channels
+      title: CompositeChannelList
+      type: object
     CreateChildThreadModel:
       example:
         content:
@@ -157,6 +191,17 @@ components:
           type: array
       title: HTTPValidationError
       type: object
+    PublicChannelList:
+      properties:
+        public_channels:
+          items:
+            $ref: '#/components/schemas/ChannelModel'
+          title: Public Channels
+          type: array
+      required:
+      - public_channels
+      title: PublicChannelList
+      type: object
     SessionInfo:
       properties:
         accessTokenPayload:
@@ -187,6 +232,32 @@ components:
       - email
       - accessTokenPayload
       title: SessionInfo
+      type: object
+    SubcribeChannelRequest:
+      properties:
+        channel_ids:
+          items:
+            type: string
+          title: Channel Ids
+          type: array
+      required:
+      - channel_ids
+      title: SubcribeChannelRequest
+      type: object
+    SubscribedChannelList:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        subscribed_channels:
+          items:
+            $ref: '#/components/schemas/ChannelModel'
+          title: Subscribed Channels
+          type: array
+      required:
+      - _id
+      - subscribed_channels
+      title: SubscribedChannelList
       type: object
     ThreadHeadlineModel:
       example:
@@ -261,6 +332,7 @@ components:
         - content: This is the content of the block
         created_date: '2021-01-01T00:00:00.000000'
         creator: user1
+        headline: This is the headline of the thread
         title: This is the title of the thread
         type: /new-plan
       properties:
@@ -278,6 +350,9 @@ components:
           type: string
         creator:
           title: Creator
+          type: string
+        headline:
+          title: Headline
           type: string
         title:
           maxLength: 100
@@ -490,6 +565,29 @@ paths:
       summary: Get Blocks By Date
       tags:
       - threads
+  /channel_list:
+    get:
+      operationId: ch_channel_list_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompositeChannelList'
+          description: Get all blocks for a given date
+      summary: Ch
+      tags:
+      - slack
+  /healthcheck:
+    get:
+      operationId: healthcheck_healthcheck_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Healthcheck
   /journal:
     get:
       operationId: date_journal_get
@@ -528,6 +626,19 @@ paths:
       summary: Md
       tags:
       - threads
+  /public_channels:
+    get:
+      operationId: public_channels_public_channels_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicChannelList'
+          description: Get all public channels
+      summary: Public Channels
+      tags:
+      - slack
   /searchThreads:
     get:
       operationId: search_threads_searchThreads_get
@@ -596,6 +707,54 @@ paths:
       summary: Secure Api
       tags:
       - session
+  /slack_user_token:
+    post:
+      operationId: slack_user_token_slack_user_token_post
+      parameters:
+      - in: query
+        name: authcode
+        required: true
+        schema:
+          title: Authcode
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Slack User Token
+  /subscribe_channel:
+    post:
+      operationId: subscribe_channel_subscribe_channel_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubcribeChannelRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscribedChannelList'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Subscribe Channel
+      tags:
+      - slack
   /threadHeadlines:
     get:
       operationId: th_threadHeadlines_get
