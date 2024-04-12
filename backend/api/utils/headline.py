@@ -1,18 +1,20 @@
-from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+import os
+
 from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
-import os
-from config import settings
 # Define prompt
 from langchain_openai import ChatOpenAI
+
+from config import settings
 
 os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
 os.environ["OPENAI_API_ENDPOINT"] = "https://api.openai.com"
 os.environ["OPENAI_API_VERSION"] = "2023-05-15"
 
+
 def generate_headline(text: str) -> str:
     # Define prompt
-    
+
     prompt_template = """Imagine the following text in
     triple quotes is from a concatenated tweetstorm. 
     Generate a concise headline, maximum 1-2 sentences long, 
@@ -28,40 +30,35 @@ def generate_headline(text: str) -> str:
     llm_chain = LLMChain(llm=llm, prompt=prompt)
 
     # Define StuffDocumentsChain
-    ##stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+    # stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
 
-    #docs = loader.load()
-    
+    # docs = loader.load()
+
     headline = llm_chain.invoke(text)
-    #print(summary)
+    # print(summary)
     return headline
 
 
-def generate_single_thread_headline(thread_doc, headline_collection,
-                                    useAI=False):   
+def generate_single_thread_headline(thread_doc, threads_collection, use_ai=False):
     blocks = thread_doc['content']
     headline = {}
-    if useAI:
+    if use_ai:
         text = ""
         for block in blocks:
-            #print(block['content'])
-            text += block['content'] + " " 
+            # print(block['content'])
+            text += block['content'] + " "
         headline = generate_headline(text)
-        
+
     else:
-        #print(thread_doc['title'])
-        
+        # print(thread_doc['title'])
+
         if len(blocks) > 0:
             headline['text'] = blocks[0]['content']
             headline['last_modified'] = str(blocks[-1]['created_at'])
         else:
             headline['text'] = "blank thread"
-            headline['last_modified']= str(thread_doc['created_date'])
-            
-        title = thread_doc['title']
-        headline_collection.update_one({'_id': thread_doc['_id']}, 
-                                      {'$set': {'headline': headline['text'], 
-                                                'title': title,
-                                                'last_modified':headline['last_modified']}}, upsert=True)
-        
+            headline['last_modified'] = str(thread_doc['created_date'])
 
+        threads_collection.update_one({'_id': thread_doc['_id']},
+                                      {'$set': {'headline': headline['text'],
+                                                'last_modified': headline['last_modified']}}, upsert=True)

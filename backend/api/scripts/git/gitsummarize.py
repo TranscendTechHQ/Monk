@@ -1,22 +1,19 @@
-
-
 import json
+
 from openai import AzureOpenAI
+
 from config import settings
-
 from utils import llms
-
 
 
 # Function to call OpenAI API for code summarization
 def summarize_code_change(code_diff):
     # Set your Azure-specific OpenAI API key and endpoint
     client = AzureOpenAI(
-    api_key = settings.AZURE_OPENAI_KEY,  
-    api_version = settings.API_VERSION,
-    azure_endpoint =settings.AZURE_OPENAI_ENDPOINT 
+        api_key=settings.AZURE_OPENAI_KEY,
+        api_version=settings.API_VERSION,
+        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT
     )
-
 
     system_prompt = """
 you are an excellent programmer with expertise on version control management tool git.
@@ -50,11 +47,9 @@ Show final output in the following format to the user:
 }
 ```
     """
-    
-    
+
     user_prompt = json.dumps(code_diff)
-    
-    
+
     client = llms.openai()
 
     completion = client.chat.completions.create(
@@ -63,41 +58,41 @@ Show final output in the following format to the user:
         max_tokens=256,
         top_p=1,
         messages=[
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_prompt}
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
         ]
     )
 
-    #print(completion.choices[0].message)
-    
-    
+    # print(completion.choices[0].message)
+
     return completion.choices[0].message.content.strip()
-    #return response
+    # return response
+
 
 def json_code_summarization(input_file, output_file):
     output = []
     # Open the CSV file for reading and writing
     with open(input_file, 'r', newline='') as json_file:
-        #read json file
+        # read json file
         json_data = json.load(json_file)
         rows = list(json_data)
-        
+
         # Iterate over each row, summarize the code change, and add to the row
         for row in rows:  # Skip the header row
             code_diff = row['code_diff']
-            code_diff = code_diff[:16000] #truncate the code to 16000 characters, mainly due to model limitations
+            code_diff = code_diff[:16000]  # truncate the code to 16000 characters, mainly due to model limitations
             row['code_diff'] = code_diff
-            code_change = row  
-            #print(code_diff)
+            code_change = row
+            # print(code_diff)
             summary = summarize_code_change(code_change)
             output.append(summary)
-            
-    #Write the updated rows back to the same CSV file
+
+    # Write the updated rows back to the same CSV file
     with open(output_file, 'w', newline='') as json_file:
         json.dump(output, json_file, indent=2)
 
+
 def main():
-    
     diff = '''
     {
     "commit_message": "added MongoDB info in README\n",
@@ -109,11 +104,11 @@ def main():
 },
 
     '''
-    
-    #print(prompt)
-    #print(summarize_code_change(diff))
+
+    # print(prompt)
+    # print(summarize_code_change(diff))
     json_code_summarization('git_commits.json', 'git_commits_summarized.json')
+
 
 if __name__ == "__main__":
     main()
-    

@@ -27,6 +27,11 @@ void main() {
       // TODO
     });
 
+    // String headline
+    test('to test the property `headline`', () async {
+      // TODO
+    });
+
     // String title
     test('to test the property `title`', () async {
       // TODO

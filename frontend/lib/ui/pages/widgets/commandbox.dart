@@ -81,7 +81,7 @@ class CommandBox extends ConsumerWidget {
       focusNode: _blockFocusNode,
       decoration: InputDecoration(
           hintText:
-              'Write your text block here. Press SHIFT+Enter to save. Press "/" for commands',
+              'Write your text block here. Press Meta+Enter to save. Press "/" for commands',
           hintStyle: context.textTheme.bodyMedium),
       onChanged: (text) async {
         if (text.isNotEmpty && text.startsWith('/')) {
@@ -523,13 +523,13 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
             setState(() {
               filtered = [];
             });
-            print('Escape');
+            //print('Escape');
           } else if (value.logicalKey == LogicalKeyboardKey.enter) {
             // onSubmit!(controller.text);
             // ref.read(provider.notifier).setList([]);
-            print('Enter: text: ${widget.controller.text}');
+            //print('Enter: text: ${widget.controller.text}');
           } else if (value.logicalKey == LogicalKeyboardKey.arrowUp) {
-            print('Arrow up');
+            //print('Arrow up');
             setState(() {
               if (selectedIndex == null) {
                 selectedIndex = filtered.length - 1;
@@ -540,7 +540,7 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
 
             // inputFocusNode?.requestFocus();
           } else if (value.logicalKey == LogicalKeyboardKey.arrowDown) {
-            print('Arrow down');
+            //print('Arrow down');
             setState(() {
               if (selectedIndex == null) {
                 selectedIndex = 0;
@@ -549,9 +549,9 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
               }
             });
           } else if (value.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            print('Arrow left');
+            //print('Arrow left');
           } else if (value.logicalKey == LogicalKeyboardKey.arrowRight) {
-            print('Arrow right');
+            //print('Arrow right');
           } else {
             // print('Key: ${value.logicalKey.keyLabel}');
           }
@@ -562,14 +562,14 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
   Widget callbackShortcutWrapper({required Widget child}) {
     Map<ShortcutActivator, VoidCallback> bindings = {
       const SingleActivator(LogicalKeyboardKey.keyA, meta: true): () {
-        print('Meta + A');
+        //print('Meta + A');
         widget.controller.selection = TextSelection(
           baseOffset: 0,
           extentOffset: widget.controller.text.length,
         );
       },
       const SingleActivator(LogicalKeyboardKey.arrowUp, meta: false): () {
-        print('Arrow up');
+        //print('Arrow up');
         if (filtered.isNullOrEmpty) {
           return;
         }
@@ -606,7 +606,7 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
         });
       },
       const SingleActivator(LogicalKeyboardKey.arrowDown, meta: false): () {
-        print('Arrow down');
+        //print('Arrow down');
         if (filtered.isNullOrEmpty) {
           return;
         }

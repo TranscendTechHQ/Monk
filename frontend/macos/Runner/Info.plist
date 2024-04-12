@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Hey Monk</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
@@ -48,5 +50,7 @@
   <string>337392647778-3j84aqtmia13h4rnn76ud66q2aacjr56.apps.googleusercontent.com</string>
 	<key>GIDServerClientID</key>
 	<string>337392647778-99gj0cpsu12dci6uo45f7aue0j7j9rsq.apps.googleusercontent.com</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
 </dict>
 </plist>

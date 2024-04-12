@@ -27,6 +27,8 @@ class ThreadModel {
 
     required  this.creator,
 
+     this.headline,
+
     required  this.title,
 
     required  this.type,
@@ -82,6 +84,18 @@ class ThreadModel {
 
   @JsonKey(
     
+    name: r'headline',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? headline;
+
+
+
+  @JsonKey(
+    
     name: r'title',
     required: true,
     includeIfNull: false
@@ -110,6 +124,7 @@ class ThreadModel {
      other.content == content &&
      other.createdDate == createdDate &&
      other.creator == creator &&
+     other.headline == headline &&
      other.title == title &&
      other.type == type;
 
@@ -119,6 +134,7 @@ class ThreadModel {
     content.hashCode +
     createdDate.hashCode +
     creator.hashCode +
+    headline.hashCode +
     title.hashCode +
     type.hashCode;
 

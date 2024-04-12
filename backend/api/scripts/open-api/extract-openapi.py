@@ -2,13 +2,14 @@
 import argparse
 import json
 import sys
+
 import yaml
 from uvicorn.importer import import_from_string
 
 parser = argparse.ArgumentParser(prog="extract-openapi.py")
-parser.add_argument("app",       help='App import string. Eg. "main:app"', default="main:app")
-parser.add_argument("--app-dir", help="Directory containing the app", default=None)
-parser.add_argument("--out",     help="Output file ending in .json or .yaml", default="openapi.yaml")
+parser.add_argument("app", help='App import string. Eg. "main:app"', default="main:app")
+parser.add_argument("--app-dir", help="Directory containing the app", default="../../")
+parser.add_argument("--out", help="Output file ending in .json or .yaml", default="openapi.yaml")
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -30,7 +31,7 @@ if __name__ == "__main__":
             yaml.dump(openapi, f, sort_keys=False)
 
     print(f"spec written to {args.out}")
-    
+
     # Load the YAML file
     with open(args.out, "r") as file:
         data = yaml.safe_load(file)
@@ -46,6 +47,3 @@ if __name__ == "__main__":
     with open(args.out, "w") as file:
         yaml.dump(data, file)
     print(f"modified spec written to {args.out}")
-
-
-

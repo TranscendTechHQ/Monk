@@ -1,0 +1,32 @@
+import 'package:test/test.dart';
+import 'package:openapi/openapi.dart';
+
+
+/// tests for SlackApi
+void main() {
+  final instance = Openapi().getSlackApi();
+
+  group(SlackApi, () {
+    // Ch
+    //
+    //Future<CompositeChannelList> chChannelListGet() async
+    test('test chChannelListGet', () async {
+      // TODO
+    });
+
+    // Public Channels
+    //
+    //Future<PublicChannelList> publicChannelsPublicChannelsGet() async
+    test('test publicChannelsPublicChannelsGet', () async {
+      // TODO
+    });
+
+    // Subscribe Channel
+    //
+    //Future<SubscribedChannelList> subscribeChannelSubscribeChannelPost(SubcribeChannelRequest subcribeChannelRequest) async
+    test('test subscribeChannelSubscribeChannelPost', () async {
+      // TODO
+    });
+
+  });
+}

@@ -1,15 +1,12 @@
 import asyncio
 import json
-import pprint
-
-from pymongo import MongoClient
-from config import settings
-from utils.headline import generate_headline
-import os 
+import os
 import re
 
 from openai import OpenAI
+from pymongo import MongoClient
 
+from config import settings
 
 system_text = """
 
@@ -59,18 +56,17 @@ user_text = """
 - <id11>:I'll cook lasagna for you after we finish playing.
 """
 
-
 os.environ["OPEN_API_GPT_MODEL"] = settings.OPEN_API_GPT_MODEL
 os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
 os.environ["OPENAI_API_ENDPOINT"] = settings.OPENAI_API_ENDPOINT
 os.environ["OPENAI_API_VERSION"] = settings.OPENAI_API_VERSION
 
+
 class App:
     pass
 
+
 app = App()
-
-
 
 
 def remove_triple_quote_blocks(text):
@@ -79,46 +75,43 @@ def remove_triple_quote_blocks(text):
     return cleaned_text
 
 
-
-
 def startup_db_client():
     app.mongodb_client = MongoClient(settings.DB_URL)
     app.mongodb = app.mongodb_client[settings.DB_NAME]
 
 
-
 def shutdown_db_client():
     app.mongodb_client.close()
-    
 
 
 def openai_completion(system_text, user_text):
     client = OpenAI()
 
     response = client.chat.completions.create(
-    model=settings.OPEN_API_GPT_MODEL,
-    messages=[
-        {
-        "role": "system",
-        "content": system_text
-        },
-        {
-        "role": "user",
-        "content": user_text[:16385]  # Limiting the user text to 16385 characters because of openai limit
-        }
-    ],
-    temperature=1,
-    max_tokens=4096,
-    top_p=1
+        model=settings.OPEN_API_GPT_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": system_text
+            },
+            {
+                "role": "user",
+                "content": user_text[:16385]  # Limiting the user text to 16385 characters because of openai limit
+            }
+        ],
+        temperature=1,
+        max_tokens=4096,
+        top_p=1
     )
     return response.choices[0].message.content
+
 
 def messages_to_topics():
     topics = []
     topic = {}
     topic["topic"] = "topic name 1"
     topic["message_ids"] = []
-     # File path to write the JSON data
+    # File path to write the JSON data
     file_path = "messages.json"  # Replace with your desired file name
     data = {}
     user_text = ""
@@ -128,20 +121,21 @@ def messages_to_topics():
     messages = data["messages"]
     for message in messages:
         cleaned_text = remove_triple_quote_blocks(message["text"])
-        user_text= user_text + "- " + message["message_id"] +":" + cleaned_text +"\n"
-    #print(user_text)
+        user_text = user_text + "- " + message["message_id"] + ":" + cleaned_text + "\n"
+    # print(user_text)
     return user_text
+
 
 def print_clustered_messages():
     topics = []
-    
-     # File path to write the JSON data
+
+    # File path to write the JSON data
     message_file_path = "messages.json"  # Replace with your desired file name
     data = {}
     assistant_file_path = "assistant_text.json"
     with open(assistant_file_path, "r") as assistant_file, open(message_file_path, "r") as infile:
         file_data = json.load(assistant_file)
-        #print(file_data.keys())
+        # print(file_data.keys())
         topics = file_data["topics"]
         file_data = json.load(infile)
         messages = file_data["messages"]
@@ -152,13 +146,11 @@ def print_clustered_messages():
                     if message["message_id"] == msgid:
                         print(message["text"])
                         break
-            #print(topic["message_ids"])
+            # print(topic["message_ids"])
             print("\n\n")
-    
-        
-  
 
-async def main() :
+
+async def main():
     startup_db_client()
 
     sample_text = """
@@ -172,17 +164,16 @@ async def main() :
     ```
     """
 
-    #cleaned_text = remove_triple_quote_blocks(sample_text)
-    #print(cleaned_text)
+    # cleaned_text = remove_triple_quote_blocks(sample_text)
+    # print(cleaned_text)
     user_text = messages_to_topics()
     assistant_text = openai_completion(system_text, user_text)
     with open("assistant_text.json", "w") as json_file:
         json_file.write(assistant_text)
-    #print(assistant_text)
+    # print(assistant_text)
     print_clustered_messages()
     shutdown_db_client()
-    
-    
-    
+
+
 if __name__ == "__main__":
     asyncio.run(main())
