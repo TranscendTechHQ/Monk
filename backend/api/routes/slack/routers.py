@@ -24,7 +24,7 @@ async def get_public_channel_list():
 @router.get("/public_channels", response_model=PublicChannelList,
             response_description="Get all public channels")
 async def public_channels(request: Request,
-                          #session: SessionContainer = Depends(verify_session())
+                          session: SessionContainer = Depends(verify_session())
                          ):
     # get user id from session
     #user_id = session.get_user_id()
@@ -38,11 +38,10 @@ async def public_channels(request: Request,
 @router.get("/channel_list", response_model=CompositeChannelList,
             response_description="Get all blocks for a given date")
 async def ch(request: Request,
-             #session: SessionContainer = Depends(verify_session())
+             session: SessionContainer = Depends(verify_session())
             ):
     # get user id from session
-    #user_id = session.get_user_id()
-    user_id = "a4983b11-3465-4d00-9281-ec89048ce082"
+    user_id = session.get_user_id()
     subscribed_channel_collection = asyncdb.subscribed_channels_collection
     subscribed_channels = await subscribed_channel_collection.find_one({"_id": user_id})
     if subscribed_channels is None:
@@ -58,11 +57,10 @@ async def ch(request: Request,
 @router.post("/subscribe_channel", response_model=SubscribedChannelList)
 async def subscribe_channel(request: Request,
                             channels_to_subscribe: SubcribeChannelRequest = Body(...),
-                            #session: SessionContainer = Depends(verify_session())
+                            session: SessionContainer = Depends(verify_session())
                            ):
     # get user id from session
-    #user_id = session.get_user_id()
-    user_id = "a4983b11-3465-4d00-9281-ec89048ce082"
+    user_id = session.get_user_id()
     subscribed_channel_collection = asyncdb.subscribed_channels_collection
     public_channels_list = await get_public_channel_list()
     subscribed_channels_list:list[ChannelModel] = []
