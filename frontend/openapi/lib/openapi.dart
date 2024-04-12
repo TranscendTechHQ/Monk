@@ -10,16 +10,22 @@ export 'package:openapi/src/auth/oauth.dart';
 
 export 'package:openapi/src/api/default_api.dart';
 export 'package:openapi/src/api/session_api.dart';
+export 'package:openapi/src/api/slack_api.dart';
 export 'package:openapi/src/api/threads_api.dart';
 
 export 'package:openapi/src/model/block_collection.dart';
 export 'package:openapi/src/model/block_model.dart';
+export 'package:openapi/src/model/channel_model.dart';
+export 'package:openapi/src/model/composite_channel_list.dart';
 export 'package:openapi/src/model/create_child_thread_model.dart';
 export 'package:openapi/src/model/create_thread_model.dart';
 export 'package:openapi/src/model/creator.dart';
 export 'package:openapi/src/model/http_validation_error.dart';
 export 'package:openapi/src/model/model_date.dart';
+export 'package:openapi/src/model/public_channel_list.dart';
 export 'package:openapi/src/model/session_info.dart';
+export 'package:openapi/src/model/subcribe_channel_request.dart';
+export 'package:openapi/src/model/subscribed_channel_list.dart';
 export 'package:openapi/src/model/thread_headline_model.dart';
 export 'package:openapi/src/model/thread_headlines_model.dart';
 export 'package:openapi/src/model/thread_meta_data.dart';
