@@ -45,7 +45,7 @@ async def ch(request: Request,
     subscribed_channel_collection = asyncdb.subscribed_channels_collection
     subscribed_channels = await subscribed_channel_collection.find_one({"_id": user_id})
     if subscribed_channels is None:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content="No subscribed channels found")
+        subscribed_channels = {"_id": user_id, "subscribed_channels": []}
     public_channels = await get_public_channel_list()
     composite_channels = CompositeChannelList(
         id = subscribed_channels['_id'],
