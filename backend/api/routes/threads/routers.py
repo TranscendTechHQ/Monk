@@ -142,10 +142,8 @@ async def md(request: Request,
     for doc in threads:
         userinfo = await asyncdb.users_collection.find_one({"_id": doc['creator']})
         if not userinfo:
-            userinfo = await asyncdb.users_collection.find_one({"user_name": doc['creator']})
-            if not userinfo:
-                print("User not found")
-                return None
+            print("User not found")
+            return None
         creator = {}
         if userinfo is not None:
             creator["id"] = userinfo["_id"]
@@ -335,12 +333,22 @@ async def get_thread(request: Request, title: str,
     old_thread = await get_mongo_document({"title": title}, request.app.mongodb["threads"])
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
+
+    thread_content = jsonable_encoder(old_thread)
+    user = get_user_by_id(thread_content['creator'])
+    thread_content['creator'] = jsonable_encoder(user)['user_name']
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(old_thread))
+                        content=thread_content)
 
 
 @router.get("/allThreads", response_model=List[ThreadsModel])
 async def at(request: Request, session: SessionContainer = Depends(verify_session())):
     # Get all threads from MongoDB by date created
     threads = await get_mongo_documents(request.app.mongodb["threads"])
+    modified_threads = []
+    for doc in threads:
+        thread_content = jsonable_encoder(doc)
+        user = get_user_by_id(thread_content['creator'])
+        thread_content['creator'] = jsonable_encoder(user)['user_name']
+        modified_threads.append(jsonable_encoder(thread_content))
     return threads
