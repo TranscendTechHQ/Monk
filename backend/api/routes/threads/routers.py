@@ -138,18 +138,20 @@ async def md(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
     threads = await get_mongo_documents(request.app.mongodb["threads"])
+    users = await get_mongo_documents(request.app.mongodb["users"])
     metadata = []
     for doc in threads:
-        userinfo = await asyncdb.users_collection.find_one({"_id": doc['creator']})
-        if not userinfo:
-            print("User not found")
-            return None
         creator = {}
-        if userinfo is not None:
-            creator["id"] = userinfo["_id"]
-            creator["name"] = userinfo["user_name"]
-            creator["picture"] = userinfo["user_picture"]
-            creator["email"] = userinfo["email"]
+        user_info = None
+        for user in users:
+            if doc['creator'] == user['_id']:
+                user_info = user
+                break
+        if user_info:
+            creator["id"] = user_info["_id"]
+            creator["name"] = user_info["user_name"]
+            creator["picture"] = user_info["user_picture"]
+            creator["email"] = user_info["email"]
         metadata.append({
             "_id": doc["_id"],
             "title": doc["title"],
