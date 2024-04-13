@@ -19,6 +19,7 @@ from supertokens_python.recipe.thirdparty.types import User
 
 from config import settings
 from routes.threads.routers import router as threads_router
+from routes.slack.routers import router as slack_router
 from utils.db import startup_async_db_client, shutdown_async_db_client
 
 # Set your Slack client ID and client secret
@@ -91,16 +92,7 @@ async def secure_api(s: SessionContainer = Depends(verify_session())) -> Session
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8000",
-        "http://localhost:8001",
-        "http://localhost:3000",
-        "http://heymonk.app",
-        "https://heymonk.app",
-        "http://monk.heymonk.app",
-        "http://api.heymonk.app",
-        "http://www.heymonk.app",
-        "https://web.heymonk.app",
-
+        settings.WEBSITE_DOMAIN,
     ],
     allow_credentials=True,
     # allow_methods=["*"],
@@ -199,6 +191,7 @@ async def shutdown_db_client():
 
 
 app.include_router(threads_router, tags=["threads"])
+app.include_router(slack_router, tags=["slack"])
 
 if __name__ == "__main__":
     uvicorn.run(

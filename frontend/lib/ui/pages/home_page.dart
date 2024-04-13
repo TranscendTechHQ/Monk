@@ -4,8 +4,9 @@ import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
-import 'package:openapi/openapi.dart';
 import 'package:supertokens_flutter/supertokens.dart';
+
+import 'subscribed-channels/channels_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -90,6 +91,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         fullName = sessionInfo.fullName;
         email = sessionInfo.email;
+        // print(JsonEncoder.withIndent(' ').convert(sessionInfo.toJson()));
       });
       return true;
     }
@@ -177,7 +179,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () async {
                       // Navigator.pushNamed(context, ThreadPage.route);
-                      Navigator.pushNamed(context, NewsPage.route);
+                      Navigator.push(
+                        context,
+                        SubscribedChannelsPage.launchRoute(
+                          ifAlreadySubscribed: () =>
+                              Navigator.pushReplacementNamed(
+                            context,
+                            NewsPage.route,
+                          ),
+                        ),
+                      );
                     },
                     child: Text(
                       "Continue",

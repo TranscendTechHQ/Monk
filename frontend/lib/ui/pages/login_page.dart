@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +11,14 @@ import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
+import 'package:frontend/ui/pages/news_page.dart';
+import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
-import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:frontend/ui/widgets/bg_wrapper.dart';
 //import 'package:flutter/services.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
+
 /*import 'package:sign_in_with_apple/sign_in_with_apple.dart'
     hide AuthorizationRequest;*/
 import '../../helper/network.dart';
@@ -35,8 +41,8 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     appAuth = const FlutterAppAuth();
-    auth0 = Auth0(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
-    auth0Web = Auth0Web(Constants.AUTH0_DOMAIN, Constants.AUTH0_CLIENT_ID);
+    auth0 = Auth0(Constants.auth0Domain, Constants.auth0ClientId);
+    auth0Web = Auth0Web(Constants.auth0Domain, Constants.auth0ClientId);
     if (kIsWeb) {
       auth0Web.onLoad().then(
             (final credentials) => setState(
@@ -117,16 +123,21 @@ class _LoginPageState extends State<LoginPage> {
     // await logout();
     try {
       if (kIsWeb) {
-        await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        await auth0Web.loginWithRedirect(
+            redirectUrl: kDebugMode
+                ? 'http://localhost:3000'
+                : 'https://web.heymonk.app/');
+
         return;
       } else {
         var credentials = await auth0
-            .webAuthentication(scheme: Constants.AUTH0_CUSTOM_SCHEME)
+            .webAuthentication(scheme: Constants.auth0CustomScheme)
             // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
             // useHTTPS is ignored on Android
             .login(useHTTPS: true);
         loader.hideLoader();
         loader.showLoader(context, message: "processing.");
+        // print(const JsonEncoder.withIndent(' ',).convert(credentials.toMap()));
         await verifyCredentials(credentials.accessToken, credentials.idToken);
       }
     } catch (e) {
@@ -217,8 +228,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     await NetworkManager.instance.client.get("/healthcheck");
-    var result =
-        await MonkException.handle(() => NetworkManager.instance.client.post(
+    var result = await MonkException.handle<Response<dynamic>>(
+        () => NetworkManager.instance.client.post(
               "/auth/signinup",
               data: {
                 "thirdPartyId": "auth0",
@@ -228,46 +239,112 @@ class _LoginPageState extends State<LoginPage> {
                 },
               },
             ));
+    final map = result.data as Map<String, dynamic>?;
+    final userId = map?['user']?['thirdParty']?['userId'];
+
+    // print(JsonEncoder.withIndent(' ').convert(map?['user']));
     if (result.statusCode == 200) {
-      Future.delayed(
-        Duration.zero,
-        () {
-          prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
-        },
-      );
+      // For slack authentication we don't need to verify the organization
+      if (userId is String && userId.startsWith("oauth2|sign-in-with-slack")) {
+        prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
+      } else {
+        logger.i(
+            'Google sign in was successful. Verifying if user is a part of an client workspace.');
+        final email = map?['user']?['email'];
+        Navigator.of(context)
+            .push(VerifyOrganization.launchRoute(email, onVerified: () {
+          logger.i('✅ Verification success. Redirecting to news page');
+          Navigator.pushNamed(context, NewsPage.route);
+        }, onVerifyFailed: () {
+          logger.i(
+              '❌ Verification failed. Perhaps user is not affiliated with the client workspace.');
+        }));
+      }
     } else {
       logger.e('Failed to verify credentials', error: result.data);
     }
   }
 
+  Widget wrapper(
+      {required BuildContext context, required List<Widget> children}) {
+    if (context.isTablet || context.isMobile) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+        ),
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: children,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // IconButton(
-            //   icon: Image.asset(
-            //     "assets/signin_with_google_small.png",
-            //     //width: 100,
-            //   ),
-            //   onPressed: () {
-            //     loginWithGoogle();
-            //   },
-            // ),
-            FilledButton.tonal(
-              onPressed: () async => loginWithOauth(),
-              style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-              )),
-              child: Text(
-                'Login with Auth0',
-                style: context.textTheme.labelSmall,
+    return PageScaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: wrapper(
+            context: context,
+            children: [
+              Image.asset(
+                'assets/logo.png',
+                width: context.scale(240, 200, 160),
+                height: context.scale(240, 200, 160),
               ),
-            ),
-          ],
+              const SizedBox(width: 100),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: context.isMobile || context.isTablet
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  Text(
+                    "Welcome to Monk",
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.displayMedium!
+                        .copyWith(
+                          color: context.customColors.sourceMonkBlue,
+                          fontWeight: FontWeight.w400,
+                        )
+                        .scaleFont(
+                          large: 32,
+                          medium: 28,
+                          small: 24,
+                        ),
+                  ),
+                  const SizedBox(height: 62),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 68,
+                        vertical: 18,
+                      ),
+                    ),
+                    onPressed: () => loginWithOauth(),
+                    child: Text(
+                      "Login",
+                      style: context.textTheme.bodyLarge,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

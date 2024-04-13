@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/backend/api/main.py",
       "cwd": "${workspaceFolder}/backend/api",
-      "pythonPath": "${workspaceFolder}/backend/api/env/bin/python"
+      "python": "${workspaceFolder}/backend/api/env/bin/python"
     },
 
     {

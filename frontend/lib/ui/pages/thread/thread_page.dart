@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/thread/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_detail_page.dart';

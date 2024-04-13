@@ -1,5 +1,4 @@
-//const apiDomain = "http://35.209.147.65:8000";
-const apiDomain = "http://0.0.0.0:8000";
+const apiDomain = "https://api.heymonk.app";
 
 class Constants {
   static String appName = "Monk";
@@ -12,9 +11,9 @@ class Constants {
   static String slackLogin =
       "https://slack.com/oauth/v2/authorize?client_id=4287010774055.6810855127681&scope=channels:history,groups:history,im:history,mpim:history,channels:read,groups:read&user_scope=channels:history,groups:history,im:history,mpim:history,channels:read,groups:read";
 
-  static String AUTH0_DOMAIN = "dev-17s0i0aukvst4yiv.us.auth0.com";
-  static String AUTH0_CLIENT_ID = "KdrFUiiWInZY8PXlnZw0dzbrxK4sjwq6";
-  static String AUTH0_CUSTOM_SCHEME = "app.heymonk";
+  static String auth0Domain = "dev-17s0i0aukvst4yiv.us.auth0.com";
+  static String auth0ClientId = "KdrFUiiWInZY8PXlnZw0dzbrxK4sjwq6";
+  static String auth0CustomScheme = "app.heymonk";
 }
 
 const containerWidth = 800.0; //TODO: make this a provider

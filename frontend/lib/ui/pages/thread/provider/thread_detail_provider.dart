@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/main.dart';
@@ -51,7 +50,7 @@ class ThreadDetail extends _$ThreadDetail {
         createChildThreadModel: createChildThreadModel,
       );
       if (response.statusCode == 201) {
-        print(response.data);
+        //print(response.data);
         if (response.data != null) {
           logger.d("Child thread is already created");
           return ThreadDetailState.result(thread: response.data!);

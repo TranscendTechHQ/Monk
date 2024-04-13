@@ -174,19 +174,17 @@ class NewsCard extends StatelessWidget {
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
-                      if (metaData.createdDate != null)
-                        Text(
-                          DateFormat('dd MMM yyyy').format(
-                              DateTime.tryParse(metaData.createdDate)!
-                                  .toLocal()),
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(.6),
-                          ),
+                      Text(
+                        DateFormat('dd MMM yyyy').format(
+                            DateTime.tryParse(metaData.createdDate)!.toLocal()),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(.6),
                         ),
+                      ),
                     ],
                   ),
                   const Spacer(),
