@@ -79,6 +79,8 @@ class CommandBox extends ConsumerWidget {
       minLines: 2,
       maxLines: 5,
       focusNode: _blockFocusNode,
+      onTap: () => _blockFocusNode.requestFocus(),
+      showCursor: true,
       decoration: InputDecoration(
           hintText:
               'Write your text block here. Press Meta+Enter to save. Press "/" for commands',
@@ -95,6 +97,8 @@ class CommandBox extends ConsumerWidget {
           // show a popup with the list of commands and allow the user to
           // select one
           // or delete the / and treat it as a normal text
+        } else {
+          _blockFocusNode.requestFocus();
         }
       },
     );
