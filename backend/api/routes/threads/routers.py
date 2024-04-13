@@ -181,12 +181,14 @@ async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     # block as a json string in the db
     thread["content"].append(jsonable_encoder(new_block))
     
-    generate_single_thread_headline(thread, threads_collection, use_ai=False)
 
     updated_thread = await update_mongo_document_fields(
         {"_id": thread_id},
         thread,
         threads_collection)
+    
+    generate_single_thread_headline(thread, threads_collection, use_ai=False)
+    
     return updated_thread
     
 
