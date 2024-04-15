@@ -25,7 +25,7 @@ async def create_new_thread(user_id, title: str, thread_type: ThreadType, conten
             creator["email"] = userinfo["email"]
 
         new_thread = ThreadModel(creator=creator['id'], title=title, type=thread_type,
-                                 content=content)
+                                 content=content, tenant_id=userinfo['tenant_id'])
         new_thread_jsonable = jsonable_encoder(new_thread)
         created_thread = await create_mongo_document(new_thread_jsonable,
                                                      asyncdb.threads_collection)

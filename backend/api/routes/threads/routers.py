@@ -75,6 +75,8 @@ async def th(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread headlines from MongoDB
     collection = request.app.mongodb["threads"]
+    userId = session.get_user_id()
+    userDoc = await request.app.mongodb["users"].find_one({"_id": userId})
     # headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
 
     # Convert string datetimes to actual datetime objects during sorting
@@ -92,13 +94,14 @@ async def th(request: Request,
 
     sorted_headlines = []
     async for document in cursor:
-        headline = {
-            "id": document['_id'],
-            "title": document['title'],
-            "headline": document['headline'],
-            "last_modified": document['last_modified']
-        }
-        sorted_headlines.append(headline)
+        if document['tenant_id'] == userDoc['tenant_id']:
+            headline = {
+                "id": document['_id'],
+                "title": document['title'],
+                "headline": document['headline'],
+                "last_modified": document['last_modified']
+            }
+            sorted_headlines.append(headline)
 
     thread_headlines = ThreadHeadlinesModel(headlines=sorted_headlines)
 
@@ -120,13 +123,16 @@ async def tt(request: Request,
             response_description="Get all thread titles and corresponding types")
 async def ti(request: Request,
              session: SessionContainer = Depends(verify_session())):
-    # Get all thread titles from MongoDB
+    userId = session.get_user_id()
+    userDoc = await request.app.mongodb["users"].find_one({"_id": userId})
 
+    # Get all thread titles from MongoDB
     threads = await get_mongo_documents(request.app.mongodb["threads"])
 
     info: dict[str, ThreadType] = {}
     for thread in threads:
-        info[thread["title"]] = thread["type"]
+        if thread['tenant_id'] == userDoc['tenant_id']:
+            info[thread["title"]] = thread["type"]
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsInfo(info=info)))
@@ -147,7 +153,7 @@ async def md(request: Request,
             if doc['creator'] == user['_id']:
                 user_info = user
                 break
-        if user_info:
+        if user_info and user_info['tenant_id'] == doc['tenant_id']:
             creator["id"] = user_info["_id"]
             creator["name"] = user_info["user_name"]
             creator["picture"] = user_info["user_picture"]

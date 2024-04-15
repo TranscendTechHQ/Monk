@@ -37,6 +37,7 @@ class ServerSettings(BaseSettings):
     API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
     WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:8000")
 
+
 class DatabaseSettings(BaseSettings):
     DB_URL: str = get_secret('DB_URL', HCP_ACCESS_TOKEN)
     DB_NAME: str = get_secret('DB_NAME', HCP_ACCESS_TOKEN)
