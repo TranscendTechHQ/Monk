@@ -35,8 +35,9 @@ class ServerSettings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = os.getenv("FASTAPI_PORT", 8000)
     API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
-    WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:8000")
-
+    WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:3000")
+    INSTALL_DOMAIN: str = os.getenv("INSTALL_DOMAIN", "http://localhost:3000")
+    
 class DatabaseSettings(BaseSettings):
     DB_URL: str = get_secret('DB_URL', HCP_ACCESS_TOKEN)
     DB_NAME: str = get_secret('DB_NAME', HCP_ACCESS_TOKEN)

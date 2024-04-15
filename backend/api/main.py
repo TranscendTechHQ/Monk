@@ -93,6 +93,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         settings.WEBSITE_DOMAIN,
+        settings.INSTALL_DOMAIN,
     ],
     allow_credentials=True,
     # allow_methods=["*"],
