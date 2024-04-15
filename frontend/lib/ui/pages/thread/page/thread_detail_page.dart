@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
-import 'package:frontend/ui/pages/thread/provider/thread_detail_provider.dart';
+import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
