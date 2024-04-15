@@ -125,6 +125,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 email = result.user.email
                 mongodb_client = AsyncIOMotorClient(settings.DB_URL)
                 mongodb = mongodb_client[settings.DB_NAME]
+                mongodb_users = mongodb["users"]
 
                 # print(result.user.user_id)
                 # print(result.user.third_party_info.user_id) # this gives out output like oauth2|sign-in-with-slack|T048F0ANS1M-U066Q9JAU3B, google-oauth2|101162861063367124308
@@ -151,6 +152,25 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     thirdparty_user_id = split_str[1]
                     # print(thirdparty_user_id)
 
+                    # check if the email id is whitelisted
+                    whitelisted_user = await mongodb['whitelisted_users'].find_one({"email": email})
+                    if whitelisted_user:
+                        tenant_id = whitelisted_user['tenant_id']
+
+                        update_result = await mongodb_users.update_one({"_id": user_id},
+                                                                       {"$set":
+                                                                            {"user_name": user_name,
+                                                                             "user_picture": user_picture,
+                                                                             "email": email,
+                                                                             "tenant_id": tenant_id,
+                                                                             "thirdparty_provider": third_party_provider,
+                                                                             "thirdparty_user_id": thirdparty_user_id,
+                                                                             "thirdparty_team_id": thirdparty_team_id,
+
+                                                                             }}, upsert=True)
+
+                        return result
+
                     domain = email.split('@')[1]
                     tenants_collection = mongodb["tenants"]
                     old_tenant = await tenants_collection.find_one({"tenant_name": domain})
@@ -173,7 +193,6 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 # print(result.session.get_session_data_from_database())
                 # print(result.raw_user_info_from_provider.from_user_info_api.keys())
 
-                mongodb_users = mongodb["users"]
                 update_result = await mongodb_users.update_one({"_id": user_id},
                                                                {"$set":
                                                                     {"user_name": user_name,
