@@ -88,31 +88,38 @@ class ChatListView extends ConsumerWidget {
       data: (tuple) {
         final threadHeadlineList = tuple.item1;
         final threadMetaDataList = tuple.item2;
-        return Container(
-          width: containerWidth,
-          alignment: Alignment.center,
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              return SizedBox(
-                width: constraints.maxWidth / 2,
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: threadHeadlineList.length,
-                  padding: const EdgeInsets.only(bottom: 30),
-                  itemBuilder: (context, index) {
-                    final headlineModel = threadHeadlineList[index];
-                    if (threadMetaDataList.isEmpty) return const SizedBox();
-                    final metaData = threadMetaDataList.firstWhereOrNull(
-                        (element) => element.id == headlineModel.id);
-                    if (metaData == null) return const SizedBox();
-                    return NewsCard(
-                      headlineModel: headlineModel,
-                      metaData: metaData,
-                    );
-                  },
-                ),
-              );
-            },
+        return RefreshIndicator(
+          onRefresh: () => Future.wait([
+            ref.refresh(fetchThreadsHeadlinesAsyncProvider.future),
+            ref.refresh(fetchThreadsMdMetaDataAsyncProvider.future)
+          ]),
+          color: context.colorScheme.onSurface.withOpacity(.9),
+          child: Container(
+            width: containerWidth,
+            alignment: Alignment.center,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                return SizedBox(
+                  width: constraints.maxWidth / 2,
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: threadHeadlineList.length,
+                    padding: const EdgeInsets.only(bottom: 30),
+                    itemBuilder: (context, index) {
+                      final headlineModel = threadHeadlineList[index];
+                      if (threadMetaDataList.isEmpty) return const SizedBox();
+                      final metaData = threadMetaDataList.firstWhereOrNull(
+                          (element) => element.id == headlineModel.id);
+                      if (metaData == null) return const SizedBox();
+                      return NewsCard(
+                        headlineModel: headlineModel,
+                        metaData: metaData,
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         );
       },

@@ -62,40 +62,6 @@ Future<ThreadModel> createOrGetThread(
   return response.data!;
 }
 
-/*
-Future<BlockCollection> journalBlocksDate(DateTime date) async {
-  final blockApi = NetworkManager.instance.openApi.getThreadsApi();
-
-  //final modelDate = ModelDate(date: date.toIso8601String());
-  final modelDate = ModelDate(date: date);
-
-  final response =
-      await blockApi.getJournalByDateJournalGet(modelDate: modelDate);
-
-  if (response.statusCode == 200) {
-    final blocks = response.data!;
-    return blocks;
-  } else {
-    return BlockCollection.fromJson({"blocks": []});
-  }
-}
-
-  FutureOr<void> initialize() async {
-    DateTime today = DateTime.now();
-    BlockCollection blocksCollection = await journalBlocksDate(today);
-    List<String> stringBlocks = [];
-
-    state = const AsyncValue.data([]);
-    blocksCollection.toJson().forEach((key, value) {
-      value.forEach((element) {
-        stringBlocks.add(element['content']);
-      });
-    });
-    Iterable<String> inReverse = stringBlocks.reversed;
-    state = AsyncValue.data(inReverse.toList());
-  }
-*/
-
 @riverpod
 class CurrentThread extends _$CurrentThread {
   @override
@@ -210,5 +176,61 @@ class CurrentThread extends _$CurrentThread {
     final blocks =
         state.value?.content?.map((e) => e.content).toList().reversed.toList();
     return blocks ?? [];
+  }
+
+  Future<void> updateBlock(String blockId, String content) async {
+    // Mocking the update block
+    final thread = state.value;
+    if (thread == null) {
+      logger.e("There is no thread to update block");
+      return;
+    }
+
+    final block =
+        thread.content?.firstWhere((element) => element.id == blockId);
+
+    if (block != null) {
+      final map = block.toJson()
+        ..putIfAbsent("content", () => content)
+        ..update("content", (value) => content);
+
+      final updatedBlock = BlockModel.fromJson(map);
+      final newContent = thread.content?.map((e) {
+        if (e.id == blockId) {
+          return updatedBlock;
+        }
+        return e;
+      }).toList();
+      final updatedThreadModel = ThreadModel(
+          title: thread.title,
+          type: thread.type,
+          content: newContent!,
+          creator: thread.creator,
+          id: thread.id,
+          createdDate: thread.createdDate);
+
+      state = AsyncValue.data(updatedThreadModel);
+    } else {
+      logger.e("Can't find block with id $blockId");
+    }
+  }
+
+  Future<void> updateThreadTitle(String title) async {
+    final thread = state.value;
+    if (thread == null) {
+      logger.e("There is no thread to update title");
+      return;
+    }
+
+    final updatedThreadModel = ThreadModel(
+      title: title,
+      type: thread.type,
+      content: thread.content,
+      creator: thread.creator,
+      id: thread.id,
+      createdDate: thread.createdDate,
+    );
+
+    state = AsyncValue.data(updatedThreadModel);
   }
 }
