@@ -154,33 +154,22 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 
                     # check if the email id is whitelisted
                     whitelisted_user = await mongodb['whitelisted_users'].find_one({"email": email})
-                    if whitelisted_user:
-                        tenant_id = whitelisted_user['tenant_id']
+                    if whitelisted_user is None:
+                        return SignInUpPostNoEmailGivenByProviderResponse()
+                    
+                    tenant_id = whitelisted_user['tenant_id']
 
-                        update_result = await mongodb_users.update_one({"_id": user_id},
-                                                                       {"$set":
-                                                                            {"user_name": user_name,
-                                                                             "user_picture": user_picture,
-                                                                             "email": email,
-                                                                             "tenant_id": tenant_id,
-                                                                             "thirdparty_provider": third_party_provider,
-                                                                             "thirdparty_user_id": thirdparty_user_id,
-                                                                             "thirdparty_team_id": thirdparty_team_id,
-
-                                                                             }}, upsert=True)
-
-                        return result
-
-                    domain = email.split('@')[1]
+            
+                    tenant_name = "Tenant:"+ tenant_id
                     tenants_collection = mongodb["tenants"]
-                    old_tenant = await tenants_collection.find_one({"tenant_name": domain})
+                    old_tenant = await tenants_collection.find_one({"tenant_name": tenant_name})
                     if old_tenant:
                         tenant_id = old_tenant['tenant_id']
                     else:
                         tenant = {}
-                        tenant_id = str(uuid.uuid4())
+                        
                         tenant["tenant_id"] = tenant_id
-                        tenant["tenant_name"] = domain
+                        tenant["tenant_name"] = tenant_name
                         tenant["user_id"] = result.user.user_id
                         tenant["user_token"] = result.oauth_tokens['access_token']
                         # tenant["bot_user_id"] = token_data["bot_user_id"]
@@ -189,9 +178,6 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 
                         await tenants_collection.insert_one(tenant)
 
-                # print(result.user.third_party_info.id)
-                # print(result.session.get_session_data_from_database())
-                # print(result.raw_user_info_from_provider.from_user_info_api.keys())
 
                 update_result = await mongodb_users.update_one({"_id": user_id},
                                                                {"$set":
