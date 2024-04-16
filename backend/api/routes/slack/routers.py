@@ -6,7 +6,7 @@ from slack_sdk import WebClient
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
-from routes.slack.models import ChannelModel, CompositeChannelList, PublicChannelList, SubcribeChannelRequest, SubscribedChannelList
+from routes.slack.models import ChannelModel, CompositeChannelList, PublicChannelList, SubscribeChannelRequest, SubscribedChannelList
 from utils.db import asyncdb
 from utils.slack.slack_channel_messages import get_channel_list
 
@@ -56,9 +56,9 @@ async def ch(request: Request,
     
 @router.post("/subscribe_channel", response_model=SubscribedChannelList)
 async def subscribe_channel(request: Request,
-                            channels_to_subscribe: SubcribeChannelRequest = Body(...),
+                            channels_to_subscribe: SubscribeChannelRequest = Body(...),
                             session: SessionContainer = Depends(verify_session())
-                           ):
+                            ):
     # get user id from session
     user_id = session.get_user_id()
     subscribed_channel_collection = asyncdb.subscribed_channels_collection

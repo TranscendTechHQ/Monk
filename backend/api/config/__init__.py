@@ -1,7 +1,9 @@
 import os
+import uuid
 from typing import Optional, Union, Dict, Any
 
 from dotenv import load_dotenv
+from fastapi.encoders import jsonable_encoder
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic_settings import BaseSettings
 from supertokens_python import init, InputAppInfo, SupertokensConfig
@@ -15,6 +17,7 @@ from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriI
 from supertokens_python.recipe.thirdparty.provider import ProviderInput, ProviderConfig, ProviderClientConfig
 from supertokens_python.types import GeneralErrorResponse
 
+# from utils.db import create_mongo_document
 from utils.hashicorp_api import get_access_token, get_secret
 
 load_dotenv()
@@ -37,7 +40,8 @@ class ServerSettings(BaseSettings):
     API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
     WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:3000")
     INSTALL_DOMAIN: str = os.getenv("INSTALL_DOMAIN", "http://localhost:3000")
-    
+
+
 class DatabaseSettings(BaseSettings):
     DB_URL: str = get_secret('DB_URL', HCP_ACCESS_TOKEN)
     DB_NAME: str = get_secret('DB_NAME', HCP_ACCESS_TOKEN)
@@ -108,7 +112,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 
             # This is the response from the OAuth tokens provided by the third party provider
             # print(result.oauth_tokens["access_token"])
-            # other tokens like the refresh_token or id_token are also 
+            # other tokens like the refresh_token or id_token are also
             # available in the OAuthTokens object.
 
             # This gives the user's info as returned by the provider's user profile endpoint.
@@ -121,46 +125,85 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 email = result.user.email
                 mongodb_client = AsyncIOMotorClient(settings.DB_URL)
                 mongodb = mongodb_client[settings.DB_NAME]
-                
-                #print(result.user.user_id)
-                #print(result.user.third_party_info.user_id) # this gives out output like oauth2|sign-in-with-slack|T048F0ANS1M-U066Q9JAU3B, google-oauth2|101162861063367124308
+                mongodb_users = mongodb["users"]
+
+                # print(result.user.user_id)
+                # print(result.user.third_party_info.user_id) # this gives out output like oauth2|sign-in-with-slack|T048F0ANS1M-U066Q9JAU3B, google-oauth2|101162861063367124308
                 third_party_info = result.user.third_party_info.user_id
                 third_party_provider = ""
+                tenant_id = ""
                 if "slack" in third_party_info:
                     third_party_provider = "slack"
                 elif "google" in third_party_info:
                     third_party_provider = "google"
                 thirdparty_user_id = ""
                 thirdparty_team_id = ""
-                #print(third_party_provider)
+                # print(third_party_provider)
                 if third_party_provider == "slack":
                     split_str = third_party_info.split('|')
                     ids = split_str[2].split('-')
                     thirdparty_user_id = ids[1]
-                    #print(thirdparty_user_id)
+                    # print(thirdparty_user_id)
                     thirdparty_team_id = ids[0]
-                    
+                    tenant_id = ids[0]
+
                 elif third_party_provider == "google":
                     split_str = third_party_info.split('|')
                     thirdparty_user_id = split_str[1]
-                    #print(thirdparty_user_id)
-                    
-                
-                #print(result.user.third_party_info.id)
-                #print(result.session.get_session_data_from_database())
-                #print(result.raw_user_info_from_provider.from_user_info_api.keys())
+                    # print(thirdparty_user_id)
 
-                mongodb_users = mongodb["users"]
-                update_result = await mongodb_users.update_one({"_id": user_id},
-                                                               {"$set": 
-                                                                   {"user_name": user_name,
-                                                                    "user_picture": user_picture,
-                                                                    "email": email,
-                                                                    "thirdparty_provider":third_party_provider,
-                                                                    "thirdparty_user_id": thirdparty_user_id,
-                                                                    "thirdparty_team_id": thirdparty_team_id,
-                        
+                    # check if the email id is whitelisted
+                    whitelisted_user = await mongodb['whitelisted_users'].find_one({"email": email})
+                    if whitelisted_user:
+                        tenant_id = whitelisted_user['tenant_id']
+
+                        update_result = await mongodb_users.update_one({"_id": user_id},
+                                                                       {"$set":
+                                                                            {"user_name": user_name,
+                                                                             "user_picture": user_picture,
+                                                                             "email": email,
+                                                                             "tenant_id": tenant_id,
+                                                                             "thirdparty_provider": third_party_provider,
+                                                                             "thirdparty_user_id": thirdparty_user_id,
+                                                                             "thirdparty_team_id": thirdparty_team_id,
+
                                                                              }}, upsert=True)
+
+                        return result
+
+                    domain = email.split('@')[1]
+                    tenants_collection = mongodb["tenants"]
+                    old_tenant = await tenants_collection.find_one({"tenant_name": domain})
+                    if old_tenant:
+                        tenant_id = old_tenant['tenant_id']
+                    else:
+                        tenant = {}
+                        tenant_id = str(uuid.uuid4())
+                        tenant["tenant_id"] = tenant_id
+                        tenant["tenant_name"] = domain
+                        tenant["user_id"] = result.user.user_id
+                        tenant["user_token"] = result.oauth_tokens['access_token']
+                        # tenant["bot_user_id"] = token_data["bot_user_id"]
+                        # tenant["bot_token"] = token_data["access_token"]
+                        tenant["token_response"] = result.to_json()
+
+                        await tenants_collection.insert_one(tenant)
+
+                # print(result.user.third_party_info.id)
+                # print(result.session.get_session_data_from_database())
+                # print(result.raw_user_info_from_provider.from_user_info_api.keys())
+
+                update_result = await mongodb_users.update_one({"_id": user_id},
+                                                               {"$set":
+                                                                    {"user_name": user_name,
+                                                                     "user_picture": user_picture,
+                                                                     "email": email,
+                                                                     "tenant_id": tenant_id,
+                                                                     "thirdparty_provider": third_party_provider,
+                                                                     "thirdparty_user_id": thirdparty_user_id,
+                                                                     "thirdparty_team_id": thirdparty_team_id,
+
+                                                                     }}, upsert=True)
 
                 # await update_user_metadata(user_id=user_id, metadata_update={
                 #   "user_name": user_name

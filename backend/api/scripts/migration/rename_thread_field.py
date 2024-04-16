@@ -21,19 +21,18 @@ def shutdown_db_client():
     app.mongodb_client.close()
 
 
-def copy_creator_from_metadata_to_thread():
-    metadata_collection = app.mongodb["threads_metadata"]
+def rename_last_modified_to_headline_last_modified():
     threads_collection = app.mongodb["threads"]
-    for doc in metadata_collection.find():
+    for doc in threads_collection.find():
         thread_id = doc['_id']
-        thread = threads_collection.update_one({"_id": thread_id}, {'$set': {
-            'creator': doc['creator']['id']
-        }}, upsert=True)
+        threads_collection.update_one({"_id": thread_id}, {'$rename': {
+            'headline_last_modified': 'last_modified'
+        }})
 
 
 async def main():
     startup_db_client()
-    copy_creator_from_metadata_to_thread()
+    rename_last_modified_to_headline_last_modified()
     shutdown_db_client()
 
 

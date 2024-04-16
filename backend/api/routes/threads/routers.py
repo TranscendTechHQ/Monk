@@ -75,6 +75,8 @@ async def th(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread headlines from MongoDB
     collection = request.app.mongodb["threads"]
+    userId = session.get_user_id()
+    userDoc = await request.app.mongodb["users"].find_one({"_id": userId})
     # headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
 
     # Convert string datetimes to actual datetime objects during sorting
@@ -92,13 +94,14 @@ async def th(request: Request,
 
     sorted_headlines = []
     async for document in cursor:
-        headline = {
-            "id": document['_id'],
-            "title": document['title'],
-            "headline": document['headline'],
-            "last_modified": document['last_modified']
-        }
-        sorted_headlines.append(headline)
+        if document['tenant_id'] == userDoc['tenant_id']:
+            headline = {
+                "id": document['_id'],
+                "title": document['title'],
+                "headline": document['headline'],
+                "last_modified": document['last_modified']
+            }
+            sorted_headlines.append(headline)
 
     thread_headlines = ThreadHeadlinesModel(headlines=sorted_headlines)
 
@@ -120,13 +123,16 @@ async def tt(request: Request,
             response_description="Get all thread titles and corresponding types")
 async def ti(request: Request,
              session: SessionContainer = Depends(verify_session())):
-    # Get all thread titles from MongoDB
+    userId = session.get_user_id()
+    userDoc = await request.app.mongodb["users"].find_one({"_id": userId})
 
+    # Get all thread titles from MongoDB
     threads = await get_mongo_documents(request.app.mongodb["threads"])
 
     info: dict[str, ThreadType] = {}
     for thread in threads:
-        info[thread["title"]] = thread["type"]
+        if thread['tenant_id'] == userDoc['tenant_id']:
+            info[thread["title"]] = thread["type"]
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsInfo(info=info)))
@@ -138,20 +144,20 @@ async def md(request: Request,
              session: SessionContainer = Depends(verify_session())):
     # Get all thread titles from MongoDB
     threads = await get_mongo_documents(request.app.mongodb["threads"])
+    users = await get_mongo_documents(request.app.mongodb["users"])
     metadata = []
     for doc in threads:
-        userinfo = await asyncdb.users_collection.find_one({"_id": doc['creator']})
-        if not userinfo:
-            userinfo = await asyncdb.users_collection.find_one({"user_name": doc['creator']})
-            if not userinfo:
-                print("User not found")
-                return None
         creator = {}
-        if userinfo is not None:
-            creator["id"] = userinfo["_id"]
-            creator["name"] = userinfo["user_name"]
-            creator["picture"] = userinfo["user_picture"]
-            creator["email"] = userinfo["email"]
+        user_info = None
+        for user in users:
+            if doc['creator'] == user['_id']:
+                user_info = user
+                break
+        if user_info and user_info['tenant_id'] == doc['tenant_id']:
+            creator["id"] = user_info["_id"]
+            creator["name"] = user_info["user_name"]
+            creator["picture"] = user_info["user_picture"]
+            creator["email"] = user_info["email"]
         metadata.append({
             "_id": doc["_id"],
             "title": doc["title"],
@@ -341,12 +347,22 @@ async def get_thread(request: Request, title: str,
     old_thread = await get_mongo_document({"title": title}, request.app.mongodb["threads"])
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
+
+    thread_content = jsonable_encoder(old_thread)
+    user = get_user_by_id(thread_content['creator'])
+    thread_content['creator'] = jsonable_encoder(user)['user_name']
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(old_thread))
+                        content=thread_content)
 
 
 @router.get("/allThreads", response_model=List[ThreadsModel])
 async def at(request: Request, session: SessionContainer = Depends(verify_session())):
     # Get all threads from MongoDB by date created
     threads = await get_mongo_documents(request.app.mongodb["threads"])
+    modified_threads = []
+    for doc in threads:
+        thread_content = jsonable_encoder(doc)
+        user = get_user_by_id(thread_content['creator'])
+        thread_content['creator'] = jsonable_encoder(user)['user_name']
+        modified_threads.append(jsonable_encoder(thread_content))
     return threads
