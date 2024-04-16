@@ -214,4 +214,23 @@ class CurrentThread extends _$CurrentThread {
       logger.e("Can't find block with id $blockId");
     }
   }
+
+  Future<void> updateThreadTitle(String title) async {
+    final thread = state.value;
+    if (thread == null) {
+      logger.e("There is no thread to update title");
+      return;
+    }
+
+    final updatedThreadModel = ThreadModel(
+      title: title,
+      type: thread.type,
+      content: thread.content,
+      creator: thread.creator,
+      id: thread.id,
+      createdDate: thread.createdDate,
+    );
+
+    state = AsyncValue.data(updatedThreadModel);
+  }
 }

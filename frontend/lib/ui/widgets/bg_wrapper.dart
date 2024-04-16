@@ -29,8 +29,9 @@ class PageScaffold extends StatelessWidget {
 }
 
 class WithMonkAppbar extends StatelessWidget {
-  const WithMonkAppbar({super.key, required this.child});
+  const WithMonkAppbar({super.key, required this.child, this.actions});
   final Widget child;
+  final Widget? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +62,8 @@ class WithMonkAppbar extends StatelessWidget {
                     color: context.colorScheme.onPrimary,
                   ),
                 ),
+                const Spacer(),
+                if (actions != null) actions!,
               ],
             ),
           ),

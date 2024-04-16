@@ -17,8 +17,6 @@ class ThreadCard extends _$ThreadCard {
           ? EThreadCardState.edit
           : EThreadCardState.idle,
     );
-
-    print(state.eState);
   }
 
   void onHoverEnter() {

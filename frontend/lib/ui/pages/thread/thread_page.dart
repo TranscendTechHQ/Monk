@@ -1,18 +1,14 @@
-import 'package:frontend/main.dart';
-import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
-import 'package:frontend/ui/pages/thread/page/thread_detail_page.dart';
-import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
-import 'package:frontend/ui/pages/widgets/commandbox.dart';
-import 'package:frontend/ui/theme/decorations.dart';
-import 'package:frontend/ui/theme/theme.dart';
-import 'package:frontend/ui/widgets/bg_wrapper.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/repo/thread.dart';
-
-import 'package:flutter_emoji/flutter_emoji.dart';
+import 'package:frontend/ui/pages/thread/page/thread_detail_page.dart';
+import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
+import 'package:frontend/ui/pages/widgets/commandbox.dart';
+import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/bg_wrapper.dart';
+import 'package:frontend/ui/widgets/kit/alert.dart';
 import 'package:openapi/openapi.dart';
 
 enum ThreadType { thread, reply }
@@ -61,18 +57,83 @@ class ThreadPage extends ConsumerWidget {
     final currentThread = ref.watch(currentThreadProvider.call(
       title: title,
       type: type,
-      // threadType: threadType,
-      // threadChildId: threadChildId,
     ));
+    final threadTitle = currentThread.maybeWhen(
+      data: (state) => state?.title ?? title,
+      orElse: () => title,
+    );
     final blockInput = CommandBox(title: title, type: type);
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
-          '$formatType -: $title',
+          '$formatType -: $threadTitle',
           style: TextStyle(
               fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Edit title',
+            onPressed: () async {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    final controller = TextEditingController(text: title);
+                    return AlertDialog(
+                      // context: context,
+                      title: const Text('Edit title'),
+                      content: TextField(
+                        controller: controller,
+                        maxLength: 60,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter title',
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            ref
+                                .read(currentThreadProvider
+                                    .call(title: title, type: type)
+                                    .notifier)
+                                .updateThreadTitle(controller.text);
+                            // ref.refresh(currentThreadProvider.call(
+                            //   title: title,
+                            //   type: type,
+                            // ));
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Save'),
+                        )
+                      ],
+                    );
+                  });
+            },
+            icon: const Icon(Icons.edit),
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: () {
+              ref.refresh(currentThreadProvider.call(
+                title: title,
+                type: type,
+              ));
+            },
+          ),
+        ],
       ),
       body: PageScaffold(
         body: Align(
