@@ -45,10 +45,9 @@ class Channels extends _$Channels {
     if (selectedChannels.isNotNullEmpty) {
       final slackApi = NetworkManager.instance.openApi.getSlackApi();
       final res = await slackApi.subscribeChannelSubscribeChannelPost(
-        subcribeChannelRequest: SubcribeChannelRequest(
-          channelIds: selectedChannels.map((e) => e.id).toList(),
-        ),
-      );
+        subscribeChannelRequest: SubscribeChannelRequest(
+        channelIds: selectedChannels.map((e) => e.id).toList(),
+      ),);
       if (res.data != null) {
         state = AsyncData(dd.copyWith(
           subscribedChannels: res.data!.subscribedChannels,

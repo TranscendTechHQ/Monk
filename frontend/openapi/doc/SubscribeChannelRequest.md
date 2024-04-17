@@ -1,4 +1,4 @@
-# openapi.model.SubcribeChannelRequest
+# openapi.model.SubscribeChannelRequest
 
 ## Load the model package
 ```dart

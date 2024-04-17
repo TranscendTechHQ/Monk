@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,6 +55,9 @@ class ThreadDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool titleEditMode = false;
+    TextEditingController titleController = TextEditingController();
+
     CreateChildThreadModel(
       title: title,
       type: type,
@@ -70,10 +74,19 @@ class ThreadDetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '$formatType -: $title',
-          style: TextStyle(
-              fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            titleEditMode != false ? Text(
+              '$formatType -: $title',
+              style: TextStyle(
+                  fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
+            ) : TextField(controller: titleController),
+            const SizedBox(width: 30),
+            IconButton(onPressed: () {
+              
+            }, icon: const Icon(Icons.edit))
+          ],
         ),
       ),
       body: PageScaffold(

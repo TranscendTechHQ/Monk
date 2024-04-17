@@ -17,7 +17,7 @@ doc/PublicChannelList.md
 doc/SessionApi.md
 doc/SessionInfo.md
 doc/SlackApi.md
-doc/SubcribeChannelRequest.md
+doc/SubscribeChannelRequest.md
 doc/SubscribedChannelList.md
 doc/ThreadHeadlineModel.md
 doc/ThreadHeadlinesModel.md
@@ -52,7 +52,7 @@ lib/src/model/http_validation_error.dart
 lib/src/model/model_date.dart
 lib/src/model/public_channel_list.dart
 lib/src/model/session_info.dart
-lib/src/model/subcribe_channel_request.dart
+lib/src/model/subscribe_channel_request.dart
 lib/src/model/subscribed_channel_list.dart
 lib/src/model/thread_headline_model.dart
 lib/src/model/thread_headlines_model.dart
@@ -78,7 +78,7 @@ test/public_channel_list_test.dart
 test/session_api_test.dart
 test/session_info_test.dart
 test/slack_api_test.dart
-test/subcribe_channel_request_test.dart
+test/subscribe_channel_request_test.dart
 test/subscribed_channel_list_test.dart
 test/thread_headline_model_test.dart
 test/thread_headlines_model_test.dart

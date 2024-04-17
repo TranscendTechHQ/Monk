@@ -233,7 +233,7 @@ components:
       - accessTokenPayload
       title: SessionInfo
       type: object
-    SubcribeChannelRequest:
+    SubscribeChannelRequest:
       properties:
         channel_ids:
           items:
@@ -242,7 +242,7 @@ components:
           type: array
       required:
       - channel_ids
-      title: SubcribeChannelRequest
+      title: SubscribeChannelRequest
       type: object
     SubscribedChannelList:
       properties:
@@ -333,6 +333,7 @@ components:
         created_date: '2021-01-01T00:00:00.000000'
         creator: user1
         headline: This is the headline of the thread
+        tenant_id: ABCD1234
         title: This is the title of the thread
         type: /new-plan
       properties:
@@ -354,6 +355,9 @@ components:
         headline:
           title: Headline
           type: string
+        tenant_id:
+          title: Tenant Id
+          type: string
         title:
           maxLength: 100
           minLength: 1
@@ -367,6 +371,7 @@ components:
       - creator
       - type
       - title
+      - tenant_id
       title: ThreadModel
       type: object
     ThreadsInfo:
@@ -513,6 +518,37 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Create
+      tags:
+      - threads
+    put:
+      operationId: update_blocks_put
+      parameters:
+      - in: query
+        name: thread_title
+        required: true
+        schema:
+          title: Thread Title
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBlockModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadModel'
+          description: Update a block
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update
       tags:
       - threads
   /blocks/child:
@@ -737,7 +773,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubcribeChannelRequest'
+              $ref: '#/components/schemas/SubscribeChannelRequest'
         required: true
       responses:
         '200':
@@ -833,6 +869,37 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Get Thread Id
+      tags:
+      - threads
+    put:
+      operationId: update_th_threads__id__put
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateThreadModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadModel'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Th
       tags:
       - threads
   /threads/{title}:

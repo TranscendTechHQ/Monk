@@ -105,5 +105,19 @@ void main() {
       // TODO
     });
 
+    // Update
+    //
+    //Future<ThreadModel> updateBlocksPut(String threadTitle, UpdateBlockModel updateBlockModel) async
+    test('test updateBlocksPut', () async {
+      // TODO
+    });
+
+    // Update Th
+    //
+    //Future<ThreadModel> updateThThreadsIdPut(String id, CreateThreadModel createThreadModel) async
+    test('test updateThThreadsIdPut', () async {
+      // TODO
+    });
+
   });
 }

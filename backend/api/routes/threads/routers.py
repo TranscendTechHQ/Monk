@@ -43,7 +43,7 @@ async def keyword_search(query, collection):
     return threads
 
 
-@router.get("/searchTitles", response_model=list[str], 
+@router.get("/searchTitles", response_model=list[str],
             response_description="Search threads by query and get title")
 async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
         (list)[str]:
@@ -176,6 +176,7 @@ async def md(request: Request,
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
+
 async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     threads_collection = asyncdb.threads_collection
@@ -197,24 +198,24 @@ async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     # change new_block_dict to json_new_block if you want to store
     # block as a json string in the db
     thread["content"].append(jsonable_encoder(new_block))
-    
+
 
     updated_thread = await update_mongo_document_fields(
         {"_id": thread_id},
         thread,
         threads_collection)
-    
+
     generate_single_thread_headline(thread, threads_collection, use_ai=False)
-    
+
     return updated_thread
-    
+
 
 @router.post("/blocks", response_model=ThreadModel, response_description="Create a new block")
 async def create(request: Request, thread_title: str, block: UpdateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
-   
+
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
     thread = await get_mongo_document(
@@ -224,10 +225,50 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
-    
+
     thread_id = thread["_id"]
     updated_thread = await create_new_block(thread_id, block, user_id)
 
+
+    return JSONResponse(status_code=status.HTTP_201_CREATED,
+                        content=jsonable_encoder(updated_thread))
+
+
+@router.put("/blocks", response_model=ThreadModel, response_description="Update a block")
+async def update(request: Request, thread_title: str, block: UpdateBlockModel = Body(...),
+                 session: SessionContainer = Depends(verify_session())):
+    thread_collection = request.app.mongodb["threads"]
+
+    # Logic to store the block in MongoDB backend database
+    # Index the block by userId
+    update_block = block.model_dump()
+    block = get_block_by_id(update_block["id"], thread_collection)
+    user_id = session.get_user_id()
+
+    if jsonable_encoder(block)["creator_id"] != user_id:
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    # new_block_dict = new_block.model_dump()
+    # new_block_dict["id"] = str(new_block_dict["id"])
+    # to store the block as a json string in the db
+    # we need the following. We have chose to insert
+    # the block as a dictionary object in the db
+    # json_new_block = json_util.dumps(new_block_dict)
+    thread = await get_mongo_document({"title": thread_title}, thread_collection)
+    if not thread:
+        return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
+
+    # change new_block_dict to json_new_block if you want to store
+    # block as a json string in the db
+    thread["content"].remove(jsonable_encoder(block))
+    thread["content"].append(jsonable_encoder(update_block))
+
+    generate_single_thread_headline(thread, thread_collection, use_ai=False)
+
+    updated_thread = await update_mongo_document_fields(
+        {"title": thread_title},
+        thread,
+        request.app.mongodb["threads"])
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(updated_thread))
@@ -360,6 +401,30 @@ async def get_thread_id(request: Request, id: str,
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
 
+
+@router.put("/threads/{id}", response_model=ThreadModel)
+async def update_th(request: Request, id: str, thread_data: CreateThreadModel = Body(...),
+                    session: SessionContainer = Depends(verify_session())):
+    # Create a new thread in MongoDB using the thread_data
+    # Index the thread by userId
+    userId = session.get_user_id()
+
+    thread_collection = request.app.mongodb["threads"]
+
+    old_thread = await get_mongo_document({"_id": id}, thread_collection)
+    if not old_thread:
+        return JSONResponse(status_code=404, content={"message": "Thread not found"})
+
+    if old_thread["creator"] != userId:
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    thread_title = jsonable_encoder(thread_data)["title"]
+    # content = jsonable_encoder(thread_data)["content"]
+
+    updated_thread = thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title}})
+
+    return JSONResponse(status_code=status.HTTP_201_CREATED,
+                        content=jsonable_encoder(updated_thread))
 
 
 @router.get("/threads/{title}", response_model=ThreadModel)

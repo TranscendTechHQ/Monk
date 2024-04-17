@@ -1,12 +1,12 @@
 import 'package:test/test.dart';
 import 'package:openapi/openapi.dart';
 
-// tests for SubcribeChannelRequest
+// tests for SubscribeChannelRequest
 void main() {
-  final SubcribeChannelRequest? instance = /* SubcribeChannelRequest(...) */ null;
+  final SubscribeChannelRequest? instance = /* SubscribeChannelRequest(...) */ null;
   // TODO add properties to the entity
 
-  group(SubcribeChannelRequest, () {
+  group(SubscribeChannelRequest, () {
     // List<String> channelIds
     test('to test the property `channelIds`', () async {
       // TODO

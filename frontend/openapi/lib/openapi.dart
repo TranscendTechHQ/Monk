@@ -24,7 +24,7 @@ export 'package:openapi/src/model/http_validation_error.dart';
 export 'package:openapi/src/model/model_date.dart';
 export 'package:openapi/src/model/public_channel_list.dart';
 export 'package:openapi/src/model/session_info.dart';
-export 'package:openapi/src/model/subcribe_channel_request.dart';
+export 'package:openapi/src/model/subscribe_channel_request.dart';
 export 'package:openapi/src/model/subscribed_channel_list.dart';
 export 'package:openapi/src/model/thread_headline_model.dart';
 export 'package:openapi/src/model/thread_headlines_model.dart';
