@@ -23,6 +23,8 @@ Method | HTTP request | Description
 [**thThreadHeadlinesGet**](ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
+[**updateBlocksPut**](ThreadsApi.md#updateblocksput) | **PUT** /blocks | Update
+[**updateThThreadsIdPut**](ThreadsApi.md#updateththreadsidput) | **PUT** /threads/{id} | Update Th
 
 
 # **atAllThreadsGet**
@@ -577,6 +579,92 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateBlocksPut**
+> ThreadModel updateBlocksPut(threadTitle, updateBlockModel)
+
+Update
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String threadTitle = threadTitle_example; // String | 
+final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
+
+try {
+    final response = api.updateBlocksPut(threadTitle, updateBlockModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateBlocksPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **threadTitle** | **String**|  | 
+ **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
+
+### Return type
+
+[**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateThThreadsIdPut**
+> ThreadModel updateThThreadsIdPut(id, createThreadModel)
+
+Update Th
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+final CreateThreadModel createThreadModel = ; // CreateThreadModel | 
+
+try {
+    final response = api.updateThThreadsIdPut(id, createThreadModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateThThreadsIdPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **createThreadModel** | [**CreateThreadModel**](CreateThreadModel.md)|  | 
+
+### Return type
+
+[**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

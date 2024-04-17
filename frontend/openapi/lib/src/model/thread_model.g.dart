@@ -12,7 +12,7 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['creator', 'title', 'type'],
+          requiredKeys: const ['creator', 'tenant_id', 'title', 'type'],
         );
         final val = ThreadModel(
           id: $checkedConvert('_id', (v) => v as String?),
@@ -25,12 +25,17 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
               (v) => v == null ? null : DateTime.parse(v as String)),
           creator: $checkedConvert('creator', (v) => v as String),
           headline: $checkedConvert('headline', (v) => v as String?),
+          tenantId: $checkedConvert('tenant_id', (v) => v as String),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
         );
         return val;
       },
-      fieldKeyMap: const {'id': '_id', 'createdDate': 'created_date'},
+      fieldKeyMap: const {
+        'id': '_id',
+        'createdDate': 'created_date',
+        'tenantId': 'tenant_id'
+      },
     );
 
 Map<String, dynamic> _$ThreadModelToJson(ThreadModel instance) {
@@ -47,6 +52,7 @@ Map<String, dynamic> _$ThreadModelToJson(ThreadModel instance) {
   writeNotNull('created_date', instance.createdDate?.toIso8601String());
   val['creator'] = instance.creator;
   writeNotNull('headline', instance.headline);
+  val['tenant_id'] = instance.tenantId;
   val['title'] = instance.title;
   val['type'] = instance.type;
   return val;

@@ -5,7 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:json_annotation/json_annotation.dart';
 
-part 'subcribe_channel_request.g.dart';
+part 'subscribe_channel_request.g.dart';
 
 
 @JsonSerializable(
@@ -14,9 +14,9 @@ part 'subcribe_channel_request.g.dart';
   disallowUnrecognizedKeys: false,
   explicitToJson: true,
 )
-class SubcribeChannelRequest {
-  /// Returns a new [SubcribeChannelRequest] instance.
-  SubcribeChannelRequest({
+class SubscribeChannelRequest {
+  /// Returns a new [SubscribeChannelRequest] instance.
+  SubscribeChannelRequest({
 
     required  this.channelIds,
   });
@@ -34,16 +34,16 @@ class SubcribeChannelRequest {
 
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is SubcribeChannelRequest &&
+  bool operator ==(Object other) => identical(this, other) || other is SubscribeChannelRequest &&
      other.channelIds == channelIds;
 
   @override
   int get hashCode =>
     channelIds.hashCode;
 
-  factory SubcribeChannelRequest.fromJson(Map<String, dynamic> json) => _$SubcribeChannelRequestFromJson(json);
+  factory SubscribeChannelRequest.fromJson(Map<String, dynamic> json) => _$SubscribeChannelRequestFromJson(json);
 
-  Map<String, dynamic> toJson() => _$SubcribeChannelRequestToJson(this);
+  Map<String, dynamic> toJson() => _$SubscribeChannelRequestToJson(this);
 
   @override
   String toString() {

@@ -198,7 +198,8 @@ class CurrentThread extends _$CurrentThread {
           content: newContent!,
           creator: thread.creator,
           id: thread.id,
-          createdDate: thread.createdDate);
+          createdDate: thread.createdDate,
+          tenantId: thread.tenantId);
 
       state = AsyncValue.data(updatedThreadModel);
     } else {

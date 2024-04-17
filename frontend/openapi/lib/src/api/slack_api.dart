@@ -12,7 +12,7 @@ import 'package:dio/dio.dart';
 import 'package:openapi/src/model/composite_channel_list.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/public_channel_list.dart';
-import 'package:openapi/src/model/subcribe_channel_request.dart';
+import 'package:openapi/src/model/subscribe_channel_request.dart';
 import 'package:openapi/src/model/subscribed_channel_list.dart';
 
 class SlackApi {
@@ -163,7 +163,7 @@ _responseData = rawData == null ? null : deserialize<PublicChannelList, PublicCh
   /// 
   ///
   /// Parameters:
-  /// * [subcribeChannelRequest] 
+  /// * [subscribeChannelRequest] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -174,7 +174,7 @@ _responseData = rawData == null ? null : deserialize<PublicChannelList, PublicCh
   /// Returns a [Future] containing a [Response] with a [SubscribedChannelList] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<SubscribedChannelList>> subscribeChannelSubscribeChannelPost({ 
-    required SubcribeChannelRequest subcribeChannelRequest,
+    required SubscribeChannelRequest subscribeChannelRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -199,7 +199,7 @@ _responseData = rawData == null ? null : deserialize<PublicChannelList, PublicCh
     dynamic _bodyData;
 
     try {
-_bodyData=jsonEncode(subcribeChannelRequest);
+_bodyData=jsonEncode(subscribeChannelRequest);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(
