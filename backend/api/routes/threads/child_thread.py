@@ -11,9 +11,12 @@ from .models import BlockModel, ThreadModel, ThreadType
 # creates a new thread or returns an existing thread. Content
 # is blank for the new thread
 async def create_new_thread(user_id, title: str, thread_type: ThreadType, content: List[BlockModel] = []):
-    old_thread = await get_mongo_document({"title": title}, asyncdb.threads_collection)
+    userinfo = await asyncdb.users_collection.find_one({"_id": user_id})
+    old_thread = await get_mongo_document({"title": title}, 
+                                          asyncdb.threads_collection,
+                                          tenant_id=userinfo['tenant_id'])
     if not old_thread:
-        userinfo = await asyncdb.users_collection.find_one({"_id": user_id})
+        
         if not userinfo:
             print("User not found")
             return None
