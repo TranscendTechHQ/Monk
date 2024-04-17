@@ -43,34 +43,34 @@ class ServerSettings(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    DB_URL: str = get_secret('DB_URL', HCP_ACCESS_TOKEN)
-    DB_NAME: str = get_secret('DB_NAME', HCP_ACCESS_TOKEN)
+    DB_URL: str = os.getenv("DB_URL")
+    DB_NAME: str = os.getenv("DB_NAME", "monk")
 
 
 class OpenAISettings(BaseSettings):
-    AZURE_OPENAI_KEY: str = get_secret('AZURE_OPENAI_KEY', HCP_ACCESS_TOKEN)
-    AZURE_OPENAI_ENDPOINT: str = get_secret('AZURE_OPENAI_ENDPOINT', HCP_ACCESS_TOKEN)
-    AZURE_OPENAI_EMB_DEPLOYMENT: str = get_secret("AZURE_OPENAI_EMB_DEPLOYMENT", HCP_ACCESS_TOKEN)
-    API_VERSION: str = get_secret("AZURE_OPENAPI_API_VERSION", HCP_ACCESS_TOKEN)
-    AZURE_OPENAI_GPT_DEPLOYEMENT: str = get_secret("AZURE_OPENAI_GPT_DEPLOYEMENT", HCP_ACCESS_TOKEN)
-    OPENAI_API_KEY: str = get_secret("OPENAI_API_KEY", HCP_ACCESS_TOKEN)
-    OPENAI_API_VERSION: str = get_secret("OPENAI_API_VERSION", HCP_ACCESS_TOKEN)
-    OPENAI_API_ENDPOINT: str = get_secret("OPENAI_API_ENDPOINT", HCP_ACCESS_TOKEN)
-    OPEN_API_GPT_MODEL: str = get_secret("OPEN_API_GPT_MODEL", HCP_ACCESS_TOKEN)
+    AZURE_OPENAI_KEY: str = os.getenv("AZURE_OPENAI_KEY", "TBD")
+    AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT", "https://monk-openai-cluster.openai.azure.com/")
+    AZURE_OPENAI_EMB_DEPLOYMENT: str = os.getenv("AZURE_OPENAI_EMB_DEPLOYMENT")
+    API_VERSION: str = os.getenv("OPENAI_API_VERSION")
+    AZURE_OPENAI_GPT_DEPLOYEMENT: str = os.getenv("AZURE_OPENAI_GPT_DEPLOYEMENT", "monk-gpt35")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
+    OPENAI_API_VERSION: str = os.getenv("OPENAI_API_VERSION", "2023-05-15")
+    OPENAI_API_ENDPOINT: str = os.getenv("OPENAI_API_ENDPOINT", "https://api.openai.com")
+    OPEN_API_GPT_MODEL: str = os.getenv("OPEN_API_GPT_MODEL")
 
 
 class ClientSettings(BaseSettings):
-    GOOGLE_CLIENT_ID: str = get_secret("GOOGLE_CLIENT_ID", HCP_ACCESS_TOKEN)
-    GOOGLE_CLIENT_SECRET: str = get_secret("GOOGLE_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    SLACK_CLIENT_ID: str = get_secret("SLACK_CLIENT_ID", HCP_ACCESS_TOKEN)
-    SLACK_CLIENT_SECRET: str = get_secret("SLACK_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    AUTH0_CLIENT_ID: str = get_secret("AUTH0_CLIENT_ID", HCP_ACCESS_TOKEN)
-    AUTH0_CLIENT_SECRET: str = get_secret("AUTH0_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    FRONTEND_CLIENT_ID: str = get_secret("FRONTEND_CLIENT_ID", HCP_ACCESS_TOKEN)
-    BACKEND_CLIENT_ID: str = get_secret("BACKEND_CLIENT_ID", HCP_ACCESS_TOKEN)
-    BACKEND_CLIENT_SECRET: str = get_secret("BACKEND_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    SLACK_BOT_TOKEN: str = get_secret("SLACK_BOT_TOKEN", HCP_ACCESS_TOKEN)
-    SLACK_USER_TOKEN: str = get_secret("SLACK_USER_TOKEN", HCP_ACCESS_TOKEN)
+    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
+    SLACK_CLIENT_ID: str = os.getenv("SLACK_CLIENT_ID")
+    SLACK_CLIENT_SECRET: str = os.getenv("SLACK_CLIENT_SECRET")
+    AUTH0_CLIENT_ID: str = os.getenv("AUTH0_CLIENT_ID")
+    AUTH0_CLIENT_SECRET: str = os.getenv("AUTH0_CLIENT_SECRET")
+    FRONTEND_CLIENT_ID: str = os.getenv("FRONTEND_CLIENT_ID")
+    BACKEND_CLIENT_ID: str = os.getenv("BACKEND_CLIENT_ID")
+    BACKEND_CLIENT_SECRET: str = os.getenv("BACKEND_CLIENT_SECRET")
+    SLACK_BOT_TOKEN: str = os.getenv("SLACK_BOT_TOKEN")
+    SLACK_USER_TOKEN: str = os.getenv("SLACK_USER_TOKEN")
 
 
 class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings):
@@ -106,7 +106,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         # call the default behaviour as show below
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
                                                            api_options, user_context)
-
+        #print(result.user.email)
         if isinstance(result, SignInUpPostOkResult):
             # print(result.user)
 
@@ -146,7 +146,9 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     # print(thirdparty_user_id)
                     thirdparty_team_id = ids[0]
                     tenant_id = ids[0]
-
+                    existing_slack_tenant = await mongodb["tenants"].find_one({"tenant_id": tenant_id})
+                    if existing_slack_tenant is None:
+                        return GeneralErrorResponse('Your Slack workspace is not whitelisted. Please contact your workspace admin to install Monk bot. If you are the admin, please visit https://install.heymonk.app')
                 elif third_party_provider == "google":
                     split_str = third_party_info.split('|')
                     thirdparty_user_id = split_str[1]
@@ -155,7 +157,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     # check if the email id is whitelisted
                     whitelisted_user = await mongodb['whitelisted_users'].find_one({"email": email})
                     if whitelisted_user is None:
-                        return SignInUpPostNoEmailGivenByProviderResponse()
+                        return GeneralErrorResponse('Your Google email address is not whitelisted. Please contact support@transcendtech.io')
                     
                     tenant_id = whitelisted_user['tenant_id']
 
