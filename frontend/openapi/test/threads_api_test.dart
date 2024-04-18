@@ -35,6 +35,13 @@ void main() {
       // TODO
     });
 
+    // Create Tr
+    //
+    //Future<ThreadReadModel> createTrThreadReadPost(CreateThreadReadModel createThreadReadModel) async
+    test('test createTrThreadReadPost', () async {
+      // TODO
+    });
+
     // Date
     //
     //Future<BlockCollection> dateJournalGet(ModelDate modelDate) async

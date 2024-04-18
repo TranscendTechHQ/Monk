@@ -9,12 +9,13 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
-from utils.db import get_mongo_document, get_mongo_documents, get_tenant_id, update_mongo_document_fields, asyncdb
+from utils.db import get_mongo_document, get_mongo_documents, get_tenant_id, update_mongo_document_fields, asyncdb, \
+    create_mongo_document, delete_mongo_document
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockCollection, BlockModel, UpdateBlockModel, Date
+from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, ThreadReadModel, CreateThreadReadModel
 from .models import THREADTYPES, CreateChildThreadModel, ThreadHeadlinesModel, ThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
@@ -63,8 +64,8 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 
     filtered_threads = []
     for doc in result:
-        filtered_threads.append(await get_mongo_document({"title": doc["title"]}, 
-                                                         threads_collection, 
+        filtered_threads.append(await get_mongo_document({"title": doc["title"]},
+                                                         threads_collection,
                                                          tenant_id=tenant_id))
     return_threads = jsonable_encoder(ThreadsModel(threads=filtered_threads))
     # print(return_threads)
@@ -116,7 +117,7 @@ async def th(request: Request,
             response_description="Get all thread types")
 async def tt(request: Request,
              session: SessionContainer = Depends(verify_session())):
-    # Get all thread types 
+    # Get all thread types
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(THREADTYPES))
 
@@ -143,36 +144,41 @@ async def ti(request: Request,
             response_description="Get meta data for all threads")
 async def md(request: Request,
              session: SessionContainer = Depends(verify_session())):
-    
     tenant_id = await get_tenant_id(session)
     # Get all thread titles from MongoDB
     threads = await get_mongo_documents(
         asyncdb.threads_collection,
         tenant_id=tenant_id
-        )
+    )
     users = await get_mongo_documents(
         asyncdb.users_collection,
         tenant_id=tenant_id)
     metadata = []
+    thread_read = None
     for doc in threads:
         creator = {}
         user_info = None
         for user in users:
             if doc['creator'] == user['_id']:
                 user_info = user
+                thread_read = await get_mongo_document({"thread_id": doc["_id"], "email": user["email"]},
+                                                       request.app.mongodb["thread_reads"])
                 break
         if user_info and tenant_id == doc['tenant_id']:
             creator["id"] = user_info["_id"]
             creator["name"] = user_info["user_name"]
             creator["picture"] = user_info["user_picture"]
             creator["email"] = user_info["email"]
-        metadata.append({
-            "_id": doc["_id"],
-            "title": doc["title"],
-            "type": doc["type"],
-            "created_date": doc["created_date"],
-            "creator": creator
-        })
+
+            metadata.append({
+                "_id": doc["_id"],
+                "title": doc["title"],
+                "type": doc["type"],
+                "read_status": True if thread_read else False,
+                "created_date": doc["created_date"],
+                "creator": creator
+            })
+
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
@@ -192,13 +198,12 @@ async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     new_block.creator_picture = picture
     new_block.creator_id = user_id
     thread = await get_mongo_document(
-        {"_id": thread_id}, 
+        {"_id": thread_id},
         threads_collection,
         tenant_id=user_info['tenant_id'])
     # change new_block_dict to json_new_block if you want to store
     # block as a json string in the db
     thread["content"].append(jsonable_encoder(new_block))
-
 
     updated_thread = await update_mongo_document_fields(
         {"_id": thread_id},
@@ -219,16 +224,21 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
     thread = await get_mongo_document(
-        {"title": thread_title}, 
+        {"title": thread_title},
         request.app.mongodb["threads"],
         tenant_id=tenant_id)
-    
+
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
 
     thread_id = thread["_id"]
     updated_thread = await create_new_block(thread_id, block, user_id)
 
+    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"])
+    for doc in thread_read_documents:
+        if doc['thread_id'] == thread_id:
+            await delete_mongo_document({"thread_id": thread_id, "email": doc.email},
+                                        request.app.mongodb["threads_reads"])
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(updated_thread))
@@ -242,8 +252,9 @@ async def update(request: Request, thread_title: str, block: UpdateBlockModel = 
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     update_block = block.model_dump()
-    block = get_block_by_id(update_block["id"], thread_collection)
+    block = await get_block_by_id(update_block["id"], thread_collection)
     user_id = session.get_user_id()
+    tenant_id = await get_tenant_id(session)
 
     if jsonable_encoder(block)["creator_id"] != user_id:
         return JSONResponse(status_code=401, content={"message": "Unauthorized"})
@@ -254,7 +265,7 @@ async def update(request: Request, thread_title: str, block: UpdateBlockModel = 
     # we need the following. We have chose to insert
     # the block as a dictionary object in the db
     # json_new_block = json_util.dumps(new_block_dict)
-    thread = await get_mongo_document({"title": thread_title}, thread_collection)
+    thread = await get_mongo_document({"title": thread_title}, thread_collection, tenant_id)
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
 
@@ -264,6 +275,12 @@ async def update(request: Request, thread_title: str, block: UpdateBlockModel = 
     thread["content"].append(jsonable_encoder(update_block))
 
     generate_single_thread_headline(thread, thread_collection, use_ai=False)
+
+    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"], tenant_id)
+    for doc in thread_read_documents:
+        if doc['thread_id'] == thread["_id"]:
+            await delete_mongo_document({"thread_id": thread["_id"], "email": doc.email},
+                                        request.app.mongodb["threads_reads"])
 
     updated_thread = await update_mongo_document_fields(
         {"title": thread_title},
@@ -294,13 +311,14 @@ async def child_thread(request: Request,
     thread_type = jsonable_encoder(child_thread)["type"]
     user_id = session.get_user_id()
     creator_name = await get_user_name(user_id, request.app.mongodb["users"])
+    tenant_id = await get_tenant_id(session)
 
     created_child_thread = await create_child_thread(thread_collection=thread_collection,
                                                      parent_block_id=parent_block_id,
                                                      parent_thread_id=parent_thread_id,
                                                      thread_title=thread_title,
                                                      thread_type=thread_type,
-                                                     user_id=user_id, )
+                                                     user_id=user_id, tenant_id=tenant_id)
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(created_child_thread))
@@ -316,10 +334,10 @@ async def get_blocks_by_date(request: Request,
     # Logic to fetch all blocks by the signed-in user from MongoDB backend database
     tenant_id = await get_tenant_id(session)
     blocks = await get_mongo_documents_by_date(
-        date.date, 
+        date.date,
         request.app.mongodb["blocks"],
         tenant_id=tenant_id
-        )
+    )
 
     ret_block = BlockCollection(blocks=blocks)
 
@@ -339,7 +357,7 @@ async def date(request: Request,
     # get journal thread. If it does not exist, create it
     journal_thread = await create_new_thread(userId, "journal", "/new-thread")
     # get the blocks that have created_at date equal to the date
-    # doing this query in the db directly will be much faster than doing this 
+    # doing this query in the db directly will be much faster than doing this
     # in the python application
 
     # build a pymongo query to get the list of blocks from a thread that have the created_at date equal to the date
@@ -372,12 +390,13 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
     # Index the thread by userId
     userId = session.get_user_id()
     userName = await get_user_by_id(userId)
+    tenant_id = await get_tenant_id(session)
 
     thread_title = jsonable_encoder(thread_data)["title"]
     thread_type = jsonable_encoder(thread_data)["type"]
     # content = jsonable_encoder(thread_data)["content"]
 
-    created_thread = await create_new_thread(userId, thread_title, thread_type)
+    created_thread = await create_new_thread(userId, tenant_id, thread_title, thread_type)
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(created_thread))
@@ -408,10 +427,11 @@ async def update_th(request: Request, id: str, thread_data: CreateThreadModel = 
     # Create a new thread in MongoDB using the thread_data
     # Index the thread by userId
     userId = session.get_user_id()
+    tenant_id = await get_tenant_id(session)
 
     thread_collection = request.app.mongodb["threads"]
 
-    old_thread = await get_mongo_document({"_id": id}, thread_collection)
+    old_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
@@ -421,7 +441,8 @@ async def update_th(request: Request, id: str, thread_data: CreateThreadModel = 
     thread_title = jsonable_encoder(thread_data)["title"]
     # content = jsonable_encoder(thread_data)["content"]
 
-    updated_thread = thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title}})
+    await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title}})
+    updated_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(updated_thread))
@@ -433,7 +454,7 @@ async def get_thread(request: Request, title: str,
     # Get a thread from MongoDB by title
     tenant_id = await get_tenant_id(session)
     old_thread = await get_mongo_document(
-        {"title": title}, 
+        {"title": title},
         request.app.mongodb["threads"],
         tenant_id=tenant_id)
     if not old_thread:
@@ -453,7 +474,7 @@ async def at(request: Request, session: SessionContainer = Depends(verify_sessio
     threads = await get_mongo_documents(
         request.app.mongodb["threads"],
         tenant_id=tenant_id
-        )
+    )
     modified_threads = []
     for doc in threads:
         thread_content = jsonable_encoder(doc)
@@ -461,3 +482,39 @@ async def at(request: Request, session: SessionContainer = Depends(verify_sessio
         thread_content['creator'] = jsonable_encoder(user)['user_name']
         modified_threads.append(jsonable_encoder(thread_content))
     return threads
+
+
+@router.post("/thread-read", response_model=ThreadReadModel)
+async def create_tr(request: Request, thread_read_data: CreateThreadReadModel = Body(...),
+                    session: SessionContainer = Depends(verify_session())):
+    # Create a new thread in MongoDB using the thread_data
+    # Index the thread by user_id
+    user_id = session.get_user_id()
+    user = await get_user_by_id(user_id)
+    email = user.email
+    tenant_id = await get_tenant_id(session)
+
+    thread_id = jsonable_encoder(thread_read_data)["thread_id"]
+    read_status = jsonable_encoder(thread_read_data)["status"]
+
+    thread = await get_mongo_document({"_id": thread_id}, request.app.mongodb["threads"], tenant_id)
+    if not thread:
+        return JSONResponse(status_code=404, content={"message": "Thread not found"})
+    if tenant_id != jsonable_encoder(thread)["tenant_id"]:
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    thread_read = await get_mongo_document({"thread_id": thread_id, "email": email}, request.app.mongodb["thread_reads"])
+
+    if not thread_read and read_status:
+        thread_read_doc = ThreadReadModel(email=email, thread_id=thread_id)
+        thread_read_jsonable = jsonable_encoder(thread_read_doc)
+        await create_mongo_document(thread_read_jsonable, request.app.mongodb["thread_reads"])
+
+        return JSONResponse(status_code=status.HTTP_201_CREATED,
+                            content=thread_read_jsonable)
+    elif thread_read and not read_status:
+        await delete_mongo_document(jsonable_encoder(thread_read), request.app.mongodb["thread_reads"])
+        return JSONResponse(status_code=status.HTTP_201_CREATED,
+                            content={"message": "Success"})
+
+    return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Bad request"})

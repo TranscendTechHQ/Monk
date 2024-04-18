@@ -23,20 +23,24 @@ async def startup_async_db_client():
     # asyncdb.headlines_collection = asyncdb.mongodb["thread_headlines"]
     asyncdb.subscribed_channels_collection = asyncdb.mongodb["subscribed_channels"]
     asyncdb.whitelisted_users_collection = asyncdb.mongodb["whitelisted_users"]
+    asyncdb.thread_reads_collection = asyncdb.mongodb["thread_reads"]
 
 
 async def shutdown_async_db_client():
     asyncdb.mongodb_client.close()
+
 
 async def get_user_info(session):
     user_id = session.get_user_id()
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     return user_info
 
+
 async def get_tenant_id(session):
     user_id = session.get_user_id()
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     return user_info["tenant_id"]
+
 
 async def get_user_name(user_id, collection) -> str:
     if (doc := await collection.find_one({"_id": user_id})) is not None:
@@ -77,22 +81,21 @@ async def get_mongo_documents(collection, tenant_id):
     cursor = collection.find(query)
     # Convert cursor to list of dictionaries
     docs = await cursor.to_list(length=None)
-    #async for doc in collection.find(query):
-   #     docs.append(doc)
+    # async for doc in collection.find(query):
+    #     docs.append(doc)
     return docs
 
 
 async def get_mongo_documents_by_date(date: dt.datetime, collection, tenant_id):
     # async for doc in collection.find({"metadata.createdAt": date}):
     #    docs.append(doc)
-    
+
     d = date.date()
     from_date = dt.datetime.combine(d, dt.datetime.min.time())
     to_date = dt.datetime.combine(d, dt.datetime.max.time())
 
-    query = {"created_at": {"$gte": from_date.isoformat(), "$lt": to_date.isoformat()}}
-    query["tenant_id"] = tenant_id
-    
+    query = {"created_at": {"$gte": from_date.isoformat(), "$lt": to_date.isoformat()}, "tenant_id": tenant_id}
+
     cursor = collection.find(query)
     batch_size = 100
     # Convert cursor to list of dictionaries
