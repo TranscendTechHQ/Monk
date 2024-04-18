@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
         createChildThreadModel: createChildThreadModel);
     final response = await threadApi.getThreadIdThreadsIdGet(
         id: "2bcad996-8391-4ddf-a274-bf84d6904906");*/
-
+/*
     UpdateBlockModel block = UpdateBlockModel(
       content: "Ding dong, o baby sing a song",
     );
@@ -74,10 +74,10 @@ class _HomePageState extends State<HomePage> {
         id: "8a7708a0-8598-4133-9b28-b0ad7c65652b",
         threadTitle: "ding",
         updateBlockModel: block);
-
-    if (response.statusCode != 200) {
-      throw Exception("Failed to get thread");
-    }
+*/
+    await threadApi.updateThThreadsIdPut(
+        id: "56007383-3f47-4d82-9fc1-0da3510b2da8",
+        updateThreadTitleModel: UpdateThreadTitleModel(title: "dong"));
   }
 
   Future<void> signOut() async {
