@@ -111,7 +111,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         # call the default behaviour as show below
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
                                                            api_options, user_context)
-
+        #print(result.user.email)
         if isinstance(result, SignInUpPostOkResult):
             # print(result.user)
 
@@ -151,7 +151,9 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     # print(thirdparty_user_id)
                     thirdparty_team_id = ids[0]
                     tenant_id = ids[0]
-
+                    existing_slack_tenant = await mongodb["tenants"].find_one({"tenant_id": tenant_id})
+                    if existing_slack_tenant is None:
+                        return GeneralErrorResponse('Your Slack workspace is not whitelisted. Please contact your workspace admin to install Monk bot. If you are the admin, please visit https://install.heymonk.app')
                 elif third_party_provider == "google":
                     split_str = third_party_info.split('|')
                     thirdparty_user_id = split_str[1]
@@ -159,33 +161,22 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 
                     # check if the email id is whitelisted
                     whitelisted_user = await mongodb['whitelisted_users'].find_one({"email": email})
-                    if whitelisted_user:
-                        tenant_id = whitelisted_user['tenant_id']
+                    if whitelisted_user is None:
+                        return GeneralErrorResponse('Your Google email address is not whitelisted. Please contact support@transcendtech.io')
+                    
+                    tenant_id = whitelisted_user['tenant_id']
 
-                        update_result = await mongodb_users.update_one({"_id": user_id},
-                                                                       {"$set":
-                                                                            {"user_name": user_name,
-                                                                             "user_picture": user_picture,
-                                                                             "email": email,
-                                                                             "tenant_id": tenant_id,
-                                                                             "thirdparty_provider": third_party_provider,
-                                                                             "thirdparty_user_id": thirdparty_user_id,
-                                                                             "thirdparty_team_id": thirdparty_team_id,
-
-                                                                             }}, upsert=True)
-
-                        return result
-
-                    domain = email.split('@')[1]
+            
+                    tenant_name = "Tenant:"+ tenant_id
                     tenants_collection = mongodb["tenants"]
-                    old_tenant = await tenants_collection.find_one({"tenant_name": domain})
+                    old_tenant = await tenants_collection.find_one({"tenant_name": tenant_name})
                     if old_tenant:
                         tenant_id = old_tenant['tenant_id']
                     else:
                         tenant = {}
-                        tenant_id = str(uuid.uuid4())
+                        
                         tenant["tenant_id"] = tenant_id
-                        tenant["tenant_name"] = domain
+                        tenant["tenant_name"] = tenant_name
                         tenant["user_id"] = result.user.user_id
                         tenant["user_token"] = result.oauth_tokens['access_token']
                         # tenant["bot_user_id"] = token_data["bot_user_id"]
@@ -194,9 +185,6 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 
                         await tenants_collection.insert_one(tenant)
 
-                # print(result.user.third_party_info.id)
-                # print(result.session.get_session_data_from_database())
-                # print(result.raw_user_info_from_provider.from_user_info_api.keys())
 
                 update_result = await mongodb_users.update_one({"_id": user_id},
                                                                {"$set":
