@@ -180,60 +180,77 @@ class CurrentThread extends _$CurrentThread {
   }
 
   Future<void> updateBlock(String blockId, String content) async {
-    // Mocking the update block
-    final thread = state.value;
-    if (thread == null) {
-      logger.e("There is no thread to update block");
-      return;
-    }
+    MonkException.handle(() async {
+      final thread = state.value;
+      if (thread == null) {
+        logger.e("There is no thread to update block");
+        return;
+      }
 
-    final block =
-        thread.content?.firstWhere((element) => element.id == blockId);
+      final block =
+          thread.content?.firstWhere((element) => element.id == blockId);
 
-    if (block != null) {
-      final map = block.toJson()
-        ..putIfAbsent("content", () => content)
-        ..update("content", (value) => content);
+      if (block != null) {
+        final map = block.toJson()
+          ..putIfAbsent("content", () => content)
+          ..update("content", (value) => content);
 
-      final updatedBlock = BlockModel.fromJson(map);
-      final newContent = thread.content?.map((e) {
-        if (e.id == blockId) {
-          return updatedBlock;
-        }
-        return e;
-      }).toList();
-      final updatedThreadModel = ThreadModel(
-          title: thread.title,
-          type: thread.type,
-          content: newContent!,
-          creator: thread.creator,
-          id: thread.id,
-          createdDate: thread.createdDate,
-          tenantId: thread.tenantId);
-
-      state = AsyncValue.data(updatedThreadModel);
-    } else {
-      logger.e("Can't find block with id $blockId");
-    }
+        final updatedBlock = BlockModel.fromJson(map);
+        final newContent = thread.content?.map((e) {
+          if (e.id == blockId) {
+            return updatedBlock;
+          }
+          return e;
+        }).toList();
+        final updatedThreadModel = ThreadModel(
+            title: thread.title,
+            type: thread.type,
+            content: newContent!,
+            creator: thread.creator,
+            id: thread.id,
+            createdDate: thread.createdDate,
+            tenantId: thread.tenantId);
+        final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+        await threadApi.updateBlocksPut(
+          threadTitle: thread.title,
+          updateBlockModel: UpdateBlockModel(
+            content: content,
+          ),
+        );
+        state = AsyncValue.data(updatedThreadModel);
+      } else {
+        logger.e("Can't find block with id $blockId");
+      }
+    });
   }
 
   Future<void> updateThreadTitle(String title) async {
-    final thread = state.value;
-    if (thread == null) {
-      logger.e("There is no thread to update title");
-      return;
-    }
+    MonkException.handle(() async {
+      final thread = state.value;
+      if (thread == null) {
+        logger.e("There is no thread to update title");
+        return;
+      }
 
-    final updatedThreadModel = ThreadModel(
-      title: title,
-      type: thread.type,
-      content: thread.content,
-      creator: thread.creator,
-      id: thread.id,
-      createdDate: thread.createdDate,
-      tenantId: thread.tenantId,
-    );
-
-    state = AsyncValue.data(updatedThreadModel);
+      final updatedThreadModel = ThreadModel(
+        title: title,
+        type: thread.type,
+        content: thread.content,
+        creator: thread.creator,
+        id: thread.id,
+        createdDate: thread.createdDate,
+        tenantId: thread.tenantId,
+      );
+      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+      final res = await threadApi.updateThThreadsIdPut(
+        id: thread.id!,
+        createThreadModel: CreateThreadModel(title: title, type: thread.type),
+      );
+      if (res.statusCode != 200) {
+        throw Exception("Failed to update thread title");
+      } else {
+        state = AsyncValue.data(updatedThreadModel);
+      }
+    });
   }
 }
