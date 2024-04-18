@@ -126,166 +126,6 @@ class ThreadCard extends ConsumerWidget {
         }
       }
     });
-    // final replyThread = ref.listen(replyProvider);
-    // if(replyThread != null && replyThread.state. != null) {
-    //   print('replyThread.thread: ${replyThread.thread}');
-    // }
-    final card2 = Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecorations.cardDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image.network(
-                      block.creatorPicture!.startsWith('https')
-                          ? block.creatorPicture!
-                          : "https://api.dicebear.com/7.x/identicon/png?seed=${block.createdBy ?? "UN"}",
-                      width: 25,
-                      height: 25,
-                      cacheHeight: 30,
-                      cacheWidth: 30,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${block.createdBy}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      if (block.createdAt != null)
-                        Text(
-                          DateFormat('dd MMM yyyy')
-                              .format(block.createdAt!.toLocal()),
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(.6),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-              const Spacer(),
-              // TOOLS
-              Row(
-                children: [
-                  if (isHovered && !isEdit)
-                    InkWell(
-                      onTap: () {
-                        ref.read(cardProvider.notifier).toggleEdit();
-                      },
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          isEdit ? Icons.cancel : Icons.edit,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 15,
-                        ),
-                      ),
-                    ),
-                  if (isHovered || isEdit)
-                    Row(
-                      children: [
-                        if (isEdit)
-                          IconButton(
-                            onPressed: () {
-                              ref.read(cardProvider.notifier).toggleEdit();
-                            },
-                            icon: Icon(
-                              Icons.cancel,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        if (isEdit)
-                          IconButton(
-                            onPressed: () async {
-                              await ref
-                                  .read(currentThreadProvider
-                                      .call(title: title, type: type)
-                                      .notifier)
-                                  .updateBlock(block.id!, controller.text);
-                              ref.read(cardProvider.notifier).toggleEdit();
-                            },
-                            icon: Icon(
-                              Icons.check,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                      ],
-                    )
-                ],
-              )
-            ],
-          ),
-          const SizedBox(height: 8),
-          if (isEdit)
-            TextField(
-              controller: controller,
-              onChanged: (val) {},
-              autofocus: true,
-              maxLength: null,
-              maxLines: null,
-              style: context.textTheme.bodySmall,
-              decoration: InputDecoration(
-                hintText: 'Update your content here',
-                hintStyle: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(.7),
-                ),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                fillColor: context.colorScheme.surface,
-              ),
-              // cursorHeight: 18,
-            )
-          else
-            SelectableText(
-              emojiParser.emojify(block.content.toString()).trimRight(),
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () async => onReplyClick(context, ref, replyProvider),
-            child: Text(
-              block.childId.isNotNullEmpty ? "Replies" : 'Reply in Thread',
-              style: context.textTheme.bodySmall?.copyWith(
-                color: context.customColors.sourceMonkBlue,
-              ),
-            ),
-          )
-        ],
-      ),
-    );
 
     return MouseRegion(
       onEnter: (event) {
@@ -294,7 +134,172 @@ class ThreadCard extends ConsumerWidget {
       onExit: (event) {
         ref.read(cardProvider.notifier).onHoverExit();
       },
-      child: card2,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecorations.cardDecoration(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Image.network(
+                        block.creatorPicture!.startsWith('https')
+                            ? block.creatorPicture!
+                            : "https://api.dicebear.com/7.x/identicon/png?seed=${block.createdBy ?? "UN"}",
+                        width: 25,
+                        height: 25,
+                        cacheHeight: 30,
+                        cacheWidth: 30,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${block.createdBy}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        if (block.createdAt != null)
+                          Text(
+                            DateFormat('dd MMM yyyy')
+                                .format(block.createdAt!.toLocal()),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(.6),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Spacer(),
+
+                if (!isHovered &&
+                    (DateTime.now()
+                            .difference(block.createdAt ?? DateTime.now())
+                            .inHours) <
+                        24)
+                  CircleAvatar(
+                    backgroundColor: Colors.yellow.shade200,
+                    radius: 4,
+                  ),
+                // TOOLS
+                Row(
+                  children: [
+                    if (isHovered && !isEdit)
+                      InkWell(
+                        onTap: () {
+                          ref.read(cardProvider.notifier).toggleEdit();
+                        },
+                        child: Container(
+                          height: 30,
+                          width: 30,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isEdit ? Icons.cancel : Icons.edit,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            size: 15,
+                          ),
+                        ),
+                      ),
+                    if (isHovered || isEdit)
+                      Row(
+                        children: [
+                          if (isEdit)
+                            IconButton(
+                              onPressed: () {
+                                ref.read(cardProvider.notifier).toggleEdit();
+                              },
+                              icon: Icon(
+                                Icons.cancel,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          if (isEdit)
+                            IconButton(
+                              onPressed: () async {
+                                await ref
+                                    .read(currentThreadProvider
+                                        .call(title: title, type: type)
+                                        .notifier)
+                                    .updateBlock(block.id!, controller.text);
+                                ref.read(cardProvider.notifier).toggleEdit();
+                              },
+                              icon: Icon(
+                                Icons.check,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                        ],
+                      )
+                  ],
+                )
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (isEdit)
+              TextField(
+                controller: controller,
+                onChanged: (val) {},
+                autofocus: true,
+                maxLength: null,
+                maxLines: null,
+                style: context.textTheme.bodySmall,
+                decoration: InputDecoration(
+                  hintText: 'Update your content here',
+                  hintStyle: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withOpacity(.7),
+                  ),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  fillColor: context.colorScheme.surface,
+                ),
+                // cursorHeight: 18,
+              )
+            else
+              SelectableText(
+                emojiParser.emojify(block.content.toString()).trimRight(),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () async => onReplyClick(context, ref, replyProvider),
+              child: Text(
+                block.childId.isNotNullEmpty ? "Replies" : 'Reply in Thread',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.customColors.sourceMonkBlue,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
