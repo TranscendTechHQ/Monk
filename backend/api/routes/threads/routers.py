@@ -256,6 +256,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     input_block = block.model_dump()
+    
     block = await get_block_by_id(id, thread_collection)
     block = block["content"]
     user_id = session.get_user_id()
@@ -282,8 +283,8 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     for content in thread["content"]:
         if content["_id"] == block["_id"]:
             content["content"] = update_block["content"]
-
-    await update_mongo_document_fields({"_id": thread["_id"]}, thread, thread_collection)
+    
+    updated_thread = await update_mongo_document_fields({"_id": thread["_id"]}, thread, thread_collection)
 
     user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
                                                 request.app.mongodb["user_thread_flags"], tenant_id)
@@ -295,10 +296,6 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
             jsonable_encoder(user_thread_flag),
             request.app.mongodb["user_thread_flags"])
 
-    updated_thread = await update_mongo_document_fields(
-        {"title": thread_title},
-        thread,
-        request.app.mongodb["threads"])
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(updated_thread))

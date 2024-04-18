@@ -4,6 +4,7 @@ import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
+import 'package:openapi/openapi.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
 import 'subscribed-channels/channels_page.dart';
@@ -62,9 +63,17 @@ class _HomePageState extends State<HomePage> {
       parentThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
     );
     await threadApi.childThreadBlocksChildPost(
-        createChildThreadModel: createChildThreadModel);*/
+        createChildThreadModel: createChildThreadModel);
     final response = await threadApi.getThreadIdThreadsIdGet(
-        id: "2bcad996-8391-4ddf-a274-bf84d6904906");
+        id: "2bcad996-8391-4ddf-a274-bf84d6904906");*/
+
+    UpdateBlockModel block = UpdateBlockModel(
+      content: "Ding dong, o baby sing a song",
+    );
+    final response = await threadApi.updateBlocksIdPut(
+        id: "8a7708a0-8598-4133-9b28-b0ad7c65652b",
+        threadTitle: "ding",
+        updateBlockModel: block);
 
     if (response.statusCode != 200) {
       throw Exception("Failed to get thread");
@@ -178,6 +187,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     onPressed: () async {
+                      //testOpenApi();
+
                       // Navigator.pushNamed(context, ThreadPage.route);
                       Navigator.push(
                         context,
