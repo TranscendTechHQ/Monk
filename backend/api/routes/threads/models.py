@@ -183,6 +183,19 @@ class UpdateThreadModel(BaseModel):
                               )
 
 
+class UpdateThreadTitleModel(BaseModel):
+    title: str
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              json_schema_extra={
+                                  "example": {
+                                      "title": "New title"
+                                  }
+                              }
+                              )
+
+
 class UserThreadFlagModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     user_id: str

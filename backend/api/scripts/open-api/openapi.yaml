@@ -471,6 +471,17 @@ components:
           type: string
       title: UpdateBlockModel
       type: object
+    UpdateThreadTitleModel:
+      example:
+        title: New title
+      properties:
+        title:
+          title: Title
+          type: string
+      required:
+      - title
+      title: UpdateThreadTitleModel
+      type: object
     UserThreadFlagModel:
       properties:
         _id:
@@ -968,7 +979,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateThreadModel'
+              $ref: '#/components/schemas/UpdateThreadTitleModel'
         required: true
       responses:
         '200':

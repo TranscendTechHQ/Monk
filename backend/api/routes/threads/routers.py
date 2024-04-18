@@ -15,7 +15,8 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, UserThreadFlagModel, CreateUserThreadFlagModel
+from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, UserThreadFlagModel, CreateUserThreadFlagModel, \
+    UpdateThreadTitleModel
 from .models import THREADTYPES, CreateChildThreadModel, ThreadHeadlinesModel, ThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
@@ -425,11 +426,11 @@ async def get_thread_id(request: Request, id: str,
 
 
 @router.put("/threads/{id}", response_model=ThreadModel)
-async def update_th(request: Request, id: str, thread_data: CreateThreadModel = Body(...),
+async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleModel = Body(...),
                     session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data
-    # Index the thread by userId
-    userId = session.get_user_id()
+    # Index the thread by user_id
+    user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
 
     thread_collection = request.app.mongodb["threads"]
@@ -438,7 +439,7 @@ async def update_th(request: Request, id: str, thread_data: CreateThreadModel = 
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
-    if old_thread["creator"] != userId:
+    if old_thread["creator"] != user_id:
         return JSONResponse(status_code=401, content={"message": "Unauthorized"})
 
     thread_title = jsonable_encoder(thread_data)["title"]

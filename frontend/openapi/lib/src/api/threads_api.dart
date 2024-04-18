@@ -21,6 +21,7 @@ import 'package:openapi/src/model/threads_info.dart';
 import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
+import 'package:openapi/src/model/update_thread_title_model.dart';
 import 'package:openapi/src/model/user_thread_flag_model.dart';
 
 class ThreadsApi {
@@ -1312,7 +1313,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
   ///
   /// Parameters:
   /// * [id] 
-  /// * [createThreadModel] 
+  /// * [updateThreadTitleModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1324,7 +1325,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ThreadModel>> updateThThreadsIdPut({ 
     required String id,
-    required CreateThreadModel createThreadModel,
+    required UpdateThreadTitleModel updateThreadTitleModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -1349,7 +1350,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
     dynamic _bodyData;
 
     try {
-_bodyData=jsonEncode(createThreadModel);
+_bodyData=jsonEncode(updateThreadTitleModel);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(

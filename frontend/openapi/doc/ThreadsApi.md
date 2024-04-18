@@ -669,7 +669,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateThThreadsIdPut**
-> ThreadModel updateThThreadsIdPut(id, createThreadModel)
+> ThreadModel updateThThreadsIdPut(id, updateThreadTitleModel)
 
 Update Th
 
@@ -679,10 +679,10 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
 final String id = id_example; // String | 
-final CreateThreadModel createThreadModel = ; // CreateThreadModel | 
+final UpdateThreadTitleModel updateThreadTitleModel = ; // UpdateThreadTitleModel | 
 
 try {
-    final response = api.updateThThreadsIdPut(id, createThreadModel);
+    final response = api.updateThThreadsIdPut(id, updateThreadTitleModel);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->updateThThreadsIdPut: $e\n');
@@ -694,7 +694,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **String**|  | 
- **createThreadModel** | [**CreateThreadModel**](CreateThreadModel.md)|  | 
+ **updateThreadTitleModel** | [**UpdateThreadTitleModel**](UpdateThreadTitleModel.md)|  | 
 
 ### Return type
 

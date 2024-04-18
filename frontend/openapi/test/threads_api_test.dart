@@ -121,7 +121,7 @@ void main() {
 
     // Update Th
     //
-    //Future<ThreadModel> updateThThreadsIdPut(String id, CreateThreadModel createThreadModel) async
+    //Future<ThreadModel> updateThThreadsIdPut(String id, UpdateThreadTitleModel updateThreadTitleModel) async
     test('test updateThThreadsIdPut', () async {
       // TODO
     });

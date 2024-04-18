@@ -114,6 +114,7 @@ Class | Method | HTTP request | Description
  - [ThreadsMetaData](doc/ThreadsMetaData.md)
  - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
+ - [UpdateThreadTitleModel](doc/UpdateThreadTitleModel.md)
  - [UserThreadFlagModel](doc/UserThreadFlagModel.md)
  - [ValidationError](doc/ValidationError.md)
 
