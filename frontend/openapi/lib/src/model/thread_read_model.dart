@@ -18,10 +18,24 @@ class ThreadReadModel {
   /// Returns a new [ThreadReadModel] instance.
   ThreadReadModel({
 
+     this.id,
+
     required  this.email,
 
     required  this.threadId,
   });
+
+  @JsonKey(
+    
+    name: r'_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? id;
+
+
 
   @JsonKey(
     
@@ -49,11 +63,13 @@ class ThreadReadModel {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is ThreadReadModel &&
+     other.id == id &&
      other.email == email &&
      other.threadId == threadId;
 
   @override
   int get hashCode =>
+    id.hashCode +
     email.hashCode +
     threadId.hashCode;
 

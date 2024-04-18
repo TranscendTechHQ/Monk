@@ -392,6 +392,9 @@ components:
       type: object
     ThreadReadModel:
       properties:
+        _id:
+          title: ' Id'
+          type: string
         email:
           title: Email
           type: string

@@ -7,6 +7,11 @@ void main() {
   // TODO add properties to the entity
 
   group(ThreadReadModel, () {
+    // String id
+    test('to test the property `id`', () async {
+      // TODO
+    });
+
     // String email
     test('to test the property `email`', () async {
       // TODO

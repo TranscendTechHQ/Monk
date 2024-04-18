@@ -184,6 +184,7 @@ class UpdateThreadModel(BaseModel):
 
 
 class ThreadReadModel(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     email: str
     thread_id: str
 
