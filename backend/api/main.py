@@ -73,7 +73,7 @@ async def secure_api(s: SessionContainer = Depends(verify_session())) -> Session
         await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": last_login}}, upsert=True)
         # await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
 
-    # thirdpartyInfo:ThirdPartyInfo = userName.third_party_info
+    # thirdpartyInfo = userObj.third_party_info
     # print(email)
     # print(thirdpartyInfo.user_id)
     # print(thirdpartyInfo.id)

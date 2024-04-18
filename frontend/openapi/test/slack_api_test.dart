@@ -23,7 +23,7 @@ void main() {
 
     // Subscribe Channel
     //
-    //Future<SubscribedChannelList> subscribeChannelSubscribeChannelPost(SubcribeChannelRequest subcribeChannelRequest) async
+    //Future<SubscribedChannelList> subscribeChannelSubscribeChannelPost(SubscribeChannelRequest subscribeChannelRequest) async
     test('test subscribeChannelSubscribeChannelPost', () async {
       // TODO
     });

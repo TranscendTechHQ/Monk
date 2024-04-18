@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **creator** | **String** |  | 
 **headline** | **String** |  | [optional] 
+**tenantId** | **String** |  | 
 **title** | **String** |  | 
 **type** | **String** |  | 
 

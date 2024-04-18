@@ -3,6 +3,9 @@ import asyncio
 import json
 import uuid
 
+from routes.threads.models import UpdateBlockModel
+from routes.threads.child_thread import create_new_thread
+from routes.threads.routers import create_new_block
 from routes.slack.models import ChannelModel, PublicChannelList
 
 from slack_sdk import WebClient
@@ -38,14 +41,14 @@ def fetch_and_print_replies(slack_client, channel_id, message_ts):
             message_list.append(select_message_data)
             overall_list.append(select_message_data)
             # print(reply.keys())
-            print(reply["user"] + '---' + reply["text"])  # Adjust this based on the structure of your messages
-        print('\n\n')
+            #print(reply["user"] + '---' + reply["text"])  # Adjust this based on the structure of your messages
+        #print('\n\n')
 
     except SlackApiError as e:
         print(f"Error fetching replies: {e.response['error']}")
 
 
-def print_channel_messages(slack_client, channel_id, write_to_json=False, limit=1000):
+def get_channel_messages(slack_client, channel_id, write_to_json=False, limit=1000):
     try:
         # Call conversations.history to retrieve messages
         response = slack_client.conversations_history(channel=channel_id, limit=limit)
@@ -78,9 +81,11 @@ def print_channel_messages(slack_client, channel_id, write_to_json=False, limit=
                     json.dump(overall_messages, outfile)
                 # print(overall_list)
                 # print(count)
+            return overall_list
 
         else:
             print(f"Error: {response['error']}")
+            return None
 
     except SlackApiError as e:
         print(f"Error: {e}")
@@ -122,9 +127,23 @@ async def main():
     print("Creating Slack client...")
     slack_client = WebClient(token=SLACK_USER_TOKEN)
     print("Slack client created successfully.")
-    get_channel_list(slack_client)
-    #print_channel_messages(slack_client, CHANNEL_ID, write_to_json=False,
-    #                       limit=1000)
+    channel_list = get_channel_list(slack_client)
+    print(channel_list)
+    thread_title = channel_list.public_channels[0].name
+    channel_id = channel_list.public_channels[0].id
+    print(f"Fetching messages from channel {channel_id}...")
+    message_list = get_channel_messages(slack_client, channel_id, write_to_json=False, limit=1000)
+    
+    #print(message_block)
+    thread_type = "/new-thread"
+    user_id = "a4983b11-3465-4d00-9281-ec89048ce082" ##yogesh hardcoded. This should be fetched from slack and mapped to our own user id
+    new_thread = await create_new_thread(user_id=user_id, title=thread_title, thread_type=thread_type)
+    thread_id = new_thread["_id"]
+    new_block = UpdateBlockModel(content=message_list[0]["text"])
+    await create_new_block(thread_id=thread_id, block=new_block, user_id=user_id)
+    
+    #slack_collection = asyncdb.slack_collection()
+    
 
     await shutdown_async_db_client()
 

@@ -1,7 +1,10 @@
 import os
+import uuid
+from time import sleep
 from typing import Optional, Union, Dict, Any
 
 from dotenv import load_dotenv
+from fastapi.encoders import jsonable_encoder
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic_settings import BaseSettings
 from supertokens_python import init, InputAppInfo, SupertokensConfig
@@ -15,15 +18,20 @@ from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriI
 from supertokens_python.recipe.thirdparty.provider import ProviderInput, ProviderConfig, ProviderClientConfig
 from supertokens_python.types import GeneralErrorResponse
 
+# from utils.db import create_mongo_document
 from utils.hashicorp_api import get_access_token, get_secret
 
 load_dotenv()
 HCP_ACCESS_TOKEN = get_access_token()
+while not HCP_ACCESS_TOKEN:
+    sleep(0.2)
+
+HCP_SECRET_RESPONSE = get_secret(HCP_ACCESS_TOKEN)
 
 
 class SuperTokensSettings(BaseSettings):
-    SUPERTOKENS_CORE_CONNECTION_URI: str = get_secret("SUPERTOKENS_CORE_CONNECTION_URI", HCP_ACCESS_TOKEN)
-    SUPERTOKENS_CORE_API_KEY: str = get_secret("SUPERTOKENS_CORE_API_KEY", HCP_ACCESS_TOKEN)
+    SUPERTOKENS_CORE_CONNECTION_URI: str = HCP_SECRET_RESPONSE["SUPERTOKENS_CORE_CONNECTION_URI"]
+    SUPERTOKENS_CORE_API_KEY: str = HCP_SECRET_RESPONSE["SUPERTOKENS_CORE_API_KEY"]
 
 
 class CommonSettings(BaseSettings):
@@ -37,36 +45,37 @@ class ServerSettings(BaseSettings):
     API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
     WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:3000")
     INSTALL_DOMAIN: str = os.getenv("INSTALL_DOMAIN", "http://localhost:3000")
-    
+
+
 class DatabaseSettings(BaseSettings):
-    DB_URL: str = get_secret('DB_URL', HCP_ACCESS_TOKEN)
-    DB_NAME: str = get_secret('DB_NAME', HCP_ACCESS_TOKEN)
+    DB_URL: str = HCP_SECRET_RESPONSE['DB_URL']
+    DB_NAME: str = HCP_SECRET_RESPONSE['DB_NAME']
 
 
 class OpenAISettings(BaseSettings):
-    AZURE_OPENAI_KEY: str = get_secret('AZURE_OPENAI_KEY', HCP_ACCESS_TOKEN)
-    AZURE_OPENAI_ENDPOINT: str = get_secret('AZURE_OPENAI_ENDPOINT', HCP_ACCESS_TOKEN)
-    AZURE_OPENAI_EMB_DEPLOYMENT: str = get_secret("AZURE_OPENAI_EMB_DEPLOYMENT", HCP_ACCESS_TOKEN)
-    API_VERSION: str = get_secret("AZURE_OPENAPI_API_VERSION", HCP_ACCESS_TOKEN)
-    AZURE_OPENAI_GPT_DEPLOYEMENT: str = get_secret("AZURE_OPENAI_GPT_DEPLOYEMENT", HCP_ACCESS_TOKEN)
-    OPENAI_API_KEY: str = get_secret("OPENAI_API_KEY", HCP_ACCESS_TOKEN)
-    OPENAI_API_VERSION: str = get_secret("OPENAI_API_VERSION", HCP_ACCESS_TOKEN)
-    OPENAI_API_ENDPOINT: str = get_secret("OPENAI_API_ENDPOINT", HCP_ACCESS_TOKEN)
-    OPEN_API_GPT_MODEL: str = get_secret("OPEN_API_GPT_MODEL", HCP_ACCESS_TOKEN)
+    AZURE_OPENAI_KEY: str = HCP_SECRET_RESPONSE['AZURE_OPENAI_KEY']
+    AZURE_OPENAI_ENDPOINT: str = HCP_SECRET_RESPONSE['AZURE_OPENAI_ENDPOINT']
+    AZURE_OPENAI_EMB_DEPLOYMENT: str = HCP_SECRET_RESPONSE["AZURE_OPENAI_EMB_DEPLOYMENT"]
+    API_VERSION: str = HCP_SECRET_RESPONSE["AZURE_OPENAPI_API_VERSION"]
+    AZURE_OPENAI_GPT_DEPLOYEMENT: str = HCP_SECRET_RESPONSE["AZURE_OPENAI_GPT_DEPLOYEMENT"]
+    OPENAI_API_KEY: str = HCP_SECRET_RESPONSE["OPENAI_API_KEY"]
+    OPENAI_API_VERSION: str = HCP_SECRET_RESPONSE["OPENAI_API_VERSION"]
+    OPENAI_API_ENDPOINT: str = HCP_SECRET_RESPONSE["OPENAI_API_ENDPOINT"]
+    OPEN_API_GPT_MODEL: str = HCP_SECRET_RESPONSE["OPEN_API_GPT_MODEL"]
 
 
 class ClientSettings(BaseSettings):
-    GOOGLE_CLIENT_ID: str = get_secret("GOOGLE_CLIENT_ID", HCP_ACCESS_TOKEN)
-    GOOGLE_CLIENT_SECRET: str = get_secret("GOOGLE_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    SLACK_CLIENT_ID: str = get_secret("SLACK_CLIENT_ID", HCP_ACCESS_TOKEN)
-    SLACK_CLIENT_SECRET: str = get_secret("SLACK_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    AUTH0_CLIENT_ID: str = get_secret("AUTH0_CLIENT_ID", HCP_ACCESS_TOKEN)
-    AUTH0_CLIENT_SECRET: str = get_secret("AUTH0_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    FRONTEND_CLIENT_ID: str = get_secret("FRONTEND_CLIENT_ID", HCP_ACCESS_TOKEN)
-    BACKEND_CLIENT_ID: str = get_secret("BACKEND_CLIENT_ID", HCP_ACCESS_TOKEN)
-    BACKEND_CLIENT_SECRET: str = get_secret("BACKEND_CLIENT_SECRET", HCP_ACCESS_TOKEN)
-    SLACK_BOT_TOKEN: str = get_secret("SLACK_BOT_TOKEN", HCP_ACCESS_TOKEN)
-    SLACK_USER_TOKEN: str = get_secret("SLACK_USER_TOKEN", HCP_ACCESS_TOKEN)
+    GOOGLE_CLIENT_ID: str = HCP_SECRET_RESPONSE["GOOGLE_CLIENT_ID"]
+    GOOGLE_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["GOOGLE_CLIENT_SECRET"]
+    SLACK_CLIENT_ID: str = HCP_SECRET_RESPONSE["SLACK_CLIENT_ID"]
+    SLACK_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["SLACK_CLIENT_SECRET"]
+    AUTH0_CLIENT_ID: str = HCP_SECRET_RESPONSE["AUTH0_CLIENT_ID"]
+    AUTH0_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["AUTH0_CLIENT_SECRET"]
+    FRONTEND_CLIENT_ID: str = HCP_SECRET_RESPONSE["FRONTEND_CLIENT_ID"]
+    BACKEND_CLIENT_ID: str = HCP_SECRET_RESPONSE["BACKEND_CLIENT_ID"]
+    BACKEND_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["BACKEND_CLIENT_SECRET"]
+    SLACK_BOT_TOKEN: str = HCP_SECRET_RESPONSE["SLACK_BOT_TOKEN"]
+    SLACK_USER_TOKEN: str = HCP_SECRET_RESPONSE["SLACK_USER_TOKEN"]
 
 
 class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings):
@@ -102,13 +111,13 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         # call the default behaviour as show below
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
                                                            api_options, user_context)
-
+        #print(result.user.email)
         if isinstance(result, SignInUpPostOkResult):
             # print(result.user)
 
             # This is the response from the OAuth tokens provided by the third party provider
             # print(result.oauth_tokens["access_token"])
-            # other tokens like the refresh_token or id_token are also 
+            # other tokens like the refresh_token or id_token are also
             # available in the OAuthTokens object.
 
             # This gives the user's info as returned by the provider's user profile endpoint.
@@ -121,12 +130,73 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 email = result.user.email
                 mongodb_client = AsyncIOMotorClient(settings.DB_URL)
                 mongodb = mongodb_client[settings.DB_NAME]
-
                 mongodb_users = mongodb["users"]
+
+                # print(result.user.user_id)
+                # print(result.user.third_party_info.user_id) # this gives out output like oauth2|sign-in-with-slack|T048F0ANS1M-U066Q9JAU3B, google-oauth2|101162861063367124308
+                third_party_info = result.user.third_party_info.user_id
+                third_party_provider = ""
+                tenant_id = ""
+                if "slack" in third_party_info:
+                    third_party_provider = "slack"
+                elif "google" in third_party_info:
+                    third_party_provider = "google"
+                thirdparty_user_id = ""
+                thirdparty_team_id = ""
+                # print(third_party_provider)
+                if third_party_provider == "slack":
+                    split_str = third_party_info.split('|')
+                    ids = split_str[2].split('-')
+                    thirdparty_user_id = ids[1]
+                    # print(thirdparty_user_id)
+                    thirdparty_team_id = ids[0]
+                    tenant_id = ids[0]
+                    existing_slack_tenant = await mongodb["tenants"].find_one({"tenant_id": tenant_id})
+                    if existing_slack_tenant is None:
+                        return GeneralErrorResponse('Your Slack workspace is not whitelisted. Please contact your workspace admin to install Monk bot. If you are the admin, please visit https://install.heymonk.app')
+                elif third_party_provider == "google":
+                    split_str = third_party_info.split('|')
+                    thirdparty_user_id = split_str[1]
+                    # print(thirdparty_user_id)
+
+                    # check if the email id is whitelisted
+                    whitelisted_user = await mongodb['whitelisted_users'].find_one({"email": email})
+                    if whitelisted_user is None:
+                        return GeneralErrorResponse('Your Google email address is not whitelisted. Please contact support@transcendtech.io')
+                    
+                    tenant_id = whitelisted_user['tenant_id']
+
+            
+                    tenant_name = "Tenant:"+ tenant_id
+                    tenants_collection = mongodb["tenants"]
+                    old_tenant = await tenants_collection.find_one({"tenant_name": tenant_name})
+                    if old_tenant:
+                        tenant_id = old_tenant['tenant_id']
+                    else:
+                        tenant = {}
+                        
+                        tenant["tenant_id"] = tenant_id
+                        tenant["tenant_name"] = tenant_name
+                        tenant["user_id"] = result.user.user_id
+                        tenant["user_token"] = result.oauth_tokens['access_token']
+                        # tenant["bot_user_id"] = token_data["bot_user_id"]
+                        # tenant["bot_token"] = token_data["access_token"]
+                        tenant["token_response"] = result.to_json()
+
+                        await tenants_collection.insert_one(tenant)
+
+
                 update_result = await mongodb_users.update_one({"_id": user_id},
-                                                               {"$set": {"user_name": user_name,
-                                                                         "user_picture": user_picture,
-                                                                         "email": email}}, upsert=True)
+                                                               {"$set":
+                                                                    {"user_name": user_name,
+                                                                     "user_picture": user_picture,
+                                                                     "email": email,
+                                                                     "tenant_id": tenant_id,
+                                                                     "thirdparty_provider": third_party_provider,
+                                                                     "thirdparty_user_id": thirdparty_user_id,
+                                                                     "thirdparty_team_id": thirdparty_team_id,
+
+                                                                     }}, upsert=True)
 
                 # await update_user_metadata(user_id=user_id, metadata_update={
                 #   "user_name": user_name

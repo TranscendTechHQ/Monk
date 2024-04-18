@@ -36,7 +36,7 @@ Edit the openapi.yaml file (temporary hack)
             - type: string
             - type: integer
 ```
-```
+```yaml
 # with
           items:
             type: string

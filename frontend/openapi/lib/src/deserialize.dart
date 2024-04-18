@@ -9,7 +9,7 @@ import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/public_channel_list.dart';
 import 'package:openapi/src/model/session_info.dart';
-import 'package:openapi/src/model/subcribe_channel_request.dart';
+import 'package:openapi/src/model/subscribe_channel_request.dart';
 import 'package:openapi/src/model/subscribed_channel_list.dart';
 import 'package:openapi/src/model/thread_headline_model.dart';
 import 'package:openapi/src/model/thread_headlines_model.dart';
@@ -61,8 +61,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return PublicChannelList.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SessionInfo':
           return SessionInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'SubcribeChannelRequest':
-          return SubcribeChannelRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'SubscribeChannelRequest':
+          return SubscribeChannelRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SubscribedChannelList':
           return SubscribedChannelList.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadHeadlineModel':

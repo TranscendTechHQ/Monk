@@ -137,6 +137,7 @@ class ThreadModel(BaseModel):
     title: str = Field(..., min_length=1, max_length=100, pattern="^[a-zA-Z0-9]+$")
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     headline: str = Field(default=None)
+    tenant_id: str
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -154,8 +155,8 @@ class ThreadModel(BaseModel):
                                               "content": "This is the content of the block",
                                           }
                                       ],
-                                      "headline": "This is the headline of the thread"
-
+                                      "headline": "This is the headline of the thread",
+                                      "tenant_id": "ABCD1234"
                                   }
                               }
                               )

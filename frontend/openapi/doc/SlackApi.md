@@ -89,7 +89,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **subscribeChannelSubscribeChannelPost**
-> SubscribedChannelList subscribeChannelSubscribeChannelPost(subcribeChannelRequest)
+> SubscribedChannelList subscribeChannelSubscribeChannelPost(subscribeChannelRequest)
 
 Subscribe Channel
 
@@ -98,10 +98,10 @@ Subscribe Channel
 import 'package:openapi/api.dart';
 
 final api = Openapi().getSlackApi();
-final SubcribeChannelRequest subcribeChannelRequest = ; // SubcribeChannelRequest | 
+final SubscribeChannelRequest subscribeChannelRequest = ; // SubscribeChannelRequest | 
 
 try {
-    final response = api.subscribeChannelSubscribeChannelPost(subcribeChannelRequest);
+    final response = api.subscribeChannelSubscribeChannelPost(subscribeChannelRequest);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling SlackApi->subscribeChannelSubscribeChannelPost: $e\n');
@@ -112,7 +112,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **subcribeChannelRequest** | [**SubcribeChannelRequest**](SubcribeChannelRequest.md)|  | 
+ **subscribeChannelRequest** | [**SubscribeChannelRequest**](SubscribeChannelRequest.md)|  | 
 
 ### Return type
 
