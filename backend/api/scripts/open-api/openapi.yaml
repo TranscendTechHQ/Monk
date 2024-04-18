@@ -590,9 +590,41 @@ paths:
       summary: Create
       tags:
       - threads
+  /blocks/child:
+    post:
+      operationId: child_thread_blocks_child_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChildThreadModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadModel'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Child Thread
+      tags:
+      - threads
+  /blocks/{id}:
     put:
-      operationId: update_blocks_put
+      operationId: update_blocks__id__put
       parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
       - in: query
         name: thread_title
         required: true
@@ -619,31 +651,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Update
-      tags:
-      - threads
-  /blocks/child:
-    post:
-      operationId: child_thread_blocks_child_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateChildThreadModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadModel'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Child Thread
       tags:
       - threads
   /blocksDate:

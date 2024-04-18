@@ -248,19 +248,20 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
                         content=jsonable_encoder(updated_thread))
 
 
-@router.put("/blocks", response_model=ThreadModel, response_description="Update a block")
-async def update(request: Request, thread_title: str, block: UpdateBlockModel = Body(...),
+@router.put("/blocks/{id}", response_model=ThreadModel, response_description="Update a block")
+async def update(request: Request, id: str, thread_title: str, block: UpdateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
     thread_collection = request.app.mongodb["threads"]
 
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
-    update_block = block.model_dump()
-    block = await get_block_by_id(update_block["id"], thread_collection)
+    input_block = block.model_dump()
+    block = await get_block_by_id(id, thread_collection)
+    block = block["content"]
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
 
-    if jsonable_encoder(block)["creator_id"] != user_id:
+    if block["creator_id"] != user_id:
         return JSONResponse(status_code=401, content={"message": "Unauthorized"})
 
     # new_block_dict = new_block.model_dump()
@@ -273,18 +274,26 @@ async def update(request: Request, thread_title: str, block: UpdateBlockModel = 
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
 
+    update_block = block
+    update_block["content"] = input_block["content"]
+
     # change new_block_dict to json_new_block if you want to store
     # block as a json string in the db
-    thread["content"].remove(jsonable_encoder(block))
-    thread["content"].append(jsonable_encoder(update_block))
+    for content in thread["content"]:
+        if content["_id"] == block["_id"]:
+            content["content"] = update_block["content"]
 
-    generate_single_thread_headline(thread, thread_collection, use_ai=False)
+    await update_mongo_document_fields({"_id": thread["_id"]}, thread, thread_collection)
 
-    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"], tenant_id)
-    for doc in thread_read_documents:
-        if doc['thread_id'] == thread["_id"]:
-            await delete_mongo_document({"thread_id": thread["_id"], "email": doc.email},
-                                        request.app.mongodb["threads_reads"])
+    user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
+                                                request.app.mongodb["user_thread_flags"], tenant_id)
+
+    if user_thread_flag:
+        user_thread_flag["read"] = False
+        updated_user_thread_flags = await update_mongo_document_fields(
+            {"thread_id": thread["_id"], "user_id": user_id},
+            jsonable_encoder(user_thread_flag),
+            request.app.mongodb["user_thread_flags"])
 
     updated_thread = await update_mongo_document_fields(
         {"title": thread_title},
