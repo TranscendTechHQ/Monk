@@ -74,20 +74,10 @@ class ThreadDetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            titleEditMode != false ? Text(
-              '$formatType -: $title',
-              style: TextStyle(
-                  fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
-            ) : TextField(controller: titleController),
-            const SizedBox(width: 30),
-            IconButton(onPressed: () {
-              
-            }, icon: const Icon(Icons.edit))
-          ],
-        ),
+        title: Text(
+        '$formatType -: $title',
+        style: TextStyle(
+        fontSize: 20, color: Theme.of(context).colorScheme.onSurface)),
       ),
       body: PageScaffold(
         body: Container(

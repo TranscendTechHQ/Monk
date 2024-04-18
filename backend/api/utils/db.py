@@ -23,6 +23,7 @@ async def startup_async_db_client():
     # asyncdb.headlines_collection = asyncdb.mongodb["thread_headlines"]
     asyncdb.subscribed_channels_collection = asyncdb.mongodb["subscribed_channels"]
     asyncdb.subscribed_channels_collection = asyncdb.mongodb["whitelisted_users"]
+    asyncdb.subscribed_channels_collection = asyncdb.mongodb["thread_reads"]
 
 
 async def shutdown_async_db_client():

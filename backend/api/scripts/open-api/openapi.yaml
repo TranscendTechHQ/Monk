@@ -147,6 +147,22 @@ components:
       - title
       title: CreateThreadModel
       type: object
+    CreateThreadReadModel:
+      example:
+        status: true
+        thread_id: 12345678-123
+      properties:
+        status:
+          title: Status
+          type: boolean
+        thread_id:
+          title: Thread Id
+          type: string
+      required:
+      - thread_id
+      - status
+      title: CreateThreadReadModel
+      type: object
     Creator:
       example:
         email: hey@abc.com
@@ -373,6 +389,19 @@ components:
       - title
       - tenant_id
       title: ThreadModel
+      type: object
+    ThreadReadModel:
+      properties:
+        email:
+          title: Email
+          type: string
+        thread_id:
+          title: Thread Id
+          type: string
+      required:
+      - email
+      - thread_id
+      title: ThreadReadModel
       type: object
     ThreadsInfo:
       example:
@@ -791,6 +820,31 @@ paths:
       summary: Subscribe Channel
       tags:
       - slack
+  /thread-read:
+    post:
+      operationId: create_tr_thread_read_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateThreadReadModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadReadModel'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create Tr
+      tags:
+      - threads
   /threadHeadlines:
     get:
       operationId: th_threadHeadlines_get

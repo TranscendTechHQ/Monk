@@ -183,6 +183,30 @@ class UpdateThreadModel(BaseModel):
                               )
 
 
+class ThreadReadModel(BaseModel):
+    email: str
+    thread_id: str
+
+
+class ThreadReadsModel(BaseModel):
+    threadReads: List[ThreadReadModel]
+
+
+class CreateThreadReadModel(BaseModel):
+    thread_id: str
+    status: bool
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              json_schema_extra={
+                                  "example": {
+                                      "thread_id": "12345678-123",
+                                      "status": True
+                                  }
+                              }
+                              )
+
+
 class ThreadsModel(BaseModel):
     threads: List[ThreadModel]
     model_config = ConfigDict(extra='ignore',
