@@ -114,8 +114,8 @@ void main() {
 
     // Update
     //
-    //Future<ThreadModel> updateBlocksPut(String threadTitle, UpdateBlockModel updateBlockModel) async
-    test('test updateBlocksPut', () async {
+    //Future<ThreadModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
+    test('test updateBlocksIdPut', () async {
       // TODO
     });
 

@@ -24,7 +24,7 @@ Method | HTTP request | Description
 [**thThreadHeadlinesGet**](ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
-[**updateBlocksPut**](ThreadsApi.md#updateblocksput) | **PUT** /blocks | Update
+[**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
 [**updateThThreadsIdPut**](ThreadsApi.md#updateththreadsidput) | **PUT** /threads/{id} | Update Th
 
 
@@ -625,8 +625,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **updateBlocksPut**
-> ThreadModel updateBlocksPut(threadTitle, updateBlockModel)
+# **updateBlocksIdPut**
+> ThreadModel updateBlocksIdPut(id, threadTitle, updateBlockModel)
 
 Update
 
@@ -635,14 +635,15 @@ Update
 import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
 final String threadTitle = threadTitle_example; // String | 
 final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
 
 try {
-    final response = api.updateBlocksPut(threadTitle, updateBlockModel);
+    final response = api.updateBlocksIdPut(id, threadTitle, updateBlockModel);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling ThreadsApi->updateBlocksPut: $e\n');
+    print('Exception when calling ThreadsApi->updateBlocksIdPut: $e\n');
 }
 ```
 
@@ -650,6 +651,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
  **threadTitle** | **String**|  | 
  **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
 

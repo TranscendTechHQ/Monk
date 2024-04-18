@@ -16,13 +16,24 @@ ThreadsInfo _$ThreadsInfoFromJson(Map<String, dynamic> json) => $checkedCreate(
         );
         final val = ThreadsInfo(
           info: $checkedConvert(
-              'info', (v) => Map<String, String>.from(v as Map)),
+              'info',
+              (v) => (v as Map<String, dynamic>?)?.map(
+                    (k, e) => MapEntry(k, e as String),
+                  )),
         );
         return val;
       },
     );
 
-Map<String, dynamic> _$ThreadsInfoToJson(ThreadsInfo instance) =>
-    <String, dynamic>{
-      'info': instance.info,
-    };
+Map<String, dynamic> _$ThreadsInfoToJson(ThreadsInfo instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('info', instance.info);
+  return val;
+}

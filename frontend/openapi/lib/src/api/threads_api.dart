@@ -1215,6 +1215,7 @@ _responseData = rawData == null ? null : deserialize<List<String>, String>(rawDa
   /// 
   ///
   /// Parameters:
+  /// * [id] 
   /// * [threadTitle] 
   /// * [updateBlockModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1226,7 +1227,8 @@ _responseData = rawData == null ? null : deserialize<List<String>, String>(rawDa
   ///
   /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> updateBlocksPut({ 
+  Future<Response<ThreadModel>> updateBlocksIdPut({ 
+    required String id,
     required String threadTitle,
     required UpdateBlockModel updateBlockModel,
     CancelToken? cancelToken,
@@ -1236,7 +1238,7 @@ _responseData = rawData == null ? null : deserialize<List<String>, String>(rawDa
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/blocks';
+    final _path = r'/blocks/{id}'.replaceAll('{' r'id' '}', id.toString());
     final _options = Options(
       method: r'PUT',
       headers: <String, dynamic>{
