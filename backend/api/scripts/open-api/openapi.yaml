@@ -147,21 +147,28 @@ components:
       - title
       title: CreateThreadModel
       type: object
-    CreateThreadReadModel:
+    CreateUserThreadFlagModel:
       example:
-        status: true
         thread_id: 12345678-123
       properties:
-        status:
-          title: Status
+        bookmark:
           type: boolean
+          title: Bookmark
+        read:
+          type: boolean
+          title: Read
         thread_id:
           title: Thread Id
           type: string
+        unfollow:
+          type: boolean
+          title: Unfollow
+        upvote:
+          type: boolean
+          title: Upvote
       required:
       - thread_id
-      - status
-      title: CreateThreadReadModel
+      title: CreateUserThreadFlagModel
       type: object
     Creator:
       example:
@@ -390,22 +397,6 @@ components:
       - tenant_id
       title: ThreadModel
       type: object
-    ThreadReadModel:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        email:
-          title: Email
-          type: string
-        thread_id:
-          title: Thread Id
-          type: string
-      required:
-      - email
-      - thread_id
-      title: ThreadReadModel
-      type: object
     ThreadsInfo:
       example:
         titles:
@@ -479,6 +470,38 @@ components:
           title: Content
           type: string
       title: UpdateBlockModel
+      type: object
+    UserThreadFlagModel:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        bookmark:
+          default: false
+          title: Bookmark
+          type: boolean
+        read:
+          default: false
+          title: Read
+          type: boolean
+        thread_id:
+          title: Thread Id
+          type: string
+        unfollow:
+          default: false
+          title: Unfollow
+          type: boolean
+        upvote:
+          default: false
+          title: Upvote
+          type: boolean
+        user_id:
+          title: User Id
+          type: string
+      required:
+      - user_id
+      - thread_id
+      title: UserThreadFlagModel
       type: object
     ValidationError:
       properties:
@@ -823,21 +846,21 @@ paths:
       summary: Subscribe Channel
       tags:
       - slack
-  /thread-read:
+  /thread/flag:
     post:
-      operationId: create_tr_thread_read_post
+      operationId: create_tf_thread_flag_post
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateThreadReadModel'
+              $ref: '#/components/schemas/CreateUserThreadFlagModel'
         required: true
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadReadModel'
+                $ref: '#/components/schemas/UserThreadFlagModel'
           description: Successful Response
         '422':
           content:
@@ -845,7 +868,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Create Tr
+      summary: Create Tf
       tags:
       - threads
   /threadHeadlines:

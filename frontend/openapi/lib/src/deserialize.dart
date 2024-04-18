@@ -4,7 +4,7 @@ import 'package:openapi/src/model/channel_model.dart';
 import 'package:openapi/src/model/composite_channel_list.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
-import 'package:openapi/src/model/create_thread_read_model.dart';
+import 'package:openapi/src/model/create_user_thread_flag_model.dart';
 import 'package:openapi/src/model/creator.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
@@ -16,11 +16,11 @@ import 'package:openapi/src/model/thread_headline_model.dart';
 import 'package:openapi/src/model/thread_headlines_model.dart';
 import 'package:openapi/src/model/thread_meta_data.dart';
 import 'package:openapi/src/model/thread_model.dart';
-import 'package:openapi/src/model/thread_read_model.dart';
 import 'package:openapi/src/model/threads_info.dart';
 import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
+import 'package:openapi/src/model/user_thread_flag_model.dart';
 import 'package:openapi/src/model/validation_error.dart';
 
 final _regList = RegExp(r'^List<(.*)>$');
@@ -53,8 +53,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return CreateChildThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CreateThreadModel':
           return CreateThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'CreateThreadReadModel':
-          return CreateThreadReadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'CreateUserThreadFlagModel':
+          return CreateUserThreadFlagModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'Creator':
           return Creator.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
@@ -77,8 +77,6 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return ThreadMetaData.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadModel':
           return ThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ThreadReadModel':
-          return ThreadReadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadsInfo':
           return ThreadsInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadsMetaData':
@@ -87,6 +85,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return ThreadsModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateBlockModel':
           return UpdateBlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'UserThreadFlagModel':
+          return UserThreadFlagModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ValidationError':
           return ValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
         default:

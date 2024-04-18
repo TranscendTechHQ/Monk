@@ -1,7 +1,7 @@
 import datetime as dt
 import uuid
 from datetime import datetime
-from typing import Annotated, List, Union
+from typing import Annotated, List, Union, Optional
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
@@ -183,26 +183,32 @@ class UpdateThreadModel(BaseModel):
                               )
 
 
-class ThreadReadModel(BaseModel):
+class UserThreadFlagModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
-    email: str
+    user_id: str
     thread_id: str
+    read: bool = Field(default=False)
+    unfollow: bool = Field(default=False)
+    bookmark: bool = Field(default=False)
+    upvote: bool = Field(default=False)
 
 
-class ThreadReadsModel(BaseModel):
-    threadReads: List[ThreadReadModel]
+class UserThreadFlagsModel(BaseModel):
+    threadReads: List[UserThreadFlagModel]
 
 
-class CreateThreadReadModel(BaseModel):
+class CreateUserThreadFlagModel(BaseModel):
     thread_id: str
-    status: bool
+    read: Optional[bool] = None
+    unfollow: Optional[bool] = None
+    bookmark: Optional[bool] = None
+    upvote: Optional[bool] = None
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               json_schema_extra={
                                   "example": {
-                                      "thread_id": "12345678-123",
-                                      "status": True
+                                      "thread_id": "12345678-123"
                                   }
                               }
                               )

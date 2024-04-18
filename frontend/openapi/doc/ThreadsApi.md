@@ -12,8 +12,8 @@ Method | HTTP request | Description
 [**atAllThreadsGet**](ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [**childThreadBlocksChildPost**](ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
+[**createTfThreadFlagPost**](ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [**createThThreadsPost**](ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
-[**createTrThreadReadPost**](ThreadsApi.md#createtrthreadreadpost) | **POST** /thread-read | Create Tr
 [**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [**getBlocksByDateBlocksDateGet**](ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
@@ -149,6 +149,47 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **createTfThreadFlagPost**
+> UserThreadFlagModel createTfThreadFlagPost(createUserThreadFlagModel)
+
+Create Tf
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final CreateUserThreadFlagModel createUserThreadFlagModel = ; // CreateUserThreadFlagModel | 
+
+try {
+    final response = api.createTfThreadFlagPost(createUserThreadFlagModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->createTfThreadFlagPost: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **createUserThreadFlagModel** | [**CreateUserThreadFlagModel**](CreateUserThreadFlagModel.md)|  | 
+
+### Return type
+
+[**UserThreadFlagModel**](UserThreadFlagModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **createThThreadsPost**
 > ThreadModel createThThreadsPost(createThreadModel)
 
@@ -178,47 +219,6 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ThreadModel**](ThreadModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **createTrThreadReadPost**
-> ThreadReadModel createTrThreadReadPost(createThreadReadModel)
-
-Create Tr
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final CreateThreadReadModel createThreadReadModel = ; // CreateThreadReadModel | 
-
-try {
-    final response = api.createTrThreadReadPost(createThreadReadModel);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->createTrThreadReadPost: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **createThreadReadModel** | [**CreateThreadReadModel**](CreateThreadReadModel.md)|  | 
-
-### Return type
-
-[**ThreadReadModel**](ThreadReadModel.md)
 
 ### Authorization
 

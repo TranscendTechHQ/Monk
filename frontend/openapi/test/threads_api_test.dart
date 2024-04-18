@@ -28,17 +28,17 @@ void main() {
       // TODO
     });
 
+    // Create Tf
+    //
+    //Future<UserThreadFlagModel> createTfThreadFlagPost(CreateUserThreadFlagModel createUserThreadFlagModel) async
+    test('test createTfThreadFlagPost', () async {
+      // TODO
+    });
+
     // Create Th
     //
     //Future<ThreadModel> createThThreadsPost(CreateThreadModel createThreadModel) async
     test('test createThThreadsPost', () async {
-      // TODO
-    });
-
-    // Create Tr
-    //
-    //Future<ThreadReadModel> createTrThreadReadPost(CreateThreadReadModel createThreadReadModel) async
-    test('test createTrThreadReadPost', () async {
       // TODO
     });
 

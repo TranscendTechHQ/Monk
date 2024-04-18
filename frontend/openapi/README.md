@@ -74,8 +74,8 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
+[*ThreadsApi*](doc/ThreadsApi.md) | [**createTfThreadFlagPost**](doc/ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createThThreadsPost**](doc/ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
-[*ThreadsApi*](doc/ThreadsApi.md) | [**createTrThreadReadPost**](doc/ThreadsApi.md#createtrthreadreadpost) | **POST** /thread-read | Create Tr
 [*ThreadsApi*](doc/ThreadsApi.md) | [**dateJournalGet**](doc/ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksDateGet**](doc/ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadIdThreadsIdGet**](doc/ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
@@ -98,7 +98,7 @@ Class | Method | HTTP request | Description
  - [CompositeChannelList](doc/CompositeChannelList.md)
  - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
- - [CreateThreadReadModel](doc/CreateThreadReadModel.md)
+ - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)
  - [Creator](doc/Creator.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
@@ -110,11 +110,11 @@ Class | Method | HTTP request | Description
  - [ThreadHeadlinesModel](doc/ThreadHeadlinesModel.md)
  - [ThreadMetaData](doc/ThreadMetaData.md)
  - [ThreadModel](doc/ThreadModel.md)
- - [ThreadReadModel](doc/ThreadReadModel.md)
  - [ThreadsInfo](doc/ThreadsInfo.md)
  - [ThreadsMetaData](doc/ThreadsMetaData.md)
  - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
+ - [UserThreadFlagModel](doc/UserThreadFlagModel.md)
  - [ValidationError](doc/ValidationError.md)
 
 

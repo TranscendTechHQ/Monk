@@ -25,6 +25,7 @@ brew install openapi-generator
 ```
 Each time you update API endpoints
 ```bash
+cd scripts/open-api
 python extract-openapi.py main:app
 ./generate_yaml.sh
 ```
