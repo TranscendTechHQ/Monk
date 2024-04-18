@@ -74,10 +74,14 @@ class _HomePageState extends State<HomePage> {
         id: "8a7708a0-8598-4133-9b28-b0ad7c65652b",
         threadTitle: "ding",
         updateBlockModel: block);
-*/
+
     await threadApi.updateThThreadsIdPut(
         id: "56007383-3f47-4d82-9fc1-0da3510b2da8",
         updateThreadTitleModel: UpdateThreadTitleModel(title: "dong"));
+*/
+    await threadApi.createTfThreadFlagPost(
+        createUserThreadFlagModel: CreateUserThreadFlagModel(
+            threadId: "56007383-3f47-4d82-9fc1-0da3510b2da8", upvote: true));
   }
 
   Future<void> signOut() async {
