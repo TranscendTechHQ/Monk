@@ -162,7 +162,7 @@ async def md(request: Request,
             if doc['creator'] == user['_id']:
                 user_info = user
                 user_thread_flags = await get_mongo_document({"thread_id": doc["_id"], "user_id": user["_id"]},
-                                                             request.app.mongodb["user_thread_flags"])
+                                                             request.app.mongodb["user_thread_flags"], tenant_id)
                 break
         if user_info and tenant_id == doc['tenant_id']:
             creator["id"] = user_info["_id"]
@@ -508,11 +508,12 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
         return JSONResponse(status_code=401, content={"message": "Unauthorized"})
 
     user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
-                                                request.app.mongodb["user_thread_flags"])
+                                                request.app.mongodb["user_thread_flags"], tenant_id)
     if not user_thread_flag:
         user_thread_flag_doc = UserThreadFlagModel(
             user_id=user_id,
             thread_id=thread_id,
+            tenant_id=tenant_id,
             read=read if read else False,
             unfollow=unfollow if unfollow else False,
             bookmark=bookmark if bookmark else False,
@@ -534,6 +535,6 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
     )
 
     updated_user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
-                                                request.app.mongodb["user_thread_flags"])
+                                                        request.app.mongodb["user_thread_flags"], tenant_id)
 
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(updated_user_thread_flag))

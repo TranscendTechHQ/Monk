@@ -22,6 +22,11 @@ void main() {
       // TODO
     });
 
+    // String tenantId
+    test('to test the property `tenantId`', () async {
+      // TODO
+    });
+
     // String threadId
     test('to test the property `threadId`', () async {
       // TODO

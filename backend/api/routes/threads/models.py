@@ -187,6 +187,7 @@ class UserThreadFlagModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     user_id: str
     thread_id: str
+    tenant_id: str
     read: bool = Field(default=False)
     unfollow: bool = Field(default=False)
     bookmark: bool = Field(default=False)

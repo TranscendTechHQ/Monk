@@ -13,12 +13,13 @@ UserThreadFlagModel _$UserThreadFlagModelFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['thread_id', 'user_id'],
+          requiredKeys: const ['tenant_id', 'thread_id', 'user_id'],
         );
         final val = UserThreadFlagModel(
           id: $checkedConvert('_id', (v) => v as String?),
           bookmark: $checkedConvert('bookmark', (v) => v as bool? ?? false),
           read: $checkedConvert('read', (v) => v as bool? ?? false),
+          tenantId: $checkedConvert('tenant_id', (v) => v as String),
           threadId: $checkedConvert('thread_id', (v) => v as String),
           unfollow: $checkedConvert('unfollow', (v) => v as bool? ?? false),
           upvote: $checkedConvert('upvote', (v) => v as bool? ?? false),
@@ -28,6 +29,7 @@ UserThreadFlagModel _$UserThreadFlagModelFromJson(Map<String, dynamic> json) =>
       },
       fieldKeyMap: const {
         'id': '_id',
+        'tenantId': 'tenant_id',
         'threadId': 'thread_id',
         'userId': 'user_id'
       },
@@ -45,6 +47,7 @@ Map<String, dynamic> _$UserThreadFlagModelToJson(UserThreadFlagModel instance) {
   writeNotNull('_id', instance.id);
   writeNotNull('bookmark', instance.bookmark);
   writeNotNull('read', instance.read);
+  val['tenant_id'] = instance.tenantId;
   val['thread_id'] = instance.threadId;
   writeNotNull('unfollow', instance.unfollow);
   writeNotNull('upvote', instance.upvote);

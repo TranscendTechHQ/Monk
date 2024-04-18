@@ -24,6 +24,8 @@ class UserThreadFlagModel {
 
      this.read = false,
 
+    required  this.tenantId,
+
     required  this.threadId,
 
      this.unfollow = false,
@@ -66,6 +68,18 @@ class UserThreadFlagModel {
 
 
   final bool? read;
+
+
+
+  @JsonKey(
+    
+    name: r'tenant_id',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final String tenantId;
 
 
 
@@ -122,6 +136,7 @@ class UserThreadFlagModel {
      other.id == id &&
      other.bookmark == bookmark &&
      other.read == read &&
+     other.tenantId == tenantId &&
      other.threadId == threadId &&
      other.unfollow == unfollow &&
      other.upvote == upvote &&
@@ -132,6 +147,7 @@ class UserThreadFlagModel {
     id.hashCode +
     bookmark.hashCode +
     read.hashCode +
+    tenantId.hashCode +
     threadId.hashCode +
     unfollow.hashCode +
     upvote.hashCode +

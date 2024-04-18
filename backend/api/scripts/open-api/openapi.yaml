@@ -484,6 +484,9 @@ components:
           default: false
           title: Read
           type: boolean
+        tenant_id:
+          title: Tenant Id
+          type: string
         thread_id:
           title: Thread Id
           type: string
@@ -501,6 +504,7 @@ components:
       required:
       - user_id
       - thread_id
+      - tenant_id
       title: UserThreadFlagModel
       type: object
     ValidationError:
