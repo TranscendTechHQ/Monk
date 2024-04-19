@@ -189,17 +189,12 @@ async def md(request: Request,
 
 async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
+    
     threads_collection = asyncdb.threads_collection
     if user_info is None:
         return None
-    fullName = user_info['user_name']
-    email = user_info['email']
-    picture = user_info['user_picture']
     block = block.model_dump()
     new_block = BlockModel(**block)
-    new_block.created_by = fullName
-    new_block.creator_email = email
-    new_block.creator_picture = picture
     new_block.creator_id = user_id
     thread = await get_mongo_document(
         {"_id": thread_id},

@@ -47,9 +47,6 @@ class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
     created_at: datetime = Field(default_factory=datetime.now)
-    created_by: str = Field(default="unknown user")
-    creator_email: str = Field(default="unknown email")
-    creator_picture: str = Field(default="unknown picture link")
     creator_id: str = Field(default="unknown id")
     child_id: str = Field(default="")
 
