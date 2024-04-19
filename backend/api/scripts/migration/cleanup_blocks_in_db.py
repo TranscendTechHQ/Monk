@@ -27,10 +27,25 @@ async def remove_some_fields():
 
     print(f'Dropped fields from {result.modified_count} documents.')
 
+async def add_new_field():
+    # Define the fields to add
+    fields_to_add = [
+        {'field': 'creator_id', 'default_value': 'a4983b11-3465-4d00-9281-ec89048ce082'},
+        {'field': 'child_id', 'default_value': ''}
+    ]
+
+    # Add new field to documents
+    result = await asyncdb.threads_collection.update_many(
+        {},  # Empty filter to update all documents
+        {'$set': {f'content.$[].{field_info["field"]}': field_info["default_value"] for field_info in fields_to_add}}
+    )
+
+    print(f'Added new field to {result.modified_count} documents.')
 async def main():
     await startup_async_db_client()
     await print_block_keys()
     #await remove_some_fields()
+    #await add_new_field()
     await shutdown_async_db_client()
 
 
