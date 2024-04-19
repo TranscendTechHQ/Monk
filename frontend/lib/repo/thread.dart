@@ -210,8 +210,10 @@ class CurrentThread extends _$CurrentThread {
             id: thread.id,
             createdDate: thread.createdDate,
             tenantId: thread.tenantId);
+        logger.i('updating block with id $blockId');
         final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-        await threadApi.updateBlocksPut(
+        await threadApi.updateBlocksIdPut(
+          id: thread.id!,
           threadTitle: thread.title,
           updateBlockModel: UpdateBlockModel(
             content: content,
@@ -244,7 +246,7 @@ class CurrentThread extends _$CurrentThread {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final res = await threadApi.updateThThreadsIdPut(
         id: thread.id!,
-        createThreadModel: CreateThreadModel(title: title, type: thread.type),
+        updateThreadTitleModel: UpdateThreadTitleModel(title: title),
       );
       if (res.statusCode != 200) {
         throw Exception("Failed to update thread title");

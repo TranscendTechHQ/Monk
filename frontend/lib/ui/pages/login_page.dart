@@ -247,6 +247,16 @@ class _LoginPageState extends State<LoginPage> {
       // For slack authentication we don't need to verify the organization
       if (userId is String && userId.startsWith("oauth2|sign-in-with-slack")) {
         prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
+      } else if (map?['status'] == "GENERAL_ERROR") {
+        final message = map?['message'] ??
+            'Unable to login this time. Please try again later.';
+        logger.e(message);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: context.customColors.sourceMonkBlue,
+          ),
+        );
       } else {
         logger.i(
             'Google sign in was successful. Verifying if user is a part of an client workspace.');

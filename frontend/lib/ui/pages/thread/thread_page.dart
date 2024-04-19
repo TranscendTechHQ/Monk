@@ -119,10 +119,10 @@ class ThreadPage extends ConsumerWidget {
                             await ref
                                 .read(provider.notifier)
                                 .updateThreadTitle(controller.text);
-                            // ref.refresh(currentThreadProvider.call(
-                            //   title: title,
-                            //   type: type,
-                            // ));
+                            ref.refresh(currentThreadProvider.call(
+                              title: title,
+                              type: type,
+                            ));
                             Navigator.of(context).pop();
                           },
                           child: const Text('Save'),
