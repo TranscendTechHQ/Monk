@@ -238,11 +238,15 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     thread_id = thread["_id"]
     updated_thread = await create_new_block(thread_id, block, user_id)
 
-    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"])
-    for doc in thread_read_documents:
-        if doc['thread_id'] == thread_id:
-            await delete_mongo_document({"thread_id": thread_id, "email": doc.email},
-                                        request.app.mongodb["threads_reads"])
+    user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
+                                                request.app.mongodb["user_thread_flags"], tenant_id)
+
+    if user_thread_flag:
+        user_thread_flag["read"] = False
+        updated_user_thread_flags = await update_mongo_document_fields(
+            {"thread_id": thread["_id"], "user_id": user_id},
+            jsonable_encoder(user_thread_flag),
+            request.app.mongodb["user_thread_flags"])
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(updated_thread))
@@ -295,7 +299,6 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
             {"thread_id": thread["_id"], "user_id": user_id},
             jsonable_encoder(user_thread_flag),
             request.app.mongodb["user_thread_flags"])
-
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(updated_thread))
