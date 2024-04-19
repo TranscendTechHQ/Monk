@@ -15,6 +15,7 @@ import 'helper/constants.dart';
 
 final logger = Logger();
 final loader = LoaderService.instance;
+
 void main() async {
   SuperTokens.init(apiDomain: apiDomain);
   runApp(

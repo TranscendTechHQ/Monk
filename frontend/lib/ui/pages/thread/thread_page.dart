@@ -54,15 +54,27 @@ class ThreadPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentThread = ref.watch(currentThreadProvider.call(
+    final provider = currentThreadProvider.call(
       title: title,
       type: type,
-    ));
+    );
+    final currentThread = ref.watch(provider);
     final threadTitle = currentThread.maybeWhen(
       data: (state) => state?.title ?? title,
       orElse: () => title,
     );
     final blockInput = CommandBox(title: title, type: type);
+
+    ref.listen(provider, (prev, next) {
+      if (next is AsyncError) {
+        final data = next.value;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(data.toString().replaceFirst('Exception: ', '')),
+          ),
+        );
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -103,16 +115,14 @@ class ThreadPage extends ConsumerWidget {
                           child: const Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () {
-                            ref
-                                .read(currentThreadProvider
-                                    .call(title: title, type: type)
-                                    .notifier)
+                          onPressed: () async {
+                            await ref
+                                .read(provider.notifier)
                                 .updateThreadTitle(controller.text);
-                            // ref.refresh(currentThreadProvider.call(
-                            //   title: title,
-                            //   type: type,
-                            // ));
+                            ref.refresh(currentThreadProvider.call(
+                              title: title,
+                              type: type,
+                            ));
                             Navigator.of(context).pop();
                           },
                           child: const Text('Save'),

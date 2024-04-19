@@ -131,10 +131,6 @@ class ThreadCard extends ConsumerWidget {
         }
       }
     });
-    // final replyThread = ref.listen(replyProvider);
-    // if(replyThread != null && replyThread.state. != null) {
-    //   print('replyThread.thread: ${replyThread.thread}');
-    // }
 
     return MouseRegion(
       onEnter: (event) {
@@ -197,6 +193,16 @@ class ThreadCard extends ConsumerWidget {
                   ],
                 ),
                 const Spacer(),
+
+                if (!isHovered &&
+                    (DateTime.now()
+                            .difference(block.createdAt ?? DateTime.now())
+                            .inHours) <
+                        24)
+                  CircleAvatar(
+                    backgroundColor: Colors.yellow.shade200,
+                    radius: 4,
+                  ),
                 // TOOLS
                 Row(
                   children: [
