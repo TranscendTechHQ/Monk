@@ -12,6 +12,7 @@ import 'package:dio/dio.dart';
 import 'package:openapi/src/model/block_collection.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
+import 'package:openapi/src/model/create_user_thread_flag_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/thread_headlines_model.dart';
@@ -20,6 +21,8 @@ import 'package:openapi/src/model/threads_info.dart';
 import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
+import 'package:openapi/src/model/update_thread_title_model.dart';
+import 'package:openapi/src/model/user_thread_flag_model.dart';
 
 class ThreadsApi {
 
@@ -271,6 +274,95 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
     }
 
     return Response<ThreadModel>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Create Tf
+  /// 
+  ///
+  /// Parameters:
+  /// * [createUserThreadFlagModel] 
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [UserThreadFlagModel] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<UserThreadFlagModel>> createTfThreadFlagPost({ 
+    required CreateUserThreadFlagModel createUserThreadFlagModel,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/thread/flag';
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{
+        ...?headers,
+      },
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+_bodyData=jsonEncode(createUserThreadFlagModel);
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
+          _dio.options,
+          _path,
+        ),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    UserThreadFlagModel? _responseData;
+
+    try {
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<UserThreadFlagModel, UserThreadFlagModel>(rawData, 'UserThreadFlagModel', growable: true);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<UserThreadFlagModel>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -1123,6 +1215,7 @@ _responseData = rawData == null ? null : deserialize<List<String>, String>(rawDa
   /// 
   ///
   /// Parameters:
+  /// * [id] 
   /// * [threadTitle] 
   /// * [updateBlockModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1134,7 +1227,8 @@ _responseData = rawData == null ? null : deserialize<List<String>, String>(rawDa
   ///
   /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> updateBlocksPut({ 
+  Future<Response<ThreadModel>> updateBlocksIdPut({ 
+    required String id,
     required String threadTitle,
     required UpdateBlockModel updateBlockModel,
     CancelToken? cancelToken,
@@ -1144,7 +1238,7 @@ _responseData = rawData == null ? null : deserialize<List<String>, String>(rawDa
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/blocks';
+    final _path = r'/blocks/{id}'.replaceAll('{' r'id' '}', id.toString());
     final _options = Options(
       method: r'PUT',
       headers: <String, dynamic>{
@@ -1221,7 +1315,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
   ///
   /// Parameters:
   /// * [id] 
-  /// * [createThreadModel] 
+  /// * [updateThreadTitleModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1233,7 +1327,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ThreadModel>> updateThThreadsIdPut({ 
     required String id,
-    required CreateThreadModel createThreadModel,
+    required UpdateThreadTitleModel updateThreadTitleModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -1258,7 +1352,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
     dynamic _bodyData;
 
     try {
-_bodyData=jsonEncode(createThreadModel);
+_bodyData=jsonEncode(updateThreadTitleModel);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(

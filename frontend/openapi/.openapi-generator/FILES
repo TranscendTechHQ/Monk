@@ -9,6 +9,7 @@ doc/ChannelModel.md
 doc/CompositeChannelList.md
 doc/CreateChildThreadModel.md
 doc/CreateThreadModel.md
+doc/CreateUserThreadFlagModel.md
 doc/Creator.md
 doc/DefaultApi.md
 doc/HTTPValidationError.md
@@ -28,6 +29,8 @@ doc/ThreadsInfo.md
 doc/ThreadsMetaData.md
 doc/ThreadsModel.md
 doc/UpdateBlockModel.md
+doc/UpdateThreadTitleModel.md
+doc/UserThreadFlagModel.md
 doc/ValidationError.md
 lib/openapi.dart
 lib/src/api.dart
@@ -47,6 +50,7 @@ lib/src/model/channel_model.dart
 lib/src/model/composite_channel_list.dart
 lib/src/model/create_child_thread_model.dart
 lib/src/model/create_thread_model.dart
+lib/src/model/create_user_thread_flag_model.dart
 lib/src/model/creator.dart
 lib/src/model/http_validation_error.dart
 lib/src/model/model_date.dart
@@ -62,6 +66,8 @@ lib/src/model/threads_info.dart
 lib/src/model/threads_meta_data.dart
 lib/src/model/threads_model.dart
 lib/src/model/update_block_model.dart
+lib/src/model/update_thread_title_model.dart
+lib/src/model/user_thread_flag_model.dart
 lib/src/model/validation_error.dart
 pubspec.yaml
 test/block_collection_test.dart
@@ -70,6 +76,7 @@ test/channel_model_test.dart
 test/composite_channel_list_test.dart
 test/create_child_thread_model_test.dart
 test/create_thread_model_test.dart
+test/create_user_thread_flag_model_test.dart
 test/creator_test.dart
 test/default_api_test.dart
 test/http_validation_error_test.dart
@@ -89,4 +96,6 @@ test/threads_info_test.dart
 test/threads_meta_data_test.dart
 test/threads_model_test.dart
 test/update_block_model_test.dart
+test/update_thread_title_model_test.dart
+test/user_thread_flag_model_test.dart
 test/validation_error_test.dart

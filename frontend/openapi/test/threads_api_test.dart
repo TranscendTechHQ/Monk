@@ -28,6 +28,13 @@ void main() {
       // TODO
     });
 
+    // Create Tf
+    //
+    //Future<UserThreadFlagModel> createTfThreadFlagPost(CreateUserThreadFlagModel createUserThreadFlagModel) async
+    test('test createTfThreadFlagPost', () async {
+      // TODO
+    });
+
     // Create Th
     //
     //Future<ThreadModel> createThThreadsPost(CreateThreadModel createThreadModel) async
@@ -107,14 +114,14 @@ void main() {
 
     // Update
     //
-    //Future<ThreadModel> updateBlocksPut(String threadTitle, UpdateBlockModel updateBlockModel) async
-    test('test updateBlocksPut', () async {
+    //Future<ThreadModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
+    test('test updateBlocksIdPut', () async {
       // TODO
     });
 
     // Update Th
     //
-    //Future<ThreadModel> updateThThreadsIdPut(String id, CreateThreadModel createThreadModel) async
+    //Future<ThreadModel> updateThThreadsIdPut(String id, UpdateThreadTitleModel updateThreadTitleModel) async
     test('test updateThThreadsIdPut', () async {
       // TODO
     });

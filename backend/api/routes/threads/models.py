@@ -1,7 +1,7 @@
 import datetime as dt
 import uuid
 from datetime import datetime
-from typing import Annotated, List, Union
+from typing import Annotated, List, Union, Optional
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
@@ -178,6 +178,51 @@ class UpdateThreadModel(BaseModel):
                                           }
                                       ]
 
+                                  }
+                              }
+                              )
+
+
+class UpdateThreadTitleModel(BaseModel):
+    title: str
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              json_schema_extra={
+                                  "example": {
+                                      "title": "New title"
+                                  }
+                              }
+                              )
+
+
+class UserThreadFlagModel(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    user_id: str
+    thread_id: str
+    tenant_id: str
+    read: bool = Field(default=False)
+    unfollow: bool = Field(default=False)
+    bookmark: bool = Field(default=False)
+    upvote: bool = Field(default=False)
+
+
+class UserThreadFlagsModel(BaseModel):
+    threadReads: List[UserThreadFlagModel]
+
+
+class CreateUserThreadFlagModel(BaseModel):
+    thread_id: str
+    read: Optional[bool] = None
+    unfollow: Optional[bool] = None
+    bookmark: Optional[bool] = None
+    upvote: Optional[bool] = None
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              json_schema_extra={
+                                  "example": {
+                                      "thread_id": "12345678-123"
                                   }
                               }
                               )

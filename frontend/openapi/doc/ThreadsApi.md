@@ -12,6 +12,7 @@ Method | HTTP request | Description
 [**atAllThreadsGet**](ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [**childThreadBlocksChildPost**](ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
+[**createTfThreadFlagPost**](ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [**createThThreadsPost**](ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
 [**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [**getBlocksByDateBlocksDateGet**](ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
@@ -23,7 +24,7 @@ Method | HTTP request | Description
 [**thThreadHeadlinesGet**](ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
-[**updateBlocksPut**](ThreadsApi.md#updateblocksput) | **PUT** /blocks | Update
+[**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
 [**updateThThreadsIdPut**](ThreadsApi.md#updateththreadsidput) | **PUT** /threads/{id} | Update Th
 
 
@@ -136,6 +137,47 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ThreadModel**](ThreadModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **createTfThreadFlagPost**
+> UserThreadFlagModel createTfThreadFlagPost(createUserThreadFlagModel)
+
+Create Tf
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final CreateUserThreadFlagModel createUserThreadFlagModel = ; // CreateUserThreadFlagModel | 
+
+try {
+    final response = api.createTfThreadFlagPost(createUserThreadFlagModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->createTfThreadFlagPost: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **createUserThreadFlagModel** | [**CreateUserThreadFlagModel**](CreateUserThreadFlagModel.md)|  | 
+
+### Return type
+
+[**UserThreadFlagModel**](UserThreadFlagModel.md)
 
 ### Authorization
 
@@ -583,8 +625,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **updateBlocksPut**
-> ThreadModel updateBlocksPut(threadTitle, updateBlockModel)
+# **updateBlocksIdPut**
+> ThreadModel updateBlocksIdPut(id, threadTitle, updateBlockModel)
 
 Update
 
@@ -593,14 +635,15 @@ Update
 import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
 final String threadTitle = threadTitle_example; // String | 
 final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
 
 try {
-    final response = api.updateBlocksPut(threadTitle, updateBlockModel);
+    final response = api.updateBlocksIdPut(id, threadTitle, updateBlockModel);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling ThreadsApi->updateBlocksPut: $e\n');
+    print('Exception when calling ThreadsApi->updateBlocksIdPut: $e\n');
 }
 ```
 
@@ -608,6 +651,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
  **threadTitle** | **String**|  | 
  **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
 
@@ -627,7 +671,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateThThreadsIdPut**
-> ThreadModel updateThThreadsIdPut(id, createThreadModel)
+> ThreadModel updateThThreadsIdPut(id, updateThreadTitleModel)
 
 Update Th
 
@@ -637,10 +681,10 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
 final String id = id_example; // String | 
-final CreateThreadModel createThreadModel = ; // CreateThreadModel | 
+final UpdateThreadTitleModel updateThreadTitleModel = ; // UpdateThreadTitleModel | 
 
 try {
-    final response = api.updateThThreadsIdPut(id, createThreadModel);
+    final response = api.updateThThreadsIdPut(id, updateThreadTitleModel);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->updateThThreadsIdPut: $e\n');
@@ -652,7 +696,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **String**|  | 
- **createThreadModel** | [**CreateThreadModel**](CreateThreadModel.md)|  | 
+ **updateThreadTitleModel** | [**UpdateThreadTitleModel**](UpdateThreadTitleModel.md)|  | 
 
 ### Return type
 

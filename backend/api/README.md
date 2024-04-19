@@ -25,7 +25,7 @@ brew install openapi-generator
 ```
 Each time you update API endpoints
 ```bash
-python extract-openapi.py main:app
+cd scripts/open-api
 ./generate_yaml.sh
 ```
 Edit the openapi.yaml file (temporary hack)
@@ -41,4 +41,7 @@ Edit the openapi.yaml file (temporary hack)
           items:
             type: string
 ```
+`./regenerate_api.sh`
+
+cd ../../../../frontend
 `./regenerate_api.sh`
