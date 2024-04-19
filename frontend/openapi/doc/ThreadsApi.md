@@ -30,7 +30,7 @@ Method | HTTP request | Description
 
 
 # **allUsersUserGet**
-> UserList allUsersUserGet()
+> UserMap allUsersUserGet()
 
 All Users
 
@@ -53,7 +53,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**UserList**](UserList.md)
+[**UserMap**](UserMap.md)
 
 ### Authorization
 

@@ -35,8 +35,8 @@ class UserModel(BaseModel):
                               arbitrary_types_allowed=True,
                               )
 
-class UserList(BaseModel):
-    users: List[UserModel]
+class UserMap(BaseModel):
+    users: dict[str, UserModel]
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,)
@@ -208,10 +208,10 @@ class UserThreadFlagsModel(BaseModel):
 
 class CreateUserThreadFlagModel(BaseModel):
     thread_id: str
-    read: Optional[bool] = None
-    unfollow: Optional[bool] = None
-    bookmark: Optional[bool] = None
-    upvote: Optional[bool] = None
+    read: bool = Field(default=False)
+    unfollow: bool = Field(default=False)
+    bookmark: bool = Field(default=False)
+    upvote: bool = Field(default=False)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

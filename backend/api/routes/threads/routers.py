@@ -15,7 +15,7 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, UserList, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel
 from .models import THREADTYPES, CreateChildThreadModel, ThreadHeadlinesModel, ThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -44,21 +44,24 @@ async def keyword_search(query, collection):
 
     return threads
 
-@router.get("/user", response_model=UserList,
+@router.get("/user", response_model=UserMap,
             response_description="Get user information")
 async def all_users(request: Request, 
                     session: SessionContainer = Depends(verify_session())
                     ):
-   
+    
+    tenant_id = await get_tenant_id(session)
     # get all users
-    final_user_list = []
-    cursor =  asyncdb.users_collection.find({})
+    final_user_map = {}
+    
+    cursor =  asyncdb.users_collection.find({"tenant_id": tenant_id})
     user_list = await cursor.to_list(length=None)
+    
     for user in user_list:
-        final_user_list.append(UserModel(**user))
+        final_user_map[user["_id"]] = UserModel(**user)
 
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(UserList(users=final_user_list)))
+                        content=jsonable_encoder(UserMap(users=final_user_map)))
             
 @router.get("/searchTitles", response_model=list[str],
             response_description="Search threads by query and get title")
@@ -248,7 +251,8 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     thread_id = thread["_id"]
     updated_thread = await create_new_block(thread_id, block, user_id)
 
-    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"])
+    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"], 
+                                                      tenant_id=tenant_id)
     for doc in thread_read_documents:
         if doc['thread_id'] == thread_id:
             await delete_mongo_document({"thread_id": thread_id, "email": doc.email},

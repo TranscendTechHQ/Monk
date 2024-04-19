@@ -29,7 +29,7 @@ doc/ThreadsMetaData.md
 doc/ThreadsModel.md
 doc/UpdateBlockModel.md
 doc/UpdateThreadTitleModel.md
-doc/UserList.md
+doc/UserMap.md
 doc/UserModel.md
 doc/UserThreadFlagModel.md
 doc/ValidationError.md
@@ -67,7 +67,7 @@ lib/src/model/threads_meta_data.dart
 lib/src/model/threads_model.dart
 lib/src/model/update_block_model.dart
 lib/src/model/update_thread_title_model.dart
-lib/src/model/user_list.dart
+lib/src/model/user_map.dart
 lib/src/model/user_model.dart
 lib/src/model/user_thread_flag_model.dart
 lib/src/model/validation_error.dart
@@ -98,7 +98,7 @@ test/threads_meta_data_test.dart
 test/threads_model_test.dart
 test/update_block_model_test.dart
 test/update_thread_title_model_test.dart
-test/user_list_test.dart
+test/user_map_test.dart
 test/user_model_test.dart
 test/user_thread_flag_model_test.dart
 test/validation_error_test.dart

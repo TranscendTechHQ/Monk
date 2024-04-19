@@ -22,7 +22,7 @@ import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
 import 'package:openapi/src/model/update_thread_title_model.dart';
-import 'package:openapi/src/model/user_list.dart';
+import 'package:openapi/src/model/user_map.dart';
 import 'package:openapi/src/model/user_thread_flag_model.dart';
 
 class ThreadsApi {
@@ -42,9 +42,9 @@ class ThreadsApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [UserList] as data
+  /// Returns a [Future] containing a [Response] with a [UserMap] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<UserList>> allUsersUserGet({ 
+  Future<Response<UserMap>> allUsersUserGet({ 
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -73,11 +73,11 @@ class ThreadsApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    UserList? _responseData;
+    UserMap? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<UserList, UserList>(rawData, 'UserList', growable: true);
+_responseData = rawData == null ? null : deserialize<UserMap, UserMap>(rawData, 'UserMap', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -88,7 +88,7 @@ _responseData = rawData == null ? null : deserialize<UserList, UserList>(rawData
       );
     }
 
-    return Response<UserList>(
+    return Response<UserMap>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

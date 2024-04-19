@@ -1,13 +1,13 @@
 import 'package:test/test.dart';
 import 'package:openapi/openapi.dart';
 
-// tests for UserList
+// tests for UserMap
 void main() {
-  final UserList? instance = /* UserList(...) */ null;
+  final UserMap? instance = /* UserMap(...) */ null;
   // TODO add properties to the entity
 
-  group(UserList, () {
-    // List<UserModel> users
+  group(UserMap, () {
+    // Map<String, UserModel> users
     test('to test the property `users`', () async {
       // TODO
     });

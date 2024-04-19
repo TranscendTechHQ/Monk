@@ -9,7 +9,7 @@ void main() {
   group(ThreadsApi, () {
     // All Users
     //
-    //Future<UserList> allUsersUserGet() async
+    //Future<UserMap> allUsersUserGet() async
     test('test allUsersUserGet', () async {
       // TODO
     });

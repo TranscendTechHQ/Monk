@@ -140,20 +140,24 @@ components:
         thread_id: 12345678-123
       properties:
         bookmark:
-          type: boolean
+          default: false
           title: Bookmark
-        read:
           type: boolean
+        read:
+          default: false
           title: Read
+          type: boolean
         thread_id:
           title: Thread Id
           type: string
         unfollow:
-          type: boolean
+          default: false
           title: Unfollow
-        upvote:
           type: boolean
+        upvote:
+          default: false
           title: Upvote
+          type: boolean
       required:
       - thread_id
       title: CreateUserThreadFlagModel
@@ -445,16 +449,16 @@ components:
       - title
       title: UpdateThreadTitleModel
       type: object
-    UserList:
+    UserMap:
       properties:
         users:
-          items:
+          additionalProperties:
             $ref: '#/components/schemas/UserModel'
           title: Users
-          type: array
+          type: object
       required:
       - users
-      title: UserList
+      title: UserMap
       type: object
     UserModel:
       properties:
@@ -1050,7 +1054,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserList'
+                $ref: '#/components/schemas/UserMap'
           description: Get user information
       summary: All Users
       tags:
