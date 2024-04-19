@@ -70,6 +70,7 @@ Class | Method | HTTP request | Description
 [*SlackApi*](doc/SlackApi.md) | [**chChannelListGet**](doc/SlackApi.md#chchannellistget) | **GET** /channel_list | Ch
 [*SlackApi*](doc/SlackApi.md) | [**publicChannelsPublicChannelsGet**](doc/SlackApi.md#publicchannelspublicchannelsget) | **GET** /public_channels | Public Channels
 [*SlackApi*](doc/SlackApi.md) | [**subscribeChannelSubscribeChannelPost**](doc/SlackApi.md#subscribechannelsubscribechannelpost) | **POST** /subscribe_channel | Subscribe Channel
+[*ThreadsApi*](doc/ThreadsApi.md) | [**allUsersUserGet**](doc/ThreadsApi.md#allusersuserget) | **GET** /user | All Users
 [*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
@@ -98,7 +99,6 @@ Class | Method | HTTP request | Description
  - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)
- - [Creator](doc/Creator.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ModelDate](doc/ModelDate.md)
  - [PublicChannelList](doc/PublicChannelList.md)
@@ -114,6 +114,8 @@ Class | Method | HTTP request | Description
  - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateThreadTitleModel](doc/UpdateThreadTitleModel.md)
+ - [UserList](doc/UserList.md)
+ - [UserModel](doc/UserModel.md)
  - [UserThreadFlagModel](doc/UserThreadFlagModel.md)
  - [ValidationError](doc/ValidationError.md)
 

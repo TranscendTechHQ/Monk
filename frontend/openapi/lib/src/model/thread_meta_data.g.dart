@@ -25,7 +25,7 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
           id: $checkedConvert('_id', (v) => v as String),
           createdDate: $checkedConvert('created_date', (v) => v as String),
           creator: $checkedConvert(
-              'creator', (v) => Creator.fromJson(v as Map<String, dynamic>)),
+              'creator', (v) => UserModel.fromJson(v as Map<String, dynamic>)),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
         );

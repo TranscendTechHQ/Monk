@@ -1,4 +1,4 @@
-# openapi.model.BlockModel
+# openapi.model.UserList
 
 ## Load the model package
 ```dart
@@ -8,11 +8,7 @@ import 'package:openapi/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **String** |  | [optional] 
-**childId** | **String** |  | [optional] [default to '']
-**content** | **String** |  | 
-**createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
-**creatorId** | **String** |  | [optional] [default to 'unknown id']
+**users** | [**List&lt;UserModel&gt;**](UserModel.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

@@ -31,21 +31,9 @@ components:
           format: date-time
           title: Created At
           type: string
-        created_by:
-          default: unknown user
-          title: Created By
-          type: string
-        creator_email:
-          default: unknown email
-          title: Creator Email
-          type: string
         creator_id:
           default: unknown id
           title: Creator Id
-          type: string
-        creator_picture:
-          default: unknown picture link
-          title: Creator Picture
           type: string
       required:
       - content
@@ -169,31 +157,6 @@ components:
       required:
       - thread_id
       title: CreateUserThreadFlagModel
-      type: object
-    Creator:
-      example:
-        email: hey@abc.com
-        id: 12345678-1234-5678-1234-567812345678
-        name: firstname lastname
-        picture: https://www.example.com/picture.jpg
-      properties:
-        email:
-          default: unknown email
-          title: Email
-          type: string
-        id:
-          default: unknown id
-          title: Id
-          type: string
-        name:
-          default: unknown user
-          title: Name
-          type: string
-        picture:
-          default: unknown picture link
-          title: Picture
-          type: string
-      title: Creator
       type: object
     Date:
       properties:
@@ -333,7 +296,7 @@ components:
           title: Created Date
           type: string
         creator:
-          $ref: '#/components/schemas/Creator'
+          $ref: '#/components/schemas/UserModel'
         title:
           title: Title
           type: string
@@ -481,6 +444,42 @@ components:
       required:
       - title
       title: UpdateThreadTitleModel
+      type: object
+    UserList:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/UserModel'
+          title: Users
+          type: array
+      required:
+      - users
+      title: UserList
+      type: object
+    UserModel:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        email:
+          default: unknown email
+          title: Email
+          type: string
+        last_login:
+          default: unknown last login
+          title: Last Login
+          type: string
+        name:
+          default: unknown user
+          title: Name
+          type: string
+        picture:
+          default: unknown picture link
+          title: Picture
+          type: string
+      required:
+      - _id
+      title: UserModel
       type: object
     UserThreadFlagModel:
       properties:
@@ -1041,5 +1040,18 @@ paths:
                 $ref: '#/components/schemas/ThreadsInfo'
           description: Get all thread titles and corresponding types
       summary: Ti
+      tags:
+      - threads
+  /user:
+    get:
+      operationId: all_users_user_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: Get user information
+      summary: All Users
       tags:
       - threads

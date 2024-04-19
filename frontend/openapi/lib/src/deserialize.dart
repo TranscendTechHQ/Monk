@@ -5,7 +5,6 @@ import 'package:openapi/src/model/composite_channel_list.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
-import 'package:openapi/src/model/creator.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/model_date.dart';
 import 'package:openapi/src/model/public_channel_list.dart';
@@ -21,6 +20,8 @@ import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
 import 'package:openapi/src/model/update_thread_title_model.dart';
+import 'package:openapi/src/model/user_list.dart';
+import 'package:openapi/src/model/user_model.dart';
 import 'package:openapi/src/model/user_thread_flag_model.dart';
 import 'package:openapi/src/model/validation_error.dart';
 
@@ -56,8 +57,6 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return CreateThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CreateUserThreadFlagModel':
           return CreateUserThreadFlagModel.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'Creator':
-          return Creator.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
           return HTTPValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ModelDate':
@@ -88,6 +87,10 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return UpdateBlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateThreadTitleModel':
           return UpdateThreadTitleModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'UserList':
+          return UserList.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'UserModel':
+          return UserModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UserThreadFlagModel':
           return UserThreadFlagModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ValidationError':
