@@ -24,24 +24,22 @@ THREADTYPES = [
     "/go"]
 
 
-class Creator(BaseModel):
+class UserModel(BaseModel):
+    id: str = Field(..., alias="_id")
     name: str = Field(default="unknown user")
     picture: str = Field(default="unknown picture link")
     email: str = Field(default="unknown email")
-    id: str = Field(default="unknown id")
+    last_login: str = Field(default="unknown last login")
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "name": "firstname lastname",
-                                      "picture": "https://www.example.com/picture.jpg",
-                                      "email": "hey@abc.com",
-                                      "id": "12345678-1234-5678-1234-567812345678"
-                                  }
-                              }
                               )
 
+class UserList(BaseModel):
+    users: List[UserModel]
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,)
 
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
@@ -275,7 +273,7 @@ class ThreadMetaData(BaseModel):
     title: str
     type: str
     created_date: str
-    creator: Creator
+    creator: UserModel
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

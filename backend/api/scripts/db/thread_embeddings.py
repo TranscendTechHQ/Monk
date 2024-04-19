@@ -56,7 +56,7 @@ def generate_single_thread_embedding(thread_doc):
     text += "The thread was created on " + createdAt + ". "
     creator = thread_doc['creator']
     text += "The creator of the thread is " + creator + ". "
-    userDoc = user_collection.find_one({'user_name': creator})
+    userDoc = user_collection.find_one({'name': creator})
     email = userDoc['email']
     text += "The email of the creator is " + email + ". "
     # print(text)
