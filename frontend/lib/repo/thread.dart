@@ -25,7 +25,7 @@ Future<Map<String, String>> fetchThreadsInfo(FetchThreadsInfoRef ref) async {
   if (response.statusCode != 200) {
     throw Exception("Failed to fetch titles");
   }
-  return response.data!.info!;
+  return response.data!.info;
 }
 
 @riverpod
