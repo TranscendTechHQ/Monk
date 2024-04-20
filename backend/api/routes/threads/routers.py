@@ -277,7 +277,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     tenant_id = await get_tenant_id(session)
 
     if block["creator_id"] != user_id:
-        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
     # new_block_dict = new_block.model_dump()
     # new_block_dict["id"] = str(new_block_dict["id"])
@@ -460,7 +460,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
     if old_thread["creator"] != user_id:
-        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
     thread_title = jsonable_encoder(thread_data)["title"]
     # content = jsonable_encoder(thread_data)["content"]
@@ -526,7 +526,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
     if tenant_id != jsonable_encoder(thread)["tenant_id"]:
-        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
     user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
                                                 request.app.mongodb["user_thread_flags"], tenant_id)

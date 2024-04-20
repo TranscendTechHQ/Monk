@@ -203,17 +203,18 @@ class CurrentThread extends _$CurrentThread {
           return e;
         }).toList();
         final updatedThreadModel = ThreadModel(
-            title: thread.title,
-            type: thread.type,
-            content: newContent!,
-            creator: thread.creator,
-            id: thread.id,
-            createdDate: thread.createdDate,
-            tenantId: thread.tenantId);
+          title: thread.title,
+          type: thread.type,
+          content: newContent!,
+          creator: thread.creator,
+          id: thread.id,
+          createdDate: thread.createdDate,
+          tenantId: thread.tenantId,
+        );
         logger.i('updating block with id $blockId');
         final threadApi = NetworkManager.instance.openApi.getThreadsApi();
         await threadApi.updateBlocksIdPut(
-          id: thread.id!,
+          id: blockId,
           threadTitle: thread.title,
           updateBlockModel: UpdateBlockModel(
             content: content,
