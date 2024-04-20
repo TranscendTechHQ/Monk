@@ -22,8 +22,8 @@ void main() {
       // TODO
     });
 
-    // String creator
-    test('to test the property `creator`', () async {
+    // String creatorId
+    test('to test the property `creatorId`', () async {
       // TODO
     });
 

@@ -178,7 +178,7 @@ async def md(request: Request,
         creator = {}
         user_info = None
         for user in users:
-            if doc['creator'] == user['_id']:
+            if doc['creator_id'] == user['_id']:
                 user_info = user
                 user_thread_flags = await get_mongo_document({"thread_id": doc["_id"], "user_id": user["_id"]},
                                                              request.app.mongodb["user_thread_flags"], tenant_id)
@@ -204,6 +204,54 @@ async def md(request: Request,
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
+@router.get("/newsfeed", response_model=ThreadsMetaData,
+            response_description="Get news feed as  data for all threads")
+            
+async def filter(
+            is_thread_filter: bool = False, 
+            session: SessionContainer = Depends(verify_session())
+            ):
+    
+    tenant_id = await get_tenant_id(session)
+    
+    
+    aggregate = asyncdb.threads_collection.aggregate(
+        [
+            {
+            "$match": {"tenant_id": tenant_id}
+            },
+            {
+                "$lookup": {
+                "from": "users",
+                "localField": "creator_id",
+                "foreignField": "_id",
+                "as": "creator"
+                }
+            },
+            {
+                "$unwind": "$creator"
+            },
+            {
+                "$project": {
+                "_id": 1,
+                "title": 1,
+                "type": 1,
+                "created_date": 1,
+                "headline": 1,
+                "creator._id": 1,
+                "creator.name": 1,
+                "creator.picture": 1,
+                "creator.email": 1,
+                "creator.last_login": 1
+                }
+            }
+            ]
+        )
+    
+    aggregate = await aggregate.to_list(None)
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
+    
 
 async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
@@ -334,7 +382,7 @@ async def child_thread(request: Request,
     thread_title = jsonable_encoder(child_thread)["title"]
     thread_type = jsonable_encoder(child_thread)["type"]
     user_id = session.get_user_id()
-    creator_name = await get_user_name(user_id, request.app.mongodb["users"])
+    
     tenant_id = await get_tenant_id(session)
 
     created_child_thread = await create_child_thread(thread_collection=thread_collection,
@@ -439,8 +487,8 @@ async def get_thread_id(request: Request, id: str,
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
     thread_content = jsonable_encoder(old_thread)
-    user = get_user_by_id(thread_content['creator'])
-    thread_content['creator'] = jsonable_encoder(user)['name']
+    user = get_user_by_id(thread_content['creator_id'])
+    thread_content['creator_id'] = jsonable_encoder(user)['name']
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
 
@@ -459,7 +507,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
-    if old_thread["creator"] != user_id:
+    if old_thread["creator_id"] != user_id:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
     thread_title = jsonable_encoder(thread_data)["title"]
@@ -485,8 +533,8 @@ async def get_thread(request: Request, title: str,
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
     thread_content = jsonable_encoder(old_thread)
-    user = get_user_by_id(thread_content['creator'])
-    thread_content['creator'] = jsonable_encoder(user)['name']
+    user = get_user_by_id(thread_content['creator_id'])
+    thread_content['creator_id'] = jsonable_encoder(user)['name']
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
 
@@ -502,8 +550,8 @@ async def at(request: Request, session: SessionContainer = Depends(verify_sessio
     modified_threads = []
     for doc in threads:
         thread_content = jsonable_encoder(doc)
-        user = get_user_by_id(thread_content['creator'])
-        thread_content['creator'] = jsonable_encoder(user)['name']
+        user = get_user_by_id(thread_content['creator_id'])
+        thread_content['creator_id'] = jsonable_encoder(user)['name']
         modified_threads.append(jsonable_encoder(thread_content))
     return threads
 

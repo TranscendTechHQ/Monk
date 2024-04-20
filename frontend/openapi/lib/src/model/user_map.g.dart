@@ -17,7 +17,7 @@ UserMap _$UserMapFromJson(Map<String, dynamic> json) => $checkedCreate(
         final val = UserMap(
           users: $checkedConvert(
               'users',
-              (v) => (v as Map<String, dynamic>?)?.map(
+              (v) => (v as Map<String, dynamic>).map(
                     (k, e) => MapEntry(
                         k, UserModel.fromJson(e as Map<String, dynamic>)),
                   )),
@@ -26,15 +26,6 @@ UserMap _$UserMapFromJson(Map<String, dynamic> json) => $checkedCreate(
       },
     );
 
-Map<String, dynamic> _$UserMapToJson(UserMap instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('users', instance.users?.map((k, e) => MapEntry(k, e.toJson())));
-  return val;
-}
+Map<String, dynamic> _$UserMapToJson(UserMap instance) => <String, dynamic>{
+      'users': instance.users.map((k, e) => MapEntry(k, e.toJson())),
+    };

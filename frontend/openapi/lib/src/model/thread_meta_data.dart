@@ -21,13 +21,23 @@ class ThreadMetaData {
 
     required  this.id,
 
+     this.bookmark = false,
+
     required  this.createdDate,
 
     required  this.creator,
 
+     this.headline,
+
+     this.read = false,
+
     required  this.title,
 
     required  this.type,
+
+     this.unfollow = false,
+
+     this.upvote = false,
   });
 
   @JsonKey(
@@ -39,6 +49,18 @@ class ThreadMetaData {
 
 
   final String id;
+
+
+
+  @JsonKey(
+    defaultValue: false,
+    name: r'bookmark',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? bookmark;
 
 
 
@@ -68,6 +90,30 @@ class ThreadMetaData {
 
   @JsonKey(
     
+    name: r'headline',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? headline;
+
+
+
+  @JsonKey(
+    defaultValue: false,
+    name: r'read',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? read;
+
+
+
+  @JsonKey(
+    
     name: r'title',
     required: true,
     includeIfNull: false
@@ -90,21 +136,55 @@ class ThreadMetaData {
 
 
 
+  @JsonKey(
+    defaultValue: false,
+    name: r'unfollow',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? unfollow;
+
+
+
+  @JsonKey(
+    defaultValue: false,
+    name: r'upvote',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? upvote;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is ThreadMetaData &&
      other.id == id &&
+     other.bookmark == bookmark &&
      other.createdDate == createdDate &&
      other.creator == creator &&
+     other.headline == headline &&
+     other.read == read &&
      other.title == title &&
-     other.type == type;
+     other.type == type &&
+     other.unfollow == unfollow &&
+     other.upvote == upvote;
 
   @override
   int get hashCode =>
     id.hashCode +
+    bookmark.hashCode +
     createdDate.hashCode +
     creator.hashCode +
+    headline.hashCode +
+    read.hashCode +
     title.hashCode +
-    type.hashCode;
+    type.hashCode +
+    unfollow.hashCode +
+    upvote.hashCode;
 
   factory ThreadMetaData.fromJson(Map<String, dynamic> json) => _$ThreadMetaDataFromJson(json);
 
