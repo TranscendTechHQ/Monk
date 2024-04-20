@@ -38,7 +38,7 @@ final fetchThreadTypesProvider =
 );
 
 typedef FetchThreadTypesRef = AutoDisposeFutureProviderRef<List<String>>;
-String _$currentThreadHash() => r'a19790cc6f02485e29b581ea971f225e151123e1';
+String _$currentThreadHash() => r'5fd328f91be3d12cec9a188d4ba554c16287db71';
 
 /// Copied from Dart SDK
 class _SystemHash {

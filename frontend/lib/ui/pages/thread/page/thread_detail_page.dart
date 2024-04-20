@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/repo/user_provider.dart';
 import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/decorations.dart';
@@ -74,10 +77,9 @@ class ThreadDetailPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-        '$formatType -: $title',
-        style: TextStyle(
-        fontSize: 20, color: Theme.of(context).colorScheme.onSurface)),
+        title: Text('$formatType -: $title',
+            style: TextStyle(
+                fontSize: 20, color: Theme.of(context).colorScheme.onSurface)),
       ),
       body: PageScaffold(
         body: Container(
@@ -139,13 +141,17 @@ class RepliesListView extends ConsumerWidget {
   }
 }
 
-class ReplyCard extends StatelessWidget {
+class ReplyCard extends ConsumerWidget {
   const ReplyCard({super.key, required this.block, required this.emojiParser});
   final BlockModel block;
   final EmojiParser emojiParser;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userMap = ref.watch(fetchUsersInfoProvider);
+    final userInfo =
+        userMap.asData?.value.users?[block.creatorId?.toString() ?? 'UN'];
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -161,9 +167,9 @@ class ReplyCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: Image.network(
-                      block.creatorPicture!.startsWith('https')
-                          ? block.creatorPicture!
-                          : "https://api.dicebear.com/7.x/identicon/png?seed=${block.createdBy ?? "UN"}",
+                      userInfo!.picture!.startsWith('https')
+                          ? userInfo.picture!
+                          : "https://api.dicebear.com/7.x/identicon/png?seed=${userInfo.name ?? "UN"}",
                       width: 25,
                       height: 25,
                       cacheHeight: 30,
@@ -176,7 +182,7 @@ class ReplyCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${block.createdBy}',
+                        '${userInfo.name}',
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.onSurface,

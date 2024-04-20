@@ -20,8 +20,8 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
         creator = {}
         if userinfo is not None:
             creator["id"] = userinfo["_id"]
-            creator["name"] = userinfo["user_name"]
-            creator["picture"] = userinfo["user_picture"]
+            creator["name"] = userinfo["name"]
+            creator["picture"] = userinfo["picture"]
             creator["email"] = userinfo["email"]
 
         new_thread = ThreadModel(creator=creator['id'], title=title, type=thread_type,

@@ -27,23 +27,8 @@ void main() {
       // TODO
     });
 
-    // String createdBy (default value: 'unknown user')
-    test('to test the property `createdBy`', () async {
-      // TODO
-    });
-
-    // String creatorEmail (default value: 'unknown email')
-    test('to test the property `creatorEmail`', () async {
-      // TODO
-    });
-
     // String creatorId (default value: 'unknown id')
     test('to test the property `creatorId`', () async {
-      // TODO
-    });
-
-    // String creatorPicture (default value: 'unknown picture link')
-    test('to test the property `creatorPicture`', () async {
       // TODO
     });
 

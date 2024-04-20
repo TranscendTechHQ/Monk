@@ -7,12 +7,12 @@ void main() {
   // TODO add properties to the entity
 
   group(CreateUserThreadFlagModel, () {
-    // bool bookmark
+    // bool bookmark (default value: false)
     test('to test the property `bookmark`', () async {
       // TODO
     });
 
-    // bool read
+    // bool read (default value: false)
     test('to test the property `read`', () async {
       // TODO
     });
@@ -22,12 +22,12 @@ void main() {
       // TODO
     });
 
-    // bool unfollow
+    // bool unfollow (default value: false)
     test('to test the property `unfollow`', () async {
       // TODO
     });
 
-    // bool upvote
+    // bool upvote (default value: false)
     test('to test the property `upvote`', () async {
       // TODO
     });

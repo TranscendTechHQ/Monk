@@ -7,6 +7,13 @@ void main() {
   final instance = Openapi().getThreadsApi();
 
   group(ThreadsApi, () {
+    // All Users
+    //
+    //Future<UserMap> allUsersUserGet() async
+    test('test allUsersUserGet', () async {
+      // TODO
+    });
+
     // At
     //
     //Future<List<ThreadsModel>> atAllThreadsGet() async

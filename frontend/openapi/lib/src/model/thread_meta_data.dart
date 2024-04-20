@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:openapi/src/model/creator.dart';
+import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'thread_meta_data.g.dart';
@@ -62,7 +62,7 @@ class ThreadMetaData {
   )
 
 
-  final Creator creator;
+  final UserModel creator;
 
 
 

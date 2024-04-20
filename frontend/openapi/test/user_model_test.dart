@@ -1,19 +1,24 @@
 import 'package:test/test.dart';
 import 'package:openapi/openapi.dart';
 
-// tests for Creator
+// tests for UserModel
 void main() {
-  final Creator? instance = /* Creator(...) */ null;
+  final UserModel? instance = /* UserModel(...) */ null;
   // TODO add properties to the entity
 
-  group(Creator, () {
+  group(UserModel, () {
+    // String id
+    test('to test the property `id`', () async {
+      // TODO
+    });
+
     // String email (default value: 'unknown email')
     test('to test the property `email`', () async {
       // TODO
     });
 
-    // String id (default value: 'unknown id')
-    test('to test the property `id`', () async {
+    // String lastLogin (default value: 'unknown last login')
+    test('to test the property `lastLogin`', () async {
       // TODO
     });
 

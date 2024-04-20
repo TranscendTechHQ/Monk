@@ -17,7 +17,7 @@ void main() {
       // TODO
     });
 
-    // Creator creator
+    // UserModel creator
     test('to test the property `creator`', () async {
       // TODO
     });

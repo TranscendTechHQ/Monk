@@ -24,32 +24,27 @@ THREADTYPES = [
     "/go"]
 
 
-class Creator(BaseModel):
+class UserModel(BaseModel):
+    id: str = Field(..., alias="_id")
     name: str = Field(default="unknown user")
     picture: str = Field(default="unknown picture link")
     email: str = Field(default="unknown email")
-    id: str = Field(default="unknown id")
+    last_login: str = Field(default="unknown last login")
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "name": "firstname lastname",
-                                      "picture": "https://www.example.com/picture.jpg",
-                                      "email": "hey@abc.com",
-                                      "id": "12345678-1234-5678-1234-567812345678"
-                                  }
-                              }
                               )
 
+class UserMap(BaseModel):
+    users: dict[str, UserModel]
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,)
 
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
     created_at: datetime = Field(default_factory=datetime.now)
-    created_by: str = Field(default="unknown user")
-    creator_email: str = Field(default="unknown email")
-    creator_picture: str = Field(default="unknown picture link")
     creator_id: str = Field(default="unknown id")
     child_id: str = Field(default="")
 
@@ -213,10 +208,10 @@ class UserThreadFlagsModel(BaseModel):
 
 class CreateUserThreadFlagModel(BaseModel):
     thread_id: str
-    read: Optional[bool] = None
-    unfollow: Optional[bool] = None
-    bookmark: Optional[bool] = None
-    upvote: Optional[bool] = None
+    read: bool = Field(default=False)
+    unfollow: bool = Field(default=False)
+    bookmark: bool = Field(default=False)
+    upvote: bool = Field(default=False)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -278,7 +273,7 @@ class ThreadMetaData(BaseModel):
     title: str
     type: str
     created_date: str
-    creator: Creator
+    creator: UserModel
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

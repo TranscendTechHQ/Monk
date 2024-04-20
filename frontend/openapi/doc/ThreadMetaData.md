@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
 **createdDate** | **String** |  | 
-**creator** | [**Creator**](Creator.md) |  | 
+**creator** | [**UserModel**](UserModel.md) |  | 
 **title** | **String** |  | 
 **type** | **String** |  | 
 

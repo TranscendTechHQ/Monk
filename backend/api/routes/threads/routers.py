@@ -15,7 +15,7 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel
 from .models import THREADTYPES, CreateChildThreadModel, ThreadHeadlinesModel, ThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -44,7 +44,25 @@ async def keyword_search(query, collection):
 
     return threads
 
+@router.get("/user", response_model=UserMap,
+            response_description="Get user information")
+async def all_users(request: Request, 
+                    session: SessionContainer = Depends(verify_session())
+                    ):
+    
+    tenant_id = await get_tenant_id(session)
+    # get all users
+    final_user_map = {}
+    
+    cursor =  asyncdb.users_collection.find({"tenant_id": tenant_id})
+    user_list = await cursor.to_list(length=None)
+    
+    for user in user_list:
+        final_user_map[user["_id"]] = UserModel(**user)
 
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content=jsonable_encoder(UserMap(users=final_user_map)))
+            
 @router.get("/searchTitles", response_model=list[str],
             response_description="Search threads by query and get title")
 async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
@@ -167,8 +185,8 @@ async def md(request: Request,
                 break
         if user_info and tenant_id == doc['tenant_id']:
             creator["id"] = user_info["_id"]
-            creator["name"] = user_info["user_name"]
-            creator["picture"] = user_info["user_picture"]
+            creator["name"] = user_info["name"]
+            creator["picture"] = user_info["picture"]
             creator["email"] = user_info["email"]
 
             metadata.append({
@@ -189,17 +207,12 @@ async def md(request: Request,
 
 async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
+    
     threads_collection = asyncdb.threads_collection
     if user_info is None:
         return None
-    fullName = user_info['user_name']
-    email = user_info['email']
-    picture = user_info['user_picture']
     block = block.model_dump()
     new_block = BlockModel(**block)
-    new_block.created_by = fullName
-    new_block.creator_email = email
-    new_block.creator_picture = picture
     new_block.creator_id = user_id
     thread = await get_mongo_document(
         {"_id": thread_id},
@@ -238,7 +251,8 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     thread_id = thread["_id"]
     updated_thread = await create_new_block(thread_id, block, user_id)
 
-    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"])
+    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"], 
+                                                      tenant_id=tenant_id)
     for doc in thread_read_documents:
         if doc['thread_id'] == thread_id:
             await delete_mongo_document({"thread_id": thread_id, "email": doc.email},
@@ -426,7 +440,7 @@ async def get_thread_id(request: Request, id: str,
 
     thread_content = jsonable_encoder(old_thread)
     user = get_user_by_id(thread_content['creator'])
-    thread_content['creator'] = jsonable_encoder(user)['user_name']
+    thread_content['creator'] = jsonable_encoder(user)['name']
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
 
@@ -472,7 +486,7 @@ async def get_thread(request: Request, title: str,
 
     thread_content = jsonable_encoder(old_thread)
     user = get_user_by_id(thread_content['creator'])
-    thread_content['creator'] = jsonable_encoder(user)['user_name']
+    thread_content['creator'] = jsonable_encoder(user)['name']
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
 
@@ -489,7 +503,7 @@ async def at(request: Request, session: SessionContainer = Depends(verify_sessio
     for doc in threads:
         thread_content = jsonable_encoder(doc)
         user = get_user_by_id(thread_content['creator'])
-        thread_content['creator'] = jsonable_encoder(user)['user_name']
+        thread_content['creator'] = jsonable_encoder(user)['name']
         modified_threads.append(jsonable_encoder(thread_content))
     return threads
 

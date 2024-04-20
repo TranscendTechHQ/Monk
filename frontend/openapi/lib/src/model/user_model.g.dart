@@ -1,29 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'creator.dart';
+part of 'user_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Creator _$CreatorFromJson(Map<String, dynamic> json) => $checkedCreate(
-      'Creator',
+UserModel _$UserModelFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'UserModel',
       json,
       ($checkedConvert) {
-        final val = Creator(
+        $checkKeys(
+          json,
+          requiredKeys: const ['_id'],
+        );
+        final val = UserModel(
+          id: $checkedConvert('_id', (v) => v as String),
           email:
               $checkedConvert('email', (v) => v as String? ?? 'unknown email'),
-          id: $checkedConvert('id', (v) => v as String? ?? 'unknown id'),
+          lastLogin: $checkedConvert(
+              'last_login', (v) => v as String? ?? 'unknown last login'),
           name: $checkedConvert('name', (v) => v as String? ?? 'unknown user'),
           picture: $checkedConvert(
               'picture', (v) => v as String? ?? 'unknown picture link'),
         );
         return val;
       },
+      fieldKeyMap: const {'id': '_id', 'lastLogin': 'last_login'},
     );
 
-Map<String, dynamic> _$CreatorToJson(Creator instance) {
-  final val = <String, dynamic>{};
+Map<String, dynamic> _$UserModelToJson(UserModel instance) {
+  final val = <String, dynamic>{
+    '_id': instance.id,
+  };
 
   void writeNotNull(String key, dynamic value) {
     if (value != null) {
@@ -32,7 +41,7 @@ Map<String, dynamic> _$CreatorToJson(Creator instance) {
   }
 
   writeNotNull('email', instance.email);
-  writeNotNull('id', instance.id);
+  writeNotNull('last_login', instance.lastLogin);
   writeNotNull('name', instance.name);
   writeNotNull('picture', instance.picture);
   return val;

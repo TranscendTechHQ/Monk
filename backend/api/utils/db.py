@@ -45,7 +45,7 @@ async def get_tenant_id(session):
 
 async def get_user_name(user_id, collection) -> str:
     if (doc := await collection.find_one({"_id": user_id})) is not None:
-        return doc["user_name"]
+        return doc["name"]
     return "Unknown user"
 
 

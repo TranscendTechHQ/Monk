@@ -17,11 +17,11 @@ CreateUserThreadFlagModel _$CreateUserThreadFlagModelFromJson(
           requiredKeys: const ['thread_id'],
         );
         final val = CreateUserThreadFlagModel(
-          bookmark: $checkedConvert('bookmark', (v) => v as bool?),
-          read: $checkedConvert('read', (v) => v as bool?),
+          bookmark: $checkedConvert('bookmark', (v) => v as bool? ?? false),
+          read: $checkedConvert('read', (v) => v as bool? ?? false),
           threadId: $checkedConvert('thread_id', (v) => v as String),
-          unfollow: $checkedConvert('unfollow', (v) => v as bool?),
-          upvote: $checkedConvert('upvote', (v) => v as bool?),
+          unfollow: $checkedConvert('unfollow', (v) => v as bool? ?? false),
+          upvote: $checkedConvert('upvote', (v) => v as bool? ?? false),
         );
         return val;
       },
