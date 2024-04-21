@@ -122,22 +122,18 @@ components:
     CreateUserThreadFlagModel:
       properties:
         bookmark:
-          default: false
           title: Bookmark
           type: boolean
         read:
-          default: false
           title: Read
           type: boolean
         thread_id:
           title: Thread Id
           type: string
         unfollow:
-          default: false
           title: Unfollow
           type: boolean
         upvote:
-          default: false
           title: Upvote
           type: boolean
       required:

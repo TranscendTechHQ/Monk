@@ -18,19 +18,19 @@ class CreateUserThreadFlagModel {
   /// Returns a new [CreateUserThreadFlagModel] instance.
   CreateUserThreadFlagModel({
 
-     this.bookmark = false,
+     this.bookmark,
 
-     this.read = false,
+     this.read,
 
     required  this.threadId,
 
-     this.unfollow = false,
+     this.unfollow,
 
-     this.upvote = false,
+     this.upvote,
   });
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'bookmark',
     required: false,
     includeIfNull: false
@@ -42,7 +42,7 @@ class CreateUserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'read',
     required: false,
     includeIfNull: false
@@ -66,7 +66,7 @@ class CreateUserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unfollow',
     required: false,
     includeIfNull: false
@@ -78,7 +78,7 @@ class CreateUserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'upvote',
     required: false,
     includeIfNull: false

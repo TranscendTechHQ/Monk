@@ -140,10 +140,10 @@ class UserThreadFlagsModel(BaseModel):
 
 class CreateUserThreadFlagModel(BaseModel):
     thread_id: str
-    read: bool = Field(default=False)
-    unfollow: bool = Field(default=False)
-    bookmark: bool = Field(default=False)
-    upvote: bool = Field(default=False)
+    read: bool = Field(default=None)
+    unfollow: bool = Field(default=None)
+    bookmark: bool = Field(default=None)
+    upvote: bool = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
