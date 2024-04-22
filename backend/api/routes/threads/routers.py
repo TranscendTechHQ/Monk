@@ -178,7 +178,7 @@ async def md(request: Request,
         creator = {}
         user_info = None
         for user in users:
-            if doc['creator'] == user['_id']:
+            if doc['creator_id'] == user['_id']:
                 user_info = user
                 user_thread_flags = await get_mongo_document({"thread_id": doc["_id"], "user_id": user["_id"]},
                                                              request.app.mongodb["user_thread_flags"], tenant_id)
@@ -204,6 +204,145 @@ async def md(request: Request,
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
+
+async def get_unfiltered_newsfeed(tenant_id):
+    result = asyncdb.threads_collection.aggregate(
+        [
+            {
+            "$match": {"tenant_id": tenant_id}
+            },
+            {
+                "$lookup": {
+                "from": "users",
+                "localField": "creator_id",
+                "foreignField": "_id",
+                "as": "creator"
+                }
+            },
+            {
+                "$unwind": "$creator"
+            },
+            {
+                "$project": {
+                "_id": 1,
+                "title": 1,
+                "type": 1,
+                "created_date": 1,
+                "headline": 1,
+                "creator._id": 1,
+                "creator.name": 1,
+                "creator.picture": 1,
+                "creator.email": 1,
+                "creator.last_login": 1
+                }
+            }
+            ]
+        )
+    return result
+
+async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, upvote):
+    pipeline = [
+    {
+        "$match": {
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "$or": [
+                {"bookmark": bookmark},
+            {"read": read},
+            {"unfollow": unfollow},
+            {"upvote": upvote}
+        
+      ]
+            
+        }
+    },
+    {
+        "$lookup": {
+            "from": "threads",
+            "localField": "thread_id",
+            "foreignField": "_id",
+            "as": "threads"
+        }
+    },
+    {
+        "$unwind": "$threads"
+    },
+    {
+        "$lookup": {
+            "from": "users",
+            "localField": "user_id",
+            "foreignField": "_id",
+            "as": "threads.creator"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$threads.creator"
+        }
+    },
+    {
+    "$addFields": {
+      "threads.bookmark": "$bookmark",
+			"threads.read": "$read",
+      "threads.upvote":"$upvote",
+			"threads.unfollow":"$unfollow"
+    },
+  },
+    { "$replaceRoot": { "newRoot": "$threads" } },
+    {
+                "$project": {
+                "_id": 1,
+                "title": 1,
+                "type": 1,
+                "created_date": 1,
+                "headline": 1,
+                "creator._id": 1,
+                "creator.name": 1,
+                "creator.picture": 1,
+                "creator.email": 1,
+                "creator.last_login": 1,
+                "bookmark": 1,
+                "unfollow":1,
+                "read":1,
+                "upvote":1
+                }
+            }
+]
+    print(pipeline)
+    result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
+    return result
+    
+@router.get("/newsfeed", response_model=ThreadsMetaData,
+            response_description="Get news feed as  data for all threads")
+            
+async def filter( 
+            bookmark: bool = False,
+            read: bool = False,
+            unfollow: bool = False,
+            upvote: bool = False,
+            session: SessionContainer = Depends(verify_session())
+            ):
+    user_id = session.get_user_id()
+    tenant_id = await get_tenant_id(session)
+
+    
+    if bookmark or unfollow or read or upvote:
+        aggregate = await get_filtered_newsfeed(
+                                                user_id=user_id,
+                                                tenant_id=tenant_id, 
+                                                bookmark=bookmark, 
+                                                read=read, 
+                                                unfollow=unfollow, 
+                                                upvote=upvote)
+        
+    else:
+        aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id)
+    
+    
+    aggregate = await aggregate.to_list(None)
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
+    
 
 async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
@@ -334,7 +473,7 @@ async def child_thread(request: Request,
     thread_title = jsonable_encoder(child_thread)["title"]
     thread_type = jsonable_encoder(child_thread)["type"]
     user_id = session.get_user_id()
-    creator_name = await get_user_name(user_id, request.app.mongodb["users"])
+    
     tenant_id = await get_tenant_id(session)
 
     created_child_thread = await create_child_thread(thread_collection=thread_collection,
@@ -439,8 +578,8 @@ async def get_thread_id(request: Request, id: str,
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
     thread_content = jsonable_encoder(old_thread)
-    user = get_user_by_id(thread_content['creator'])
-    thread_content['creator'] = jsonable_encoder(user)['name']
+    user = get_user_by_id(thread_content['creator_id'])
+    thread_content['creator_id'] = jsonable_encoder(user)['name']
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
 
@@ -459,7 +598,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
-    if old_thread["creator"] != user_id:
+    if old_thread["creator_id"] != user_id:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
     thread_title = jsonable_encoder(thread_data)["title"]
@@ -485,8 +624,8 @@ async def get_thread(request: Request, title: str,
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
     thread_content = jsonable_encoder(old_thread)
-    user = get_user_by_id(thread_content['creator'])
-    thread_content['creator'] = jsonable_encoder(user)['name']
+    user = get_user_by_id(thread_content['creator_id'])
+    thread_content['creator_id'] = jsonable_encoder(user)['name']
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
 
@@ -502,8 +641,8 @@ async def at(request: Request, session: SessionContainer = Depends(verify_sessio
     modified_threads = []
     for doc in threads:
         thread_content = jsonable_encoder(doc)
-        user = get_user_by_id(thread_content['creator'])
-        thread_content['creator'] = jsonable_encoder(user)['name']
+        user = get_user_by_id(thread_content['creator_id'])
+        thread_content['creator_id'] = jsonable_encoder(user)['name']
         modified_threads.append(jsonable_encoder(thread_content))
     return threads
 

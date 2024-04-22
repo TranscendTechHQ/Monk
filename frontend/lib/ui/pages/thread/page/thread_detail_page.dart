@@ -1,6 +1,3 @@
-import 'dart:ffi';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,9 +55,6 @@ class ThreadDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool titleEditMode = false;
-    TextEditingController titleController = TextEditingController();
-
     CreateChildThreadModel(
       title: title,
       type: type,

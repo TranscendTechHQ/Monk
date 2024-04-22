@@ -1,10 +1,6 @@
 components:
   schemas:
     BlockCollection:
-      example:
-        blocks:
-        - content: This is the content of the block
-        - content: This is the content of the block
       properties:
         blocks:
           items:
@@ -74,12 +70,6 @@ components:
       title: CompositeChannelList
       type: object
     CreateChildThreadModel:
-      example:
-        content:
-        - content: This is the content of the block
-        - content: This is the content of the block
-        title: This is the title of the thread
-        type: /new-plan
       properties:
         content:
           items:
@@ -109,12 +99,6 @@ components:
       title: CreateChildThreadModel
       type: object
     CreateThreadModel:
-      example:
-        content:
-        - content: This is the content of the block
-        - content: This is the content of the block
-        title: This is the title of the thread
-        type: /new-plan
       properties:
         content:
           items:
@@ -136,26 +120,20 @@ components:
       title: CreateThreadModel
       type: object
     CreateUserThreadFlagModel:
-      example:
-        thread_id: 12345678-123
       properties:
         bookmark:
-          default: false
           title: Bookmark
           type: boolean
         read:
-          default: false
           title: Read
           type: boolean
         thread_id:
           title: Thread Id
           type: string
         unfollow:
-          default: false
           title: Unfollow
           type: boolean
         upvote:
-          default: false
           title: Upvote
           type: boolean
       required:
@@ -250,10 +228,6 @@ components:
       title: SubscribedChannelList
       type: object
     ThreadHeadlineModel:
-      example:
-        headline: This is the headline of the thread
-        id: 12345678-1234-5678-1234-567812345678
-        title: This is the title of the thread
       properties:
         _id:
           title: ' Id'
@@ -282,31 +256,40 @@ components:
       title: ThreadHeadlinesModel
       type: object
     ThreadMetaData:
-      example:
-        created_date: '2021-01-01T00:00:00.000000'
-        creator:
-          email: a@b.com
-          id: 12345678-123
-          name: firstname lastname
-          picture: https://www.example.com/picture.jpg
-        id: 12345678-1234-5678-1234-567812345678
-        title: This is the title of the thread
-        type: /new-plan
       properties:
         _id:
           title: ' Id'
           type: string
+        bookmark:
+          default: false
+          title: Bookmark
+          type: boolean
         created_date:
           title: Created Date
           type: string
         creator:
           $ref: '#/components/schemas/UserModel'
+        headline:
+          title: Headline
+          type: string
+        read:
+          default: false
+          title: Read
+          type: boolean
         title:
           title: Title
           type: string
         type:
           title: Type
           type: string
+        unfollow:
+          default: false
+          title: Unfollow
+          type: boolean
+        upvote:
+          default: false
+          title: Upvote
+          type: boolean
       required:
       - _id
       - title
@@ -316,16 +299,6 @@ components:
       title: ThreadMetaData
       type: object
     ThreadModel:
-      example:
-        content:
-        - content: This is the content of the block
-        - content: This is the content of the block
-        created_date: '2021-01-01T00:00:00.000000'
-        creator: user1
-        headline: This is the headline of the thread
-        tenant_id: ABCD1234
-        title: This is the title of the thread
-        type: /new-plan
       properties:
         _id:
           title: ' Id'
@@ -339,8 +312,8 @@ components:
           format: date-time
           title: Created Date
           type: string
-        creator:
-          title: Creator
+        creator_id:
+          title: Creator Id
           type: string
         headline:
           title: Headline
@@ -358,17 +331,13 @@ components:
           title: Type
           type: string
       required:
-      - creator
+      - creator_id
       - type
       - title
       - tenant_id
       title: ThreadModel
       type: object
     ThreadsInfo:
-      example:
-        titles:
-        - ThreadTitle: ThreadType
-        - AnotherThreadTitle: AnotherThreadType
       properties:
         info:
           additionalProperties:
@@ -380,18 +349,6 @@ components:
       title: ThreadsInfo
       type: object
     ThreadsMetaData:
-      example:
-        metadata:
-        - created_date: '2021-01-01T00:00:00.000000'
-          creator: user1
-          id: 12345678-1234-5678-1234-567812345678
-          title: This is the title of the thread
-          type: /new-plan
-        - created_date: '2021-01-01T00:00:00.000000'
-          creator: user1
-          id: 12345678-1234-5678-1234-567812345678
-          title: This is the title of the thread
-          type: /new-plan
       properties:
         metadata:
           items:
@@ -403,22 +360,6 @@ components:
       title: ThreadsMetaData
       type: object
     ThreadsModel:
-      example:
-        threads:
-        - content:
-          - content: This is the content of the block
-          - content: This is the content of the block
-          created_date: '2021-01-01T00:00:00.000000'
-          creator: user1
-          title: This is the title of the thread
-          type: /new-plan
-        - content:
-          - content: This is the content of the block
-          - content: This is the content of the block
-          created_date: '2021-01-01T00:00:00.000000'
-          creator: user1
-          title: This is the title of the thread
-          type: /new-plan
       properties:
         threads:
           items:
@@ -430,8 +371,6 @@ components:
       title: ThreadsModel
       type: object
     UpdateBlockModel:
-      example:
-        content: This is the content of the block
       properties:
         content:
           title: Content
@@ -439,8 +378,6 @@ components:
       title: UpdateBlockModel
       type: object
     UpdateThreadTitleModel:
-      example:
-        title: New title
       properties:
         title:
           title: Title
@@ -740,6 +677,54 @@ paths:
                 $ref: '#/components/schemas/ThreadsMetaData'
           description: Get meta data for all threads
       summary: Md
+      tags:
+      - threads
+  /newsfeed:
+    get:
+      operationId: filter_newsfeed_get
+      parameters:
+      - in: query
+        name: bookmark
+        required: false
+        schema:
+          default: false
+          title: Bookmark
+          type: boolean
+      - in: query
+        name: read
+        required: false
+        schema:
+          default: false
+          title: Read
+          type: boolean
+      - in: query
+        name: unfollow
+        required: false
+        schema:
+          default: false
+          title: Unfollow
+          type: boolean
+      - in: query
+        name: upvote
+        required: false
+        schema:
+          default: false
+          title: Upvote
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadsMetaData'
+          description: Get news feed as  data for all threads
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Filter
       tags:
       - threads
   /public_channels:

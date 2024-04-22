@@ -81,7 +81,10 @@ class _HomePageState extends State<HomePage> {
 */
     await threadApi.createTfThreadFlagPost(
         createUserThreadFlagModel: CreateUserThreadFlagModel(
-            threadId: "56007383-3f47-4d82-9fc1-0da3510b2da8", upvote: true));
+            threadId: "7ffefd35-2286-4377-ae4d-02bcfe9b121a",
+            upvote: null,
+            bookmark: null,
+            read: true));
   }
 
   Future<void> signOut() async {

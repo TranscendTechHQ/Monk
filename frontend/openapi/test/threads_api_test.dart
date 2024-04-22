@@ -56,6 +56,13 @@ void main() {
       // TODO
     });
 
+    // Filter
+    //
+    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool read, bool unfollow, bool upvote }) async
+    test('test filterNewsfeedGet', () async {
+      // TODO
+    });
+
     // Get Blocks By Date
     //
     //Future<BlockCollection> getBlocksByDateBlocksDateGet(ModelDate modelDate) async

@@ -25,7 +25,7 @@ Future<Map<String, String>> fetchThreadsInfo(FetchThreadsInfoRef ref) async {
   if (response.statusCode != 200) {
     throw Exception("Failed to fetch titles");
   }
-  return response.data!.info!;
+  return response.data!.info;
 }
 
 @riverpod
@@ -162,7 +162,7 @@ class CurrentThread extends _$CurrentThread {
           title: thread.title,
           type: thread.type,
           content: newContent!,
-          creator: thread.creator,
+          creatorId: thread.creatorId,
           id: thread.id,
           createdDate: thread.createdDate,
           tenantId: thread.tenantId);
@@ -206,7 +206,7 @@ class CurrentThread extends _$CurrentThread {
           title: thread.title,
           type: thread.type,
           content: newContent!,
-          creator: thread.creator,
+          creatorId: thread.creatorId,
           id: thread.id,
           createdDate: thread.createdDate,
           tenantId: thread.tenantId,
@@ -239,7 +239,7 @@ class CurrentThread extends _$CurrentThread {
         title: title,
         type: thread.type,
         content: thread.content,
-        creator: thread.creator,
+        creatorId: thread.creatorId,
         id: thread.id,
         createdDate: thread.createdDate,
         tenantId: thread.tenantId,

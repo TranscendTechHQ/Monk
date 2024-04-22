@@ -5,7 +5,7 @@ import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news_page.dart';
 import 'package:frontend/ui/pages/splash_page.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
-import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';
+
 import 'package:frontend/ui/theme/theme_builder_app.dart';
 import 'package:frontend/ui/widgets/kit/overlay_loader.dart';
 import 'package:logger/logger.dart';

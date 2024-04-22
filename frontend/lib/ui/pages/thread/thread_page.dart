@@ -8,7 +8,6 @@ import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
-import 'package:frontend/ui/widgets/kit/alert.dart';
 import 'package:openapi/openapi.dart';
 
 enum ThreadType { thread, reply }
