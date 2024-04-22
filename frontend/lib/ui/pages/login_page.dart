@@ -9,7 +9,7 @@ import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/home_page.dart';
-import 'package:frontend/ui/pages/news_page.dart';
+import 'package:frontend/ui/pages/news/news_page.dart';
 import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';

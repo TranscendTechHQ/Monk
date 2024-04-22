@@ -6,7 +6,7 @@ part of 'thread.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchThreadsInfoHash() => r'2f19f66379d9c9d60759ef7bf34ac062de6baaab';
+String _$fetchThreadsInfoHash() => r'1e4b8b4b6d6b7cee77c1fc8b6a15c7b9873f6230';
 
 /// See also [fetchThreadsInfo].
 @ProviderFor(fetchThreadsInfo)
@@ -38,7 +38,7 @@ final fetchThreadTypesProvider =
 );
 
 typedef FetchThreadTypesRef = AutoDisposeFutureProviderRef<List<String>>;
-String _$currentThreadHash() => r'5fd328f91be3d12cec9a188d4ba554c16287db71';
+String _$currentThreadHash() => r'1304e171290988dc12cfb6aa333b10d8541e6701';
 
 /// Copied from Dart SDK
 class _SystemHash {

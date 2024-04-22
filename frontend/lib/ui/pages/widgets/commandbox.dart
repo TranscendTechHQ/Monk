@@ -7,7 +7,7 @@ import 'package:frontend/helper/constants.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/commandparser.dart';
 import 'package:frontend/repo/thread.dart';
-import 'package:frontend/ui/pages/news_page.dart';
+import 'package:frontend/ui/pages/news/news_page.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
 import 'package:frontend/ui/theme/theme.dart';

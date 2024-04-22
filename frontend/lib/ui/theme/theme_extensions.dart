@@ -109,6 +109,10 @@ extension Extended on Widget {
   Expanded get extended => Expanded(
         child: this,
       );
+  Widget onPressed([VoidCallback? onPressed]) => GestureDetector(
+        onTap: onPressed,
+        child: this,
+      );
 }
 
 extension DoubleExtension on double {
