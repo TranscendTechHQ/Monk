@@ -204,18 +204,9 @@ async def md(request: Request,
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
-@router.get("/newsfeed", response_model=ThreadsMetaData,
-            response_description="Get news feed as  data for all threads")
-            
-async def filter(
-            is_thread_filter: bool = False, 
-            session: SessionContainer = Depends(verify_session())
-            ):
-    
-    tenant_id = await get_tenant_id(session)
-    
-    
-    aggregate = asyncdb.threads_collection.aggregate(
+
+async def get_unfiltered_newsfeed(tenant_id):
+    result = asyncdb.threads_collection.aggregate(
         [
             {
             "$match": {"tenant_id": tenant_id}
@@ -247,6 +238,110 @@ async def filter(
             }
             ]
         )
+    return result
+
+async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, upvote):
+    pipeline = [
+    {
+        "$match": {
+            "tenant_id": tenant_id,
+            "user_id": user_id,
+            "$or": [
+                {"bookmark": bookmark},
+            {"read": read},
+            {"unfollow": unfollow},
+            {"upvote": upvote}
+        
+      ]
+            
+        }
+    },
+    {
+        "$lookup": {
+            "from": "threads",
+            "localField": "thread_id",
+            "foreignField": "_id",
+            "as": "threads"
+        }
+    },
+    {
+        "$unwind": "$threads"
+    },
+    {
+        "$lookup": {
+            "from": "users",
+            "localField": "user_id",
+            "foreignField": "_id",
+            "as": "threads.creator"
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$threads.creator"
+        }
+    },
+    {
+    "$addFields": {
+      "threads.bookmark": "$bookmark",
+			"threads.read": "$read",
+      "threads.upvote":"$upvote",
+			"threads.unfollow":"$unfollow"
+    },
+  },
+    { "$replaceRoot": { "newRoot": "$threads" } },
+    {
+                "$project": {
+                "_id": 1,
+                "title": 1,
+                "type": 1,
+                "created_date": 1,
+                "headline": 1,
+                "creator._id": 1,
+                "creator.name": 1,
+                "creator.picture": 1,
+                "creator.email": 1,
+                "creator.last_login": 1,
+                "bookmark": 1,
+                "unfollow":1,
+                "read":1,
+                "upvote":1
+                }
+            }
+]
+    print(pipeline)
+    result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
+    return result
+    
+@router.get("/newsfeed", response_model=ThreadsMetaData,
+            response_description="Get news feed as  data for all threads")
+            
+async def filter( 
+            bookmark: bool = False,
+            read: bool = False,
+            unfollow: bool = False,
+            upvote: bool = False,
+            #session: SessionContainer = Depends(verify_session())
+            ):
+    #user_id = session.get_user_id()
+    #tenant_id = await get_tenant_id(session)
+
+    user_id = "a4983b11-3465-4d00-9281-ec89048ce082"
+    tenant_id = "T048F0ANS1M"
+    print("Bookmark: ", bookmark)
+    if bookmark or unfollow or read or upvote:
+        print("filtering")
+        aggregate = await get_filtered_newsfeed(
+                                                user_id=user_id,
+                                                tenant_id=tenant_id, 
+                                                bookmark=bookmark, 
+                                                read=read, 
+                                                unfollow=unfollow, 
+                                                upvote=upvote)
+        
+    else:
+        print("un-filtering")
+        aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id)
+    
     
     aggregate = await aggregate.to_list(None)
     return JSONResponse(status_code=status.HTTP_200_OK,
