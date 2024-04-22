@@ -684,11 +684,32 @@ paths:
       operationId: filter_newsfeed_get
       parameters:
       - in: query
-        name: is_thread_filter
+        name: bookmark
         required: false
         schema:
           default: false
-          title: Is Thread Filter
+          title: Bookmark
+          type: boolean
+      - in: query
+        name: read
+        required: false
+        schema:
+          default: false
+          title: Read
+          type: boolean
+      - in: query
+        name: unfollow
+        required: false
+        schema:
+          default: false
+          title: Unfollow
+          type: boolean
+      - in: query
+        name: upvote
+        required: false
+        schema:
+          default: false
+          title: Upvote
           type: boolean
       responses:
         '200':

@@ -626,7 +626,10 @@ _responseData = rawData == null ? null : deserialize<BlockCollection, BlockColle
   /// 
   ///
   /// Parameters:
-  /// * [isThreadFilter] 
+  /// * [bookmark] 
+  /// * [read] 
+  /// * [unfollow] 
+  /// * [upvote] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -637,7 +640,10 @@ _responseData = rawData == null ? null : deserialize<BlockCollection, BlockColle
   /// Returns a [Future] containing a [Response] with a [ThreadsMetaData] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ThreadsMetaData>> filterNewsfeedGet({ 
-    bool? isThreadFilter = false,
+    bool? bookmark = false,
+    bool? read = false,
+    bool? unfollow = false,
+    bool? upvote = false,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -659,7 +665,10 @@ _responseData = rawData == null ? null : deserialize<BlockCollection, BlockColle
     );
 
     final _queryParameters = <String, dynamic>{
-      if (isThreadFilter != null) r'is_thread_filter': isThreadFilter,
+      if (bookmark != null) r'bookmark': bookmark,
+      if (read != null) r'read': read,
+      if (unfollow != null) r'unfollow': unfollow,
+      if (upvote != null) r'upvote': upvote,
     };
 
     final _response = await _dio.request<Object>(
