@@ -45,7 +45,7 @@ async def get_tenant_id(session):
 
 async def get_user_name(user_id, collection) -> str:
     if (doc := await collection.find_one({"_id": user_id})) is not None:
-        return doc["user_name"]
+        return doc["name"]
     return "Unknown user"
 
 
@@ -75,11 +75,11 @@ async def get_mongo_document(query: dict, collection, tenant_id):
     return None
 
 
-async def get_mongo_documents(collection, tenant_id):
-    query = {}
-    query["tenant_id"] = tenant_id
+async def get_mongo_documents(collection, tenant_id, filter: dict = {}, projection: dict = {}):
+    
+    filter["tenant_id"] = tenant_id
     docs = []
-    cursor = collection.find(query)
+    cursor = collection.find(filter, projection=projection)
     # Convert cursor to list of dictionaries
     docs = await cursor.to_list(length=None)
     # async for doc in collection.find(query):

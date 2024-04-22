@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/thread.dart';
+import 'package:frontend/repo/user_provider.dart';
 import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/thread/widget/provider/thread_card_provider.dart';
@@ -108,7 +108,11 @@ class ThreadCard extends ConsumerWidget {
     final isEdit = card.eState == EThreadCardState.edit;
     final isHovered = card.hoverEnabled;
     final controller = TextEditingController(text: block.content);
-
+    final userMap = ref.watch(fetchUsersInfoProvider);
+    //print(block.creatorId?.toString());
+    final userInfo =
+        userMap.asData?.value.users?[block.creatorId?.toString() ?? 'UN'];
+    //print('userInfo: $userInfo');
     final replyProvider = threadDetailProvider.call();
     ref.listen(replyProvider, (previous, next) {
       if (next is AsyncData) {
@@ -126,10 +130,6 @@ class ThreadCard extends ConsumerWidget {
         }
       }
     });
-    // final replyThread = ref.listen(replyProvider);
-    // if(replyThread != null && replyThread.state. != null) {
-    //   print('replyThread.thread: ${replyThread.thread}');
-    // }
 
     return MouseRegion(
       onEnter: (event) {
@@ -154,9 +154,9 @@ class ThreadCard extends ConsumerWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: Image.network(
-                        block.creatorPicture!.startsWith('https')
-                            ? block.creatorPicture!
-                            : "https://api.dicebear.com/7.x/identicon/png?seed=${block.createdBy ?? "UN"}",
+                        userInfo!.picture!.startsWith('https')
+                            ? userInfo.picture!
+                            : "https://api.dicebear.com/7.x/identicon/png?seed=${userInfo.name!}",
                         width: 25,
                         height: 25,
                         cacheHeight: 30,
@@ -169,7 +169,7 @@ class ThreadCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${block.createdBy}',
+                          '${userInfo.name!}',
                           style: TextStyle(
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurface,
@@ -192,6 +192,16 @@ class ThreadCard extends ConsumerWidget {
                   ],
                 ),
                 const Spacer(),
+
+                if (!isHovered &&
+                    (DateTime.now()
+                            .difference(block.createdAt ?? DateTime.now())
+                            .inHours) <
+                        24)
+                  CircleAvatar(
+                    backgroundColor: Colors.yellow.shade200,
+                    radius: 4,
+                  ),
                 // TOOLS
                 Row(
                   children: [

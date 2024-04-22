@@ -253,7 +253,7 @@
     "commit_id": "3bcb5fd45965df82381c2266701d19572ee44872",
     "commit_timestamp": 1707857998,
     "code_diff": "",
-    "code_summary": "The code updates the user_name field in the database for the user with the given user_id, using the user_name value from the raw_user_info_from_provider object. It also imports the AsyncIOMotorClient class from the motor.motor_asyncio module and uses it to create a connection to the database."
+    "code_summary": "The code updates the name field in the database for the user with the given user_id, using the name value from the raw_user_info_from_provider object. It also imports the AsyncIOMotorClient class from the motor.motor_asyncio module and uses it to create a connection to the database."
   },
   {
     "commit_message": "We can get the name of signed in user\nfrom Google. But I don't know where to save it yet.\n",

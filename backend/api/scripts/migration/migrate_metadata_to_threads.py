@@ -27,7 +27,7 @@ def copy_creator_from_metadata_to_thread():
     for doc in metadata_collection.find():
         thread_id = doc['_id']
         thread = threads_collection.update_one({"_id": thread_id}, {'$set': {
-            'creator': doc['creator']['id']
+            'creator_id': doc['creator']['id']
         }}, upsert=True)
 
 

@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **id** | **String** |  | [optional] 
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
 **createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
-**creator** | **String** |  | 
+**creatorId** | **String** |  | 
 **headline** | **String** |  | [optional] 
 **tenantId** | **String** |  | 
 **title** | **String** |  | 

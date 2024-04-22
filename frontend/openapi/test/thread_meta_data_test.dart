@@ -12,13 +12,28 @@ void main() {
       // TODO
     });
 
+    // bool bookmark (default value: false)
+    test('to test the property `bookmark`', () async {
+      // TODO
+    });
+
     // String createdDate
     test('to test the property `createdDate`', () async {
       // TODO
     });
 
-    // Creator creator
+    // UserModel creator
     test('to test the property `creator`', () async {
+      // TODO
+    });
+
+    // String headline
+    test('to test the property `headline`', () async {
+      // TODO
+    });
+
+    // bool read (default value: false)
+    test('to test the property `read`', () async {
       // TODO
     });
 
@@ -29,6 +44,16 @@ void main() {
 
     // String type
     test('to test the property `type`', () async {
+      // TODO
+    });
+
+    // bool unfollow (default value: false)
+    test('to test the property `unfollow`', () async {
+      // TODO
+    });
+
+    // bool upvote (default value: false)
+    test('to test the property `upvote`', () async {
       // TODO
     });
 

@@ -7,6 +7,13 @@ void main() {
   final instance = Openapi().getThreadsApi();
 
   group(ThreadsApi, () {
+    // All Users
+    //
+    //Future<UserMap> allUsersUserGet() async
+    test('test allUsersUserGet', () async {
+      // TODO
+    });
+
     // At
     //
     //Future<List<ThreadsModel>> atAllThreadsGet() async
@@ -46,6 +53,13 @@ void main() {
     //
     //Future<BlockCollection> dateJournalGet(ModelDate modelDate) async
     test('test dateJournalGet', () async {
+      // TODO
+    });
+
+    // Filter
+    //
+    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool read, bool unfollow, bool upvote }) async
+    test('test filterNewsfeedGet', () async {
       // TODO
     });
 

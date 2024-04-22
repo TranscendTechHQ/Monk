@@ -24,32 +24,27 @@ THREADTYPES = [
     "/go"]
 
 
-class Creator(BaseModel):
+class UserModel(BaseModel):
+    id: str = Field(..., alias="_id")
     name: str = Field(default="unknown user")
     picture: str = Field(default="unknown picture link")
     email: str = Field(default="unknown email")
-    id: str = Field(default="unknown id")
+    last_login: str = Field(default="unknown last login")
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "name": "firstname lastname",
-                                      "picture": "https://www.example.com/picture.jpg",
-                                      "email": "hey@abc.com",
-                                      "id": "12345678-1234-5678-1234-567812345678"
-                                  }
-                              }
                               )
 
+class UserMap(BaseModel):
+    users: dict[str, UserModel]
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,)
 
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
     created_at: datetime = Field(default_factory=datetime.now)
-    created_by: str = Field(default="unknown user")
-    creator_email: str = Field(default="unknown email")
-    creator_picture: str = Field(default="unknown picture link")
     creator_id: str = Field(default="unknown id")
     child_id: str = Field(default="")
 
@@ -59,11 +54,6 @@ class UpdateBlockModel(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "content": "This is the content of the block",
-                                  }
-                              }
                               )
 
 
@@ -72,18 +62,6 @@ class BlockCollection(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "blocks": [
-                                          {
-                                              "content": "This is the content of the block",
-                                          },
-                                          {
-                                              "content": "This is the content of the block",
-                                          }
-                                      ]
-                                  }
-                              }
                               )
 
 
@@ -106,21 +84,6 @@ class CreateThreadModel(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "type": "/new-plan",
-                                      "title": "This is the title of the thread",
-                                      "content": [
-                                          {
-                                              "content": "This is the content of the block",
-                                          },
-                                          {
-                                              "content": "This is the content of the block",
-                                          }
-                                      ]
-
-                                  }
-                              }
                               )
 
 
@@ -131,7 +94,7 @@ class CreateChildThreadModel(CreateThreadModel):
 
 class ThreadModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
-    creator: str
+    creator_id: str
     created_date: datetime = Field(default_factory=datetime.now)
     type: ThreadType
     title: str = Field(..., min_length=1, max_length=100, pattern="^[a-zA-Z0-9]+$")
@@ -141,24 +104,6 @@ class ThreadModel(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "creator": "user1",
-                                      "created_date": "2021-01-01T00:00:00.000000",
-                                      "type": "/new-plan",
-                                      "title": "This is the title of the thread",
-                                      "content": [
-                                          {
-                                              "content": "This is the content of the block",
-                                          },
-                                          {
-                                              "content": "This is the content of the block",
-                                          }
-                                      ],
-                                      "headline": "This is the headline of the thread",
-                                      "tenant_id": "ABCD1234"
-                                  }
-                              }
                               )
 
 
@@ -167,19 +112,6 @@ class UpdateThreadModel(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "content": [
-                                          {
-                                              "content": "This is the content of the block",
-                                          },
-                                          {
-                                              "content": "This is the content of the block",
-                                          }
-                                      ]
-
-                                  }
-                              }
                               )
 
 
@@ -188,11 +120,6 @@ class UpdateThreadTitleModel(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "title": "New title"
-                                  }
-                              }
                               )
 
 
@@ -213,18 +140,13 @@ class UserThreadFlagsModel(BaseModel):
 
 class CreateUserThreadFlagModel(BaseModel):
     thread_id: str
-    read: Optional[bool] = None
-    unfollow: Optional[bool] = None
-    bookmark: Optional[bool] = None
-    upvote: Optional[bool] = None
+    read: bool = Field(default=None)
+    unfollow: bool = Field(default=None)
+    bookmark: bool = Field(default=None)
+    upvote: bool = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "thread_id": "12345678-123"
-                                  }
-                              }
                               )
 
 
@@ -233,43 +155,6 @@ class ThreadsModel(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "threads": [
-                                          {
-                                              "creator": "user1",
-                                              "created_date": "2021-01-01T00:00:00.000000",
-                                              "type": "/new-plan",
-                                              "title": "This is the title of the thread",
-                                              "content": [
-                                                  {
-                                                      "content": "This is the content of the block",
-                                                  },
-                                                  {
-                                                      "content": "This is the content of the block",
-                                                  }
-                                              ]
-
-                                          },
-                                          {
-                                              "creator": "user1",
-                                              "created_date": "2021-01-01T00:00:00.000000",
-                                              "type": "/new-plan",
-                                              "title": "This is the title of the thread",
-                                              "content": [
-                                                  {
-                                                      "content": "This is the content of the block",
-                                                  },
-                                                  {
-                                                      "content": "This is the content of the block",
-                                                  }
-                                              ]
-
-                                          }
-                                      ]
-
-                                  }
-                              }
                               )
 
 
@@ -278,24 +163,15 @@ class ThreadMetaData(BaseModel):
     title: str
     type: str
     created_date: str
-    creator: Creator
+    creator: UserModel
+    headline: str = Field(default=None)
+    read: bool = Field(default=False)
+    unfollow: bool = Field(default=False)
+    bookmark: bool = Field(default=False)
+    upvote: bool = Field(default=False)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "id": "12345678-1234-5678-1234-567812345678",
-                                      "title": "This is the title of the thread",
-                                      "type": "/new-plan",
-                                      "created_date": "2021-01-01T00:00:00.000000",
-                                      "creator": {
-                                          "name": "firstname lastname",
-                                          "picture": "https://www.example.com/picture.jpg",
-                                          "email": "a@b.com",
-                                          "id": "12345678-123"
-                                      }
-                                  }
-                              }
                               )
 
 
@@ -304,26 +180,6 @@ class ThreadsMetaData(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "metadata": [
-                                          {
-                                              "id": "12345678-1234-5678-1234-567812345678",
-                                              "title": "This is the title of the thread",
-                                              "type": "/new-plan",
-                                              "created_date": "2021-01-01T00:00:00.000000",
-                                              "creator": "user1"
-                                          },
-                                          {
-                                              "id": "12345678-1234-5678-1234-567812345678",
-                                              "title": "This is the title of the thread",
-                                              "type": "/new-plan",
-                                              "created_date": "2021-01-01T00:00:00.000000",
-                                              "creator": "user1"
-                                          }
-                                      ]
-                                  }
-                              }
                               )
 
 
@@ -332,18 +188,6 @@ class ThreadsInfo(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "titles": [
-                                          {
-                                              "ThreadTitle": "ThreadType",
-                                          },
-                                          {
-                                              "AnotherThreadTitle": "AnotherThreadType",
-                                          }
-                                      ]
-                                  }
-                              }
                               )
 
 
@@ -354,13 +198,6 @@ class ThreadHeadlineModel(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
-                              json_schema_extra={
-                                  "example": {
-                                      "id": "12345678-1234-5678-1234-567812345678",
-                                      "title": "This is the title of the thread",
-                                      "headline": "This is the headline of the thread"
-                                  }
-                              }
                               )
 
 

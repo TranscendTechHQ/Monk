@@ -8,6 +8,9 @@ class MonkException {
     } on DioException catch (e) {
       logger.e('API ERROR: status: ${e.response?.statusCode}',
           error: e.message ?? e.error);
+      if (e.response?.statusCode == 500) {
+        throw Exception("Internal Server Error");
+      }
       if (e.response != null && e.response?.data != null) {
         final rawData = e.response?.data as Map<String, dynamic>;
         if (e.response?.statusCode == 404) {

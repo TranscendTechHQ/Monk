@@ -5,7 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:json_annotation/json_annotation.dart';
 
-part 'creator.g.dart';
+part 'user_model.g.dart';
 
 
 @JsonSerializable(
@@ -14,18 +14,32 @@ part 'creator.g.dart';
   disallowUnrecognizedKeys: false,
   explicitToJson: true,
 )
-class Creator {
-  /// Returns a new [Creator] instance.
-  Creator({
+class UserModel {
+  /// Returns a new [UserModel] instance.
+  UserModel({
+
+    required  this.id,
 
      this.email = 'unknown email',
 
-     this.id = 'unknown id',
+     this.lastLogin = 'unknown last login',
 
      this.name = 'unknown user',
 
      this.picture = 'unknown picture link',
   });
+
+  @JsonKey(
+    
+    name: r'_id',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final String id;
+
+
 
   @JsonKey(
     defaultValue: 'unknown email',
@@ -40,14 +54,14 @@ class Creator {
 
 
   @JsonKey(
-    defaultValue: 'unknown id',
-    name: r'id',
+    defaultValue: 'unknown last login',
+    name: r'last_login',
     required: false,
     includeIfNull: false
   )
 
 
-  final String? id;
+  final String? lastLogin;
 
 
 
@@ -76,22 +90,24 @@ class Creator {
 
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is Creator &&
-     other.email == email &&
+  bool operator ==(Object other) => identical(this, other) || other is UserModel &&
      other.id == id &&
+     other.email == email &&
+     other.lastLogin == lastLogin &&
      other.name == name &&
      other.picture == picture;
 
   @override
   int get hashCode =>
-    email.hashCode +
     id.hashCode +
+    email.hashCode +
+    lastLogin.hashCode +
     name.hashCode +
     picture.hashCode;
 
-  factory Creator.fromJson(Map<String, dynamic> json) => _$CreatorFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CreatorToJson(this);
+  Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   @override
   String toString() {

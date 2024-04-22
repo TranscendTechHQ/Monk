@@ -65,8 +65,8 @@ async def secure_api(s: SessionContainer = Depends(verify_session())) -> Session
     email = ""
     last_login = datetime.datetime.now().isoformat()
     if userDoc is not None:
-        fullName = userDoc['user_name']
-        picture = userDoc['user_picture']
+        fullName = userDoc['name']
+        picture = userDoc['picture']
         email = userDoc['email']
 
         # print(userDoc)

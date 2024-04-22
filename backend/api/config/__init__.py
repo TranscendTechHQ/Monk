@@ -124,8 +124,8 @@ def override_thirdparty_apis(original_implementation: APIInterface):
             if result.raw_user_info_from_provider.from_user_info_api is not None:
                 # print(result.raw_user_info_from_provider.from_user_info_api['name'])
                 user_id = result.user.user_id
-                user_name = result.raw_user_info_from_provider.from_user_info_api['name']
-                user_picture = result.raw_user_info_from_provider.from_user_info_api['picture']
+                name = result.raw_user_info_from_provider.from_user_info_api['name']
+                picture = result.raw_user_info_from_provider.from_user_info_api['picture']
                 # email = result.raw_user_info_from_provider.from_user_info_api['email']
                 email = result.user.email
                 mongodb_client = AsyncIOMotorClient(settings.DB_URL)
@@ -188,8 +188,8 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 
                 update_result = await mongodb_users.update_one({"_id": user_id},
                                                                {"$set":
-                                                                    {"user_name": user_name,
-                                                                     "user_picture": user_picture,
+                                                                    {"name": name,
+                                                                     "picture": picture,
                                                                      "email": email,
                                                                      "tenant_id": tenant_id,
                                                                      "thirdparty_provider": third_party_provider,
@@ -199,7 +199,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                                                                      }}, upsert=True)
 
                 # await update_user_metadata(user_id=user_id, metadata_update={
-                #   "user_name": user_name
+                #   "name": name
                 # })
             # This gives the user's info from the returned ID token 
             # if the provider gave us an ID token

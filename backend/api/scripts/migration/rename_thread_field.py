@@ -29,10 +29,20 @@ def rename_last_modified_to_headline_last_modified():
             'headline_last_modified': 'last_modified'
         }})
 
+def rename_creator_to_creator_id():
+    threads_collection = app.mongodb["threads"]
+    for doc in threads_collection.find():
+        thread_id = doc['_id']
+        threads_collection.update_one({"_id": thread_id}, {'$rename': {
+            'creator': 'creator_id'
+        }})
+
+
 
 async def main():
     startup_db_client()
-    rename_last_modified_to_headline_last_modified()
+    #rename_last_modified_to_headline_last_modified()
+    rename_creator_to_creator_id()
     shutdown_db_client()
 
 

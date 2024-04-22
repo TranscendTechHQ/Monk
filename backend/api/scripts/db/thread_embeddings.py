@@ -32,15 +32,6 @@ def shutdown_db_client():
     app.mongodb_client.close()
 
 
-def update_thread_creator():
-    collection = app.mongodb["threads"]
-    requests = []
-    for doc in collection.find({'title': {"$exists": True}}).limit(500):
-        # print(doc['content'])
-
-        requests.append(UpdateOne({'_id': doc['_id']}, {'$set': {'creator': "Yogesh K. Soni"}}))
-
-    collection.bulk_write(requests)
 
 
 def generate_single_thread_embedding(thread_doc):
@@ -54,9 +45,10 @@ def generate_single_thread_embedding(thread_doc):
     text += "The type of the thread is " + threadType + ". "
     createdAt = thread_doc['created_date']
     text += "The thread was created on " + createdAt + ". "
-    creator = thread_doc['creator']
-    text += "The creator of the thread is " + creator + ". "
-    userDoc = user_collection.find_one({'user_name': creator})
+    creator_id = thread_doc['creator_id']
+    
+    userDoc = user_collection.find_one({'_id': creator_id})
+    text += "The creator of the thread is " + userDoc['name'] + ". "
     email = userDoc['email']
     text += "The email of the creator is " + email + ". "
     # print(text)

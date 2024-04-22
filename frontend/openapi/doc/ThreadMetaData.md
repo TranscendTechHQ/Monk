@@ -9,10 +9,15 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
+**bookmark** | **bool** |  | [optional] [default to false]
 **createdDate** | **String** |  | 
-**creator** | [**Creator**](Creator.md) |  | 
+**creator** | [**UserModel**](UserModel.md) |  | 
+**headline** | **String** |  | [optional] 
+**read** | **bool** |  | [optional] [default to false]
 **title** | **String** |  | 
 **type** | **String** |  | 
+**unfollow** | **bool** |  | [optional] [default to false]
+**upvote** | **bool** |  | [optional] [default to false]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
