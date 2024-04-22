@@ -320,16 +320,13 @@ async def filter(
             read: bool = False,
             unfollow: bool = False,
             upvote: bool = False,
-            #session: SessionContainer = Depends(verify_session())
+            session: SessionContainer = Depends(verify_session())
             ):
-    #user_id = session.get_user_id()
-    #tenant_id = await get_tenant_id(session)
+    user_id = session.get_user_id()
+    tenant_id = await get_tenant_id(session)
 
-    user_id = "a4983b11-3465-4d00-9281-ec89048ce082"
-    tenant_id = "T048F0ANS1M"
-    print("Bookmark: ", bookmark)
+    
     if bookmark or unfollow or read or upvote:
-        print("filtering")
         aggregate = await get_filtered_newsfeed(
                                                 user_id=user_id,
                                                 tenant_id=tenant_id, 
@@ -339,7 +336,6 @@ async def filter(
                                                 upvote=upvote)
         
     else:
-        print("un-filtering")
         aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id)
     
     
