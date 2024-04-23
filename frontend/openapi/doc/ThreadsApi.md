@@ -10,7 +10,6 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**allUsersUserGet**](ThreadsApi.md#allusersuserget) | **GET** /user | All Users
-[**atAllThreadsGet**](ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [**childThreadBlocksChildPost**](ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [**createTfThreadFlagPost**](ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
@@ -51,43 +50,6 @@ This endpoint does not need any parameter.
 ### Return type
 
 [**UserMap**](UserMap.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **atAllThreadsGet**
-> List<ThreadsModel> atAllThreadsGet()
-
-At
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-
-try {
-    final response = api.atAllThreadsGet();
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->atAllThreadsGet: $e\n');
-}
-```
-
-### Parameters
-This endpoint does not need any parameter.
-
-### Return type
-
-[**List&lt;ThreadsModel&gt;**](ThreadsModel.md)
 
 ### Authorization
 

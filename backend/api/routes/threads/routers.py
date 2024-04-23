@@ -484,21 +484,6 @@ async def get_thread(request: Request, title: str,
                         content=thread_content)
 
 
-@router.get("/allThreads", response_model=List[ThreadsModel], response_description="Get all threads")
-async def at(request: Request, session: SessionContainer = Depends(verify_session())):
-    # Get all threads from MongoDB by date created
-    tenant_id = await get_tenant_id(session)
-    threads = await get_mongo_documents(
-        request.app.mongodb["threads"],
-        tenant_id=tenant_id
-    )
-    modified_threads = []
-    for doc in threads:
-        thread_content = jsonable_encoder(doc)
-        user = get_user_by_id(thread_content['creator_id'])
-        thread_content['creator_id'] = jsonable_encoder(user)['name']
-        modified_threads.append(jsonable_encoder(thread_content))
-    return threads
 
 
 @router.post("/thread/flag", response_model=UserThreadFlagModel, response_description="Create a new thread flag")

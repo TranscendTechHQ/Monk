@@ -71,7 +71,6 @@ Class | Method | HTTP request | Description
 [*SlackApi*](doc/SlackApi.md) | [**chChannelListGet**](doc/SlackApi.md#chchannellistget) | **GET** /channel_list | Ch
 [*SlackApi*](doc/SlackApi.md) | [**subscribeChannelSubscribeChannelPost**](doc/SlackApi.md#subscribechannelsubscribechannelpost) | **POST** /subscribe_channel | Subscribe Channel
 [*ThreadsApi*](doc/ThreadsApi.md) | [**allUsersUserGet**](doc/ThreadsApi.md#allusersuserget) | **GET** /user | All Users
-[*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createTfThreadFlagPost**](doc/ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf

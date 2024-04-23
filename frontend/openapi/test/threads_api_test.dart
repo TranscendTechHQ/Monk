@@ -14,13 +14,6 @@ void main() {
       // TODO
     });
 
-    // At
-    //
-    //Future<List<ThreadsModel>> atAllThreadsGet() async
-    test('test atAllThreadsGet', () async {
-      // TODO
-    });
-
     // Child Thread
     //
     //Future<ThreadModel> childThreadBlocksChildPost(CreateChildThreadModel createChildThreadModel) async
