@@ -111,7 +111,7 @@ class ThreadCard extends ConsumerWidget {
     final userMap = ref.watch(fetchUsersInfoProvider);
     //print(block.creatorId?.toString());
     final userInfo =
-        userMap.asData?.value.users?[block.creatorId?.toString() ?? 'UN'];
+        userMap.asData?.value.users[block.creatorId?.toString() ?? 'UN'];
     //print('userInfo: $userInfo');
     final replyProvider = threadDetailProvider.call();
     ref.listen(replyProvider, (previous, next) {
@@ -169,7 +169,7 @@ class ThreadCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${userInfo.name!}',
+                          userInfo.name!,
                           style: TextStyle(
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurface,
