@@ -15,9 +15,9 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockCollection, BlockModel, UpdateBlockModel, Date, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, UpdateBlockModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel
-from .models import THREADTYPES, CreateChildThreadModel, ThreadHeadlinesModel, ThreadModel, ThreadType, \
+from .models import THREADTYPES, CreateChildThreadModel, ThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
 
@@ -91,47 +91,6 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)
 
 
-@router.get("/threadHeadlines", response_model=ThreadHeadlinesModel,
-            response_description="Get headlines for all threads")
-async def th(request: Request,
-             session: SessionContainer = Depends(verify_session())):
-    # Get all thread headlines from MongoDB
-    collection = request.app.mongodb["threads"]
-    userId = session.get_user_id()
-    userDoc = await request.app.mongodb["users"].find_one({"_id": userId})
-    # headlines = await get_mongo_documents(request.app.mongodb["thread_headlines"])
-
-    # Convert string datetimes to actual datetime objects during sorting
-    sort_criteria = [{
-        "$addFields":
-            {"last_modified_date":
-                 {"$toDate": "$last_modified"}
-             }
-    },
-        {"$sort": {"last_modified_date": -1}}]
-
-    # Fetch all documents with the sort criteria (using aggregation for sorting)
-
-    cursor = collection.aggregate(sort_criteria)
-
-    sorted_headlines = []
-    async for document in cursor:
-        if document['tenant_id'] == userDoc['tenant_id']:
-            headline = {
-                "id": document['_id'],
-                "title": document['title'],
-                "headline": document['headline'],
-                "last_modified": document['last_modified']
-            }
-            sorted_headlines.append(headline)
-
-    thread_headlines = ThreadHeadlinesModel(headlines=sorted_headlines)
-
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(
-                            thread_headlines))
-
-
 @router.get("/threadTypes", response_model=List[ThreadType],
             response_description="Get all thread types")
 async def tt(request: Request,
@@ -159,50 +118,6 @@ async def ti(request: Request,
                         content=jsonable_encoder(ThreadsInfo(info=info)))
 
 
-@router.get("/metadata", response_model=ThreadsMetaData,
-            response_description="Get meta data for all threads")
-async def md(request: Request,
-             session: SessionContainer = Depends(verify_session())):
-    tenant_id = await get_tenant_id(session)
-    # Get all thread titles from MongoDB
-    threads = await get_mongo_documents(
-        asyncdb.threads_collection,
-        tenant_id=tenant_id
-    )
-    users = await get_mongo_documents(
-        asyncdb.users_collection,
-        tenant_id=tenant_id)
-    metadata = []
-    user_thread_flags = None
-    for doc in threads:
-        creator = {}
-        user_info = None
-        for user in users:
-            if doc['creator_id'] == user['_id']:
-                user_info = user
-                user_thread_flags = await get_mongo_document({"thread_id": doc["_id"], "user_id": user["_id"]},
-                                                             request.app.mongodb["user_thread_flags"], tenant_id)
-                break
-        if user_info and tenant_id == doc['tenant_id']:
-            creator["id"] = user_info["_id"]
-            creator["name"] = user_info["name"]
-            creator["picture"] = user_info["picture"]
-            creator["email"] = user_info["email"]
-
-            metadata.append({
-                "_id": doc["_id"],
-                "title": doc["title"],
-                "type": doc["type"],
-                "read": user_thread_flags["read"] if user_thread_flags else False,
-                "unfollow": user_thread_flags["unfollow"] if user_thread_flags else False,
-                "bookmark": user_thread_flags["bookmark"] if user_thread_flags else False,
-                "upvote": user_thread_flags["upvote"] if user_thread_flags else False,
-                "created_date": doc["created_date"],
-                "creator": creator
-            })
-
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(ThreadsMetaData(metadata=metadata)))
 
 
 async def get_unfiltered_newsfeed(tenant_id):
@@ -452,7 +367,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
                         content=jsonable_encoder(updated_thread))
 
 
-@router.post("/blocks/child", response_model=ThreadModel)
+@router.post("/blocks/child", response_model=ThreadModel, response_description="Create a new child thread from a block")
 async def child_thread(request: Request,
                        child_thread_data: CreateChildThreadModel = Body(...),
                        session: SessionContainer = Depends(verify_session())):
@@ -485,66 +400,7 @@ async def child_thread(request: Request,
                         content=jsonable_encoder(created_child_thread))
 
 
-# get blocks given a date
-@router.get("/blocksDate", response_model=BlockCollection,
-            response_description="Get all blocks for a given date")
-async def get_blocks_by_date(request: Request,
-                             date: Date,
-                             session: SessionContainer = Depends(verify_session())
-                             ):
-    # Logic to fetch all blocks by the signed-in user from MongoDB backend database
-    tenant_id = await get_tenant_id(session)
-    blocks = await get_mongo_documents_by_date(
-        date.date,
-        request.app.mongodb["blocks"],
-        tenant_id=tenant_id
-    )
-
-    ret_block = BlockCollection(blocks=blocks)
-
-    # retun the block in json format
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(ret_block))
-
-
-@router.get("/journal", response_model=BlockCollection,
-            response_description="Get journal for a given date")
-async def date(request: Request,
-               date: Date,
-               session: SessionContainer = Depends(verify_session())
-               ):
-    print("Getting journal for date: ", date.date)
-    userId = session.get_user_id()
-    # get journal thread. If it does not exist, create it
-    journal_thread = await create_new_thread(userId, "journal", "/new-thread")
-    # get the blocks that have created_at date equal to the date
-    # doing this query in the db directly will be much faster than doing this
-    # in the python application
-
-    # build a pymongo query to get the list of blocks from a thread that have the created_at date equal to the date
-    # provided date:
-    d = date.date.date()
-    from_date = dt.datetime.combine(d, dt.datetime.min.time())
-    to_date = dt.datetime.combine(d, dt.datetime.max.time())
-
-    query = {"title": "journal",
-             "content": {"$elemMatch": {"created_at": {"$gte": from_date.isoformat(),
-                                                       "$lt": to_date.isoformat()}}}}
-    collection = request.app.mongodb["threads"]
-    doc = await collection.find_one(query)
-    if not doc:
-        return JSONResponse(status_code=404, content={"message": "Journal not found"})
-
-    # Convert cursor to list of dictionaries
-    blocks = doc["content"]
-
-    ret_thread = BlockCollection(blocks=blocks)
-
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(ret_thread))
-
-
-@router.post("/threads", response_model=ThreadModel)
+@router.post("/threads", response_model=ThreadModel, response_description="Create a new thread")
 async def create_th(request: Request, thread_data: CreateThreadModel = Body(...),
                     session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data
@@ -563,7 +419,7 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
                         content=jsonable_encoder(created_thread))
 
 
-@router.get("/threads/{id}", response_model=ThreadModel)
+@router.get("/threads/{id}", response_model=ThreadModel, response_description="Get a thread by id")
 async def get_thread_id(request: Request, id: str,
                         session: SessionContainer = Depends(verify_session())):
     # Get a thread from MongoDB by title
@@ -582,7 +438,7 @@ async def get_thread_id(request: Request, id: str,
                         content=thread_content)
 
 
-@router.put("/threads/{id}", response_model=ThreadModel)
+@router.put("/threads/{id}", response_model=ThreadModel, response_description="Update a thread by id")
 async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleModel = Body(...),
                     session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data
@@ -609,7 +465,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
                         content=jsonable_encoder(updated_thread))
 
 
-@router.get("/threads/{title}", response_model=ThreadModel)
+@router.get("/threads/{title}", response_model=ThreadModel, response_description="Get a thread by title")
 async def get_thread(request: Request, title: str,
                      session: SessionContainer = Depends(verify_session())):
     # Get a thread from MongoDB by title
@@ -628,7 +484,7 @@ async def get_thread(request: Request, title: str,
                         content=thread_content)
 
 
-@router.get("/allThreads", response_model=List[ThreadsModel])
+@router.get("/allThreads", response_model=List[ThreadsModel], response_description="Get all threads")
 async def at(request: Request, session: SessionContainer = Depends(verify_session())):
     # Get all threads from MongoDB by date created
     tenant_id = await get_tenant_id(session)
@@ -645,7 +501,7 @@ async def at(request: Request, session: SessionContainer = Depends(verify_sessio
     return threads
 
 
-@router.post("/thread/flag", response_model=UserThreadFlagModel)
+@router.post("/thread/flag", response_model=UserThreadFlagModel, response_description="Create a new thread flag")
 async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagModel = Body(...),
                     session: SessionContainer = Depends(verify_session())):
     # Create a new thread in MongoDB using the thread_data

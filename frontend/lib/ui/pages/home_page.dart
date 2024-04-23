@@ -45,17 +45,7 @@ class _HomePageState extends State<HomePage> {
     }
     final results = response.data!;
     print(results);
-    final response = await threadApi.thThreadHeadlinesGet();
-    if (response.statusCode != 200) {
-      throw Exception("Failed to fetch matching threads");
-    }
-    final results = response.data!;
-    results.headlines.map((e) => print(e));*/
-    /*final response = await threadApi.mdMetadataGet();
-    if (response.statusCode != 200) {
-      throw Exception("Failed to fetch matching threads");
-    }
-    final results = response.data!;
+    
     CreateChildThreadModel createChildThreadModel = CreateChildThreadModel(
       title: "myownchildthread",
       type: "/new-plan",

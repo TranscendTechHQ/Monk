@@ -1,16 +1,5 @@
 components:
   schemas:
-    BlockCollection:
-      properties:
-        blocks:
-          items:
-            $ref: '#/components/schemas/BlockModel'
-          title: Blocks
-          type: array
-      required:
-      - blocks
-      title: BlockCollection
-      type: object
     BlockModel:
       properties:
         _id:
@@ -140,16 +129,6 @@ components:
       - thread_id
       title: CreateUserThreadFlagModel
       type: object
-    Date:
-      properties:
-        date:
-          format: date-time
-          title: Date
-          type: string
-      required:
-      - date
-      title: Date
-      type: object
     HTTPValidationError:
       properties:
         detail:
@@ -158,17 +137,6 @@ components:
           title: Detail
           type: array
       title: HTTPValidationError
-      type: object
-    PublicChannelList:
-      properties:
-        public_channels:
-          items:
-            $ref: '#/components/schemas/ChannelModel'
-          title: Public Channels
-          type: array
-      required:
-      - public_channels
-      title: PublicChannelList
       type: object
     SessionInfo:
       properties:
@@ -226,34 +194,6 @@ components:
       - _id
       - subscribed_channels
       title: SubscribedChannelList
-      type: object
-    ThreadHeadlineModel:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        headline:
-          title: Headline
-          type: string
-        title:
-          title: Title
-          type: string
-      required:
-      - _id
-      - title
-      - headline
-      title: ThreadHeadlineModel
-      type: object
-    ThreadHeadlinesModel:
-      properties:
-        headlines:
-          items:
-            $ref: '#/components/schemas/ThreadHeadlineModel'
-          title: Headlines
-          type: array
-      required:
-      - headlines
-      title: ThreadHeadlinesModel
       type: object
     ThreadMetaData:
       properties:
@@ -494,7 +434,7 @@ paths:
                   $ref: '#/components/schemas/ThreadsModel'
                 title: Response At Allthreads Get
                 type: array
-          description: Successful Response
+          description: Get all threads
       summary: At
       tags:
       - threads
@@ -545,7 +485,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadModel'
-          description: Successful Response
+          description: Create a new child thread from a block
         '422':
           content:
             application/json:
@@ -593,31 +533,6 @@ paths:
       summary: Update
       tags:
       - threads
-  /blocksDate:
-    get:
-      operationId: get_blocks_by_date_blocksDate_get
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Date'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockCollection'
-          description: Get all blocks for a given date
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Get Blocks By Date
-      tags:
-      - threads
   /channel_list:
     get:
       operationId: ch_channel_list_get
@@ -627,7 +542,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompositeChannelList'
-          description: Get all blocks for a given date
+          description: Get a list of public and subscribed channels
       summary: Ch
       tags:
       - slack
@@ -641,44 +556,6 @@ paths:
               schema: {}
           description: Successful Response
       summary: Healthcheck
-  /journal:
-    get:
-      operationId: date_journal_get
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Date'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockCollection'
-          description: Get journal for a given date
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Date
-      tags:
-      - threads
-  /metadata:
-    get:
-      operationId: md_metadata_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadsMetaData'
-          description: Get meta data for all threads
-      summary: Md
-      tags:
-      - threads
   /newsfeed:
     get:
       operationId: filter_newsfeed_get
@@ -727,19 +604,6 @@ paths:
       summary: Filter
       tags:
       - threads
-  /public_channels:
-    get:
-      operationId: public_channels_public_channels_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PublicChannelList'
-          description: Get all public channels
-      summary: Public Channels
-      tags:
-      - slack
   /searchThreads:
     get:
       operationId: search_threads_searchThreads_get
@@ -871,7 +735,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserThreadFlagModel'
-          description: Successful Response
+          description: Create a new thread flag
         '422':
           content:
             application/json:
@@ -879,19 +743,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Create Tf
-      tags:
-      - threads
-  /threadHeadlines:
-    get:
-      operationId: th_threadHeadlines_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadHeadlinesModel'
-          description: Get headlines for all threads
-      summary: Th
       tags:
       - threads
   /threadTypes:
@@ -925,7 +776,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadModel'
-          description: Successful Response
+          description: Create a new thread
         '422':
           content:
             application/json:
@@ -951,7 +802,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadModel'
-          description: Successful Response
+          description: Get a thread by id
         '422':
           content:
             application/json:
@@ -982,7 +833,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadModel'
-          description: Successful Response
+          description: Update a thread by id
         '422':
           content:
             application/json:
@@ -1008,7 +859,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadModel'
-          description: Successful Response
+          description: Get a thread by title
         '422':
           content:
             application/json:

@@ -14,13 +14,6 @@ void main() {
       // TODO
     });
 
-    // Public Channels
-    //
-    //Future<PublicChannelList> publicChannelsPublicChannelsGet() async
-    test('test publicChannelsPublicChannelsGet', () async {
-      // TODO
-    });
-
     // Subscribe Channel
     //
     //Future<SubscribedChannelList> subscribeChannelSubscribeChannelPost(SubscribeChannelRequest subscribeChannelRequest) async

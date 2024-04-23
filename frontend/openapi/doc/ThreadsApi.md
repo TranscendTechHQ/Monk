@@ -15,15 +15,11 @@ Method | HTTP request | Description
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [**createTfThreadFlagPost**](ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [**createThThreadsPost**](ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
-[**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [**filterNewsfeedGet**](ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
-[**getBlocksByDateBlocksDateGet**](ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
 [**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
-[**mdMetadataGet**](ThreadsApi.md#mdmetadataget) | **GET** /metadata | Md
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
-[**thThreadHeadlinesGet**](ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
@@ -270,47 +266,6 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **dateJournalGet**
-> BlockCollection dateJournalGet(modelDate)
-
-Date
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final ModelDate modelDate = ; // ModelDate | 
-
-try {
-    final response = api.dateJournalGet(modelDate);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->dateJournalGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **modelDate** | [**ModelDate**](ModelDate.md)|  | 
-
-### Return type
-
-[**BlockCollection**](BlockCollection.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **filterNewsfeedGet**
 > ThreadsMetaData filterNewsfeedGet(bookmark, read, unfollow, upvote)
 
@@ -354,47 +309,6 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getBlocksByDateBlocksDateGet**
-> BlockCollection getBlocksByDateBlocksDateGet(modelDate)
-
-Get Blocks By Date
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final ModelDate modelDate = ; // ModelDate | 
-
-try {
-    final response = api.getBlocksByDateBlocksDateGet(modelDate);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->getBlocksByDateBlocksDateGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **modelDate** | [**ModelDate**](ModelDate.md)|  | 
-
-### Return type
-
-[**BlockCollection**](BlockCollection.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -481,43 +395,6 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **mdMetadataGet**
-> ThreadsMetaData mdMetadataGet()
-
-Md
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-
-try {
-    final response = api.mdMetadataGet();
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->mdMetadataGet: $e\n');
-}
-```
-
-### Parameters
-This endpoint does not need any parameter.
-
-### Return type
-
-[**ThreadsMetaData**](ThreadsMetaData.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **searchThreadsSearchThreadsGet**
 > ThreadsModel searchThreadsSearchThreadsGet(query)
 
@@ -588,43 +465,6 @@ Name | Type | Description  | Notes
 ### Return type
 
 **List&lt;String&gt;**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **thThreadHeadlinesGet**
-> ThreadHeadlinesModel thThreadHeadlinesGet()
-
-Th
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-
-try {
-    final response = api.thThreadHeadlinesGet();
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->thThreadHeadlinesGet: $e\n');
-}
-```
-
-### Parameters
-This endpoint does not need any parameter.
-
-### Return type
-
-[**ThreadHeadlinesModel**](ThreadHeadlinesModel.md)
 
 ### Authorization
 

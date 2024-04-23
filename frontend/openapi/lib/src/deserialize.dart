@@ -1,4 +1,3 @@
-import 'package:openapi/src/model/block_collection.dart';
 import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/channel_model.dart';
 import 'package:openapi/src/model/composite_channel_list.dart';
@@ -6,13 +5,9 @@ import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
-import 'package:openapi/src/model/model_date.dart';
-import 'package:openapi/src/model/public_channel_list.dart';
 import 'package:openapi/src/model/session_info.dart';
 import 'package:openapi/src/model/subscribe_channel_request.dart';
 import 'package:openapi/src/model/subscribed_channel_list.dart';
-import 'package:openapi/src/model/thread_headline_model.dart';
-import 'package:openapi/src/model/thread_headlines_model.dart';
 import 'package:openapi/src/model/thread_meta_data.dart';
 import 'package:openapi/src/model/thread_model.dart';
 import 'package:openapi/src/model/threads_info.dart';
@@ -43,8 +38,6 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return (valueString == 'true' || valueString == '1') as ReturnType;
         case 'double':
           return (value is double ? value : double.parse('$value')) as ReturnType;
-        case 'BlockCollection':
-          return BlockCollection.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'BlockModel':
           return BlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ChannelModel':
@@ -59,20 +52,12 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return CreateUserThreadFlagModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
           return HTTPValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ModelDate':
-          return ModelDate.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PublicChannelList':
-          return PublicChannelList.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SessionInfo':
           return SessionInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SubscribeChannelRequest':
           return SubscribeChannelRequest.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SubscribedChannelList':
           return SubscribedChannelList.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ThreadHeadlineModel':
-          return ThreadHeadlineModel.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'ThreadHeadlinesModel':
-          return ThreadHeadlinesModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadMetaData':
           return ThreadMetaData.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ThreadModel':

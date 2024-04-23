@@ -49,24 +49,10 @@ void main() {
       // TODO
     });
 
-    // Date
-    //
-    //Future<BlockCollection> dateJournalGet(ModelDate modelDate) async
-    test('test dateJournalGet', () async {
-      // TODO
-    });
-
     // Filter
     //
     //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool read, bool unfollow, bool upvote }) async
     test('test filterNewsfeedGet', () async {
-      // TODO
-    });
-
-    // Get Blocks By Date
-    //
-    //Future<BlockCollection> getBlocksByDateBlocksDateGet(ModelDate modelDate) async
-    test('test getBlocksByDateBlocksDateGet', () async {
       // TODO
     });
 
@@ -84,13 +70,6 @@ void main() {
       // TODO
     });
 
-    // Md
-    //
-    //Future<ThreadsMetaData> mdMetadataGet() async
-    test('test mdMetadataGet', () async {
-      // TODO
-    });
-
     // Search Threads
     //
     //Future<ThreadsModel> searchThreadsSearchThreadsGet(String query) async
@@ -102,13 +81,6 @@ void main() {
     //
     //Future<List<String>> searchTitlesSearchTitlesGet(String query) async
     test('test searchTitlesSearchTitlesGet', () async {
-      // TODO
-    });
-
-    // Th
-    //
-    //Future<ThreadHeadlinesModel> thThreadHeadlinesGet() async
-    test('test thThreadHeadlinesGet', () async {
       // TODO
     });
 

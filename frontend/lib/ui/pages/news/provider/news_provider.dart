@@ -9,28 +9,6 @@ part 'news_provider.freezed.dart';
 part 'news_provider.g.dart';
 
 @riverpod
-Future<List<ThreadHeadlineModel>> fetchThreadsHeadlinesAsync(
-    FetchThreadsHeadlinesAsyncRef ref) async {
-  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-  final response = await threadApi.thThreadHeadlinesGet();
-  if (response.statusCode != 200) {
-    throw Exception("Failed to fetch titles");
-  }
-  return response.data!.headlines;
-}
-
-@riverpod
-Future<List<ThreadMetaData>> fetchThreadsMdMetaDataAsync(
-    FetchThreadsMdMetaDataAsyncRef ref) async {
-  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-  final response = await threadApi.mdMetadataGet();
-  if (response.statusCode != 200) {
-    throw Exception("Failed to fetch titles");
-  }
-  return response.data!.metadata;
-}
-
-@riverpod
 class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
