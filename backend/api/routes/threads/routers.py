@@ -248,12 +248,10 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
             "user_id": user_id,
             "$or": [
                 {"bookmark": bookmark},
-            {"read": read},
-            {"unfollow": unfollow},
-            {"upvote": upvote}
-        
-      ]
-            
+                {"read": read},
+                {"unfollow": unfollow},
+                {"upvote": upvote}
+              ]
         }
     },
     {
@@ -270,7 +268,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
     {
         "$lookup": {
             "from": "users",
-            "localField": "user_id",
+            "localField": "threads.creator_id",
             "foreignField": "_id",
             "as": "threads.creator"
         }
@@ -281,32 +279,32 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
         }
     },
     {
-    "$addFields": {
-      "threads.bookmark": "$bookmark",
-			"threads.read": "$read",
-      "threads.upvote":"$upvote",
-			"threads.unfollow":"$unfollow"
+        "$addFields": {
+          "threads.bookmark": "$bookmark",
+	      "threads.read": "$read",
+          "threads.upvote":"$upvote",
+	      "threads.unfollow":"$unfollow"
+        },
     },
-  },
     { "$replaceRoot": { "newRoot": "$threads" } },
     {
-                "$project": {
-                "_id": 1,
-                "title": 1,
-                "type": 1,
-                "created_date": 1,
-                "headline": 1,
-                "creator._id": 1,
-                "creator.name": 1,
-                "creator.picture": 1,
-                "creator.email": 1,
-                "creator.last_login": 1,
-                "bookmark": 1,
-                "unfollow":1,
-                "read":1,
-                "upvote":1
-                }
-            }
+        "$project": {
+            "_id": 1,
+            "title": 1,
+            "type": 1,
+            "created_date": 1,
+            "headline": 1,
+            "creator._id": 1,
+            "creator.name": 1,
+            "creator.picture": 1,
+            "creator.email": 1,
+            "creator.last_login": 1,
+            "bookmark": 1,
+            "unfollow":1,
+            "read":1,
+            "upvote":1
+        }
+    }
 ]
     print(pipeline)
     result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
