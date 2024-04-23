@@ -140,67 +140,88 @@ class NewsBottomActions extends ConsumerWidget {
     final watchProvider = ref.watch(provider);
     final readProvider = ref.read(provider.notifier);
 
+    ref.listen(provider, (prev, next) {
+      if (next.estate == ENewsCardState.upVoted) {
+        showMessage(context, "Upvoted successfully");
+      } else if (next.estate == ENewsCardState.bookmarked) {
+        showMessage(context, "Bookmark added successfully");
+      } else if (next.estate == ENewsCardState.dismissed) {
+        showMessage(context, "Dismissed successfully");
+        final newsFeed = ref.read(newsFeedProvider.notifier);
+        newsFeed.remove(metaData.id);
+      }
+    });
+
     return Row(
       children: [
         if (watchProvider.estate == ENewsCardState.upVoting)
           const CircularProgressIndicator.adaptive()
         else
-          Text(
-            watchProvider.estate == ENewsCardState.upVoting
-                ? "👍 Upvoting"
-                : "👍 Upvote",
-            style: TextStyle(
-              fontSize: 14,
-              color: context.colorScheme.onSurface.withOpacity(.9),
+          TextButton.icon(
+            onPressed: () async {
+              await readProvider.createTfThreadFlagPost(
+                metaData.id,
+                upvote: true,
+              );
+            },
+            icon: const Icon(
+              Icons.arrow_upward,
+              size: 18,
             ),
-          ).onPressed(() async {
-            final res = await readProvider.createTfThreadFlagPost(
-              metaData.id,
-              upvote: true,
-            );
-            if (res) {
-              showMessage(context, "Upvoted successfully");
-            }
-          }),
+            style: TextButton.styleFrom(
+              foregroundColor: context.colorScheme.onSurface.withOpacity(.9),
+            ),
+            label: Text(
+              "Upvote",
+              style: TextStyle(
+                fontSize: 14,
+                color: context.colorScheme.onSurface.withOpacity(.9),
+              ),
+            ),
+          ),
         const SizedBox(width: 16),
         if (watchProvider.estate == ENewsCardState.bookmarking)
           const CircularProgressIndicator.adaptive()
         else
-          Text(
-            "🔖 Bookmark",
-            style: TextStyle(
-              fontSize: 14,
-              color: context.colorScheme.onSurface.withOpacity(.9),
+          TextButton.icon(
+            onPressed: () async {
+              await readProvider.createTfThreadFlagPost(
+                metaData.id,
+                bookmark: true,
+              );
+            },
+            icon: const Icon(
+              Icons.bookmark_add_outlined,
+              size: 18,
             ),
-          ).onPressed(() async {
-            final res = await readProvider.createTfThreadFlagPost(
-              metaData.id,
-              bookmark: true,
-            );
-            if (res) {
-              showMessage(context, "Bookmark added successfully");
-            }
-          }),
+            style: TextButton.styleFrom(
+              foregroundColor: context.colorScheme.onSurface.withOpacity(.9),
+            ),
+            label: Text(
+              "Bookmark",
+              style: TextStyle(
+                fontSize: 14,
+                color: context.colorScheme.onSurface.withOpacity(.9),
+              ),
+            ),
+          ),
         const Spacer(),
         SizedBox(
           width: 30,
           child: watchProvider.estate == ENewsCardState.dismissing
               ? const CircularProgressIndicator.adaptive()
               : Tooltip(
-                  message: 'Unfollowed',
+                  message: 'Dismiss',
                   child: TextButton(
                     style: TextButton.styleFrom(
                         foregroundColor:
                             context.colorScheme.onSurface.withOpacity(.9),
                         padding: const EdgeInsets.all(0)),
                     onPressed: () async {
-                      final res = await readProvider.createTfThreadFlagPost(
+                      await readProvider.createTfThreadFlagPost(
                         metaData.id,
                         unfollow: true,
                       );
-                      if (res) {
-                        showMessage(context, "Unfollowed successfully");
-                      }
                     },
                     child: const Icon(Icons.clear),
                   ),

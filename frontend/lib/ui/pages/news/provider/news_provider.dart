@@ -1,5 +1,6 @@
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -60,6 +61,15 @@ class NewsFeed extends _$NewsFeed {
     }
     state = AsyncData(response.data!.metadata);
   }
+
+  void remove(String threadId) {
+    final list = state.value?.getAbsoluteOrNull;
+
+    if (list.isNotNullEmpty) {
+      list!.removeWhere((element) => element.id == threadId);
+      state = AsyncData(list);
+    }
+  }
 }
 
 @riverpod
@@ -106,11 +116,17 @@ class NewsCardPod extends _$NewsCardPod {
     });
     state = NewsCardState(
       threadMetaData: state.threadMetaData,
-      estate: ENewsCardState.initial,
+      estate: res == true
+          ? upvote == true
+              ? ENewsCardState.upVoted
+              : bookmark == true
+                  ? ENewsCardState.bookmarked
+                  : read == true
+                      ? ENewsCardState.markedAsRead
+                      : ENewsCardState.dismissed
+          : ENewsCardState.initial,
     );
-    print('-----------------');
-    print(res);
-    print('-----------------');
+
     return res ?? false;
   }
 }
@@ -127,7 +143,11 @@ class NewsCardState with _$NewsCardState {
 enum ENewsCardState {
   initial,
   upVoting,
+  upVoted,
   bookmarking,
+  bookmarked,
   dismissing,
+  dismissed,
   markingAsRead,
+  markedAsRead,
 }
