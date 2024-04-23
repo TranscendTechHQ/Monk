@@ -4,11 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/ui/pages/news/news_card.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
+import 'package:frontend/ui/pages/news/widget/news_feed_filter.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 
-class NewsPage extends StatelessWidget {
+class NewsPage extends ConsumerWidget {
   final String title;
   final String type;
   const NewsPage({super.key, required this.title, required this.type});
@@ -20,8 +21,30 @@ class NewsPage extends StatelessWidget {
         builder: (_) => const NewsPage(title: "News", type: "/news"));
   }
 
+  Future<void> onFilterPressed(BuildContext context, WidgetRef ref) async {
+    final map = await showDialog<Map<String, bool>?>(
+      context: context,
+      builder: (BuildContext context) {
+        return const Dialog(
+          elevation: 0.0,
+          insetPadding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
+          backgroundColor: Colors.transparent,
+          child: NewsFeedFilter(),
+        );
+      },
+    );
+    if (map != null) {
+      ref.read(newsFeedProvider.notifier).getFilteredFeed(
+            bookmark: map['bookmarked'],
+            read: map['read'],
+            unfollow: map['dismissed'],
+            upvote: map['upvoted'],
+          );
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final blockInput = CommandBox(
       title: title,
       type: type,
@@ -31,14 +54,13 @@ class NewsPage extends StatelessWidget {
       ],
     );
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(
-      //     'News',
-      //     style: TextStyle(fontSize: 20, color: context.colorScheme.onSurface),
-      //   ),
-      // ),
       body: PageScaffold(
         body: WithMonkAppbar(
+          actions: IconButton(
+            tooltip: 'Filter',
+            onPressed: () async => onFilterPressed(context, ref),
+            icon: const Icon(Icons.filter_alt_outlined),
+          ),
           child: Container(
             padding: const EdgeInsets.only(top: 16),
             alignment: Alignment.center,

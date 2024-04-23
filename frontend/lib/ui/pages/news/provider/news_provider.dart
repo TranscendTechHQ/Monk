@@ -42,6 +42,26 @@ class NewsFeed extends _$NewsFeed {
     return response.data!.metadata;
   }
 
+  Future<void> getFilteredFeed({
+    bool? bookmark = false,
+    bool? read = false,
+    bool? unfollow = false,
+    bool? upvote = false,
+  }) async {
+    state = const AsyncLoading();
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final response = await threadApi.filterNewsfeedGet(
+      bookmark: bookmark,
+      read: read,
+      unfollow: unfollow,
+      upvote: upvote,
+    );
+    if (response.statusCode != 200) {
+      throw Exception("Failed to fetch titles");
+    }
+    state = AsyncData(response.data!.metadata);
+  }
+
   Future<void> filter({
     bool? bookmark = false,
     bool? read = false,
