@@ -232,7 +232,7 @@ class CurrentThread extends _$CurrentThread {
       );
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final res = await threadApi.updateThThreadsIdPut(
-        id: thread.id!,
+        id: thread.id,
         updateThreadTitleModel: UpdateThreadTitleModel(title: title),
       );
       if (res.statusCode != 200) {
@@ -241,5 +241,37 @@ class CurrentThread extends _$CurrentThread {
         state = AsyncValue.data(updatedThreadModel);
       }
     });
+  }
+
+  void reorderBlocks(int oldIndex, int newIndex) {
+    final thread = state.value;
+    if (thread == null) {
+      logger.e("There is no thread to reorder blocks");
+      return;
+    }
+
+    final blocks = thread.content.getAbsoluteOrNull;
+    if (blocks == null) {
+      logger.e("There are no blocks to reorder");
+      return;
+    }
+
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+
+    final block = blocks.removeAt(oldIndex);
+    blocks.insert(newIndex, block);
+
+    final updatedThreadModel = FullThreadInfo(
+      title: thread.title,
+      type: thread.type,
+      content: blocks,
+      creator: thread.creator,
+      id: thread.id,
+      createdDate: thread.createdDate,
+    );
+
+    state = AsyncValue.data(updatedThreadModel);
   }
 }

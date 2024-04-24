@@ -107,6 +107,7 @@ class ThreadCard extends ConsumerWidget {
     final card = ref.watch(cardProvider);
     final isEdit = card.eState == EThreadCardState.edit;
     final isHovered = card.hoverEnabled;
+    final taskStatus = card.taskStatus;
     final controller = TextEditingController(text: block.content);
 
     //print(block.creatorId?.toString());
@@ -153,7 +154,7 @@ class ThreadCard extends ConsumerWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: Image.network(
-                        userInfo!.picture!.startsWith('https')
+                        userInfo.picture!.startsWith('https')
                             ? userInfo.picture!
                             : "https://api.dicebear.com/7.x/identicon/png?seed=${userInfo.name!}",
                         width: 25,
@@ -168,7 +169,7 @@ class ThreadCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${userInfo.name!}',
+                          userInfo.name!,
                           style: TextStyle(
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onSurface,
@@ -201,10 +202,43 @@ class ThreadCard extends ConsumerWidget {
                     backgroundColor: Colors.yellow.shade200,
                     radius: 4,
                   ),
-                // TOOLS
+                // TOOLS - 1
+                if (type == '/new-task')
+                  if (taskStatus == ETaskStatus.loading)
+                    const CircularProgressIndicator.adaptive()
+                  else
+                    Tooltip(
+                      message: taskStatus.tooltip,
+                      child: InkWell(
+                        onTap: () async {
+                          await ref
+                              .read(cardProvider.notifier)
+                              .setTaskStatus(taskStatus == ETaskStatus.done
+                                  ? ETaskStatus.todo
+                                  : taskStatus == ETaskStatus.todo
+                                      ? ETaskStatus.inProgress
+                                      : ETaskStatus.done);
+                        },
+                        child: Container(
+                          height: 30,
+                          width: 30,
+                          decoration: BoxDecoration(
+                            color: taskStatus.bgColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            taskStatus.icon,
+                            color: taskStatus.fgColor,
+                            size: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                // TOOLS - 2
                 Row(
                   children: [
-                    if (isHovered && !isEdit)
+                    if (isHovered && !isEdit && type != '/new-task')
                       InkWell(
                         onTap: () {
                           ref.read(cardProvider.notifier).toggleEdit();
@@ -257,6 +291,7 @@ class ThreadCard extends ConsumerWidget {
                 )
               ],
             ),
+            Text(type),
             const SizedBox(height: 8),
             if (isEdit)
               TextField(

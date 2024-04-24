@@ -20,6 +20,7 @@ mixin _$ThreadCardState {
   String get type => throw _privateConstructorUsedError;
   EThreadCardState get eState => throw _privateConstructorUsedError;
   dynamic get hoverEnabled => throw _privateConstructorUsedError;
+  ETaskStatus get taskStatus => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ThreadCardStateCopyWith<ThreadCardState> get copyWith =>
@@ -36,7 +37,8 @@ abstract class $ThreadCardStateCopyWith<$Res> {
       {BlockWithCreator block,
       String type,
       EThreadCardState eState,
-      dynamic hoverEnabled});
+      dynamic hoverEnabled,
+      ETaskStatus taskStatus});
 }
 
 /// @nodoc
@@ -56,6 +58,7 @@ class _$ThreadCardStateCopyWithImpl<$Res, $Val extends ThreadCardState>
     Object? type = null,
     Object? eState = null,
     Object? hoverEnabled = freezed,
+    Object? taskStatus = null,
   }) {
     return _then(_value.copyWith(
       block: null == block
@@ -74,6 +77,10 @@ class _$ThreadCardStateCopyWithImpl<$Res, $Val extends ThreadCardState>
           ? _value.hoverEnabled
           : hoverEnabled // ignore: cast_nullable_to_non_nullable
               as dynamic,
+      taskStatus: null == taskStatus
+          ? _value.taskStatus
+          : taskStatus // ignore: cast_nullable_to_non_nullable
+              as ETaskStatus,
     ) as $Val);
   }
 }
@@ -90,7 +97,8 @@ abstract class _$$ThreadCardStateImplCopyWith<$Res>
       {BlockWithCreator block,
       String type,
       EThreadCardState eState,
-      dynamic hoverEnabled});
+      dynamic hoverEnabled,
+      ETaskStatus taskStatus});
 }
 
 /// @nodoc
@@ -108,6 +116,7 @@ class __$$ThreadCardStateImplCopyWithImpl<$Res>
     Object? type = null,
     Object? eState = null,
     Object? hoverEnabled = freezed,
+    Object? taskStatus = null,
   }) {
     return _then(_$ThreadCardStateImpl(
       block: null == block
@@ -124,6 +133,10 @@ class __$$ThreadCardStateImplCopyWithImpl<$Res>
               as EThreadCardState,
       hoverEnabled:
           freezed == hoverEnabled ? _value.hoverEnabled! : hoverEnabled,
+      taskStatus: null == taskStatus
+          ? _value.taskStatus
+          : taskStatus // ignore: cast_nullable_to_non_nullable
+              as ETaskStatus,
     ));
   }
 }
@@ -135,7 +148,8 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
       {required this.block,
       required this.type,
       this.eState = EThreadCardState.idle,
-      this.hoverEnabled = false});
+      this.hoverEnabled = false,
+      this.taskStatus = ETaskStatus.todo});
 
   @override
   final BlockWithCreator block;
@@ -147,10 +161,13 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
   @override
   @JsonKey()
   final dynamic hoverEnabled;
+  @override
+  @JsonKey()
+  final ETaskStatus taskStatus;
 
   @override
   String toString() {
-    return 'ThreadCardState(block: $block, type: $type, eState: $eState, hoverEnabled: $hoverEnabled)';
+    return 'ThreadCardState(block: $block, type: $type, eState: $eState, hoverEnabled: $hoverEnabled, taskStatus: $taskStatus)';
   }
 
   @override
@@ -162,12 +179,14 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.eState, eState) || other.eState == eState) &&
             const DeepCollectionEquality()
-                .equals(other.hoverEnabled, hoverEnabled));
+                .equals(other.hoverEnabled, hoverEnabled) &&
+            (identical(other.taskStatus, taskStatus) ||
+                other.taskStatus == taskStatus));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, block, type, eState,
-      const DeepCollectionEquality().hash(hoverEnabled));
+      const DeepCollectionEquality().hash(hoverEnabled), taskStatus);
 
   @JsonKey(ignore: true)
   @override
@@ -182,7 +201,8 @@ abstract class _ThreadCardState implements ThreadCardState {
       {required final BlockWithCreator block,
       required final String type,
       final EThreadCardState eState,
-      final dynamic hoverEnabled}) = _$ThreadCardStateImpl;
+      final dynamic hoverEnabled,
+      final ETaskStatus taskStatus}) = _$ThreadCardStateImpl;
 
   @override
   BlockWithCreator get block;
@@ -192,6 +212,8 @@ abstract class _ThreadCardState implements ThreadCardState {
   EThreadCardState get eState;
   @override
   dynamic get hoverEnabled;
+  @override
+  ETaskStatus get taskStatus;
   @override
   @JsonKey(ignore: true)
   _$$ThreadCardStateImplCopyWith<_$ThreadCardStateImpl> get copyWith =>
