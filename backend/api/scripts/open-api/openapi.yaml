@@ -24,6 +24,33 @@ components:
       - content
       title: BlockModel
       type: object
+    BlockWithCreator:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        child_id:
+          default: ''
+          title: Child Id
+          type: string
+        content:
+          title: Content
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator:
+          $ref: '#/components/schemas/UserModel'
+        creator_id:
+          default: unknown id
+          title: Creator Id
+          type: string
+      required:
+      - content
+      - creator
+      title: BlockWithCreator
+      type: object
     ChannelModel:
       properties:
         id:
@@ -128,6 +155,54 @@ components:
       required:
       - thread_id
       title: CreateUserThreadFlagModel
+      type: object
+    FullThreadInfo:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        bookmark:
+          default: false
+          title: Bookmark
+          type: boolean
+        content:
+          items:
+            $ref: '#/components/schemas/BlockWithCreator'
+          title: Content
+          type: array
+        created_date:
+          title: Created Date
+          type: string
+        creator:
+          $ref: '#/components/schemas/UserModel'
+        headline:
+          title: Headline
+          type: string
+        read:
+          default: false
+          title: Read
+          type: boolean
+        title:
+          title: Title
+          type: string
+        type:
+          title: Type
+          type: string
+        unfollow:
+          default: false
+          title: Unfollow
+          type: boolean
+        upvote:
+          default: false
+          title: Upvote
+          type: boolean
+      required:
+      - _id
+      - title
+      - type
+      - created_date
+      - creator
+      title: FullThreadInfo
       type: object
     HTTPValidationError:
       properties:
@@ -443,7 +518,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadModel'
+                $ref: '#/components/schemas/FullThreadInfo'
           description: Create a new block
         '422':
           content:
@@ -468,7 +543,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadModel'
+                $ref: '#/components/schemas/FullThreadInfo'
           description: Create a new child thread from a block
         '422':
           content:
@@ -506,7 +581,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadModel'
+                $ref: '#/components/schemas/FullThreadInfo'
           description: Update a block
         '422':
           content:
@@ -759,7 +834,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadModel'
+                $ref: '#/components/schemas/FullThreadInfo'
           description: Create a new thread
         '422':
           content:
@@ -785,7 +860,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadModel'
+                $ref: '#/components/schemas/FullThreadInfo'
           description: Get a thread by id
         '422':
           content:
@@ -816,7 +891,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadModel'
+                $ref: '#/components/schemas/FullThreadInfo'
           description: Update a thread by id
         '422':
           content:
@@ -825,32 +900,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Update Th
-      tags:
-      - threads
-  /threads/{title}:
-    get:
-      operationId: get_thread_threads__title__get
-      parameters:
-      - in: path
-        name: title
-        required: true
-        schema:
-          title: Title
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadModel'
-          description: Get a thread by title
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Get Thread
       tags:
       - threads
   /threadsInfo:

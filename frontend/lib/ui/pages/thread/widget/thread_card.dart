@@ -3,7 +3,7 @@ import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/thread.dart';
-import 'package:frontend/repo/user_provider.dart';
+
 import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/thread/widget/provider/thread_card_provider.dart';
@@ -21,7 +21,7 @@ class ThreadCard extends ConsumerWidget {
     required this.type,
     required this.parentThreadId,
   });
-  final BlockModel block;
+  final BlockWithCreator block;
   final String type;
   final String title;
   final EmojiParser emojiParser;
@@ -108,10 +108,9 @@ class ThreadCard extends ConsumerWidget {
     final isEdit = card.eState == EThreadCardState.edit;
     final isHovered = card.hoverEnabled;
     final controller = TextEditingController(text: block.content);
-    final userMap = ref.watch(fetchUsersInfoProvider);
+
     //print(block.creatorId?.toString());
-    final userInfo =
-        userMap.asData?.value.users?[block.creatorId?.toString() ?? 'UN'];
+    final userInfo = block.creator;
     //print('userInfo: $userInfo');
     final replyProvider = threadDetailProvider.call();
     ref.listen(replyProvider, (previous, next) {

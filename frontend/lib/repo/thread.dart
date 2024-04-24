@@ -38,7 +38,7 @@ Future<List<String>> fetchThreadTypes(FetchThreadTypesRef ref) async {
   return response.data!;
 }
 
-Future<ThreadModel> fetchThreadFromId({required String id}) async {
+Future<FullThreadInfo> fetchThreadFromId({required String id}) async {
   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
 
   final response = await threadApi.getThreadIdThreadsIdGet(id: id);
@@ -49,7 +49,7 @@ Future<ThreadModel> fetchThreadFromId({required String id}) async {
   return response.data!;
 }
 
-Future<ThreadModel> createOrGetThread(
+Future<FullThreadInfo> createOrGetThread(
     {required String title, required String type}) async {
   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
 
@@ -65,14 +65,14 @@ Future<ThreadModel> createOrGetThread(
 @riverpod
 class CurrentThread extends _$CurrentThread {
   @override
-  Future<ThreadModel?> build({
+  Future<FullThreadInfo?> build({
     required String title,
     required String type,
     ThreadType threadType = ThreadType.thread,
     String? threadChildId,
   }) async {
     state = const AsyncValue.loading();
-    ThreadModel? thread;
+    FullThreadInfo? thread;
     if (threadType == ThreadType.thread) {
       thread = await createOrGetThread(title: title, type: type);
     } else {
@@ -107,19 +107,7 @@ class CurrentThread extends _$CurrentThread {
     // return state.value;
   }
 
-  Future<ThreadModel> getThread(String title) async {
-    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-
-    final response = await threadApi.getThreadThreadsTitleGet(title: title);
-
-    if (response.statusCode != 200) {
-      throw Exception("Failed to get thread");
-    }
-    state = AsyncValue.data(response.data!);
-    return state.value!;
-  }
-
-  Future<ThreadModel?> fetchThreadFromIdAsync(String id) async {
+  Future<FullThreadInfo?> fetchThreadFromIdAsync(String id) async {
     return MonkException.handle(() async {
       logger.d("Fetching child thread. id: $id");
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
@@ -151,21 +139,21 @@ class CurrentThread extends _$CurrentThread {
         ..putIfAbsent("child_id", () => childThreadId)
         ..update("child_id", (value) => childThreadId);
 
-      block = BlockModel.fromJson(map);
+      block = BlockWithCreator.fromJson(map);
       final newContent = thread.content?.map((e) {
         if (e.id == blockId) {
           return block!;
         }
         return e;
       }).toList();
-      final updatedThreadModel = ThreadModel(
-          title: thread.title,
-          type: thread.type,
-          content: newContent!,
-          creatorId: thread.creatorId,
-          id: thread.id,
-          createdDate: thread.createdDate,
-          tenantId: thread.tenantId);
+      final updatedThreadModel = FullThreadInfo(
+        title: thread.title,
+        type: thread.type,
+        content: newContent!,
+        creator: thread.creator,
+        id: thread.id,
+        createdDate: thread.createdDate,
+      );
 
       state = AsyncValue.data(updatedThreadModel);
     } else {
@@ -195,21 +183,20 @@ class CurrentThread extends _$CurrentThread {
           ..putIfAbsent("content", () => content)
           ..update("content", (value) => content);
 
-        final updatedBlock = BlockModel.fromJson(map);
+        final updatedBlock = BlockWithCreator.fromJson(map);
         final newContent = thread.content?.map((e) {
           if (e.id == blockId) {
             return updatedBlock;
           }
           return e;
         }).toList();
-        final updatedThreadModel = ThreadModel(
+        final updatedThreadModel = FullThreadInfo(
           title: thread.title,
           type: thread.type,
           content: newContent!,
-          creatorId: thread.creatorId,
+          creator: thread.creator,
           id: thread.id,
           createdDate: thread.createdDate,
-          tenantId: thread.tenantId,
         );
         logger.i('updating block with id $blockId');
         final threadApi = NetworkManager.instance.openApi.getThreadsApi();
@@ -235,14 +222,13 @@ class CurrentThread extends _$CurrentThread {
         return;
       }
 
-      final updatedThreadModel = ThreadModel(
+      final updatedThreadModel = FullThreadInfo(
         title: title,
         type: thread.type,
         content: thread.content,
-        creatorId: thread.creatorId,
+        creator: thread.creator,
         id: thread.id,
         createdDate: thread.createdDate,
-        tenantId: thread.tenantId,
       );
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final res = await threadApi.updateThThreadsIdPut(

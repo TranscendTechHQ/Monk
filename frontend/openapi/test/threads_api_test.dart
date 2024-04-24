@@ -16,14 +16,14 @@ void main() {
 
     // Child Thread
     //
-    //Future<ThreadModel> childThreadBlocksChildPost(CreateChildThreadModel createChildThreadModel) async
+    //Future<FullThreadInfo> childThreadBlocksChildPost(CreateChildThreadModel createChildThreadModel) async
     test('test childThreadBlocksChildPost', () async {
       // TODO
     });
 
     // Create
     //
-    //Future<ThreadModel> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<FullThreadInfo> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
     test('test createBlocksPost', () async {
       // TODO
     });
@@ -37,7 +37,7 @@ void main() {
 
     // Create Th
     //
-    //Future<ThreadModel> createThThreadsPost(CreateThreadModel createThreadModel) async
+    //Future<FullThreadInfo> createThThreadsPost(CreateThreadModel createThreadModel) async
     test('test createThThreadsPost', () async {
       // TODO
     });
@@ -51,15 +51,8 @@ void main() {
 
     // Get Thread Id
     //
-    //Future<ThreadModel> getThreadIdThreadsIdGet(String id) async
+    //Future<FullThreadInfo> getThreadIdThreadsIdGet(String id) async
     test('test getThreadIdThreadsIdGet', () async {
-      // TODO
-    });
-
-    // Get Thread
-    //
-    //Future<ThreadModel> getThreadThreadsTitleGet(String title) async
-    test('test getThreadThreadsTitleGet', () async {
       // TODO
     });
 
@@ -93,14 +86,14 @@ void main() {
 
     // Update
     //
-    //Future<ThreadModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<FullThreadInfo> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
     test('test updateBlocksIdPut', () async {
       // TODO
     });
 
     // Update Th
     //
-    //Future<ThreadModel> updateThThreadsIdPut(String id, UpdateThreadTitleModel updateThreadTitleModel) async
+    //Future<FullThreadInfo> updateThThreadsIdPut(String id, UpdateThreadTitleModel updateThreadTitleModel) async
     test('test updateThThreadsIdPut', () async {
       // TODO
     });

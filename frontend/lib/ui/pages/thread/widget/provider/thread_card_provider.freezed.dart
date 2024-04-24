@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ThreadCardState {
-  BlockModel get block => throw _privateConstructorUsedError;
+  BlockWithCreator get block => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
   EThreadCardState get eState => throw _privateConstructorUsedError;
   dynamic get hoverEnabled => throw _privateConstructorUsedError;
@@ -33,7 +33,7 @@ abstract class $ThreadCardStateCopyWith<$Res> {
       _$ThreadCardStateCopyWithImpl<$Res, ThreadCardState>;
   @useResult
   $Res call(
-      {BlockModel block,
+      {BlockWithCreator block,
       String type,
       EThreadCardState eState,
       dynamic hoverEnabled});
@@ -61,7 +61,7 @@ class _$ThreadCardStateCopyWithImpl<$Res, $Val extends ThreadCardState>
       block: null == block
           ? _value.block
           : block // ignore: cast_nullable_to_non_nullable
-              as BlockModel,
+              as BlockWithCreator,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -87,7 +87,7 @@ abstract class _$$ThreadCardStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {BlockModel block,
+      {BlockWithCreator block,
       String type,
       EThreadCardState eState,
       dynamic hoverEnabled});
@@ -113,7 +113,7 @@ class __$$ThreadCardStateImplCopyWithImpl<$Res>
       block: null == block
           ? _value.block
           : block // ignore: cast_nullable_to_non_nullable
-              as BlockModel,
+              as BlockWithCreator,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -138,7 +138,7 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
       this.hoverEnabled = false});
 
   @override
-  final BlockModel block;
+  final BlockWithCreator block;
   @override
   final String type;
   @override
@@ -179,13 +179,13 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
 
 abstract class _ThreadCardState implements ThreadCardState {
   const factory _ThreadCardState(
-      {required final BlockModel block,
+      {required final BlockWithCreator block,
       required final String type,
       final EThreadCardState eState,
       final dynamic hoverEnabled}) = _$ThreadCardStateImpl;
 
   @override
-  BlockModel get block;
+  BlockWithCreator get block;
   @override
   String get type;
   @override

@@ -186,7 +186,7 @@ class ChatListView extends ConsumerWidget {
     required this.title,
     required this.type,
   });
-  final AsyncValue<ThreadModel?> currentThread;
+  final AsyncValue<FullThreadInfo?> currentThread;
   final String type;
   final String title;
 

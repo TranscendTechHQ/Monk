@@ -6,7 +6,7 @@ part of 'thread_card_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$threadCardHash() => r'aa8657c496aa553bbb433f18000c00509debfc5b';
+String _$threadCardHash() => r'0899d0ac51d59c50e42cb3f2e285fdd89ed3dc29';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -31,11 +31,11 @@ class _SystemHash {
 
 abstract class _$ThreadCard
     extends BuildlessAutoDisposeNotifier<ThreadCardState> {
-  late final BlockModel block;
+  late final BlockWithCreator block;
   late final String type;
 
   ThreadCardState build(
-    BlockModel block,
+    BlockWithCreator block,
     String type,
   );
 }
@@ -51,7 +51,7 @@ class ThreadCardFamily extends Family<ThreadCardState> {
 
   /// See also [ThreadCard].
   ThreadCardProvider call(
-    BlockModel block,
+    BlockWithCreator block,
     String type,
   ) {
     return ThreadCardProvider(
@@ -90,7 +90,7 @@ class ThreadCardProvider
     extends AutoDisposeNotifierProviderImpl<ThreadCard, ThreadCardState> {
   /// See also [ThreadCard].
   ThreadCardProvider(
-    BlockModel block,
+    BlockWithCreator block,
     String type,
   ) : this._internal(
           () => ThreadCard()
@@ -120,7 +120,7 @@ class ThreadCardProvider
     required this.type,
   }) : super.internal();
 
-  final BlockModel block;
+  final BlockWithCreator block;
   final String type;
 
   @override
@@ -177,7 +177,7 @@ class ThreadCardProvider
 
 mixin ThreadCardRef on AutoDisposeNotifierProviderRef<ThreadCardState> {
   /// The parameter `block` of this provider.
-  BlockModel get block;
+  BlockWithCreator get block;
 
   /// The parameter `type` of this provider.
   String get type;
@@ -189,7 +189,7 @@ class _ThreadCardProviderElement
   _ThreadCardProviderElement(super.provider);
 
   @override
-  BlockModel get block => (origin as ThreadCardProvider).block;
+  BlockWithCreator get block => (origin as ThreadCardProvider).block;
   @override
   String get type => (origin as ThreadCardProvider).type;
 }

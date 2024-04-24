@@ -16,7 +16,6 @@ Method | HTTP request | Description
 [**createThThreadsPost**](ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
 [**filterNewsfeedGet**](ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
 [**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
-[**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
@@ -63,7 +62,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **childThreadBlocksChildPost**
-> ThreadModel childThreadBlocksChildPost(createChildThreadModel)
+> FullThreadInfo childThreadBlocksChildPost(createChildThreadModel)
 
 Child Thread
 
@@ -90,7 +89,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -104,7 +103,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createBlocksPost**
-> ThreadModel createBlocksPost(threadTitle, updateBlockModel)
+> FullThreadInfo createBlocksPost(threadTitle, updateBlockModel)
 
 Create
 
@@ -133,7 +132,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -188,7 +187,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createThThreadsPost**
-> ThreadModel createThThreadsPost(createThreadModel)
+> FullThreadInfo createThThreadsPost(createThreadModel)
 
 Create Th
 
@@ -215,7 +214,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -276,7 +275,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getThreadIdThreadsIdGet**
-> ThreadModel getThreadIdThreadsIdGet(id)
+> FullThreadInfo getThreadIdThreadsIdGet(id)
 
 Get Thread Id
 
@@ -303,48 +302,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getThreadThreadsTitleGet**
-> ThreadModel getThreadThreadsTitleGet(title)
-
-Get Thread
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final String title = title_example; // String | 
-
-try {
-    final response = api.getThreadThreadsTitleGet(title);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->getThreadThreadsTitleGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **title** | **String**|  | 
-
-### Return type
-
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -514,7 +472,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateBlocksIdPut**
-> ThreadModel updateBlocksIdPut(id, threadTitle, updateBlockModel)
+> FullThreadInfo updateBlocksIdPut(id, threadTitle, updateBlockModel)
 
 Update
 
@@ -545,7 +503,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -559,7 +517,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateThThreadsIdPut**
-> ThreadModel updateThThreadsIdPut(id, updateThreadTitleModel)
+> FullThreadInfo updateThThreadsIdPut(id, updateThreadTitleModel)
 
 Update Th
 
@@ -588,7 +546,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 

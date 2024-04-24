@@ -7,7 +7,7 @@ part 'thread_card_provider.g.dart';
 @riverpod
 class ThreadCard extends _$ThreadCard {
   @override
-  ThreadCardState build(BlockModel block, String type) {
+  ThreadCardState build(BlockWithCreator block, String type) {
     return ThreadCardState.initial(block, type);
   }
 
@@ -31,12 +31,12 @@ class ThreadCard extends _$ThreadCard {
 @freezed
 class ThreadCardState with _$ThreadCardState {
   const factory ThreadCardState({
-    required BlockModel block,
+    required BlockWithCreator block,
     required String type,
     @Default(EThreadCardState.idle) EThreadCardState eState,
     @Default(false) hoverEnabled,
   }) = _ThreadCardState;
-  factory ThreadCardState.initial(BlockModel block, String type) =>
+  factory ThreadCardState.initial(BlockWithCreator block, String type) =>
       ThreadCardState(block: block, type: type);
 }
 

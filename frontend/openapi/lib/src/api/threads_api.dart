@@ -12,8 +12,8 @@ import 'package:dio/dio.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
+import 'package:openapi/src/model/full_thread_info.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
-import 'package:openapi/src/model/thread_model.dart';
 import 'package:openapi/src/model/threads_info.dart';
 import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
@@ -109,9 +109,9 @@ _responseData = rawData == null ? null : deserialize<UserMap, UserMap>(rawData, 
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
+  /// Returns a [Future] containing a [Response] with a [FullThreadInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> childThreadBlocksChildPost({ 
+  Future<Response<FullThreadInfo>> childThreadBlocksChildPost({ 
     required CreateChildThreadModel createChildThreadModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -159,11 +159,11 @@ _bodyData=jsonEncode(createChildThreadModel);
       onReceiveProgress: onReceiveProgress,
     );
 
-    ThreadModel? _responseData;
+    FullThreadInfo? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
+_responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadInfo>(rawData, 'FullThreadInfo', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -174,7 +174,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
       );
     }
 
-    return Response<ThreadModel>(
+    return Response<FullThreadInfo>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -199,9 +199,9 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
+  /// Returns a [Future] containing a [Response] with a [FullThreadInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> createBlocksPost({ 
+  Future<Response<FullThreadInfo>> createBlocksPost({ 
     required String threadTitle,
     required UpdateBlockModel updateBlockModel,
     CancelToken? cancelToken,
@@ -256,11 +256,11 @@ _bodyData=jsonEncode(updateBlockModel);
       onReceiveProgress: onReceiveProgress,
     );
 
-    ThreadModel? _responseData;
+    FullThreadInfo? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
+_responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadInfo>(rawData, 'FullThreadInfo', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -271,7 +271,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
       );
     }
 
-    return Response<ThreadModel>(
+    return Response<FullThreadInfo>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -384,9 +384,9 @@ _responseData = rawData == null ? null : deserialize<UserThreadFlagModel, UserTh
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
+  /// Returns a [Future] containing a [Response] with a [FullThreadInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> createThThreadsPost({ 
+  Future<Response<FullThreadInfo>> createThThreadsPost({ 
     required CreateThreadModel createThreadModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -434,11 +434,11 @@ _bodyData=jsonEncode(createThreadModel);
       onReceiveProgress: onReceiveProgress,
     );
 
-    ThreadModel? _responseData;
+    FullThreadInfo? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
+_responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadInfo>(rawData, 'FullThreadInfo', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -449,7 +449,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
       );
     }
 
-    return Response<ThreadModel>(
+    return Response<FullThreadInfo>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -558,9 +558,9 @@ _responseData = rawData == null ? null : deserialize<ThreadsMetaData, ThreadsMet
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
+  /// Returns a [Future] containing a [Response] with a [FullThreadInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> getThreadIdThreadsIdGet({ 
+  Future<Response<FullThreadInfo>> getThreadIdThreadsIdGet({ 
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -590,11 +590,11 @@ _responseData = rawData == null ? null : deserialize<ThreadsMetaData, ThreadsMet
       onReceiveProgress: onReceiveProgress,
     );
 
-    ThreadModel? _responseData;
+    FullThreadInfo? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
+_responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadInfo>(rawData, 'FullThreadInfo', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -605,78 +605,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
       );
     }
 
-    return Response<ThreadModel>(
-      data: _responseData,
-      headers: _response.headers,
-      isRedirect: _response.isRedirect,
-      requestOptions: _response.requestOptions,
-      redirects: _response.redirects,
-      statusCode: _response.statusCode,
-      statusMessage: _response.statusMessage,
-      extra: _response.extra,
-    );
-  }
-
-  /// Get Thread
-  /// 
-  ///
-  /// Parameters:
-  /// * [title] 
-  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
-  /// * [headers] - Can be used to add additional headers to the request
-  /// * [extras] - Can be used to add flags to the request
-  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
-  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
-  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
-  ///
-  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
-  /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> getThreadThreadsTitleGet({ 
-    required String title,
-    CancelToken? cancelToken,
-    Map<String, dynamic>? headers,
-    Map<String, dynamic>? extra,
-    ValidateStatus? validateStatus,
-    ProgressCallback? onSendProgress,
-    ProgressCallback? onReceiveProgress,
-  }) async {
-    final _path = r'/threads/{title}'.replaceAll('{' r'title' '}', title.toString());
-    final _options = Options(
-      method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
-      extra: <String, dynamic>{
-        'secure': <Map<String, String>>[],
-        ...?extra,
-      },
-      validateStatus: validateStatus,
-    );
-
-    final _response = await _dio.request<Object>(
-      _path,
-      options: _options,
-      cancelToken: cancelToken,
-      onSendProgress: onSendProgress,
-      onReceiveProgress: onReceiveProgress,
-    );
-
-    ThreadModel? _responseData;
-
-    try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
-    } catch (error, stackTrace) {
-      throw DioException(
-        requestOptions: _response.requestOptions,
-        response: _response,
-        type: DioExceptionType.unknown,
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
-
-    return Response<ThreadModel>(
+    return Response<FullThreadInfo>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -992,9 +921,9 @@ _responseData = rawData == null ? null : deserialize<List<String>, String>(rawDa
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
+  /// Returns a [Future] containing a [Response] with a [FullThreadInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> updateBlocksIdPut({ 
+  Future<Response<FullThreadInfo>> updateBlocksIdPut({ 
     required String id,
     required String threadTitle,
     required UpdateBlockModel updateBlockModel,
@@ -1050,11 +979,11 @@ _bodyData=jsonEncode(updateBlockModel);
       onReceiveProgress: onReceiveProgress,
     );
 
-    ThreadModel? _responseData;
+    FullThreadInfo? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
+_responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadInfo>(rawData, 'FullThreadInfo', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1065,7 +994,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
       );
     }
 
-    return Response<ThreadModel>(
+    return Response<FullThreadInfo>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -1090,9 +1019,9 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ThreadModel] as data
+  /// Returns a [Future] containing a [Response] with a [FullThreadInfo] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ThreadModel>> updateThThreadsIdPut({ 
+  Future<Response<FullThreadInfo>> updateThThreadsIdPut({ 
     required String id,
     required UpdateThreadTitleModel updateThreadTitleModel,
     CancelToken? cancelToken,
@@ -1141,11 +1070,11 @@ _bodyData=jsonEncode(updateThreadTitleModel);
       onReceiveProgress: onReceiveProgress,
     );
 
-    ThreadModel? _responseData;
+    FullThreadInfo? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(rawData, 'ThreadModel', growable: true);
+_responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadInfo>(rawData, 'FullThreadInfo', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1156,7 +1085,7 @@ _responseData = rawData == null ? null : deserialize<ThreadModel, ThreadModel>(r
       );
     }
 
-    return Response<ThreadModel>(
+    return Response<FullThreadInfo>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

@@ -1,9 +1,11 @@
 import 'package:openapi/src/model/block_model.dart';
+import 'package:openapi/src/model/block_with_creator.dart';
 import 'package:openapi/src/model/channel_model.dart';
 import 'package:openapi/src/model/composite_channel_list.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
+import 'package:openapi/src/model/full_thread_info.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/session_info.dart';
 import 'package:openapi/src/model/subscribe_channel_request.dart';
@@ -40,6 +42,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return (value is double ? value : double.parse('$value')) as ReturnType;
         case 'BlockModel':
           return BlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'BlockWithCreator':
+          return BlockWithCreator.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'ChannelModel':
           return ChannelModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CompositeChannelList':
@@ -50,6 +54,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return CreateThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CreateUserThreadFlagModel':
           return CreateUserThreadFlagModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'FullThreadInfo':
+          return FullThreadInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
           return HTTPValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SessionInfo':

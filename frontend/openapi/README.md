@@ -77,7 +77,6 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createThThreadsPost**](doc/ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
 [*ThreadsApi*](doc/ThreadsApi.md) | [**filterNewsfeedGet**](doc/ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadIdThreadsIdGet**](doc/ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
-[*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
@@ -89,11 +88,13 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [BlockModel](doc/BlockModel.md)
+ - [BlockWithCreator](doc/BlockWithCreator.md)
  - [ChannelModel](doc/ChannelModel.md)
  - [CompositeChannelList](doc/CompositeChannelList.md)
  - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)
+ - [FullThreadInfo](doc/FullThreadInfo.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [SessionInfo](doc/SessionInfo.md)
  - [SubscribeChannelRequest](doc/SubscribeChannelRequest.md)
