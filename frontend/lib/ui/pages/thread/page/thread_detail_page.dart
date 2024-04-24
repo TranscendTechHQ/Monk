@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
 class ThreadDetailPage extends ConsumerWidget {
-  final BlockModel? block;
+  final BlockWithCreator? block;
   final String parentBlockId;
   final String type;
   final String parentThreadId;
@@ -32,7 +32,7 @@ class ThreadDetailPage extends ConsumerWidget {
       required String type,
       required String parentBlockId,
       required String parentThreadId,
-      BlockModel? block}) {
+      BlockWithCreator? block}) {
     return MaterialPageRoute<void>(
       builder: (_) => ThreadDetailPage(
         title: title,
@@ -107,7 +107,7 @@ class ThreadDetailPage extends ConsumerWidget {
 class RepliesListView extends ConsumerWidget {
   RepliesListView({super.key, required this.replies});
 
-  final List<BlockModel>? replies;
+  final List<BlockWithCreator>? replies;
 
   final scrollController = ScrollController();
   scrollToBottom() {
@@ -137,14 +137,12 @@ class RepliesListView extends ConsumerWidget {
 
 class ReplyCard extends ConsumerWidget {
   const ReplyCard({super.key, required this.block, required this.emojiParser});
-  final BlockModel block;
+  final BlockWithCreator block;
   final EmojiParser emojiParser;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userMap = ref.watch(fetchUsersInfoProvider);
-    final userInfo =
-        userMap.asData?.value.users?[block.creatorId?.toString() ?? 'UN'];
+    final userInfo = block.creator;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

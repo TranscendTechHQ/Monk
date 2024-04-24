@@ -6,43 +6,7 @@ part of 'news_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchThreadsHeadlinesAsyncHash() =>
-    r'672062de5182fdb1caa1fec9afe6e9ee9e5d9a20';
-
-/// See also [fetchThreadsHeadlinesAsync].
-@ProviderFor(fetchThreadsHeadlinesAsync)
-final fetchThreadsHeadlinesAsyncProvider =
-    AutoDisposeFutureProvider<List<ThreadHeadlineModel>>.internal(
-  fetchThreadsHeadlinesAsync,
-  name: r'fetchThreadsHeadlinesAsyncProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$fetchThreadsHeadlinesAsyncHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef FetchThreadsHeadlinesAsyncRef
-    = AutoDisposeFutureProviderRef<List<ThreadHeadlineModel>>;
-String _$fetchThreadsMdMetaDataAsyncHash() =>
-    r'ff8e800d571ab4ce46488330b2d79fe72f9d25e7';
-
-/// See also [fetchThreadsMdMetaDataAsync].
-@ProviderFor(fetchThreadsMdMetaDataAsync)
-final fetchThreadsMdMetaDataAsyncProvider =
-    AutoDisposeFutureProvider<List<ThreadMetaData>>.internal(
-  fetchThreadsMdMetaDataAsync,
-  name: r'fetchThreadsMdMetaDataAsyncProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$fetchThreadsMdMetaDataAsyncHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef FetchThreadsMdMetaDataAsyncRef
-    = AutoDisposeFutureProviderRef<List<ThreadMetaData>>;
-String _$newsFeedHash() => r'3717bb25fb5e4599ffdc5b229d98ef0e3b6b8ac0';
+String _$newsFeedHash() => r'b5e7e42791e4017b49dbe87a0136d7ebf6d452c1';
 
 /// See also [NewsFeed].
 @ProviderFor(NewsFeed)
@@ -57,7 +21,7 @@ final newsFeedProvider =
 );
 
 typedef _$NewsFeed = AutoDisposeAsyncNotifier<List<ThreadMetaData>>;
-String _$newsCardPodHash() => r'7bc612d7961bd6ddbdfc8a4ebb0e82b334888cbd';
+String _$newsCardPodHash() => r'1c87a9ce7e0a8d013acc0050b0d57b0cfbd7e972';
 
 /// Copied from Dart SDK
 class _SystemHash {

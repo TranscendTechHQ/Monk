@@ -72,13 +72,13 @@ class ThreadDetail extends _$ThreadDetail {
 class ThreadDetailState with _$ThreadDetailState {
   const factory ThreadDetailState({
     String? error,
-    required ThreadModel? thread,
+    required FullThreadInfo? thread,
   }) = _ThreadDetailState;
 
   factory ThreadDetailState.initial() =>
       const ThreadDetailState(thread: null, error: null);
 
-  factory ThreadDetailState.result({required ThreadModel thread}) =>
+  factory ThreadDetailState.result({required FullThreadInfo thread}) =>
       ThreadDetailState(thread: thread);
 
   factory ThreadDetailState.error(String error) =>

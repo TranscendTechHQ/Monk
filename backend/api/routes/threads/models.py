@@ -57,16 +57,7 @@ class UpdateBlockModel(BaseModel):
                               )
 
 
-class BlockCollection(BaseModel):
-    blocks: List[BlockModel]
-    model_config = ConfigDict(extra='ignore',
-                              populate_by_name=True,
-                              arbitrary_types_allowed=True,
-                              )
 
-
-class Date(BaseModel):
-    date: dt.datetime
 
 
 def allowed_thread_types(thread_type: str) -> str:
@@ -181,6 +172,20 @@ class ThreadsMetaData(BaseModel):
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               )
+    
+class BlockWithCreator(BlockModel):
+    creator: UserModel
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              )
+    
+class FullThreadInfo(ThreadMetaData):
+    content: Union[List[BlockWithCreator], SkipJsonSchema[None]] = None
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              )
 
 
 class ThreadsInfo(BaseModel):
@@ -191,15 +196,3 @@ class ThreadsInfo(BaseModel):
                               )
 
 
-class ThreadHeadlineModel(BaseModel):
-    id: str = Field(..., alias="_id")
-    title: str
-    headline: str
-    model_config = ConfigDict(extra='ignore',
-                              populate_by_name=True,
-                              arbitrary_types_allowed=True,
-                              )
-
-
-class ThreadHeadlinesModel(BaseModel):
-    headlines: List[ThreadHeadlineModel]

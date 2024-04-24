@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ThreadDetailState {
   String? get error => throw _privateConstructorUsedError;
-  ThreadModel? get thread => throw _privateConstructorUsedError;
+  FullThreadInfo? get thread => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ThreadDetailStateCopyWith<ThreadDetailState> get copyWith =>
@@ -30,7 +30,7 @@ abstract class $ThreadDetailStateCopyWith<$Res> {
           ThreadDetailState value, $Res Function(ThreadDetailState) then) =
       _$ThreadDetailStateCopyWithImpl<$Res, ThreadDetailState>;
   @useResult
-  $Res call({String? error, ThreadModel? thread});
+  $Res call({String? error, FullThreadInfo? thread});
 }
 
 /// @nodoc
@@ -57,7 +57,7 @@ class _$ThreadDetailStateCopyWithImpl<$Res, $Val extends ThreadDetailState>
       thread: freezed == thread
           ? _value.thread
           : thread // ignore: cast_nullable_to_non_nullable
-              as ThreadModel?,
+              as FullThreadInfo?,
     ) as $Val);
   }
 }
@@ -70,7 +70,7 @@ abstract class _$$ThreadDetailStateImplCopyWith<$Res>
       __$$ThreadDetailStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? error, ThreadModel? thread});
+  $Res call({String? error, FullThreadInfo? thread});
 }
 
 /// @nodoc
@@ -95,7 +95,7 @@ class __$$ThreadDetailStateImplCopyWithImpl<$Res>
       thread: freezed == thread
           ? _value.thread
           : thread // ignore: cast_nullable_to_non_nullable
-              as ThreadModel?,
+              as FullThreadInfo?,
     ));
   }
 }
@@ -108,7 +108,7 @@ class _$ThreadDetailStateImpl implements _ThreadDetailState {
   @override
   final String? error;
   @override
-  final ThreadModel? thread;
+  final FullThreadInfo? thread;
 
   @override
   String toString() {
@@ -138,12 +138,12 @@ class _$ThreadDetailStateImpl implements _ThreadDetailState {
 abstract class _ThreadDetailState implements ThreadDetailState {
   const factory _ThreadDetailState(
       {final String? error,
-      required final ThreadModel? thread}) = _$ThreadDetailStateImpl;
+      required final FullThreadInfo? thread}) = _$ThreadDetailStateImpl;
 
   @override
   String? get error;
   @override
-  ThreadModel? get thread;
+  FullThreadInfo? get thread;
   @override
   @JsonKey(ignore: true)
   _$$ThreadDetailStateImplCopyWith<_$ThreadDetailStateImpl> get copyWith =>

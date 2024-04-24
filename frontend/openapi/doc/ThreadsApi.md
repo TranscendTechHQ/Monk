@@ -10,20 +10,14 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**allUsersUserGet**](ThreadsApi.md#allusersuserget) | **GET** /user | All Users
-[**atAllThreadsGet**](ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [**childThreadBlocksChildPost**](ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [**createTfThreadFlagPost**](ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [**createThThreadsPost**](ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
-[**dateJournalGet**](ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [**filterNewsfeedGet**](ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
-[**getBlocksByDateBlocksDateGet**](ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
-[**getThreadThreadsTitleGet**](ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
-[**mdMetadataGet**](ThreadsApi.md#mdmetadataget) | **GET** /metadata | Md
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
-[**thThreadHeadlinesGet**](ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
@@ -67,45 +61,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **atAllThreadsGet**
-> List<ThreadsModel> atAllThreadsGet()
-
-At
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-
-try {
-    final response = api.atAllThreadsGet();
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->atAllThreadsGet: $e\n');
-}
-```
-
-### Parameters
-This endpoint does not need any parameter.
-
-### Return type
-
-[**List&lt;ThreadsModel&gt;**](ThreadsModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **childThreadBlocksChildPost**
-> ThreadModel childThreadBlocksChildPost(createChildThreadModel)
+> FullThreadInfo childThreadBlocksChildPost(createChildThreadModel)
 
 Child Thread
 
@@ -132,7 +89,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -146,7 +103,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createBlocksPost**
-> ThreadModel createBlocksPost(threadTitle, updateBlockModel)
+> FullThreadInfo createBlocksPost(threadTitle, updateBlockModel)
 
 Create
 
@@ -175,7 +132,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -230,7 +187,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createThThreadsPost**
-> ThreadModel createThThreadsPost(createThreadModel)
+> FullThreadInfo createThThreadsPost(createThreadModel)
 
 Create Th
 
@@ -257,48 +214,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **dateJournalGet**
-> BlockCollection dateJournalGet(modelDate)
-
-Date
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final ModelDate modelDate = ; // ModelDate | 
-
-try {
-    final response = api.dateJournalGet(modelDate);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->dateJournalGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **modelDate** | [**ModelDate**](ModelDate.md)|  | 
-
-### Return type
-
-[**BlockCollection**](BlockCollection.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -358,49 +274,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **getBlocksByDateBlocksDateGet**
-> BlockCollection getBlocksByDateBlocksDateGet(modelDate)
-
-Get Blocks By Date
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final ModelDate modelDate = ; // ModelDate | 
-
-try {
-    final response = api.getBlocksByDateBlocksDateGet(modelDate);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->getBlocksByDateBlocksDateGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **modelDate** | [**ModelDate**](ModelDate.md)|  | 
-
-### Return type
-
-[**BlockCollection**](BlockCollection.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **getThreadIdThreadsIdGet**
-> ThreadModel getThreadIdThreadsIdGet(id)
+> FullThreadInfo getThreadIdThreadsIdGet(id)
 
 Get Thread Id
 
@@ -427,85 +302,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getThreadThreadsTitleGet**
-> ThreadModel getThreadThreadsTitleGet(title)
-
-Get Thread
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-final String title = title_example; // String | 
-
-try {
-    final response = api.getThreadThreadsTitleGet(title);
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->getThreadThreadsTitleGet: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **title** | **String**|  | 
-
-### Return type
-
-[**ThreadModel**](ThreadModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **mdMetadataGet**
-> ThreadsMetaData mdMetadataGet()
-
-Md
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-
-try {
-    final response = api.mdMetadataGet();
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->mdMetadataGet: $e\n');
-}
-```
-
-### Parameters
-This endpoint does not need any parameter.
-
-### Return type
-
-[**ThreadsMetaData**](ThreadsMetaData.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -600,43 +397,6 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **thThreadHeadlinesGet**
-> ThreadHeadlinesModel thThreadHeadlinesGet()
-
-Th
-
-### Example
-```dart
-import 'package:openapi/api.dart';
-
-final api = Openapi().getThreadsApi();
-
-try {
-    final response = api.thThreadHeadlinesGet();
-    print(response);
-} catch on DioException (e) {
-    print('Exception when calling ThreadsApi->thThreadHeadlinesGet: $e\n');
-}
-```
-
-### Parameters
-This endpoint does not need any parameter.
-
-### Return type
-
-[**ThreadHeadlinesModel**](ThreadHeadlinesModel.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **tiThreadsInfoGet**
 > ThreadsInfo tiThreadsInfoGet()
 
@@ -712,7 +472,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateBlocksIdPut**
-> ThreadModel updateBlocksIdPut(id, threadTitle, updateBlockModel)
+> FullThreadInfo updateBlocksIdPut(id, threadTitle, updateBlockModel)
 
 Update
 
@@ -743,7 +503,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 
@@ -757,7 +517,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateThThreadsIdPut**
-> ThreadModel updateThThreadsIdPut(id, updateThreadTitleModel)
+> FullThreadInfo updateThThreadsIdPut(id, updateThreadTitleModel)
 
 Update Th
 
@@ -786,7 +546,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ThreadModel**](ThreadModel.md)
+[**FullThreadInfo**](FullThreadInfo.md)
 
 ### Authorization
 

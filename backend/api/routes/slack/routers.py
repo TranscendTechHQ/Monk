@@ -21,22 +21,12 @@ async def get_public_channel_list():
     public_channels_list = get_channel_list(slack_client=slack_client)
     return public_channels_list
 
-@router.get("/public_channels", response_model=PublicChannelList,
-            response_description="Get all public channels")
-async def public_channels(request: Request,
-                          session: SessionContainer = Depends(verify_session())
-                         ):
-    # get user id from session
-    #user_id = session.get_user_id()
-    
-    public_channels_list = await get_public_channel_list()
-    return JSONResponse(status_code=status.HTTP_200_OK, 
-                        content=jsonable_encoder(public_channels_list))
+
     
 
 # get blocks given a date
 @router.get("/channel_list", response_model=CompositeChannelList,
-            response_description="Get all blocks for a given date")
+            response_description="Get a list of public and subscribed channels")
 async def ch(request: Request,
              session: SessionContainer = Depends(verify_session())
             ):

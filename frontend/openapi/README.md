@@ -69,23 +69,16 @@ Class | Method | HTTP request | Description
 [*DefaultApi*](doc/DefaultApi.md) | [**slackUserTokenSlackUserTokenPost**](doc/DefaultApi.md#slackusertokenslackusertokenpost) | **POST** /slack_user_token | Slack User Token
 [*SessionApi*](doc/SessionApi.md) | [**secureApiSessioninfoGet**](doc/SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*SlackApi*](doc/SlackApi.md) | [**chChannelListGet**](doc/SlackApi.md#chchannellistget) | **GET** /channel_list | Ch
-[*SlackApi*](doc/SlackApi.md) | [**publicChannelsPublicChannelsGet**](doc/SlackApi.md#publicchannelspublicchannelsget) | **GET** /public_channels | Public Channels
 [*SlackApi*](doc/SlackApi.md) | [**subscribeChannelSubscribeChannelPost**](doc/SlackApi.md#subscribechannelsubscribechannelpost) | **POST** /subscribe_channel | Subscribe Channel
 [*ThreadsApi*](doc/ThreadsApi.md) | [**allUsersUserGet**](doc/ThreadsApi.md#allusersuserget) | **GET** /user | All Users
-[*ThreadsApi*](doc/ThreadsApi.md) | [**atAllThreadsGet**](doc/ThreadsApi.md#atallthreadsget) | **GET** /allThreads | At
 [*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createTfThreadFlagPost**](doc/ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createThThreadsPost**](doc/ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
-[*ThreadsApi*](doc/ThreadsApi.md) | [**dateJournalGet**](doc/ThreadsApi.md#datejournalget) | **GET** /journal | Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**filterNewsfeedGet**](doc/ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
-[*ThreadsApi*](doc/ThreadsApi.md) | [**getBlocksByDateBlocksDateGet**](doc/ThreadsApi.md#getblocksbydateblocksdateget) | **GET** /blocksDate | Get Blocks By Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadIdThreadsIdGet**](doc/ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
-[*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadThreadsTitleGet**](doc/ThreadsApi.md#getthreadthreadstitleget) | **GET** /threads/{title} | Get Thread
-[*ThreadsApi*](doc/ThreadsApi.md) | [**mdMetadataGet**](doc/ThreadsApi.md#mdmetadataget) | **GET** /metadata | Md
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
-[*ThreadsApi*](doc/ThreadsApi.md) | [**thThreadHeadlinesGet**](doc/ThreadsApi.md#ththreadheadlinesget) | **GET** /threadHeadlines | Th
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [*ThreadsApi*](doc/ThreadsApi.md) | [**ttThreadTypesGet**](doc/ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlocksIdPut**](doc/ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
@@ -94,21 +87,18 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
- - [BlockCollection](doc/BlockCollection.md)
  - [BlockModel](doc/BlockModel.md)
+ - [BlockWithCreator](doc/BlockWithCreator.md)
  - [ChannelModel](doc/ChannelModel.md)
  - [CompositeChannelList](doc/CompositeChannelList.md)
  - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)
+ - [FullThreadInfo](doc/FullThreadInfo.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
- - [ModelDate](doc/ModelDate.md)
- - [PublicChannelList](doc/PublicChannelList.md)
  - [SessionInfo](doc/SessionInfo.md)
  - [SubscribeChannelRequest](doc/SubscribeChannelRequest.md)
  - [SubscribedChannelList](doc/SubscribedChannelList.md)
- - [ThreadHeadlineModel](doc/ThreadHeadlineModel.md)
- - [ThreadHeadlinesModel](doc/ThreadHeadlinesModel.md)
  - [ThreadMetaData](doc/ThreadMetaData.md)
  - [ThreadModel](doc/ThreadModel.md)
  - [ThreadsInfo](doc/ThreadsInfo.md)
