@@ -203,22 +203,48 @@ class ChatListView extends ConsumerWidget {
     final parentThreadId = currentThread.value?.id;
     return SizedBox(
       width: containerWidth,
-      child: ListView.builder(
-        reverse: true,
-        controller: scrollController,
-        itemCount: blocks?.length ?? 0,
-        padding: const EdgeInsets.only(bottom: 30),
-        itemBuilder: (context, index) {
-          final block = blocks?[index];
-          return ThreadCard(
-            block: block!,
-            emojiParser: emojiParser,
-            title: title,
-            type: type,
-            parentThreadId: parentThreadId,
-          );
-        },
-      ),
+      child: type == '/new-task'
+          ? ReorderableListView(
+              padding: const EdgeInsets.only(bottom: 30),
+              onReorder: (int oldIndex, int newIndex) {
+                ref
+                    .read(currentThreadProvider
+                        .call(
+                          title: title,
+                          type: type,
+                        )
+                        .notifier)
+                    .reorderBlocks(oldIndex, newIndex);
+              },
+              children: [
+                ...blocks?.reversed.map((block) {
+                      return ThreadCard(
+                        key: ValueKey(block.id),
+                        block: block,
+                        emojiParser: emojiParser,
+                        title: title,
+                        type: type,
+                        parentThreadId: parentThreadId,
+                      );
+                    }).toList() ??
+                    [],
+              ],
+            )
+          : ListView.builder(
+              reverse: true,
+              controller: scrollController,
+              itemCount: blocks?.length ?? 0,
+              padding: const EdgeInsets.only(bottom: 30),
+              itemBuilder: (context, index) {
+                final block = blocks?[index];
+                return ThreadCard(
+                  block: block!,
+                  emojiParser: emojiParser,
+                  title: title,
+                  type: type,
+                  parentThreadId: parentThreadId,
+                );
+              }),
     );
   }
 }
