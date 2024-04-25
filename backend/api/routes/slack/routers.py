@@ -67,7 +67,7 @@ async def subscribe_channel(request: Request,
     for channel_id in channels_to_subscribe.channel_ids:
         for channel in public_channels_list.public_channels:
             if channel.id == channel_id:
-                subscribed_channels_list.append(ChannelModel(id=channel.id, name=channel.name))
+                subscribed_channels_list.append(ChannelModel(id=channel.id, name=channel.name, creator=channel.creator))
     print(subscribed_channels_list)
     new_item = SubscribedChannelList(id=user_id, 
                                      subscribed_channels=subscribed_channels_list)
