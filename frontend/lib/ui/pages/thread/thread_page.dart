@@ -78,60 +78,67 @@ class ThreadPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          '$formatType -: $threadTitle',
-          style: TextStyle(
-              fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$formatType -: $threadTitle',
+              style: TextStyle(
+                  fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
+            ),
+            const SizedBox(width: 16),
+            IconButton(
+              tooltip: 'Edit title',
+              onPressed: () async {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      final controller = TextEditingController(text: title);
+                      return AlertDialog(
+                        // context: context,
+                        title: const Text('Edit title'),
+                        content: TextField(
+                          controller: controller,
+                          maxLength: 60,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter title',
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await ref
+                                  .read(provider.notifier)
+                                  .updateThreadTitle(controller.text);
+                              ref.refresh(currentThreadProvider.call(
+                                title: title,
+                                type: type,
+                              ));
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Save'),
+                          )
+                        ],
+                      );
+                    });
+              },
+              icon: const Icon(Icons.edit, size: 18),
+            ),
+          ],
         ),
         actions: [
-          IconButton(
-            tooltip: 'Edit title',
-            onPressed: () async {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    final controller = TextEditingController(text: title);
-                    return AlertDialog(
-                      // context: context,
-                      title: const Text('Edit title'),
-                      content: TextField(
-                        controller: controller,
-                        maxLength: 60,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter title',
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            await ref
-                                .read(provider.notifier)
-                                .updateThreadTitle(controller.text);
-                            ref.refresh(currentThreadProvider.call(
-                              title: title,
-                              type: type,
-                            ));
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Save'),
-                        )
-                      ],
-                    );
-                  });
-            },
-            icon: const Icon(Icons.edit),
-          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
@@ -151,15 +158,12 @@ class ThreadPage extends ConsumerWidget {
             children: [
               Expanded(
                   child: currentThread.when(
-                data: (state) => threadType == ThreadType.reply
-                    ? RepliesListView(
-                        replies: state?.content?.reversed.toList(),
-                      )
-                    : ChatListView(
-                        currentThread: currentThread,
-                        title: title,
-                        type: type,
-                      ),
+                data: (state) => ChatListView(
+                  currentThread: currentThread,
+                  title: title,
+                  type: type,
+                  threadType: threadType,
+                ),
                 error: (error, stack) => Center(
                   child: Text(
                     error.toString().replaceFirst('Exception: ', ''),
@@ -185,10 +189,12 @@ class ChatListView extends ConsumerWidget {
     required this.currentThread,
     required this.title,
     required this.type,
+    required this.threadType,
   });
   final AsyncValue<FullThreadInfo?> currentThread;
   final String type;
   final String title;
+  final ThreadType threadType;
 
   final scrollController = ScrollController();
   scrollToBottom() {
@@ -205,6 +211,7 @@ class ChatListView extends ConsumerWidget {
       width: containerWidth,
       child: type == '/new-task'
           ? ReorderableListView(
+              reverse: threadType == ThreadType.thread,
               padding: const EdgeInsets.only(bottom: 30),
               onReorder: (int oldIndex, int newIndex) {
                 ref
@@ -225,13 +232,14 @@ class ChatListView extends ConsumerWidget {
                         title: title,
                         type: type,
                         parentThreadId: parentThreadId,
+                        threadType: threadType,
                       );
                     }).toList() ??
                     [],
               ],
             )
           : ListView.builder(
-              reverse: true,
+              reverse: threadType == ThreadType.thread,
               controller: scrollController,
               itemCount: blocks?.length ?? 0,
               padding: const EdgeInsets.only(bottom: 30),
@@ -243,8 +251,10 @@ class ChatListView extends ConsumerWidget {
                   title: title,
                   type: type,
                   parentThreadId: parentThreadId,
+                  threadType: threadType,
                 );
-              }),
+              },
+            ),
     );
   }
 }
