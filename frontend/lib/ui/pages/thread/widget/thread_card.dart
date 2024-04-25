@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/repo/thread.dart';
 
 import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
@@ -105,6 +106,11 @@ class ThreadCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final authUserId = authState.session?.userId;
+    final creatorId = block.creator.id ?? block.creatorId;
+    final isCreator = creatorId == authUserId;
+
     final cardProvider = threadCardProvider.call(block, type);
     final card = ref.watch(cardProvider);
     final isEdit = card.eState == EThreadCardState.edit;
@@ -203,7 +209,8 @@ class ThreadCard extends ConsumerWidget {
                     backgroundColor: Colors.yellow.shade200,
                     radius: 4,
                   ),
-                // TOOLS - 1
+                // TOOLS - Update task status
+                // Display task status icon only `new-task` type thread
                 if (type == '/new-task')
                   if (taskStatus == ETaskStatus.loading)
                     const CircularProgressIndicator.adaptive()
@@ -271,6 +278,8 @@ class ThreadCard extends ConsumerWidget {
                 ),
               ),
             const SizedBox(height: 8),
+
+            // Reply/Replies Button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -289,10 +298,12 @@ class ThreadCard extends ConsumerWidget {
                   )
                 ] else
                   const SizedBox(height: 40),
-                // TOOLS - 2
+
+                // TOOLS - Edit thread icon
                 Row(
                   children: [
-                    if (isHovered && !isEdit)
+                    // Display Edit thread icon to only thread creator and on hover
+                    if (isHovered && !isEdit && isCreator)
                       InkWell(
                         onTap: () {
                           ref.read(cardProvider.notifier).toggleEdit();

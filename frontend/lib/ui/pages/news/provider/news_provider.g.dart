@@ -6,7 +6,7 @@ part of 'news_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$newsFeedHash() => r'b5e7e42791e4017b49dbe87a0136d7ebf6d452c1';
+String _$newsFeedHash() => r'6b07bae25020f5b99fb9f75beaf053a58aec56e4';
 
 /// See also [NewsFeed].
 @ProviderFor(NewsFeed)
@@ -21,7 +21,7 @@ final newsFeedProvider =
 );
 
 typedef _$NewsFeed = AutoDisposeAsyncNotifier<List<ThreadMetaData>>;
-String _$newsCardPodHash() => r'1c87a9ce7e0a8d013acc0050b0d57b0cfbd7e972';
+String _$newsCardPodHash() => r'f2612b05477d546d9fb466aaa7783e5152fa21f9';
 
 /// Copied from Dart SDK
 class _SystemHash {

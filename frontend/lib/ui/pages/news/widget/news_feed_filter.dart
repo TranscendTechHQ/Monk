@@ -11,7 +11,7 @@ class NewsFeedFilter extends ConsumerStatefulWidget {
 }
 
 class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
-  bool read = false, bookmarked = false, upvoted = false, dismissed = false;
+  bool unRead = false, bookmarked = false, upvoted = false, dismissed = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -58,10 +58,10 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
           ),
           const Padding(padding: EdgeInsets.all(8)),
           CheckboxListTile(
-              value: read,
+              value: unRead,
               onChanged: (val) {
                 setState(() {
-                  read = val!;
+                  unRead = val!;
                 });
               },
               title: const Text('Read')),
@@ -93,9 +93,9 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
           FilledButton.tonal(
             onPressed: () async {
               Navigator.pop(context, {
-                'read': read,
+                'unRead': unRead,
                 'bookmarked': bookmarked,
-                'upvoted': upvoted,
+                'Upvoted': upvoted,
                 'dismissed': dismissed,
               });
             },

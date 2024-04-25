@@ -36,7 +36,7 @@ class NewsPage extends ConsumerWidget {
     if (map != null) {
       ref.read(newsFeedProvider.notifier).getFilteredFeed(
             bookmark: map['bookmarked'],
-            read: map['read'],
+            unRead: map['unRead'],
             unfollow: map['dismissed'],
             upvote: map['upvoted'],
           );

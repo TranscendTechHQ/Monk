@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news/news_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -9,19 +11,19 @@ import 'package:supertokens_flutter/supertokens.dart';
 
 import 'subscribed-channels/channels_page.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   static String route = "/home";
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   String userId = "";
-  String email = "";
-  String fullName = "";
+  // String email = "";
+  // String fullName = "";
 
   @override
   void initState() {
@@ -31,7 +33,10 @@ class _HomePageState extends State<HomePage> {
         userId = value;
       });
     });
-    getAndSetUserInfo().then((value) => null);
+
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      ref.read(authProvider.notifier).getSession();
+    });
   }
 
   Future<void> testOpenApi() async {
@@ -88,21 +93,21 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<bool> getAndSetUserInfo() async {
-    final api = NetworkManager.instance.openApi.getSessionApi();
+  // Future<bool> getAndSetUserInfo() async {
+  //   final api = NetworkManager.instance.openApi.getSessionApi();
 
-    final response = await api.secureApiSessioninfoGet();
-    if (response.statusCode == 200) {
-      final sessionInfo = response.data!;
-      setState(() {
-        fullName = sessionInfo.fullName;
-        email = sessionInfo.email;
-        // print(JsonEncoder.withIndent(' ').convert(sessionInfo.toJson()));
-      });
-      return true;
-    }
-    return false;
-  }
+  //   final response = await api.secureApiSessioninfoGet();
+  //   if (response.statusCode == 200) {
+  //     final sessionInfo = response.data!;
+  //     setState(() {
+  //       fullName = sessionInfo.fullName;
+  //       email = sessionInfo.email;
+  //       // print(JsonEncoder.withIndent(' ').convert(sessionInfo.toJson()));
+  //     });
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   Future<String> getUserId() async {
     return await SuperTokens.getUserId();
@@ -128,6 +133,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
     return PageScaffold(
       body: SafeArea(
         child: Padding(
@@ -141,87 +148,91 @@ class _HomePageState extends State<HomePage> {
                 height: context.scale(240, 200, 160),
               ),
               const SizedBox(width: 100),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: context.isMobile || context.isTablet
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  Text(
-                    "Focus. Clarity. Alignment.",
-                    textAlign: TextAlign.center,
-                    style: context.textTheme.displayMedium!
-                        .copyWith(
-                          color: context.customColors.sourceMonkBlue,
-                          fontWeight: FontWeight.w400,
-                        )
-                        .scaleFont(
-                          large: 32,
-                          medium: 28,
-                          small: 24,
-                        ),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    "Welcome $fullName.",
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 62),
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 68,
-                        vertical: 18,
-                      ),
+              if (authState.state == EState.loading) ...[
+                const SizedBox(height: 100),
+                const CircularProgressIndicator.adaptive()
+              ] else if (authState.session != null)
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: context.isMobile || context.isTablet
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 32,
                     ),
-                    onPressed: () async {
-                      //testOpenApi();
-
-                      // Navigator.pushNamed(context, ThreadPage.route);
-                      Navigator.push(
-                        context,
-                        SubscribedChannelsPage.launchRoute(
-                          ifAlreadySubscribed: () =>
-                              Navigator.pushReplacementNamed(
-                            context,
-                            NewsPage.route,
+                    Text(
+                      "Focus. Clarity. Alignment.",
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.displayMedium!
+                          .copyWith(
+                            color: context.customColors.sourceMonkBlue,
+                            fontWeight: FontWeight.w400,
+                          )
+                          .scaleFont(
+                            large: 32,
+                            medium: 28,
+                            small: 24,
                           ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      "Welcome ${authState?.session?.fullName}.",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                    const SizedBox(height: 62),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                      );
-                    },
-                    child: Text(
-                      "Continue",
-                      style: context.textTheme.bodyLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  TextButton.icon(
-                    onPressed: () {
-                      signOut();
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: context.customColors.sourceAlert,
-                    ),
-                    icon: const Icon(Icons.logout),
-                    label: Text(
-                      'Log out',
-                      style: context.textTheme.bodyLarge!.copyWith(
-                        color: context.customColors.sourceAlert,
-                        fontSize: 20,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 68,
+                          vertical: 18,
+                        ),
+                      ),
+                      onPressed: () async {
+                        //testOpenApi();
+
+                        // Navigator.pushNamed(context, ThreadPage.route);
+                        Navigator.push(
+                          context,
+                          SubscribedChannelsPage.launchRoute(
+                            ifAlreadySubscribed: () =>
+                                Navigator.pushReplacementNamed(
+                              context,
+                              NewsPage.route,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Continue",
+                        style: context.textTheme.bodyLarge,
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(height: 32),
+                    TextButton.icon(
+                      onPressed: () {
+                        signOut();
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: context.customColors.sourceAlert,
+                      ),
+                      icon: const Icon(Icons.logout),
+                      label: Text(
+                        'Log out',
+                        style: context.textTheme.bodyLarge!.copyWith(
+                          color: context.customColors.sourceAlert,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),

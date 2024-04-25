@@ -22,7 +22,7 @@ class NewsFeed extends _$NewsFeed {
 
   Future<void> getFilteredFeed({
     bool? bookmark = false,
-    bool? read = false,
+    bool? unRead = false,
     bool? unfollow = false,
     bool? upvote = false,
   }) async {
@@ -30,7 +30,7 @@ class NewsFeed extends _$NewsFeed {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
       bookmark: bookmark,
-      read: read,
+      read: unRead,
       unfollow: unfollow,
       upvote: upvote,
     );
@@ -42,14 +42,14 @@ class NewsFeed extends _$NewsFeed {
 
   Future<void> filter({
     bool? bookmark = false,
-    bool? read = false,
+    bool? unRead = false,
     bool? unfollow = false,
     bool? upvote = false,
   }) async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
       bookmark: bookmark,
-      read: read,
+      read: unRead,
       unfollow: unfollow,
       upvote: upvote,
     );
@@ -80,7 +80,7 @@ class NewsCardPod extends _$NewsCardPod {
   Future<bool> createTfThreadFlagPost(
     String threadId, {
     bool? bookmark,
-    bool? read,
+    bool? unRead,
     bool? unfollow,
     bool? upvote,
   }) async {
@@ -90,7 +90,7 @@ class NewsCardPod extends _$NewsCardPod {
           ? ENewsCardState.upVoting
           : bookmark == true
               ? ENewsCardState.bookmarking
-              : read == true
+              : unRead == true
                   ? ENewsCardState.markingAsRead
                   : ENewsCardState.dismissing,
     );
@@ -101,7 +101,7 @@ class NewsCardPod extends _$NewsCardPod {
         createUserThreadFlagModel: CreateUserThreadFlagModel(
           threadId: threadId,
           bookmark: bookmark,
-          read: read,
+          read: unRead,
           unfollow: unfollow,
           upvote: upvote,
         ),
@@ -119,7 +119,7 @@ class NewsCardPod extends _$NewsCardPod {
               ? ENewsCardState.upVoted
               : bookmark == true
                   ? ENewsCardState.bookmarked
-                  : read == true
+                  : unRead == true
                       ? ENewsCardState.markedAsRead
                       : ENewsCardState.dismissed
           : ENewsCardState.initial,
