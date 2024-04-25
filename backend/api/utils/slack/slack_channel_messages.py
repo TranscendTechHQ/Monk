@@ -1,7 +1,4 @@
-import random
-
 from pymongo import MongoClient
-from slack_sdk import WebClient
 import asyncio
 import json
 import uuid
@@ -15,7 +12,7 @@ from routes.slack.models import ChannelModel, PublicChannelList
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from utils.db import startup_async_db_client, shutdown_async_db_client, asyncdb, get_mongo_document
+from utils.db import startup_async_db_client, shutdown_async_db_client, asyncdb, update_block_child_id
 
 overall_list = []
 
@@ -105,8 +102,7 @@ def get_channel_messages(slack_client, channel_id, write_to_json=False, limit=10
                 # print('\n\n')
             # Specify the file path to write the array
 
-            overall_messages = {}
-            overall_messages["messages"] = overall_list
+            overall_messages = {"messages": overall_list}
 
             if write_to_json:
                 # File path to write the JSON data
@@ -269,17 +265,28 @@ async def main():
 
                 if "reply_count" in message:
                     if message["reply_count"] > 0:
+                        new_parent_block = UpdateBlockModel(content=message["text"])
+                        print(new_parent_block)
+                        new_parent_block = await create_new_block(thread_id=thread_id, block=new_parent_block, user_id=message_user["_id"])
+                        new_parent_block_id = new_parent_block['content'][-1]['_id']
+
                         new_thread = await create_new_thread(
                             user_id=message_user["_id"],
                             tenant_id=tenant["tenant_id"],
-                            title=f"Reply{thread_title}{random.randrange(200, 999)}",
+                            title=f"Reply{thread_title}{new_parent_block_id[0:4].replace('-', '')}",
                             thread_type=thread_type)
 
                         new_thread_title = new_thread["title"]
 
                         new_block = UpdateBlockModel(content=message["text"])
                         print(new_block)
-                        await create_new_block(thread_id=new_thread["_id"], block=new_block, user_id=message_user["_id"])
+                        await create_new_block(thread_id=new_thread["_id"], block=new_block,
+                                               user_id=message_user["_id"])
+
+                        updated_parent_block = await update_block_child_id(threads_collection=threads_collection,
+                                                                           parent_block_id=new_parent_block_id,
+                                                                           thread_id=thread_id,
+                                                                           child_thread_id=new_thread["_id"])
                     else:
                         new_block = UpdateBlockModel(content=message["text"])
                         print(new_block)
