@@ -286,14 +286,27 @@ async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
 
 async def get_thread_from_db(thread_id, tenant_id):
     pipeline = [
-    {
+     {
         "$match": {
             "_id": thread_id,
             "tenant_id": tenant_id
         }
     },
     {
-        "$unwind": "$content"
+        "$addFields": {
+            "content": {
+                "$cond": {
+                    "if": {"$eq": [{"$size": "$content"}, 0]},
+                    "then": [{}],
+                    "else": "$content"
+                }
+            }
+        }
+    },
+    {
+        "$unwind": {
+            "path": "$content"
+        }
     },
     {
         "$lookup": {
@@ -301,6 +314,17 @@ async def get_thread_from_db(thread_id, tenant_id):
             "localField": "content.creator_id",
             "foreignField": "_id",
             "as": "content.creator"
+        }
+    },
+    {
+        "$addFields": {
+            "content.creator": {
+                "$cond": {
+                    "if": {"$eq": [{"$size": "$content.creator"}, 0]},
+                    "then": [{}],
+                    "else": "$content.creator"
+                }
+            }
         }
     },
     {
@@ -348,11 +372,13 @@ async def get_thread_from_db(thread_id, tenant_id):
         }
     }
 ]
-
     result = asyncdb.threads_collection.aggregate(pipeline)
     
     thread = await result.to_list(None)
-    
+    #print(thread[0]["content"][0])
+    if not 'creator_id' in thread[0]["content"][0].keys():
+        thread[0]["content"] = None
+    #print(thread[0]["content"][0])
     return thread
     
 
@@ -489,11 +515,14 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
 
     thread_title = jsonable_encoder(thread_data)["title"]
     thread_type = jsonable_encoder(thread_data)["type"]
-    # content = jsonable_encoder(thread_data)["content"]
+    #content = []
+    #if jsonable_encoder(thread_data)["content"] is not None: 
+    #    content = jsonable_encoder(thread_data)["content"]
 
     created_thread = await create_new_thread(userId, tenant_id, thread_title, thread_type)
     ret_thread = await get_thread_from_db(created_thread["_id"], tenant_id)
-    
+    #print(created_thread["_id"])
+    #print(ret_thread[0])
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(ret_thread[0]))
 
