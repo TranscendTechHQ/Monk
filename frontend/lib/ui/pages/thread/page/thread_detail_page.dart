@@ -159,7 +159,7 @@ class ReplyCard extends ConsumerWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: Image.network(
-                      userInfo!.picture!.startsWith('https')
+                      userInfo.picture!.startsWith('https')
                           ? userInfo.picture!
                           : "https://api.dicebear.com/7.x/identicon/png?seed=${userInfo.name ?? "UN"}",
                       width: 25,

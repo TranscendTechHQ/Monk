@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/repo/thread.dart';
 
 import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
@@ -20,12 +21,14 @@ class ThreadCard extends ConsumerWidget {
     required this.title,
     required this.type,
     required this.parentThreadId,
+    required this.threadType,
   });
   final BlockWithCreator block;
   final String type;
   final String title;
   final EmojiParser emojiParser;
   final String? parentThreadId;
+  final ThreadType threadType;
 
   Future<void> onReplyClick(BuildContext context, WidgetRef ref,
       ThreadDetailProvider replyProvider) async {
@@ -103,6 +106,11 @@ class ThreadCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final authUserId = authState.session?.userId;
+    final creatorId = block.creator.id ?? block.creatorId;
+    final isCreator = creatorId == authUserId;
+
     final cardProvider = threadCardProvider.call(block, type);
     final card = ref.watch(cardProvider);
     final isEdit = card.eState == EThreadCardState.edit;
@@ -124,7 +132,7 @@ class ThreadCard extends ConsumerWidget {
               .read(
                   currentThreadProvider.call(title: title, type: type).notifier)
               .addChildThreadIdToBlock(
-                data.thread!.id!,
+                data.thread!.id,
                 block.id!,
               );
         }
@@ -193,16 +201,16 @@ class ThreadCard extends ConsumerWidget {
                 ),
                 const Spacer(),
 
-                if (!isHovered &&
-                    (DateTime.now()
-                            .difference(block.createdAt ?? DateTime.now())
-                            .inHours) <
-                        24)
+                if ((DateTime.now()
+                        .difference(block.createdAt ?? DateTime.now())
+                        .inHours) <
+                    24)
                   CircleAvatar(
                     backgroundColor: Colors.yellow.shade200,
                     radius: 4,
                   ),
-                // TOOLS - 1
+                // TOOLS - Update task status
+                // Display task status icon only `new-task` type thread
                 if (type == '/new-task')
                   if (taskStatus == ETaskStatus.loading)
                     const CircularProgressIndicator.adaptive()
@@ -234,11 +242,68 @@ class ThreadCard extends ConsumerWidget {
                         ),
                       ),
                     ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (isEdit)
+              TextField(
+                controller: controller,
+                onChanged: (val) {},
+                autofocus: true,
+                maxLength: null,
+                maxLines: null,
+                style: context.textTheme.bodySmall,
+                decoration: InputDecoration(
+                  hintText: 'Update your content here',
+                  hintStyle: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withOpacity(.7),
+                  ),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  fillColor: context.colorScheme.surface,
+                ),
+                // cursorHeight: 18,
+              )
+            else
+              SelectableText(
+                emojiParser.emojify(block.content.toString()).trimRight(),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            const SizedBox(height: 8),
 
-                // TOOLS - 2
+            // Reply/Replies Button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (threadType == ThreadType.thread) ...[
+                  TextButton(
+                    onPressed: () async =>
+                        onReplyClick(context, ref, replyProvider),
+                    child: Text(
+                      block.childId.isNotNullEmpty
+                          ? "Replies"
+                          : 'Reply in Thread',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.customColors.sourceMonkBlue,
+                      ),
+                    ),
+                  )
+                ] else
+                  const SizedBox(height: 40),
+
+                // TOOLS - Edit thread icon
                 Row(
                   children: [
-                    if (isHovered && !isEdit && type != '/new-task')
+                    // Display Edit thread icon to only thread creator and on hover
+                    if (isHovered && !isEdit && isCreator)
                       InkWell(
                         onTap: () {
                           ref.read(cardProvider.notifier).toggleEdit();
@@ -291,50 +356,6 @@ class ThreadCard extends ConsumerWidget {
                 )
               ],
             ),
-            Text(type),
-            const SizedBox(height: 8),
-            if (isEdit)
-              TextField(
-                controller: controller,
-                onChanged: (val) {},
-                autofocus: true,
-                maxLength: null,
-                maxLines: null,
-                style: context.textTheme.bodySmall,
-                decoration: InputDecoration(
-                  hintText: 'Update your content here',
-                  hintStyle: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color:
-                        Theme.of(context).colorScheme.onSurface.withOpacity(.7),
-                  ),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  fillColor: context.colorScheme.surface,
-                ),
-                // cursorHeight: 18,
-              )
-            else
-              SelectableText(
-                emojiParser.emojify(block.content.toString()).trimRight(),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () async => onReplyClick(context, ref, replyProvider),
-              child: Text(
-                block.childId.isNotNullEmpty ? "Replies" : 'Reply in Thread',
-                style: context.textTheme.bodySmall?.copyWith(
-                  color: context.customColors.sourceMonkBlue,
-                ),
-              ),
-            )
           ],
         ),
       ),
