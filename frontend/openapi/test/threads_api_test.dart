@@ -23,7 +23,7 @@ void main() {
 
     // Create
     //
-    //Future<BlockWithCreator> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<BlockWithCreator> createBlocksPost(String threadTitle, CreateBlockModel createBlockModel) async
     test('test createBlocksPost', () async {
       // TODO
     });

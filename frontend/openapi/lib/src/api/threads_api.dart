@@ -10,6 +10,7 @@ import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
 import 'package:openapi/src/model/block_with_creator.dart';
+import 'package:openapi/src/model/create_block_model.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
@@ -192,7 +193,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
   ///
   /// Parameters:
   /// * [threadTitle] 
-  /// * [updateBlockModel] 
+  /// * [createBlockModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -204,7 +205,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BlockWithCreator>> createBlocksPost({ 
     required String threadTitle,
-    required UpdateBlockModel updateBlockModel,
+    required CreateBlockModel createBlockModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -233,7 +234,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
     dynamic _bodyData;
 
     try {
-_bodyData=jsonEncode(updateBlockModel);
+_bodyData=jsonEncode(createBlockModel);
     } catch(error, stackTrace) {
       throw DioException(
          requestOptions: _options.compose(

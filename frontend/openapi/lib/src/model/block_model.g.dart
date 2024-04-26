@@ -32,6 +32,7 @@ BlockModel _$BlockModelFromJson(Map<String, dynamic> json) => $checkedCreate(
               (v) => v == null ? null : DateTime.parse(v as String)),
           parentThreadId:
               $checkedConvert('parent_thread_id', (v) => v as String? ?? ''),
+          tenantId: $checkedConvert('tenant_id', (v) => v as String? ?? ''),
         );
         return val;
       },
@@ -44,7 +45,8 @@ BlockModel _$BlockModelFromJson(Map<String, dynamic> json) => $checkedCreate(
         'createdAt': 'created_at',
         'creatorId': 'creator_id',
         'lastModified': 'last_modified',
-        'parentThreadId': 'parent_thread_id'
+        'parentThreadId': 'parent_thread_id',
+        'tenantId': 'tenant_id'
       },
     );
 
@@ -67,5 +69,6 @@ Map<String, dynamic> _$BlockModelToJson(BlockModel instance) {
   writeNotNull('creator_id', instance.creatorId);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
   writeNotNull('parent_thread_id', instance.parentThreadId);
+  writeNotNull('tenant_id', instance.tenantId);
   return val;
 }

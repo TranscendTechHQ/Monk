@@ -31,7 +31,7 @@ class ThreadCard extends ConsumerWidget {
   final ThreadType threadType;
 
   Future<void> onReplyClick(BuildContext context, WidgetRef ref,
-      ThreadDetailProvider replyProvider) async {
+      CurrentThread currentThreadNotifier) async {
     if (block.id.isNullOrEmpty || parentThreadId.isNullOrEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -41,9 +41,11 @@ class ThreadCard extends ConsumerWidget {
       return;
     }
     try {
+      final threadNotifier = ref
+          .read(currentThreadProvider.call(title: title, type: type).notifier);
       final childThreadName =
           ("Reply$title${block.id?.substring(0, 4)}").replaceAll('-', '');
-      if (block.childId.isNullOrEmpty) {
+      if (block.childThreadId.isNullOrEmpty) {
         final createChildThreadModel = CreateChildThreadModel(
           title: childThreadName,
           type: type,
@@ -51,15 +53,9 @@ class ThreadCard extends ConsumerWidget {
           parentThreadId: parentThreadId!,
         );
         loader.showLoader(context, message: 'Creating Thread');
-        final state = await ref
-            .read(replyProvider.notifier)
-            .createOrFetchReplyThread(
-              createChildThreadModel:
-                  block.childId.isNullOrEmpty ? createChildThreadModel : null,
-              childThreadId: block.childId.isNullOrEmpty ? '' : block.childId!,
-            );
-
-        if (state.thread != null) {
+        final newThread =
+            await threadNotifier.createChildThread(createChildThreadModel);
+        if (newThread != null && newThread.id.isNotNullEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Thread created successfully'),
@@ -72,13 +68,7 @@ class ThreadCard extends ConsumerWidget {
                 type: type,
                 threadType: ThreadType.reply,
               ));
-          ref
-              .read(
-                  currentThreadProvider.call(title: title, type: type).notifier)
-              .addChildThreadIdToBlock(
-                state.thread!.id!,
-                block.id!,
-              );
+          logger.d('Thread created successfully');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -93,7 +83,7 @@ class ThreadCard extends ConsumerWidget {
             title: childThreadName,
             type: type,
             threadType: ThreadType.reply,
-            threadChildId: block.childId,
+            threadChildId: block.childThreadId,
           ),
         );
       }
@@ -121,23 +111,27 @@ class ThreadCard extends ConsumerWidget {
     //print(block.creatorId?.toString());
     final userInfo = block.creator;
     //print('userInfo: $userInfo');
-    final replyProvider = threadDetailProvider.call();
-    ref.listen(replyProvider, (previous, next) {
-      if (next is AsyncData) {
-        final data = next.value;
+    // final replyProvider = threadDetailProvider.call();
+    final provider = currentThreadProvider.call(title: title, type: type);
+    final currentThreadNotifier = ref.read(provider.notifier);
+    // TODO: Update block when child thread is created
+    // final replyProvider = ref.watch(provider);
+    // ref.listen(provider, (previous, next) {
+    //   if (next is AsyncData) {
+    //     final data = next.value;
 
-        // Add childThreadId in block when child thread is created
-        if (data?.thread != null && data!.thread!.id.isNotNullEmpty) {
-          ref
-              .read(
-                  currentThreadProvider.call(title: title, type: type).notifier)
-              .addChildThreadIdToBlock(
-                data.thread!.id,
-                block.id!,
-              );
-        }
-      }
-    });
+    //     // Add childThreadId in block when child thread is created
+    //     if (data?.thread != null && data!.thread!.id.isNotNullEmpty) {
+    //       ref
+    //           .read(
+    //               currentThreadProvider.call(title: title, type: type).notifier)
+    //           .addChildThreadIdToBlock(
+    //             data.thread!.id,
+    //             block.id!,
+    //           );
+    //     }
+    //   }
+    // });
 
     return MouseRegion(
       onEnter: (event) {
@@ -286,9 +280,9 @@ class ThreadCard extends ConsumerWidget {
                 if (threadType == ThreadType.thread) ...[
                   TextButton(
                     onPressed: () async =>
-                        onReplyClick(context, ref, replyProvider),
+                        onReplyClick(context, ref, currentThreadNotifier),
                     child: Text(
-                      block.childId.isNotNullEmpty
+                      block.childThreadId.isNotNullEmpty
                           ? "Replies"
                           : 'Reply in Thread',
                       style: context.textTheme.bodySmall?.copyWith(

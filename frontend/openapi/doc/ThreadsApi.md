@@ -103,7 +103,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createBlocksPost**
-> BlockWithCreator createBlocksPost(threadTitle, updateBlockModel)
+> BlockWithCreator createBlocksPost(threadTitle, createBlockModel)
 
 Create
 
@@ -113,10 +113,10 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
 final String threadTitle = threadTitle_example; // String | 
-final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
+final CreateBlockModel createBlockModel = ; // CreateBlockModel | 
 
 try {
-    final response = api.createBlocksPost(threadTitle, updateBlockModel);
+    final response = api.createBlocksPost(threadTitle, createBlockModel);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->createBlocksPost: $e\n');
@@ -128,7 +128,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **threadTitle** | **String**|  | 
- **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
+ **createBlockModel** | [**CreateBlockModel**](CreateBlockModel.md)|  | 
 
 ### Return type
 

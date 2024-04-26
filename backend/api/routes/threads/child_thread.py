@@ -1,5 +1,6 @@
 from typing import List
 
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from utils.db import create_mongo_document, get_block_by_id, get_mongo_document, get_user_name, update_block_child_id, \
@@ -42,13 +43,15 @@ async def create_child_thread(thread_collection, parent_block_id, parent_thread_
     # fetch the parent block
     block = await get_block_by_id(parent_block_id, thread_collection)
     if not block:
-        print("block with id ${parent_block_id} not found")
+        # print("block with id ${parent_block_id} not found")
+        raise HTTPException(status_code=404, detail=f"block with id {parent_block_id} not found")
     # print(block)
     block = block["content"]
-    if "child_id" in block.keys():
-        if block["child_id"] != "":
+    if "child_thread_id" in block.keys():
+        if block["child_thread_id"] != "":
             print("block already has a child thread")
-            return
+            # throw = Exception("block already has a child thread")
+            raise HTTPException(status_code=400, detail="block already has a child thread")
     # print(block)
     # create a new child thread
 
@@ -59,8 +62,9 @@ async def create_child_thread(thread_collection, parent_block_id, parent_thread_
 
     child_thread_id = created_child_thread["_id"]
 
+    blocks_collection = asyncdb.blocks_collection
     # now update the parent block with the child thread id
     await update_block_child_id(
-        thread_collection, parent_block_id, parent_thread_id, child_thread_id)
+        blocks_collection, parent_block_id, parent_thread_id, child_thread_id)
 
     return created_child_thread

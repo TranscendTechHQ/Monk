@@ -2,6 +2,7 @@ import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/block_with_creator.dart';
 import 'package:openapi/src/model/channel_model.dart';
 import 'package:openapi/src/model/composite_channel_list.dart';
+import 'package:openapi/src/model/create_block_model.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
@@ -48,6 +49,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return ChannelModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CompositeChannelList':
           return CompositeChannelList.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'CreateBlockModel':
+          return CreateBlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CreateChildThreadModel':
           return CreateChildThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CreateThreadModel':

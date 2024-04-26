@@ -17,6 +17,7 @@ export 'package:openapi/src/model/block_model.dart';
 export 'package:openapi/src/model/block_with_creator.dart';
 export 'package:openapi/src/model/channel_model.dart';
 export 'package:openapi/src/model/composite_channel_list.dart';
+export 'package:openapi/src/model/create_block_model.dart';
 export 'package:openapi/src/model/create_child_thread_model.dart';
 export 'package:openapi/src/model/create_thread_model.dart';
 export 'package:openapi/src/model/create_user_thread_flag_model.dart';

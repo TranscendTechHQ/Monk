@@ -40,6 +40,8 @@ class BlockWithCreator {
      this.lastModified,
 
      this.parentThreadId = '',
+
+     this.tenantId = '',
   });
 
   @JsonKey(
@@ -174,6 +176,18 @@ class BlockWithCreator {
 
 
 
+  @JsonKey(
+    defaultValue: '',
+    name: r'tenant_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? tenantId;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockWithCreator &&
      other.id == id &&
@@ -186,7 +200,8 @@ class BlockWithCreator {
      other.creator == creator &&
      other.creatorId == creatorId &&
      other.lastModified == lastModified &&
-     other.parentThreadId == parentThreadId;
+     other.parentThreadId == parentThreadId &&
+     other.tenantId == tenantId;
 
   @override
   int get hashCode =>
@@ -200,7 +215,8 @@ class BlockWithCreator {
     creator.hashCode +
     creatorId.hashCode +
     lastModified.hashCode +
-    parentThreadId.hashCode;
+    parentThreadId.hashCode +
+    tenantId.hashCode;
 
   factory BlockWithCreator.fromJson(Map<String, dynamic> json) => _$BlockWithCreatorFromJson(json);
 

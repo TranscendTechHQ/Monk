@@ -83,7 +83,8 @@ class CurrentThread extends _$CurrentThread {
     return state.value;
   }
 
-  Future<void> createBlock(String text, {String? customTitle}) async {
+  Future<bool> createBlock(String text,
+      {String? customTitle, String? parentThreadId}) async {
     MonkException.handle(() async {
       String? threadTitle = state.value?.title ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
@@ -92,10 +93,17 @@ class CurrentThread extends _$CurrentThread {
       }
       logger.d("creating new Thread title $threadTitle");
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
+      if (parentThreadId != null) {
+        logger.d("creating new block with parent thread id $parentThreadId");
+      }
 
       final newThreadState = await blockApi.createBlocksPost(
-          threadTitle: threadTitle!,
-          updateBlockModel: UpdateBlockModel(content: text));
+        threadTitle: threadTitle!,
+        createBlockModel: CreateBlockModel(
+          content: text,
+          parentThreadId: parentThreadId,
+        ),
+      );
 
       if (newThreadState.statusCode != 201) {
         throw Exception("Failed to create block");
@@ -113,8 +121,11 @@ class CurrentThread extends _$CurrentThread {
           createdDate: state.value!.createdDate,
         );
         state = AsyncValue.data(updatedThreadModel);
+      } else {
+        return false;
       }
     });
+    return true;
   }
 
   Future<FullThreadInfo?> fetchThreadFromIdAsync(String id) async {
@@ -283,5 +294,51 @@ class CurrentThread extends _$CurrentThread {
     );
 
     state = AsyncValue.data(updatedThreadModel);
+  }
+
+  Future<FullThreadInfo?> createChildThread(
+      CreateChildThreadModel createChildThreadModel) async {
+    return MonkException.handle(() async {
+      logger.d("Creating child thread");
+      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+      final response = await threadApi.childThreadBlocksChildPost(
+        createChildThreadModel: createChildThreadModel,
+      );
+      if (response.statusCode == 201 || response.data != null) {
+        //print(response.data);
+        if (response.data != null) {
+          logger.d("Child thread is created");
+
+          List<BlockWithCreator> list = state.value?.content.getOrEmpty ?? [];
+          final index = list.indexWhere(
+              (element) => element.id == createChildThreadModel.parentBlockId);
+          if (index != -1) {
+            final oldModel = list[index];
+            // list[index].childId = response.data!.id;
+            final map = oldModel.toJson()
+              ..putIfAbsent("childThreadId", () => response.data!.id);
+
+            final updatedThreadModel = BlockWithCreator.fromJson(map);
+            list[index] = updatedThreadModel;
+            final threadInfo = state.value!.toJson()
+              ..putIfAbsent("content", () => list);
+
+            final updatedThreadModel2 = FullThreadInfo.fromJson(threadInfo);
+
+            state = AsyncValue.data(updatedThreadModel2);
+            logger.d("Updated in state");
+          } else {
+            logger.e("Parent block not found");
+          }
+
+          return response.data;
+        }
+        throw Exception("Thread already created, please refresh the page.");
+      }
+
+      logger.e("Failed to create child thread",
+          error: response.data ?? response.statusCode);
+      return null;
+    });
   }
 }

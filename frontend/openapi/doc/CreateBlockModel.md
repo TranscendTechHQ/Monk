@@ -1,4 +1,4 @@
-# openapi.model.UpdateBlockModel
+# openapi.model.CreateBlockModel
 
 ## Load the model package
 ```dart
@@ -8,9 +8,8 @@ import 'package:openapi/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**blockPosInChild** | **int** |  | [optional] 
-**blockPosInParent** | **int** |  | [optional] 
 **content** | **String** |  | [optional] 
+**parentThreadId** | **String** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

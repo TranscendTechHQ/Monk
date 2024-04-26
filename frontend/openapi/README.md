@@ -91,6 +91,7 @@ Class | Method | HTTP request | Description
  - [BlockWithCreator](doc/BlockWithCreator.md)
  - [ChannelModel](doc/ChannelModel.md)
  - [CompositeChannelList](doc/CompositeChannelList.md)
+ - [CreateBlockModel](doc/CreateBlockModel.md)
  - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)

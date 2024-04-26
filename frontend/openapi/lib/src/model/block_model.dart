@@ -37,6 +37,8 @@ class BlockModel {
      this.lastModified,
 
      this.parentThreadId = '',
+
+     this.tenantId = '',
   });
 
   @JsonKey(
@@ -159,6 +161,18 @@ class BlockModel {
 
 
 
+  @JsonKey(
+    defaultValue: '',
+    name: r'tenant_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? tenantId;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
      other.id == id &&
@@ -170,7 +184,8 @@ class BlockModel {
      other.createdAt == createdAt &&
      other.creatorId == creatorId &&
      other.lastModified == lastModified &&
-     other.parentThreadId == parentThreadId;
+     other.parentThreadId == parentThreadId &&
+     other.tenantId == tenantId;
 
   @override
   int get hashCode =>
@@ -183,7 +198,8 @@ class BlockModel {
     createdAt.hashCode +
     creatorId.hashCode +
     lastModified.hashCode +
-    parentThreadId.hashCode;
+    parentThreadId.hashCode +
+    tenantId.hashCode;
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => _$BlockModelFromJson(json);
 

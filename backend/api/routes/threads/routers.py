@@ -1,4 +1,5 @@
 import datetime as dt
+from fastapi import FastAPI, HTTPException
 from typing import List
 
 from fastapi import APIRouter, Body, Depends
@@ -15,7 +16,7 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, FullThreadInfo, UpdateBlockModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, UpdateBlockModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -264,7 +265,7 @@ async def create_new_block(thread_id, block: UpdateBlockModel, user_id,tenant_id
     if user_info is None:
         return None
     block = block.model_dump()
-    new_block = BlockModel(**block,tenant_id=tenant_id, creator_id=user_id, parent_thread_id=thread_id)
+    new_block = BlockModel(**block,tenant_id=tenant_id, creator_id=user_id)
     
     await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
 
@@ -389,7 +390,7 @@ async def get_thread_from_db(thread_id, tenant_id):
 
 
 @router.post("/blocks", response_model=BlockWithCreator, response_description="Create a new block")
-async def create(request: Request, thread_title: str, block: UpdateBlockModel = Body(...),
+async def create(request: Request, thread_title: str, block: CreateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
     try:
         # Logic to store the block in MongoDB backend database
@@ -407,6 +408,7 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
          return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
  
      thread_id = thread["_id"]
+
      new_block = await create_new_block(thread_id, block, user_id,tenant_id)
 
      user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
@@ -488,35 +490,45 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
 async def child_thread(request: Request,
                        child_thread_data: CreateChildThreadModel = Body(...),
                        session: SessionContainer = Depends(verify_session())):
-    thread_collection = request.app.mongodb["threads"]
-    child_thread = child_thread_data.model_dump()
-
-    parent_block_id = child_thread["parent_block_id"]
-    parent_thread_id = child_thread["parent_thread_id"]
-
-    # fetch the parent block
-    block = await get_block_by_id(parent_block_id, thread_collection)
-    if not block:
-        return JSONResponse(status_code=404, content={"message": "block with id ${parent_block_id} not found"})
-
-    # create a new child thread
-    thread_title = jsonable_encoder(child_thread)["title"]
-    thread_type = jsonable_encoder(child_thread)["type"]
-    user_id = session.get_user_id()
-
-    tenant_id = await get_tenant_id(session)
-
-    created_child_thread = await create_child_thread(thread_collection=thread_collection,
-                                                     parent_block_id=parent_block_id,
-                                                     parent_thread_id=parent_thread_id,
-                                                     thread_title=thread_title,
-                                                     thread_type=thread_type,
-                                                     user_id=user_id, tenant_id=tenant_id)
-
-    ret_thread = await get_thread_from_db(created_child_thread["_id"], tenant_id)
-    
-    return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(ret_thread[0]))
+    try:
+      thread_collection = request.app.mongodb["threads"]
+      child_thread = child_thread_data.model_dump()
+  
+      parent_block_id = child_thread["parent_block_id"]
+      parent_thread_id = child_thread["parent_thread_id"]
+  
+      # fetch the parent block
+      block = await get_block_by_id(parent_block_id, thread_collection)
+      if not block:
+          return JSONResponse(status_code=404, content={"message": "block with id ${parent_block_id} not found"})
+  
+      # create a new child thread
+      thread_title = jsonable_encoder(child_thread)["title"]
+      thread_type = jsonable_encoder(child_thread)["type"]
+      user_id = session.get_user_id()
+  
+      tenant_id = await get_tenant_id(session)
+  
+      created_child_thread = await create_child_thread(thread_collection=thread_collection,
+                                                       parent_block_id=parent_block_id,
+                                                       parent_thread_id=parent_thread_id,
+                                                       thread_title=thread_title,
+                                                       thread_type=thread_type,
+                                                       user_id=user_id, tenant_id=tenant_id)
+  
+      ret_thread = await get_thread_from_db(created_child_thread["_id"], tenant_id)
+      
+      return JSONResponse(status_code=status.HTTP_201_CREATED,
+                          content=jsonable_encoder(ret_thread[0]))
+      
+    except HTTPException as e:
+        return JSONResponse(
+            status_code=e.status_code,
+            content={"message": e.detail}
+        )
+    except Exception as e:
+      print(e)
+      return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.post("/threads", response_model=FullThreadInfo, response_description="Create a new thread")
