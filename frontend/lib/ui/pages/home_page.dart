@@ -198,7 +198,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         //testOpenApi();
 
                         // Navigator.pushNamed(context, ThreadPage.route);
-                        Navigator.push(
+                        /* Navigator.push(
                           context,
                           SubscribedChannelsPage.launchRoute(
                             ifAlreadySubscribed: () =>
@@ -208,6 +208,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                           ),
                         );
+                        */
+                        Navigator.pushReplacementNamed(context, NewsPage.route);
                       },
                       child: Text(
                         "Continue",
