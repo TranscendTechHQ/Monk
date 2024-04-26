@@ -44,25 +44,26 @@ async def keyword_search(query, collection):
 
     return threads
 
+
 @router.get("/user", response_model=UserMap,
             response_description="Get user information")
-async def all_users(request: Request, 
+async def all_users(request: Request,
                     session: SessionContainer = Depends(verify_session())
                     ):
-    
     tenant_id = await get_tenant_id(session)
     # get all users
     final_user_map = {}
-    
-    cursor =  asyncdb.users_collection.find({"tenant_id": tenant_id})
+
+    cursor = asyncdb.users_collection.find({"tenant_id": tenant_id})
     user_list = await cursor.to_list(length=None)
-    
+
     for user in user_list:
         final_user_map[user["_id"]] = UserModel(**user)
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(UserMap(users=final_user_map)))
-            
+
+
 @router.get("/searchTitles", response_model=list[str],
             response_description="Search threads by query and get title")
 async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
@@ -124,14 +125,14 @@ async def get_unfiltered_newsfeed(tenant_id):
     result = asyncdb.threads_collection.aggregate(
         [
             {
-            "$match": {"tenant_id": tenant_id}
+                "$match": {"tenant_id": tenant_id}
             },
             {
                 "$lookup": {
-                "from": "users",
-                "localField": "creator_id",
-                "foreignField": "_id",
-                "as": "creator"
+                    "from": "users",
+                    "localField": "creator_id",
+                    "foreignField": "_id",
+                    "as": "creator"
                 }
             },
             {
@@ -139,21 +140,22 @@ async def get_unfiltered_newsfeed(tenant_id):
             },
             {
                 "$project": {
-                "_id": 1,
-                "title": 1,
-                "type": 1,
-                "created_date": 1,
-                "headline": 1,
-                "creator._id": 1,
-                "creator.name": 1,
-                "creator.picture": 1,
-                "creator.email": 1,
-                "creator.last_login": 1
+                    "_id": 1,
+                    "title": 1,
+                    "type": 1,
+                    "created_date": 1,
+                    "headline": 1,
+                    "creator._id": 1,
+                    "creator.name": 1,
+                    "creator.picture": 1,
+                    "creator.email": 1,
+                    "creator.last_login": 1
                 }
             }
-            ]
-        )
+        ]
+    )
     return result
+
 
 async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, upvote):
     pipeline = [
@@ -224,42 +226,40 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
     #print(pipeline)
     result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
     return result
-    
+
+
 @router.get("/newsfeed", response_model=ThreadsMetaData,
             response_description="Get news feed as  data for all threads")
-            
-async def filter( 
-            bookmark: bool = False,
-            read: bool = False,
-            unfollow: bool = False,
-            upvote: bool = False,
-            session: SessionContainer = Depends(verify_session())
-            ):
+async def filter(
+        bookmark: bool = False,
+        read: bool = False,
+        unfollow: bool = False,
+        upvote: bool = False,
+        session: SessionContainer = Depends(verify_session())
+):
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
 
-    
     if bookmark or unfollow or read or upvote:
         aggregate = await get_filtered_newsfeed(
-                                                user_id=user_id,
-                                                tenant_id=tenant_id, 
-                                                bookmark=bookmark, 
-                                                read=read, 
-                                                unfollow=unfollow, 
-                                                upvote=upvote)
-        
+            user_id=user_id,
+            tenant_id=tenant_id,
+            bookmark=bookmark,
+            read=read,
+            unfollow=unfollow,
+            upvote=upvote)
+
     else:
         aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id)
-    
-    
+
     aggregate = await aggregate.to_list(None)
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
-    
+
 
 async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
-    
+
     threads_collection = asyncdb.threads_collection
     if user_info is None:
         return None
@@ -402,12 +402,15 @@ async def create(request: Request, thread_title: str, block: UpdateBlockModel = 
     thread_id = thread["_id"]
     updated_thread = await create_new_block(thread_id, block, user_id)
 
-    thread_read_documents = await get_mongo_documents(request.app.mongodb["threads_reads"], 
-                                                      tenant_id=tenant_id)
-    for doc in thread_read_documents:
-        if doc['thread_id'] == thread_id:
-            await delete_mongo_document({"thread_id": thread_id, "email": doc.email},
-                                        request.app.mongodb["threads_reads"])
+    user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
+                                                request.app.mongodb["user_thread_flags"], tenant_id)
+
+    if user_thread_flag:
+        user_thread_flag["read"] = False
+        updated_user_thread_flags = await update_mongo_document_fields(
+            {"thread_id": thread["_id"], "user_id": user_id},
+            jsonable_encoder(user_thread_flag),
+            request.app.mongodb["user_thread_flags"])
 
     ret_thread = await get_thread_from_db(thread_id, tenant_id)
     
@@ -423,7 +426,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     input_block = block.model_dump()
-    
+
     block = await get_block_by_id(id, thread_collection)
     block = block["content"]
     user_id = session.get_user_id()
@@ -450,7 +453,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     for content in thread["content"]:
         if content["_id"] == block["_id"]:
             content["content"] = update_block["content"]
-    
+
     updated_thread = await update_mongo_document_fields({"_id": thread["_id"]}, thread, thread_collection)
 
     user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
@@ -488,7 +491,7 @@ async def child_thread(request: Request,
     thread_title = jsonable_encoder(child_thread)["title"]
     thread_type = jsonable_encoder(child_thread)["type"]
     user_id = session.get_user_id()
-    
+
     tenant_id = await get_tenant_id(session)
 
     created_child_thread = await create_child_thread(thread_collection=thread_collection,

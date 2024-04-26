@@ -53,6 +53,9 @@ components:
       type: object
     ChannelModel:
       properties:
+        creator:
+          title: Creator
+          type: string
         id:
           title: Id
           type: string
@@ -62,6 +65,7 @@ components:
       required:
       - id
       - name
+      - creator
       title: ChannelModel
       type: object
     CompositeChannelList:

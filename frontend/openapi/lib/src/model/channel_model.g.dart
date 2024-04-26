@@ -13,9 +13,10 @@ ChannelModel _$ChannelModelFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['id', 'name'],
+          requiredKeys: const ['creator', 'id', 'name'],
         );
         final val = ChannelModel(
+          creator: $checkedConvert('creator', (v) => v as String),
           id: $checkedConvert('id', (v) => v as String),
           name: $checkedConvert('name', (v) => v as String),
         );
@@ -25,6 +26,7 @@ ChannelModel _$ChannelModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ChannelModelToJson(ChannelModel instance) =>
     <String, dynamic>{
+      'creator': instance.creator,
       'id': instance.id,
       'name': instance.name,
     };

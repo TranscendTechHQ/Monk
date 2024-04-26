@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class ChannelModel(BaseModel):
     id: str
     name: str
+    creator: str
 
 
 class PublicChannelList(BaseModel):
