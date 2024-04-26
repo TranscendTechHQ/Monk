@@ -45,8 +45,15 @@ class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
     created_at: datetime = Field(default_factory=datetime.now)
+    last_modified: datetime = Field(default_factory=datetime.now)
     creator_id: str = Field(default="unknown id")
     child_id: str = Field(default="")
+    parent_thread_id: str = Field(default="")
+    block_pos_in_child: int = Field(default=0)
+    block_pos_in_parent: int = Field(default=0)
+    child_thread_id: str = Field(default="")
+    tenant_id: str = Field(default="")
+
 
 
 class UpdateBlockModel(BaseModel):

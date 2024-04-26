@@ -5,9 +5,21 @@ components:
         _id:
           title: ' Id'
           type: string
+        block_pos_in_child:
+          default: 0
+          title: Block Pos In Child
+          type: integer
+        block_pos_in_parent:
+          default: 0
+          title: Block Pos In Parent
+          type: integer
         child_id:
           default: ''
           title: Child Id
+          type: string
+        child_thread_id:
+          default: ''
+          title: Child Thread Id
           type: string
         content:
           title: Content
@@ -20,6 +32,14 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        parent_thread_id:
+          default: ''
+          title: Parent Thread Id
+          type: string
       required:
       - content
       title: BlockModel
@@ -29,9 +49,21 @@ components:
         _id:
           title: ' Id'
           type: string
+        block_pos_in_child:
+          default: 0
+          title: Block Pos In Child
+          type: integer
+        block_pos_in_parent:
+          default: 0
+          title: Block Pos In Parent
+          type: integer
         child_id:
           default: ''
           title: Child Id
+          type: string
+        child_thread_id:
+          default: ''
+          title: Child Thread Id
           type: string
         content:
           title: Content
@@ -45,6 +77,14 @@ components:
         creator_id:
           default: unknown id
           title: Creator Id
+          type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        parent_thread_id:
+          default: ''
+          title: Parent Thread Id
           type: string
       required:
       - content
@@ -522,7 +562,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FullThreadInfo'
+                $ref: '#/components/schemas/BlockWithCreator'
           description: Create a new block
         '422':
           content:

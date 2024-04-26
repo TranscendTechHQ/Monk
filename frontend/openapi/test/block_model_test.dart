@@ -12,8 +12,23 @@ void main() {
       // TODO
     });
 
+    // int blockPosInChild (default value: 0)
+    test('to test the property `blockPosInChild`', () async {
+      // TODO
+    });
+
+    // int blockPosInParent (default value: 0)
+    test('to test the property `blockPosInParent`', () async {
+      // TODO
+    });
+
     // String childId (default value: '')
     test('to test the property `childId`', () async {
+      // TODO
+    });
+
+    // String childThreadId (default value: '')
+    test('to test the property `childThreadId`', () async {
       // TODO
     });
 
@@ -29,6 +44,16 @@ void main() {
 
     // String creatorId (default value: 'unknown id')
     test('to test the property `creatorId`', () async {
+      // TODO
+    });
+
+    // DateTime lastModified
+    test('to test the property `lastModified`', () async {
+      // TODO
+    });
+
+    // String parentThreadId (default value: '')
+    test('to test the property `parentThreadId`', () async {
       // TODO
     });
 

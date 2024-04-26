@@ -17,6 +17,7 @@ async def startup_async_db_client():
     # print(app.mongodb_client.list_database_names())
     asyncdb.mongodb = asyncdb.mongodb_client[settings.DB_NAME]
     asyncdb.threads_collection = asyncdb.mongodb["threads"]
+    asyncdb.blocks_collection = asyncdb.mongodb["blocks"]
     asyncdb.users_collection = asyncdb.mongodb["users"]
     asyncdb.tenants_collection = asyncdb.mongodb["tenants"]
     # asyncdb.metadata_collection = asyncdb.mongodb["threads_metadata"]

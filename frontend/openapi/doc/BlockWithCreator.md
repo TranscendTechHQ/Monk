@@ -9,11 +9,16 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
+**blockPosInChild** | **int** |  | [optional] [default to 0]
+**blockPosInParent** | **int** |  | [optional] [default to 0]
 **childId** | **String** |  | [optional] [default to '']
+**childThreadId** | **String** |  | [optional] [default to '']
 **content** | **String** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **creator** | [**UserModel**](UserModel.md) |  | 
 **creatorId** | **String** |  | [optional] [default to 'unknown id']
+**lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
+**parentThreadId** | **String** |  | [optional] [default to '']
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

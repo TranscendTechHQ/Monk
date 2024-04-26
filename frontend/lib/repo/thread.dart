@@ -84,27 +84,37 @@ class CurrentThread extends _$CurrentThread {
   }
 
   Future<void> createBlock(String text, {String? customTitle}) async {
-    String? threadTitle = state.value?.title ?? customTitle;
-    if (threadTitle.isNullOrEmpty) {
-      logger.e("Thread title is null");
-      throw Exception("Thread title is null");
-    }
-    logger.d("creating new Thread title $threadTitle");
-    final blockApi = NetworkManager.instance.openApi.getThreadsApi();
+    MonkException.handle(() async {
+      String? threadTitle = state.value?.title ?? customTitle;
+      if (threadTitle.isNullOrEmpty) {
+        logger.e("Thread title is null");
+        throw Exception("Thread title is null");
+      }
+      logger.d("creating new Thread title $threadTitle");
+      final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
-    final newThreadState = await blockApi.createBlocksPost(
-        threadTitle: threadTitle!,
-        updateBlockModel: UpdateBlockModel(content: text));
+      final newThreadState = await blockApi.createBlocksPost(
+          threadTitle: threadTitle!,
+          updateBlockModel: UpdateBlockModel(content: text));
 
-    if (newThreadState.statusCode != 201) {
-      throw Exception("Failed to create block");
-    }
+      if (newThreadState.statusCode != 201) {
+        throw Exception("Failed to create block");
+      }
+      if (newThreadState.data is BlockWithCreator) {
+        final list = state.value?.content.getOrEmpty ?? [];
+        list.add(newThreadState.data!);
 
-    state = AsyncValue.data(newThreadState.data!);
-    // if (state.value != null) {
-    //   return state.value!;
-    // }
-    // return state.value;
+        final updatedThreadModel = FullThreadInfo(
+          title: state.value!.title,
+          type: state.value!.type,
+          content: list,
+          creator: state.value!.creator,
+          id: state.value!.id,
+          createdDate: state.value!.createdDate,
+        );
+        state = AsyncValue.data(updatedThreadModel);
+      }
+    });
   }
 
   Future<FullThreadInfo?> fetchThreadFromIdAsync(String id) async {

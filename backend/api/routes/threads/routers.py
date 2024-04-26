@@ -257,31 +257,36 @@ async def filter(
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
 
-async def create_new_block(thread_id, block: UpdateBlockModel, user_id):
+async def create_new_block(thread_id, block: UpdateBlockModel, user_id,tenant_id:str):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
 
-    threads_collection = asyncdb.threads_collection
+    blocks_collection = asyncdb.blocks_collection
     if user_info is None:
         return None
     block = block.model_dump()
-    new_block = BlockModel(**block)
-    new_block.creator_id = user_id
-    thread = await get_mongo_document(
-        {"_id": thread_id},
-        threads_collection,
-        tenant_id=user_info['tenant_id'])
+    new_block = BlockModel(**block,tenant_id=tenant_id, creator_id=user_id, parent_thread_id=thread_id)
+    
+    await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
+
+    # thread = await get_mongo_document(
+    #             {"_id": thread_id},
+    #             threads_collection,
+    #             tenant_id=user_info['tenant_id']
+    #         )
     # change new_block_dict to json_new_block if you want to store
     # block as a json string in the db
-    thread["content"].append(jsonable_encoder(new_block))
+    # thread["content"].append(jsonable_encoder(new_block))
 
-    updated_thread = await update_mongo_document_fields(
-        {"_id": thread_id},
-        thread,
-        threads_collection)
+    # updated_thread = await update_mongo_document_fields(
+    #                     {"_id": thread_id},
+    #                     thread,
+    #                     threads_collection
+    #                 )
 
-    generate_single_thread_headline(thread, threads_collection, use_ai=False)
+    # TODO: Implement AI headline generation
+    # generate_single_thread_headline(thread, threads_collection, use_ai=False)
 
-    return updated_thread
+    return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
 
 
 async def get_thread_from_db(thread_id, tenant_id):
@@ -383,39 +388,46 @@ async def get_thread_from_db(thread_id, tenant_id):
     
 
 
-@router.post("/blocks", response_model=FullThreadInfo, response_description="Create a new block")
+@router.post("/blocks", response_model=BlockWithCreator, response_description="Create a new block")
 async def create(request: Request, thread_title: str, block: UpdateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
-    # Logic to store the block in MongoDB backend database
-    # Index the block by userId
+    try:
+        # Logic to store the block in MongoDB backend database
+        # Index the block by userId
+ 
+     user_id = session.get_user_id()
+     tenant_id = await get_tenant_id(session)
+     thread = await get_mongo_document(
+                 {"title": thread_title},
+                 request.app.mongodb["threads"],
+                 tenant_id=tenant_id
+             )
+ 
+     if not thread:
+         return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
+ 
+     thread_id = thread["_id"]
+     new_block = await create_new_block(thread_id, block, user_id,tenant_id)
 
-    user_id = session.get_user_id()
-    tenant_id = await get_tenant_id(session)
-    thread = await get_mongo_document(
-        {"title": thread_title},
-        request.app.mongodb["threads"],
-        tenant_id=tenant_id)
-
-    if not thread:
-        return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
-
-    thread_id = thread["_id"]
-    updated_thread = await create_new_block(thread_id, block, user_id)
-
-    user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
-                                                request.app.mongodb["user_thread_flags"], tenant_id)
-
-    if user_thread_flag:
-        user_thread_flag["read"] = False
-        updated_user_thread_flags = await update_mongo_document_fields(
-            {"thread_id": thread["_id"], "user_id": user_id},
-            jsonable_encoder(user_thread_flag),
-            request.app.mongodb["user_thread_flags"])
-
-    ret_thread = await get_thread_from_db(thread_id, tenant_id)
-    
-    return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(ret_thread[0]))
+     user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
+                                                 request.app.mongodb["user_thread_flags"], tenant_id)
+ 
+    #  TODO:
+     if user_thread_flag:
+         user_thread_flag["read"] = False
+         updated_user_thread_flags = await update_mongo_document_fields(
+             {"thread_id": thread["_id"], "user_id": user_id},
+             jsonable_encoder(user_thread_flag),
+             request.app.mongodb["user_thread_flags"])
+ 
+    #  ret_thread = await get_thread_from_db(thread_id, tenant_id)
+     
+     return  JSONResponse(status_code=status.HTTP_201_CREATED,
+                         content=jsonable_encoder(new_block)
+             )
+    except Exception as e:
+        print(e)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.put("/blocks/{id}", response_model=FullThreadInfo, response_description="Update a block")

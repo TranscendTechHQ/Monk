@@ -20,13 +20,23 @@ class BlockModel {
 
      this.id,
 
+     this.blockPosInChild = 0,
+
+     this.blockPosInParent = 0,
+
      this.childId = '',
+
+     this.childThreadId = '',
 
     required  this.content,
 
      this.createdAt,
 
      this.creatorId = 'unknown id',
+
+     this.lastModified,
+
+     this.parentThreadId = '',
   });
 
   @JsonKey(
@@ -42,6 +52,30 @@ class BlockModel {
 
 
   @JsonKey(
+    defaultValue: 0,
+    name: r'block_pos_in_child',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? blockPosInChild;
+
+
+
+  @JsonKey(
+    defaultValue: 0,
+    name: r'block_pos_in_parent',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? blockPosInParent;
+
+
+
+  @JsonKey(
     defaultValue: '',
     name: r'child_id',
     required: false,
@@ -50,6 +84,18 @@ class BlockModel {
 
 
   final String? childId;
+
+
+
+  @JsonKey(
+    defaultValue: '',
+    name: r'child_thread_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? childThreadId;
 
 
 
@@ -89,21 +135,55 @@ class BlockModel {
 
 
 
+  @JsonKey(
+    
+    name: r'last_modified',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? lastModified;
+
+
+
+  @JsonKey(
+    defaultValue: '',
+    name: r'parent_thread_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? parentThreadId;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
      other.id == id &&
+     other.blockPosInChild == blockPosInChild &&
+     other.blockPosInParent == blockPosInParent &&
      other.childId == childId &&
+     other.childThreadId == childThreadId &&
      other.content == content &&
      other.createdAt == createdAt &&
-     other.creatorId == creatorId;
+     other.creatorId == creatorId &&
+     other.lastModified == lastModified &&
+     other.parentThreadId == parentThreadId;
 
   @override
   int get hashCode =>
     id.hashCode +
+    blockPosInChild.hashCode +
+    blockPosInParent.hashCode +
     childId.hashCode +
+    childThreadId.hashCode +
     content.hashCode +
     createdAt.hashCode +
-    creatorId.hashCode;
+    creatorId.hashCode +
+    lastModified.hashCode +
+    parentThreadId.hashCode;
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => _$BlockModelFromJson(json);
 
