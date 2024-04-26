@@ -111,7 +111,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         # call the default behaviour as show below
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
                                                            api_options, user_context)
-        #print(result.user.email)
+        # print(result.user.email)
         if isinstance(result, SignInUpPostOkResult):
             # print(result.user)
 
@@ -123,7 +123,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
             # This gives the user's info as returned by the provider's user profile endpoint.
             if result.raw_user_info_from_provider.from_user_info_api is not None:
                 # print(result.raw_user_info_from_provider.from_user_info_api['name'])
-                user_id = result.user.user_id
+                super_token_id = result.user.user_id
                 name = result.raw_user_info_from_provider.from_user_info_api['name']
                 picture = result.raw_user_info_from_provider.from_user_info_api['picture']
                 # email = result.raw_user_info_from_provider.from_user_info_api['email']
@@ -153,7 +153,8 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     tenant_id = ids[0]
                     existing_slack_tenant = await mongodb["tenants"].find_one({"tenant_id": tenant_id})
                     if existing_slack_tenant is None:
-                        return GeneralErrorResponse('Your Slack workspace is not whitelisted. Please contact your workspace admin to install Monk bot. If you are the admin, please visit https://install.heymonk.app')
+                        return GeneralErrorResponse(
+                            'Your Slack workspace is not whitelisted. Please contact your workspace admin to install Monk bot. If you are the admin, please visit https://install.heymonk.app')
                 elif third_party_provider == "google":
                     split_str = third_party_info.split('|')
                     thirdparty_user_id = split_str[1]
@@ -162,19 +163,19 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     # check if the email id is whitelisted
                     whitelisted_user = await mongodb['whitelisted_users'].find_one({"email": email})
                     if whitelisted_user is None:
-                        return GeneralErrorResponse('Your Google email address is not whitelisted. Please contact support@transcendtech.io')
-                    
+                        return GeneralErrorResponse(
+                            'Your Google email address is not whitelisted. Please contact support@transcendtech.io')
+
                     tenant_id = whitelisted_user['tenant_id']
 
-            
-                    tenant_name = "Tenant:"+ tenant_id
+                    tenant_name = "Tenant:" + tenant_id
                     tenants_collection = mongodb["tenants"]
                     old_tenant = await tenants_collection.find_one({"tenant_name": tenant_name})
                     if old_tenant:
                         tenant_id = old_tenant['tenant_id']
                     else:
                         tenant = {}
-                        
+
                         tenant["tenant_id"] = tenant_id
                         tenant["tenant_name"] = tenant_name
                         tenant["user_id"] = result.user.user_id
@@ -185,18 +186,38 @@ def override_thirdparty_apis(original_implementation: APIInterface):
 
                         await tenants_collection.insert_one(tenant)
 
+                user = await mongodb_users.find_one({"super_token_id": super_token_id})
+                if not user:
+                    user = await mongodb_users.find_one({"email": email, "tenant_id": tenant_id})
+                    if not user:
+                        update_result = await mongodb_users.update_one({"super_token_id": super_token_id},
+                                                                       {"$set":
+                                                                           {
+                                                                               "_id": uuid.uuid4(),
+                                                                               "name": name,
+                                                                               "picture": picture,
+                                                                               "email": email,
+                                                                               "tenant_id": tenant_id,
+                                                                               "thirdparty_provider": third_party_provider,
+                                                                               "thirdparty_user_id": thirdparty_user_id,
+                                                                               "thirdparty_team_id": thirdparty_team_id,
 
-                update_result = await mongodb_users.update_one({"_id": user_id},
-                                                               {"$set":
-                                                                    {"name": name,
-                                                                     "picture": picture,
-                                                                     "email": email,
-                                                                     "tenant_id": tenant_id,
-                                                                     "thirdparty_provider": third_party_provider,
-                                                                     "thirdparty_user_id": thirdparty_user_id,
-                                                                     "thirdparty_team_id": thirdparty_team_id,
+                                                                           }}, upsert=True)
+                        return result
 
-                                                                     }}, upsert=True)
+                    update_result = await mongodb_users.update_one({"_id": user["_id"]},
+                                                                   {"$set":
+                                                                       {
+                                                                           "name": name,
+                                                                           "picture": picture,
+                                                                           "email": email,
+                                                                           "tenant_id": tenant_id,
+                                                                           "super_token_id": super_token_id,
+                                                                           "thirdparty_provider": third_party_provider,
+                                                                           "thirdparty_user_id": thirdparty_user_id,
+                                                                           "thirdparty_team_id": thirdparty_team_id,
+
+                                                                       }}, upsert=True)
 
                 # await update_user_metadata(user_id=user_id, metadata_update={
                 #   "name": name
