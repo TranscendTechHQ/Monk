@@ -1,7 +1,7 @@
 import datetime as dt
 import uuid
 from datetime import datetime
-from typing import Annotated, List, Union, Optional
+from typing import Annotated, List, Union
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
@@ -48,7 +48,7 @@ class BlockModel(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.now)
     creator_id: str = Field(default="unknown id")
     child_id: str = Field(default="")
-    parent_thread_id: Optional[str] = Field(default="")
+    parent_thread_id: str = Field(default="")
     block_pos_in_child: int = Field(default=0,null=True)
     block_pos_in_parent: int = Field(default=0,null=True)
     child_thread_id: str = Field(default="")
@@ -57,16 +57,16 @@ class BlockModel(BaseModel):
 
 
 class CreateBlockModel(BaseModel):
-    content: Union[str, SkipJsonSchema[None]] = None
-    parent_thread_id: Optional[str] = Field(default=None)
+    content: str
+    parent_thread_id: str
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               )
 class UpdateBlockModel(BaseModel):
     content: Union[str, SkipJsonSchema[None]] = None
-    block_pos_in_child: Optional[int] = Field(default=None)
-    block_pos_in_parent: Optional[int] = Field(default=None)
+    block_pos_in_child: int = Field(default=None)
+    block_pos_in_parent: int = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

@@ -83,8 +83,7 @@ class CurrentThread extends _$CurrentThread {
     return state.value;
   }
 
-  Future<bool> createBlock(String text,
-      {String? customTitle, String? parentThreadId}) async {
+  Future<bool> createBlock(String text, {String? customTitle}) async {
     MonkException.handle(() async {
       String? threadTitle = state.value?.title ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
@@ -93,6 +92,7 @@ class CurrentThread extends _$CurrentThread {
       }
       logger.d("creating new Thread title $threadTitle");
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
+      final parentThreadId = state.value!.id;
       if (parentThreadId != null) {
         logger.d("creating new block with parent thread id $parentThreadId");
       }

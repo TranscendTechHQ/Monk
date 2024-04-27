@@ -4,7 +4,7 @@ import json
 import uuid
 
 from config import settings
-from routes.threads.models import UpdateBlockModel
+from routes.threads.models import CreateBlockModel, UpdateBlockModel
 from routes.threads.child_thread import create_new_thread
 from routes.threads.routers import create_new_block
 from routes.slack.models import ChannelModel, PublicChannelList
@@ -265,9 +265,12 @@ async def main():
 
                 if "reply_count" in message:
                     if message["reply_count"] > 0:
-                        new_parent_block = UpdateBlockModel(content=message["text"])
+                        new_parent_block = CreateBlockModel(content=message["text"], parent_thread_id=thread_id)
                         print(new_parent_block)
-                        new_parent_block = await create_new_block(thread_id=thread_id, block=new_parent_block, user_id=message_user["_id"])
+                        new_parent_block = await create_new_block( 
+                                                                  block=new_parent_block, 
+                                                                  user_id=message_user["_id"],
+                                                                  tenant_id=tenant["tenant_id"])
                         new_parent_block_id = new_parent_block['content'][-1]['_id']
 
                         new_thread = await create_new_thread(
@@ -278,19 +281,19 @@ async def main():
 
                         new_thread_title = new_thread["title"]
 
-                        new_block = UpdateBlockModel(content=message["text"])
+                        new_block = CreateBlockModel(content=message["text"], parent_thread_id=new_thread["_id"])
                         print(new_block)
-                        await create_new_block(thread_id=new_thread["_id"], block=new_block,
-                                               user_id=message_user["_id"])
+                        await create_new_block(block=new_block,
+                                               user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
 
                         updated_parent_block = await update_block_child_id(threads_collection=threads_collection,
                                                                            parent_block_id=new_parent_block_id,
                                                                            thread_id=thread_id,
                                                                            child_thread_id=new_thread["_id"])
                     else:
-                        new_block = UpdateBlockModel(content=message["text"])
+                        new_block = CreateBlockModel(content=message["text"], parent_thread_id=thread_id)
                         print(new_block)
-                        await create_new_block(thread_id=thread_id, block=new_block, user_id=message_user["_id"])
+                        await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
 
                 elif "parent_message_id" in message:
                     parent_message = {}
@@ -302,9 +305,9 @@ async def main():
                     parent_thread = await threads_collection.find_one({"title": new_thread_title})
 
                     thread_id = parent_thread["_id"]
-                    new_block = UpdateBlockModel(content=message["text"])
+                    new_block = CreateBlockModel(content=message["text"], parent_thread_id=parent_thread["_id"])
                     print(new_block)
-                    await create_new_block(thread_id=parent_thread["_id"], block=new_block, user_id=message_user["_id"])
+                    await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
 
     await shutdown_async_db_client()
 

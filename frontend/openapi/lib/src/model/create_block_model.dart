@@ -18,32 +18,32 @@ class CreateBlockModel {
   /// Returns a new [CreateBlockModel] instance.
   CreateBlockModel({
 
-     this.content,
+    required  this.content,
 
-     this.parentThreadId,
+    required  this.parentThreadId,
   });
 
   @JsonKey(
     
     name: r'content',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final String? content;
+  final String content;
 
 
 
   @JsonKey(
     
     name: r'parent_thread_id',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final String? parentThreadId;
+  final String parentThreadId;
 
 
 
@@ -55,7 +55,7 @@ class CreateBlockModel {
   @override
   int get hashCode =>
     content.hashCode +
-    (parentThreadId == null ? 0 : parentThreadId.hashCode);
+    parentThreadId.hashCode;
 
   factory CreateBlockModel.fromJson(Map<String, dynamic> json) => _$CreateBlockModelFromJson(json);
 

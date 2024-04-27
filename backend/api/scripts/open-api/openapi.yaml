@@ -7,10 +7,12 @@ components:
           type: string
         block_pos_in_child:
           default: 0
+          'null': true
           title: Block Pos In Child
           type: integer
         block_pos_in_parent:
           default: 0
+          'null': true
           title: Block Pos In Parent
           type: integer
         child_id:
@@ -40,6 +42,10 @@ components:
           default: ''
           title: Parent Thread Id
           type: string
+        tenant_id:
+          default: ''
+          title: Tenant Id
+          type: string
       required:
       - content
       title: BlockModel
@@ -51,10 +57,12 @@ components:
           type: string
         block_pos_in_child:
           default: 0
+          'null': true
           title: Block Pos In Child
           type: integer
         block_pos_in_parent:
           default: 0
+          'null': true
           title: Block Pos In Parent
           type: integer
         child_id:
@@ -85,6 +93,10 @@ components:
         parent_thread_id:
           default: ''
           title: Parent Thread Id
+          type: string
+        tenant_id:
+          default: ''
+          title: Tenant Id
           type: string
       required:
       - content
@@ -128,6 +140,19 @@ components:
       - subscribed_channels
       - public_channels
       title: CompositeChannelList
+      type: object
+    CreateBlockModel:
+      properties:
+        content:
+          title: Content
+          type: string
+        parent_thread_id:
+          title: Parent Thread Id
+          type: string
+      required:
+      - content
+      - parent_thread_id
+      title: CreateBlockModel
       type: object
     CreateChildThreadModel:
       properties:
@@ -431,6 +456,12 @@ components:
       type: object
     UpdateBlockModel:
       properties:
+        block_pos_in_child:
+          title: Block Pos In Child
+          type: integer
+        block_pos_in_parent:
+          title: Block Pos In Parent
+          type: integer
         content:
           title: Content
           type: string
@@ -555,7 +586,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateBlockModel'
+              $ref: '#/components/schemas/CreateBlockModel'
         required: true
       responses:
         '200':

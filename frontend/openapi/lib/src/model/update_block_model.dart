@@ -69,8 +69,8 @@ class UpdateBlockModel {
 
   @override
   int get hashCode =>
-    (blockPosInChild == null ? 0 : blockPosInChild.hashCode) +
-    (blockPosInParent == null ? 0 : blockPosInParent.hashCode) +
+    blockPosInChild.hashCode +
+    blockPosInParent.hashCode +
     content.hashCode;
 
   factory UpdateBlockModel.fromJson(Map<String, dynamic> json) => _$UpdateBlockModelFromJson(json);

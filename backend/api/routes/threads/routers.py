@@ -258,7 +258,7 @@ async def filter(
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
 
-async def create_new_block(thread_id, block: UpdateBlockModel, user_id,tenant_id:str):
+async def create_new_block(block: CreateBlockModel, user_id,tenant_id:str):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
 
     blocks_collection = asyncdb.blocks_collection
@@ -409,16 +409,16 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
  
      thread_id = thread["_id"]
 
-     new_block = await create_new_block(thread_id, block, user_id,tenant_id)
+     new_block = await create_new_block(block, user_id, tenant_id)
 
-     user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
+     user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
                                                  request.app.mongodb["user_thread_flags"], tenant_id)
  
     #  TODO:
      if user_thread_flag:
          user_thread_flag["read"] = False
          updated_user_thread_flags = await update_mongo_document_fields(
-             {"thread_id": thread["_id"], "user_id": user_id},
+             {"thread_id": thread_id, "user_id": user_id},
              jsonable_encoder(user_thread_flag),
              request.app.mongodb["user_thread_flags"])
  
