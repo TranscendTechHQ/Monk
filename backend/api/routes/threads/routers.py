@@ -260,32 +260,27 @@ async def filter(
 
 async def create_new_block(block: CreateBlockModel, user_id,tenant_id:str):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
-
+    thread_collection = asyncdb.threads_collection
+    thread_id = block.parent_thread_id
+    thread = await get_mongo_document({"_id": thread_id}, thread_collection, tenant_id)
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    if 'num_blocks' not in thread.keys():
+        thread['num_blocks'] = 0
+    #create the new block
+    pos = thread["num_blocks"]
     blocks_collection = asyncdb.blocks_collection
     if user_info is None:
         return None
     block = block.model_dump()
-    new_block = BlockModel(**block,tenant_id=tenant_id, creator_id=user_id)
-    
+    new_block = BlockModel(**block,tenant_id=tenant_id, creator_id=user_id, block_pos_in_parent=pos)
     await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
-
-    # thread = await get_mongo_document(
-    #             {"_id": thread_id},
-    #             threads_collection,
-    #             tenant_id=user_info['tenant_id']
-    #         )
-    # change new_block_dict to json_new_block if you want to store
-    # block as a json string in the db
-    # thread["content"].append(jsonable_encoder(new_block))
-
-    # updated_thread = await update_mongo_document_fields(
-    #                     {"_id": thread_id},
-    #                     thread,
-    #                     threads_collection
-    #                 )
-
+    
+    #now update the thread block count
+    await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": pos + 1}, thread_collection)
+     
     # TODO: Implement AI headline generation
-    # generate_single_thread_headline(thread, threads_collection, use_ai=False)
+    #generate_single_thread_headline(thread, thread_collection, use_ai=False)
 
     return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
 
