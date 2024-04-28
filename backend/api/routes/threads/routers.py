@@ -303,6 +303,18 @@ async def get_thread_from_db(thread_id, tenant_id):
         },
     },
     {
+     "$addFields": {
+            "content": {
+                "$cond": {
+                    "if": {"$eq": [{"$size": "$content"}, 0]},
+                    "then": [{}],
+                    "else": "$content"
+                }
+            }
+        }
+    },
+    
+    {
         "$unwind": "$content",
     },
     {
