@@ -294,20 +294,22 @@ async def get_thread_from_db(thread_id, tenant_id):
         }
     },
     {
-        "$addFields": {
-            "content": {
-                "$cond": {
-                    "if": {"$eq": [{"$size": "$content"}, 0]},
-                    "then": [{}],
-                    "else": "$content"
-                }
-            }
-        }
+        "$lookup":
+        {
+            "from": "blocks",
+            "localField": "_id",
+            "foreignField": "parent_thread_id",
+            "as": "content",
+        },
     },
     {
-        "$unwind": {
-            "path": "$content"
-        }
+        "$unwind": "$content",
+    },
+    {
+        "$sort":
+        {
+            "content.block_pos_in_parent": 1,
+        },
     },
     {
         "$lookup": {
