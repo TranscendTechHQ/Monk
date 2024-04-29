@@ -16,7 +16,7 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, UpdateBlockModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, PositionModel, UpdateBlockModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -263,18 +263,19 @@ async def create_new_block(block: CreateBlockModel, user_id,tenant_id:str):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     thread_collection = asyncdb.threads_collection
     thread_id = block.parent_thread_id
-    thread = await get_mongo_document({"_id": thread_id}, thread_collection, tenant_id)
-    if not thread:
-        raise HTTPException(status_code=404, detail="Thread not found")
-    if 'num_blocks' not in thread.keys():
-        thread['num_blocks'] = 0
+    # thread = await get_mongo_document({"_id": thread_id}, thread_collection, tenant_id)
+    # if not thread:
+    #     raise HTTPException(status_code=404, detail="Thread not found")
+    # if 'num_blocks' not in thread.keys():
+    #     thread['num_blocks'] = 0
     #create the new block
-    pos = thread["num_blocks"]
+    # pos = thread["num_blocks"]
+    pos = await get_blocks_count(thread_id, asyncdb.blocks_collection) + 1
     blocks_collection = asyncdb.blocks_collection
     if user_info is None:
         return None
     block = block.model_dump()
-    new_block = BlockModel(**block,tenant_id=tenant_id, creator_id=user_id, block_pos_in_parent=pos)
+    new_block = BlockModel(**block,tenant_id=tenant_id, creator_id=user_id, block_pos_in_parent=pos,position=[PositionModel(position=pos, thread_id=thread_id)])
     await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
     
     #now update the thread block count
@@ -285,6 +286,9 @@ async def create_new_block(block: CreateBlockModel, user_id,tenant_id:str):
 
     return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
 
+# Get blocks count in a collection for a given thread
+async def get_blocks_count(thread_id, collection):
+    return await collection.count_documents({"parent_thread_id": thread_id})
 
 async def get_thread_from_db(thread_id, tenant_id):
     pipeline = [

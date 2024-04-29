@@ -211,7 +211,7 @@ class ChatListView extends ConsumerWidget {
       width: containerWidth,
       child: type == '/new-task'
           ? ReorderableListView(
-              reverse: threadType == ThreadType.thread,
+              reverse: true,
               padding: const EdgeInsets.only(bottom: 30),
               onReorder: (int oldIndex, int newIndex) {
                 ref
@@ -239,7 +239,7 @@ class ChatListView extends ConsumerWidget {
               ],
             )
           : ListView.builder(
-              reverse: threadType == ThreadType.thread,
+              reverse: true,
               controller: scrollController,
               itemCount: blocks?.length ?? 0,
               padding: const EdgeInsets.only(bottom: 30),

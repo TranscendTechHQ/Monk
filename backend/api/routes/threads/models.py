@@ -40,7 +40,13 @@ class UserMap(BaseModel):
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,)
-
+class PositionModel(BaseModel):
+    thread_id: str = Field(default='')
+    position: int = Field(default=0)
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,)
+    
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
@@ -53,6 +59,7 @@ class BlockModel(BaseModel):
     block_pos_in_parent: int = Field(default=0,null=True)
     child_thread_id: str = Field(default="")
     tenant_id: str = Field(default="")
+    position: Union[List[PositionModel], SkipJsonSchema[None]] = Field(default=None)
 
 
 
