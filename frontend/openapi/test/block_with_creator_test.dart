@@ -62,6 +62,11 @@ void main() {
       // TODO
     });
 
+    // List<PositionModel> position
+    test('to test the property `position`', () async {
+      // TODO
+    });
+
     // String tenantId (default value: '')
     test('to test the property `tenantId`', () async {
       // TODO

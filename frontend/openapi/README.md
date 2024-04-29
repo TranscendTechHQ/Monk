@@ -97,6 +97,7 @@ Class | Method | HTTP request | Description
  - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)
  - [FullThreadInfo](doc/FullThreadInfo.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
+ - [PositionModel](doc/PositionModel.md)
  - [SessionInfo](doc/SessionInfo.md)
  - [SubscribeChannelRequest](doc/SubscribeChannelRequest.md)
  - [SubscribedChannelList](doc/SubscribedChannelList.md)

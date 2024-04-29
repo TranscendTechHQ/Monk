@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/position_model.dart';
 import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -40,6 +41,8 @@ class BlockWithCreator {
      this.lastModified,
 
      this.parentThreadId = '',
+
+     this.position,
 
      this.tenantId = '',
   });
@@ -177,6 +180,18 @@ class BlockWithCreator {
 
 
   @JsonKey(
+    
+    name: r'position',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final List<PositionModel>? position;
+
+
+
+  @JsonKey(
     defaultValue: '',
     name: r'tenant_id',
     required: false,
@@ -201,6 +216,7 @@ class BlockWithCreator {
      other.creatorId == creatorId &&
      other.lastModified == lastModified &&
      other.parentThreadId == parentThreadId &&
+     other.position == position &&
      other.tenantId == tenantId;
 
   @override
@@ -216,6 +232,7 @@ class BlockWithCreator {
     creatorId.hashCode +
     lastModified.hashCode +
     parentThreadId.hashCode +
+    position.hashCode +
     tenantId.hashCode;
 
   factory BlockWithCreator.fromJson(Map<String, dynamic> json) => _$BlockWithCreatorFromJson(json);

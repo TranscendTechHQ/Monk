@@ -42,6 +42,11 @@ components:
           default: ''
           title: Parent Thread Id
           type: string
+        position:
+          items:
+            $ref: '#/components/schemas/PositionModel'
+          title: Position
+          type: array
         tenant_id:
           default: ''
           title: Tenant Id
@@ -94,6 +99,11 @@ components:
           default: ''
           title: Parent Thread Id
           type: string
+        position:
+          items:
+            $ref: '#/components/schemas/PositionModel'
+          title: Position
+          type: array
         tenant_id:
           default: ''
           title: Tenant Id
@@ -281,6 +291,18 @@ components:
           title: Detail
           type: array
       title: HTTPValidationError
+      type: object
+    PositionModel:
+      properties:
+        position:
+          default: 0
+          title: Position
+          type: integer
+        thread_id:
+          default: ''
+          title: Thread Id
+          type: string
+      title: PositionModel
       type: object
     SessionInfo:
       properties:
