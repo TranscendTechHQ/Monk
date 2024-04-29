@@ -287,106 +287,126 @@ async def create_new_block(block: CreateBlockModel, user_id,tenant_id:str):
 
 async def get_thread_from_db(thread_id, tenant_id):
     pipeline = [
-     {
-        "$match": {
-            "_id": thread_id,
-            "tenant_id": tenant_id
+    {
+        '$match': {
+            '_id': thread_id, 
+            'tenant_id': tenant_id
         }
-    },
-    {
-        "$lookup":
-        {
-            "from": "blocks",
-            "localField": "_id",
-            "foreignField": "parent_thread_id",
-            "as": "content",
-        },
-    },
-    {
-     "$addFields": {
-            "content": {
-                "$cond": {
-                    "if": {"$eq": [{"$size": "$content"}, 0]},
-                    "then": [{}],
-                    "else": "$content"
+    }, {
+        '$lookup': {
+            'from': 'blocks', 
+            'localField': '_id', 
+            'foreignField': 'child_thread_id', 
+            'as': 'content1'
+        }
+    }, {
+        '$lookup': {
+            'from': 'blocks', 
+            'localField': '_id', 
+            'foreignField': 'parent_thread_id', 
+            'as': 'content2'
+        }
+    }, {
+        '$set': {
+            'content': {
+                '$concatArrays': [
+                    '$content1', '$content2'
+                ]
+            }
+        }
+    }, {
+        '$unset': [
+            'content1', 'content2'
+        ]
+    }, {
+        '$unwind': '$content'
+    }, {
+        '$sort': {
+            'content.block_pos_in_child': 1
+        }
+    }, {
+        '$lookup': {
+            'from': 'users', 
+            'localField': 'content.creator_id', 
+            'foreignField': '_id', 
+            'as': 'content.creator'
+        }
+    }, {
+        '$addFields': {
+            'content.creator': {
+                '$cond': {
+                    'if': {
+                        '$eq': [
+                            {
+                                '$size': '$content.creator'
+                            }, 0
+                        ]
+                    }, 
+                    'then': [
+                        {}
+                    ], 
+                    'else': '$content.creator'
                 }
             }
         }
-    },
-    
-    {
-        "$unwind": "$content",
-    },
-    {
-        "$sort":
-        {
-            "content.block_pos_in_parent": 1,
-        },
-    },
-    {
-        "$lookup": {
-            "from": "users",
-            "localField": "content.creator_id",
-            "foreignField": "_id",
-            "as": "content.creator"
+    }, {
+        '$unwind': {
+            'path': '$content.creator'
         }
-    },
-    {
-        "$addFields": {
-            "content.creator": {
-                "$cond": {
-                    "if": {"$eq": [{"$size": "$content.creator"}, 0]},
-                    "then": [{}],
-                    "else": "$content.creator"
-                }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'created_date': {
+                '$first': '$created_date'
+            }, 
+            'type': {
+                '$first': '$type'
+            }, 
+            'title': {
+                '$first': '$title'
+            }, 
+            'headline': {
+                '$first': '$headline'
+            }, 
+            'last_modified': {
+                '$first': '$last_modified'
+            }, 
+            'tenant_id': {
+                '$first': '$tenant_id'
+            }, 
+            'creator_id': {
+                '$first': '$creator_id'
+            }, 
+            'content': {
+                '$push': '$content'
             }
         }
-    },
-    {
-        "$unwind": {
-            "path": "$content.creator"
+    }, {
+        '$lookup': {
+            'from': 'users', 
+            'localField': 'creator_id', 
+            'foreignField': '_id', 
+            'as': 'creator'
         }
-    },
-    {
-        "$group": {
-            "_id": "$_id",
-            "created_date": {"$first": "$created_date"},
-            "type": {"$first": "$type"},
-            "title": {"$first": "$title"},
-            "headline": {"$first": "$headline"},
-            "last_modified": {"$first": "$last_modified"},
-            "tenant_id": {"$first": "$tenant_id"},
-            "creator_id": {"$first": "$creator_id"},
-            "content": {"$push": "$content"}
-        }
-    },
-    {
-        "$lookup": {
-            "from": "users",
-            "localField": "creator_id",
-            "foreignField": "_id",
-            "as": "creator"
-        }
-    },
-    {
-        "$unwind": "$creator"
-    },
-    {
-        "$project": {
-            "_id": 1,
-            "title": 1,
-            "type": 1,
-            "created_date": 1,
-            "headline": 1,
-            "content": 1,
-            "creator._id": 1,
-            "creator.name": 1,
-            "creator.picture": 1,
-            "creator.email": 1,
-            "creator.last_login": 1
+    }, {
+        '$unwind': '$creator'
+    }, {
+        '$project': {
+            '_id': 1, 
+            'title': 1, 
+            'type': 1, 
+            'created_date': 1, 
+            'headline': 1, 
+            'content': 1, 
+            'creator._id': 1, 
+            'creator.name': 1, 
+            'creator.picture': 1, 
+            'creator.email': 1, 
+            'creator.last_login': 1
         }
     }
 ]
+
     result = asyncdb.threads_collection.aggregate(pipeline)
     
     thread = await result.to_list(None)
