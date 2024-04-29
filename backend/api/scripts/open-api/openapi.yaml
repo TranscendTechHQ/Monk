@@ -402,6 +402,10 @@ components:
         headline:
           title: Headline
           type: string
+        parent_block_id:
+          default: ''
+          title: Parent Block Id
+          type: string
         tenant_id:
           title: Tenant Id
           type: string

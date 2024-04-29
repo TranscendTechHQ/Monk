@@ -32,6 +32,11 @@ void main() {
       // TODO
     });
 
+    // String parentBlockId (default value: '')
+    test('to test the property `parentBlockId`', () async {
+      // TODO
+    });
+
     // String tenantId
     test('to test the property `tenantId`', () async {
       // TODO

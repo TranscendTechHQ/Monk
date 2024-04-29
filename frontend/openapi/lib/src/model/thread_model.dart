@@ -29,6 +29,8 @@ class ThreadModel {
 
      this.headline,
 
+     this.parentBlockId = '',
+
     required  this.tenantId,
 
     required  this.title,
@@ -97,6 +99,18 @@ class ThreadModel {
 
 
   @JsonKey(
+    defaultValue: '',
+    name: r'parent_block_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? parentBlockId;
+
+
+
+  @JsonKey(
     
     name: r'tenant_id',
     required: true,
@@ -139,6 +153,7 @@ class ThreadModel {
      other.createdDate == createdDate &&
      other.creatorId == creatorId &&
      other.headline == headline &&
+     other.parentBlockId == parentBlockId &&
      other.tenantId == tenantId &&
      other.title == title &&
      other.type == type;
@@ -150,6 +165,7 @@ class ThreadModel {
     createdDate.hashCode +
     creatorId.hashCode +
     headline.hashCode +
+    parentBlockId.hashCode +
     tenantId.hashCode +
     title.hashCode +
     type.hashCode;

@@ -108,6 +108,7 @@ class ThreadModel(BaseModel):
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     headline: str = Field(default=None)
     tenant_id: str
+    parent_block_id: str = Field(default="")
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

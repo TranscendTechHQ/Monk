@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/repo/thread.dart';
@@ -55,12 +56,10 @@ class ThreadCard extends ConsumerWidget {
         loader.showLoader(context, message: 'Creating Thread');
         final newThread =
             await threadNotifier.createChildThread(createChildThreadModel);
+
+        // Navigate to child thread page
         if (newThread != null && newThread.id.isNotNullEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Thread created successfully'),
-            ),
-          );
+          showMessage(context, 'Thread created successfully');
           Navigator.push(
               context,
               ThreadPage.launchRoute(
@@ -70,11 +69,7 @@ class ThreadCard extends ConsumerWidget {
               ));
           logger.d('Thread created successfully');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to create thread'),
-            ),
-          );
+          showMessage(context, 'Failed to create thread');
         }
       } else {
         Navigator.push(
@@ -113,6 +108,7 @@ class ThreadCard extends ConsumerWidget {
     //print('userInfo: $userInfo');
     // final replyProvider = threadDetailProvider.call();
     final provider = currentThreadProvider.call(title: title, type: type);
+    final currentThread = ref.watch(provider);
     final currentThreadNotifier = ref.read(provider.notifier);
     // TODO: Update block when child thread is created
     // final replyProvider = ref.watch(provider);

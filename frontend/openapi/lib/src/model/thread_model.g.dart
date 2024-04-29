@@ -25,6 +25,8 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
               (v) => v == null ? null : DateTime.parse(v as String)),
           creatorId: $checkedConvert('creator_id', (v) => v as String),
           headline: $checkedConvert('headline', (v) => v as String?),
+          parentBlockId:
+              $checkedConvert('parent_block_id', (v) => v as String? ?? ''),
           tenantId: $checkedConvert('tenant_id', (v) => v as String),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
@@ -35,6 +37,7 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
         'id': '_id',
         'createdDate': 'created_date',
         'creatorId': 'creator_id',
+        'parentBlockId': 'parent_block_id',
         'tenantId': 'tenant_id'
       },
     );
@@ -53,6 +56,7 @@ Map<String, dynamic> _$ThreadModelToJson(ThreadModel instance) {
   writeNotNull('created_date', instance.createdDate?.toIso8601String());
   val['creator_id'] = instance.creatorId;
   writeNotNull('headline', instance.headline);
+  writeNotNull('parent_block_id', instance.parentBlockId);
   val['tenant_id'] = instance.tenantId;
   val['title'] = instance.title;
   val['type'] = instance.type;

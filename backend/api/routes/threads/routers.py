@@ -254,6 +254,7 @@ async def filter(
         aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id)
 
     aggregate = await aggregate.to_list(None)
+    print(aggregate.__len__() )
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
@@ -411,8 +412,8 @@ async def get_thread_from_db(thread_id, tenant_id):
     
     thread = await result.to_list(None)
     #print(thread[0]["content"][0])
-    if not 'creator_id' in thread[0]["content"][0].keys():
-        thread[0]["content"] = None
+    # if not 'creator_id' in thread[0]["content"][0].keys():
+    #     thread[0]["content"] = None
     #print(thread[0]["content"][0])
     return thread
     
@@ -464,13 +465,17 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
 @router.put("/blocks/{id}", response_model=FullThreadInfo, response_description="Update a block")
 async def update(request: Request, id: str, thread_title: str, block: UpdateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
+    
+    print("\nReceived request to update block")
     thread_collection = request.app.mongodb["threads"]
+    block_collection = request.app.mongodb["blocks"]
 
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     input_block = block.model_dump()
 
-    block = await get_block_by_id(id, thread_collection)
+    block = await get_block_by_id(id, block_collection)
+    # TODO: Check if the block exists
     block = block["content"]
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
@@ -519,51 +524,66 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
 async def child_thread(request: Request,
                        child_thread_data: CreateChildThreadModel = Body(...),
                        session: SessionContainer = Depends(verify_session())):
-    try:
+    # try:
+      print("\n 1. Received request to create child thread")
       thread_collection = request.app.mongodb["threads"]
+      block_collection = request.app.mongodb["blocks"]
       child_thread = child_thread_data.model_dump()
   
       parent_block_id = child_thread["parent_block_id"]
       parent_thread_id = child_thread["parent_thread_id"]
   
+    
+      print("\n 2. Fetching parent block:", parent_block_id)
       # fetch the parent block
-      block = await get_block_by_id(parent_block_id, thread_collection)
-      if not block:
+      parentBlock = await get_block_by_id(parent_block_id, block_collection)
+      if not parentBlock:
           return JSONResponse(status_code=404, content={"message": "block with id ${parent_block_id} not found"})
+      
+      if parentBlock["child_thread_id"] != "":
+          print("\n 2.1 Can't create child thread for this block. Block already has a child thread")
+          return JSONResponse(status_code=400, content={"message": "block already has a child thread"})
   
+      print("\n 3. Parent block found")
       # create a new child thread
       thread_title = jsonable_encoder(child_thread)["title"]
       thread_type = jsonable_encoder(child_thread)["type"]
       user_id = session.get_user_id()
-  
+
+      print("\n 4. Fetching tenant id")
       tenant_id = await get_tenant_id(session)
+
+      print("\n 5. Creating new child thread")
   
       created_child_thread = await create_child_thread(thread_collection=thread_collection,
                                                        parent_block_id=parent_block_id,
                                                        parent_thread_id=parent_thread_id,
                                                        thread_title=thread_title,
                                                        thread_type=thread_type,
-                                                       user_id=user_id, tenant_id=tenant_id)
-  
+                                                       user_id=user_id, tenant_id=tenant_id, parentBlock=BlockModel(**parentBlock))
+    
+      print("\n 6. Child thread created, Fetching child thread from db")
       ret_thread = await get_thread_from_db(created_child_thread["_id"], tenant_id)
       
       return JSONResponse(status_code=status.HTTP_201_CREATED,
                           content=jsonable_encoder(ret_thread[0]))
       
-    except HTTPException as e:
-        return JSONResponse(
-            status_code=e.status_code,
-            content={"message": e.detail}
-        )
-    except Exception as e:
-      print(e)
-      return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
+    # except HTTPException as e:
+    #     return JSONResponse(
+    #         status_code=e.status_code,
+    #         content={"message": e.detail}
+    #     )
+    # except Exception as e:
+    #   print(e)
+    #   return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.post("/threads", response_model=FullThreadInfo, response_description="Create a new thread")
 async def create_th(request: Request, thread_data: CreateThreadModel = Body(...),
                     session: SessionContainer = Depends(verify_session())):
-    # Create a new thread in MongoDB using the thread_data
+   try:
+    print("\n ------------- Creating thread -------------")
+     # Create a new thread in MongoDB using the thread_data
     # Index the thread by userId
     userId = session.get_user_id()
     
@@ -581,6 +601,9 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
     #print(ret_thread[0])
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(ret_thread[0]))
+   except Exception as e:
+         print(e)
+         return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.get("/threads/{id}", response_model=FullThreadInfo, response_description="Get a thread by id")

@@ -8,8 +8,12 @@
 //  - the backend will store the journal entry in the database
 // ...
 
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -315,13 +319,26 @@ class CurrentThread extends _$CurrentThread {
           if (index != -1) {
             final oldModel = list[index];
             // list[index].childId = response.data!.id;
-            final map = oldModel.toJson()
-              ..putIfAbsent("childThreadId", () => response.data!.id);
+            final map = oldModel.toJson();
+            // ..putIfAbsent("childThreadId", () => response.data!.id);
+            if (map.containsKey("child_thread_id")) {
+              map.update("child_thread_id", (value) => response.data!.id);
+              debugPrint("childThreadId updated");
+            } else {
+              map.putIfAbsent("child_thread_id", () => response.data!.id);
+              debugPrint("childThreadId Inserted, ${map['child_thread_id']}");
+            }
+
+            printPretty(map);
 
             final updatedThreadModel = BlockWithCreator.fromJson(map);
             list[index] = updatedThreadModel;
-            final threadInfo = state.value!.toJson()
-              ..putIfAbsent("content", () => list);
+            final threadInfo = state.value!.toJson();
+            if (threadInfo.containsKey("content")) {
+              threadInfo["content"] = list.map((e) => e.toJson()).toList();
+            } else {
+              threadInfo.putIfAbsent("content", () => list);
+            }
 
             final updatedThreadModel2 = FullThreadInfo.fromJson(threadInfo);
 
