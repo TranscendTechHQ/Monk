@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/helper/utils.dart';
 import 'package:frontend/repo/thread.dart';
 import 'package:frontend/ui/pages/thread/page/thread_detail_page.dart';
 import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
@@ -67,11 +68,7 @@ class ThreadPage extends ConsumerWidget {
     ref.listen(provider, (prev, next) {
       if (next is AsyncError) {
         final data = next.value;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data.toString().replaceFirst('Exception: ', '')),
-          ),
-        );
+        showMessage(context, data.toString().replaceFirst('Exception: ', ''));
       }
     });
 
@@ -154,28 +151,27 @@ class ThreadPage extends ConsumerWidget {
       body: PageScaffold(
         body: Align(
           alignment: Alignment.center,
-          child: Column(
-            children: [
-              Expanded(
-                  child: currentThread.when(
-                data: (state) => ChatListView(
+          child: currentThread.when(
+            data: (state) => Column(
+              children: [
+                ChatListView(
                   currentThread: currentThread,
                   title: title,
                   type: type,
                   threadType: threadType,
-                ),
-                error: (error, stack) => Center(
-                  child: Text(
-                    error.toString().replaceFirst('Exception: ', ''),
-                    style: context.textTheme.bodySmall,
-                  ),
-                ),
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )),
-              blockInput,
-            ],
+                ).extended,
+                blockInput,
+              ],
+            ),
+            error: (error, stack) => Center(
+              child: Text(
+                error.toString().replaceFirst('Exception: ', ''),
+                style: context.textTheme.bodySmall,
+              ),
+            ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
           ),
         ),
       ),

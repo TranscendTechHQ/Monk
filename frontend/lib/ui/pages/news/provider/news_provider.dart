@@ -95,7 +95,7 @@ class NewsCardPod extends _$NewsCardPod {
                   : ENewsCardState.dismissing,
     );
 
-    final res = await MonkException.handle<bool?>(() async {
+    var res = await AsyncRequest.handle<bool?>(() async {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final response = await threadApi.createTfThreadFlagPost(
         createUserThreadFlagModel: CreateUserThreadFlagModel(
@@ -125,7 +125,7 @@ class NewsCardPod extends _$NewsCardPod {
           : ENewsCardState.initial,
     );
 
-    return res ?? false;
+    return res.fold((l) => false, (r) => true);
   }
 }
 

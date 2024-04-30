@@ -1,7 +1,7 @@
 import datetime as dt
 import uuid
 from datetime import datetime
-from typing import Annotated, List, Union
+from typing import Annotated, List, Optional, Union
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
@@ -43,6 +43,13 @@ class UserMap(BaseModel):
 class PositionModel(BaseModel):
     thread_id: str = Field(default='')
     position: int = Field(default=0)
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,)
+    
+class UpdateBlockPositionModel(PositionModel):
+    block_id: str = Field(default='')
+    new_position: int = Field(default=0)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,)
@@ -115,7 +122,7 @@ class ThreadModel(BaseModel):
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     headline: str = Field(default=None)
     tenant_id: str
-    parent_block_id: str = Field(default="")
+    parent_block_id: Optional[str] = Field(default=None,null=True)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

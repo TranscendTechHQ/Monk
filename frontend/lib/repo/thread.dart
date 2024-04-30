@@ -55,15 +55,24 @@ Future<FullThreadInfo> fetchThreadFromId({required String id}) async {
 
 Future<FullThreadInfo> createOrGetThread(
     {required String title, required String type}) async {
-  final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+  final res = await AsyncRequest.handle<FullThreadInfo>(() async {
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
 
-  final response = await threadApi.createThThreadsPost(
-      createThreadModel: CreateThreadModel(title: title, type: type));
+    final response = await threadApi.createThThreadsPost(
+        createThreadModel: CreateThreadModel(title: title, type: type));
 
-  if (response.statusCode != 201) {
-    throw Exception("Failed to create thread");
-  }
-  return response.data!;
+    if (response.statusCode != 201) {
+      throw Exception("Failed to create thread");
+    }
+    return response.data!;
+  });
+
+  return res.fold((l) {
+    if (l.response?.statusCode == 500) {
+      throw Exception("Something went wrong, please try again later.");
+    }
+    throw Exception(l.message);
+  }, (r) => r);
 }
 
 @riverpod
@@ -88,7 +97,7 @@ class CurrentThread extends _$CurrentThread {
   }
 
   Future<bool> createBlock(String text, {String? customTitle}) async {
-    MonkException.handle(() async {
+    final res = await AsyncRequest.handle<bool>(() async {
       String? threadTitle = state.value?.title ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
         logger.e("Thread title is null");
@@ -129,11 +138,14 @@ class CurrentThread extends _$CurrentThread {
         return false;
       }
     });
-    return true;
+
+    return res.fold((l) {
+      return false;
+    }, (r) => r);
   }
 
   Future<FullThreadInfo?> fetchThreadFromIdAsync(String id) async {
-    return MonkException.handle(() async {
+    final res = await AsyncRequest.handle<FullThreadInfo>(() async {
       logger.d("Fetching child thread. id: $id");
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final response = await threadApi.getThreadIdThreadsIdGet(id: id);
@@ -148,6 +160,9 @@ class CurrentThread extends _$CurrentThread {
       }
       return response.data;
     });
+    return res.fold((l) {
+      throw Exception(l.message);
+    }, (r) => r);
   }
 
   void addChildThreadIdToBlock(String childThreadId, String blockId) {
@@ -193,7 +208,7 @@ class CurrentThread extends _$CurrentThread {
   }
 
   Future<void> updateBlock(String blockId, String content) async {
-    MonkException.handle(() async {
+    final res = await AsyncRequest.handle(() async {
       final thread = state.value;
       if (thread == null) {
         logger.e("There is no thread to update block");
@@ -237,10 +252,13 @@ class CurrentThread extends _$CurrentThread {
         logger.e("Can't find block with id $blockId");
       }
     });
+    return res.fold((l) {
+      throw Exception(l.message);
+    }, (r) => r);
   }
 
   Future<void> updateThreadTitle(String title) async {
-    MonkException.handle(() async {
+    final res = await AsyncRequest.handle(() async {
       final thread = state.value;
       if (thread == null) {
         logger.e("There is no thread to update title");
@@ -266,6 +284,9 @@ class CurrentThread extends _$CurrentThread {
         state = AsyncValue.data(updatedThreadModel);
       }
     });
+    return res.fold((l) {
+      throw Exception(l.message);
+    }, (r) => r);
   }
 
   void reorderBlocks(int oldIndex, int newIndex) {
@@ -302,7 +323,7 @@ class CurrentThread extends _$CurrentThread {
 
   Future<FullThreadInfo?> createChildThread(
       CreateChildThreadModel createChildThreadModel) async {
-    return MonkException.handle(() async {
+    final res = await AsyncRequest.handle<FullThreadInfo>(() async {
       logger.d("Creating child thread");
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final response = await threadApi.childThreadBlocksChildPost(
@@ -357,5 +378,8 @@ class CurrentThread extends _$CurrentThread {
           error: response.data ?? response.statusCode);
       return null;
     });
+    return res.fold((l) {
+      throw Exception(l.message);
+    }, (r) => r);
   }
 }

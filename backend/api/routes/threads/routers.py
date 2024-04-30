@@ -1,5 +1,6 @@
 import datetime as dt
 from fastapi import FastAPI, HTTPException
+import logging
 from typing import List
 
 from fastapi import APIRouter, Body, Depends
@@ -16,13 +17,14 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, PositionModel, UpdateBlockModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, PositionModel, UpdateBlockModel, UpdateBlockPositionModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 async def keyword_search(query, collection):
@@ -118,8 +120,6 @@ async def ti(request: Request,
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsInfo(info=info)))
-
-
 
 
 async def get_unfiltered_newsfeed(tenant_id):
@@ -291,135 +291,155 @@ async def get_blocks_count(thread_id, collection):
     return await collection.count_documents({"parent_thread_id": thread_id})
 
 async def get_thread_from_db(thread_id, tenant_id):
+   try:
     pipeline = [
-    {
-        '$match': {
-            '_id': thread_id, 
-            'tenant_id': tenant_id
-        }
-    }, {
-        '$lookup': {
-            'from': 'blocks', 
-            'localField': '_id', 
-            'foreignField': 'child_thread_id', 
-            'as': 'content1'
-        }
-    }, {
-        '$lookup': {
-            'from': 'blocks', 
-            'localField': '_id', 
-            'foreignField': 'parent_thread_id', 
-            'as': 'content2'
-        }
-    }, {
-        '$set': {
-            'content': {
-                '$concatArrays': [
-                    '$content1', '$content2'
-                ]
+        {
+            '$match': {
+                '_id': thread_id, 
+                'tenant_id': tenant_id
             }
-        }
-    }, {
-        '$unset': [
-            'content1', 'content2'
-        ]
-    }, {
-        '$unwind': '$content'
-    }, {
-        '$sort': {
-            'content.block_pos_in_child': 1
-        }
-    }, {
-        '$lookup': {
-            'from': 'users', 
-            'localField': 'content.creator_id', 
-            'foreignField': '_id', 
-            'as': 'content.creator'
-        }
-    }, {
-        '$addFields': {
-            'content.creator': {
-                '$cond': {
-                    'if': {
-                        '$eq': [
-                            {
-                                '$size': '$content.creator'
-                            }, 0
-                        ]
-                    }, 
-                    'then': [
-                        {}
-                    ], 
-                    'else': '$content.creator'
+        }, {
+            '$lookup': {
+                'from': 'blocks', 
+                'localField': '_id', 
+                'foreignField': 'child_thread_id', 
+                'as': 'content1'
+            }
+        }, {
+            '$lookup': {
+                'from': 'blocks', 
+                'localField': '_id', 
+                'foreignField': 'parent_thread_id', 
+                'as': 'content2'
+            }
+        }, {
+            '$set': {
+                'content': {
+                    '$concatArrays': [
+                        '$content1', '$content2'
+                    ]
                 }
             }
-        }
-    }, {
-        '$unwind': {
-            'path': '$content.creator'
-        }
-    }, {
-        '$group': {
-            '_id': '$_id', 
-            'created_date': {
-                '$first': '$created_date'
-            }, 
-            'type': {
-                '$first': '$type'
-            }, 
-            'title': {
-                '$first': '$title'
-            }, 
-            'headline': {
-                '$first': '$headline'
-            }, 
-            'last_modified': {
-                '$first': '$last_modified'
-            }, 
-            'tenant_id': {
-                '$first': '$tenant_id'
-            }, 
-            'creator_id': {
-                '$first': '$creator_id'
-            }, 
-            'content': {
-                '$push': '$content'
+        }, {
+            '$unset': [
+                'content1', 'content2'
+            ]
+        }, {
+            '$addFields': {
+                'content': {
+                    '$cond': {
+                        'if': {
+                            '$eq': [
+                                {
+                                    '$size': '$content'
+                                }, 0
+                            ]
+                        }, 
+                        'then': [
+                            {}
+                        ], 
+                        'else': '$content'
+                    }
+                }
+            }
+        }, {
+            '$unwind': '$content'
+        }, {
+            '$sort': {
+                'content.block_pos_in_child': 1
+            }
+        }, {
+            '$lookup': {
+                'from': 'users', 
+                'localField': 'content.creator_id', 
+                'foreignField': '_id', 
+                'as': 'content.creator'
+            }
+        }, {
+            '$addFields': {
+                'content.creator': {
+                    '$cond': {
+                        'if': {
+                            '$eq': [
+                                {
+                                    '$size': '$content.creator'
+                                }, 0
+                            ]
+                        }, 
+                        'then': [
+                            {}
+                        ], 
+                        'else': '$content.creator'
+                    }
+                }
+            }
+        }, {
+            '$unwind': {
+                'path': '$content.creator'
+            }
+        }, {
+            '$group': {
+                '_id': '$_id', 
+                'created_date': {
+                    '$first': '$created_date'
+                }, 
+                'type': {
+                    '$first': '$type'
+                }, 
+                'title': {
+                    '$first': '$title'
+                }, 
+                'headline': {
+                    '$first': '$headline'
+                }, 
+                'last_modified': {
+                    '$first': '$last_modified'
+                }, 
+                'tenant_id': {
+                    '$first': '$tenant_id'
+                }, 
+                'creator_id': {
+                    '$first': '$creator_id'
+                }, 
+                'content': {
+                    '$push': '$content'
+                }
+            }
+        }, {
+            '$lookup': {
+                'from': 'users', 
+                'localField': 'creator_id', 
+                'foreignField': '_id', 
+                'as': 'creator'
+            }
+        }, {
+            '$unwind': '$creator'
+        }, {
+            '$project': {
+                '_id': 1, 
+                'title': 1, 
+                'type': 1, 
+                'created_date': 1, 
+                'headline': 1, 
+                'content': 1, 
+                'creator._id': 1, 
+                'creator.name': 1, 
+                'creator.picture': 1, 
+                'creator.email': 1, 
+                'creator.last_login': 1
             }
         }
-    }, {
-        '$lookup': {
-            'from': 'users', 
-            'localField': 'creator_id', 
-            'foreignField': '_id', 
-            'as': 'creator'
-        }
-    }, {
-        '$unwind': '$creator'
-    }, {
-        '$project': {
-            '_id': 1, 
-            'title': 1, 
-            'type': 1, 
-            'created_date': 1, 
-            'headline': 1, 
-            'content': 1, 
-            'creator._id': 1, 
-            'creator.name': 1, 
-            'creator.picture': 1, 
-            'creator.email': 1, 
-            'creator.last_login': 1
-        }
-    }
-]
-
+    ]  
     result = asyncdb.threads_collection.aggregate(pipeline)
-    
     thread = await result.to_list(None)
     #print(thread[0]["content"][0])
     # if not 'creator_id' in thread[0]["content"][0].keys():
     #     thread[0]["content"] = None
     #print(thread[0]["content"][0])
     return thread
+   except Exception as e:
+        logger.error(e,exc_info=True)
+        return None
     
 
 
@@ -523,6 +543,51 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(ret_thread[0]))
 
+@router.put("/blocks/{id}/position", response_model=UpdateBlockPositionModel, response_description="Update a block position")
+async def update_block_position(request: Request, id: str, block_position: UpdateBlockPositionModel = Body(...),
+                 session: SessionContainer = Depends(verify_session())):
+    print("\nReceived request to update block position")
+    block_collection = request.app.mongodb["blocks"]
+    block = await get_block_by_id(id, block_collection)
+
+    user_id = session.get_user_id()
+    tenant_id = await get_tenant_id(session)
+
+    if block["creator_id"] != user_id:
+        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
+    
+    new_position = block_position.new_position
+    ond_position = block_position.position
+    block_id = block_position.block_id
+
+    # get the block to be moved to the new position
+    block_to_move = await get_block_by_id(block_id, block_collection)
+
+    if block_to_move["creator_id"] != user_id:
+        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
+    
+    # get the parent thread of the block
+    thread_id = block_position.thread_id
+
+    # get the blocks in the parent thread
+    blocks = await get_mongo_documents({"parent_thread_id": thread_id}, block_collection, tenant_id)
+
+    # get the block to be moved
+    block_to_move = await get_block_by_id(new_block, block_collection)
+
+    # get the position of the block to be moved
+    block_to_move_pos = block_to_move["block_pos_in_parent"]
+
+    # get the position of the block to be updated
+    block_to_update = await get_block_by_id(id, block_collection)
+
+    # get the position of the block to be updated
+    block_to_update_pos = block_to_update["block_pos_in_parent"]
+
+    # update the position of the block to be moved
+    # await update_mongo_document_fields({"_id": new_block}, {"block_pos_in_parent": block_to_update_pos}, block_collection)
+
+
 
 @router.post("/blocks/child", response_model=FullThreadInfo, response_description="Create a new child thread from a block")
 async def child_thread(request: Request,
@@ -599,14 +664,25 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
     #if jsonable_encoder(thread_data)["content"] is not None: 
     #    content = jsonable_encoder(thread_data)["content"]
 
-    created_thread = await create_new_thread(userId, tenant_id, thread_title, thread_type)
+    created_thread = await create_new_thread(userId, tenant_id, thread_title, thread_type,parent_block_id=None)
+
+    print(f"\n\nCreated thread: {created_thread}\n\n")
+    logger.debug("Getting thread from db")
     ret_thread = await get_thread_from_db(created_thread["_id"], tenant_id)
-    #print(created_thread["_id"])
+
+    print(f'\n\nRet thread: {ret_thread}\n\n')
+    if(len(ret_thread) > 0):
+      thread = ret_thread[0]
+      if(thread['content'] is not None and len(thread['content']) >0 and thread['content'][0].get('_id') is None):
+        # Remove the content key if it is empty
+        thread.pop('content')
+        
+      
     #print(ret_thread[0])
     return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(ret_thread[0]))
+                        content=jsonable_encoder(thread))
    except Exception as e:
-         print(e)
+         logger.error(e,exc_info=True)
          return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 

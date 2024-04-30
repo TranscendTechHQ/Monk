@@ -226,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     await NetworkManager.instance.client.get("/healthcheck");
-    var result = await MonkException.handle<Response<dynamic>>(
+    var result = await AsyncRequest.handle<Response<dynamic>>(
         () => NetworkManager.instance.client.post(
               "/auth/signinup",
               data: {
@@ -237,11 +237,15 @@ class _LoginPageState extends State<LoginPage> {
                 },
               },
             ));
-    final map = result.data as Map<String, dynamic>?;
-    final userId = map?['user']?['thirdParty']?['userId'];
+    result.fold((l) {
+      logger.e('Failed to verify credentials', error: l.response?.data);
+      throw Exception(l.message);
+    }, (r) {
+      final map = r.data as Map<String, dynamic>?;
+      final userId = map?['user']?['thirdParty']?['userId'];
 
-    // print(JsonEncoder.withIndent(' ').convert(map?['user']));
-    if (result.statusCode == 200) {
+      // print(JsonEncoder.withIndent(' ').convert(map?['user']));
+
       // For slack authentication we don't need to verify the organization
       if (userId is String && userId.startsWith("oauth2|sign-in-with-slack")) {
         prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
@@ -268,9 +272,7 @@ class _LoginPageState extends State<LoginPage> {
               '❌ Verification failed. Perhaps user is not affiliated with the client workspace.');
         }));
       }
-    } else {
-      logger.e('Failed to verify credentials', error: result.data);
-    }
+    });
   }
 
   Widget wrapper(
