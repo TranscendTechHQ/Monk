@@ -220,7 +220,7 @@ class ChatListView extends ConsumerWidget {
                     .reorderBlocks(oldIndex, newIndex);
               },
               children: [
-                ...blocks?.reversed.map((block) {
+                ...blocks?.map((block) {
                       return ThreadCard(
                         key: ValueKey(block.id),
                         block: block,

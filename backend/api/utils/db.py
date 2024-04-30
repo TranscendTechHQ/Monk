@@ -142,12 +142,6 @@ async def get_block_by_id(block_id, thread_collection):
         {
             "$match": {"_id": block_id}
         },
-        # {
-        #     "$unwind": "$content"
-        # },
-        # {
-        #     "$match": {"content._id": block_id}
-        # }
     ]
     print("pipeline: ", pipeline)
     result = await thread_collection.aggregate(pipeline).to_list(length=None)
@@ -163,7 +157,7 @@ async def get_block_by_id(block_id, thread_collection):
 
          return None
 
-
+#
 async def update_block_child_id(blocks_collection,
                                 parent_block_id,
                                 thread_id,

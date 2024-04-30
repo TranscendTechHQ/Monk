@@ -556,36 +556,31 @@ async def update_block_position(request: Request, id: str, block_position: Updat
     if block["creator_id"] != user_id:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
     
-    new_position = block_position.new_position
-    ond_position = block_position.position
     block_id = block_position.block_id
+    new_position = block_position.new_position
+    old_position = block_position.position
+    #parent thread of the block
+    thread_id = block_position.thread_id
 
+    if(old_position < new_position):
+      new_position = new_position - 1
+
+    
     # get the block to be moved to the new position
     block_to_move = await get_block_by_id(block_id, block_collection)
 
     if block_to_move["creator_id"] != user_id:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
     
-    # get the parent thread of the block
-    thread_id = block_position.thread_id
-
+    # Remove the block from the old position and update the position of the blocks in the thread 
     # get the blocks in the parent thread
     blocks = await get_mongo_documents({"parent_thread_id": thread_id}, block_collection, tenant_id)
 
     # get the block to be moved
-    block_to_move = await get_block_by_id(new_block, block_collection)
+    block_to_move = blocks
 
-    # get the position of the block to be moved
-    block_to_move_pos = block_to_move["block_pos_in_parent"]
 
-    # get the position of the block to be updated
-    block_to_update = await get_block_by_id(id, block_collection)
 
-    # get the position of the block to be updated
-    block_to_update_pos = block_to_update["block_pos_in_parent"]
-
-    # update the position of the block to be moved
-    # await update_mongo_document_fields({"_id": new_block}, {"block_pos_in_parent": block_to_update_pos}, block_collection)
 
 
 
@@ -630,6 +625,8 @@ async def child_thread(request: Request,
                                                        thread_title=thread_title,
                                                        thread_type=thread_type,
                                                        user_id=user_id, tenant_id=tenant_id, parentBlock=BlockModel(**parentBlock))
+      
+    
     
       print("\n 6. Child thread created, Fetching child thread from db")
       ret_thread = await get_thread_from_db(created_child_thread["_id"], tenant_id)
