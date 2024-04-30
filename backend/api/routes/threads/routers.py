@@ -433,10 +433,14 @@ async def get_thread_from_db(thread_id, tenant_id):
     result = asyncdb.threads_collection.aggregate(pipeline)
     thread = await result.to_list(None)
     #print(thread[0]["content"][0])
-    # if not 'creator_id' in thread[0]["content"][0].keys():
-    #     thread[0]["content"] = None
+    if len(thread) == 0:
+        return []
+    if not 'content' in thread[0].keys():
+        return thread[0]
+    if not 'creator_id' in thread[0]["content"][0].keys():
+         thread[0]["content"] = None
     #print(thread[0]["content"][0])
-    return thread
+    return thread[0]
    except Exception as e:
         logger.error(e,exc_info=True)
         return None
@@ -541,7 +545,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     ret_thread = await get_thread_from_db(updated_thread["_id"], tenant_id)
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(ret_thread[0]))
+                        content=jsonable_encoder(ret_thread))
 
 @router.put("/blocks/{id}/position", response_model=UpdateBlockPositionModel, response_description="Update a block position")
 async def update_block_position(request: Request, id: str, block_position: UpdateBlockPositionModel = Body(...),
@@ -632,7 +636,7 @@ async def child_thread(request: Request,
       ret_thread = await get_thread_from_db(created_child_thread["_id"], tenant_id)
       
       return JSONResponse(status_code=status.HTTP_201_CREATED,
-                          content=jsonable_encoder(ret_thread[0]))
+                          content=jsonable_encoder(ret_thread))
       
     # except HTTPException as e:
     #     return JSONResponse(
@@ -667,17 +671,12 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
     logger.debug("Getting thread from db")
     ret_thread = await get_thread_from_db(created_thread["_id"], tenant_id)
 
-    print(f'\n\nRet thread: {ret_thread}\n\n')
-    if(len(ret_thread) > 0):
-      thread = ret_thread[0]
-      if(thread['content'] is not None and len(thread['content']) >0 and thread['content'][0].get('_id') is None):
-        # Remove the content key if it is empty
-        thread.pop('content')
+ 
         
       
     #print(ret_thread[0])
     return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(thread))
+                        content=jsonable_encoder(ret_thread))
    except Exception as e:
          logger.error(e,exc_info=True)
          return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
@@ -690,11 +689,11 @@ async def get_thread_id(request: Request,
                         ):
     
     tenant_id = await get_tenant_id(session)
-    thread_list = await get_thread_from_db(id, tenant_id)
-    if not thread_list:
+    thread = await get_thread_from_db(id, tenant_id)
+    if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
     
-    thread_content = jsonable_encoder((thread_list[0]))
+    thread_content = jsonable_encoder((thread))
    
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=thread_content)
@@ -725,7 +724,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
 
     ret_thread = await get_thread_from_db(updated_thread["_id"], tenant_id)
     return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(ret_thread[0]))
+                        content=jsonable_encoder(ret_thread))
 
 
 
