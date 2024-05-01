@@ -23,7 +23,7 @@ def get_access_token():
 def get_secret(token):
     HCP_ORG_ID = os.getenv('HCP_ORG_ID')
     HCP_PROJECT_ID = os.getenv('HCP_PROJECT_ID')
-    url = f"https://api.cloud.hashicorp.com/secrets/2023-06-13/organizations/{HCP_ORG_ID}/projects/{HCP_PROJECT_ID}/apps/monk-secrets/open"
+    url = f"https://api.cloud.hashicorp.com/secrets/2023-06-13/organizations/{HCP_ORG_ID}/projects/{HCP_PROJECT_ID}/apps/Monk/open"
 
     payload = {}
     headers = {
@@ -32,7 +32,6 @@ def get_secret(token):
 
     secrets = {}
     response = requests.request("GET", url, headers=headers, data=payload)
-
     for secret in response.json()['secrets']:
         secrets[secret['name']] = secret['version']['value']
 
