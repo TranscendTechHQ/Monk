@@ -276,7 +276,7 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str):
         return None
     block = block.model_dump()
     new_block = BlockModel(**block, tenant_id=tenant_id, creator_id=user_id,
-                           block_pos_in_parent=pos, position=[PositionModel(position=pos, thread_id=thread_id)])
+                           position=pos, position=[PositionModel(position=pos, thread_id=thread_id)])
     await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
 
     # now update the thread block count

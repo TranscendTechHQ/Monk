@@ -64,7 +64,7 @@ async def migrate_blocks_to_new_collection():
             else:
                 new_block = BlockModel(**block)
                 new_block.main_thread_id = thread['_id']
-                new_block.block_pos_in_parent = pos
+                new_block.position = pos
                 new_block.tenant_id = thread['tenant_id']
                 new_block.last_modified = thread['last_modified']
 
