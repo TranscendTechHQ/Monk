@@ -105,16 +105,16 @@ class CurrentThread extends _$CurrentThread {
       }
       logger.d("creating new Thread title $threadTitle");
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
-      final parentThreadId = state.value!.id;
-      if (parentThreadId != null) {
-        logger.d("creating new block with parent thread id $parentThreadId");
+      final mainThreadId = state.value!.id;
+      if (mainThreadId != null) {
+        logger.d("creating new block with parent thread id $mainThreadId");
       }
 
       final newThreadState = await blockApi.createBlocksPost(
         threadTitle: threadTitle!,
         createBlockModel: CreateBlockModel(
           content: text,
-          parentThreadId: parentThreadId,
+          mainThreadId: mainThreadId,
         ),
       );
 

@@ -3,7 +3,6 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:openapi/src/model/position_model.dart';
 import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -24,10 +23,6 @@ class BlockWithCreator {
 
      this.blockPosInChild = 0,
 
-     this.blockPosInParent = 0,
-
-     this.childId = '',
-
      this.childThreadId = '',
 
     required  this.content,
@@ -40,7 +35,7 @@ class BlockWithCreator {
 
      this.lastModified,
 
-     this.parentThreadId = '',
+     this.mainThreadId = '',
 
      this.position,
 
@@ -68,30 +63,6 @@ class BlockWithCreator {
 
 
   final int? blockPosInChild;
-
-
-
-  @JsonKey(
-    defaultValue: 0,
-    name: r'block_pos_in_parent',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final int? blockPosInParent;
-
-
-
-  @JsonKey(
-    defaultValue: '',
-    name: r'child_id',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final String? childId;
 
 
 
@@ -169,13 +140,13 @@ class BlockWithCreator {
 
   @JsonKey(
     defaultValue: '',
-    name: r'parent_thread_id',
+    name: r'main_thread_id',
     required: false,
     includeIfNull: false
   )
 
 
-  final String? parentThreadId;
+  final String? mainThreadId;
 
 
 
@@ -187,7 +158,7 @@ class BlockWithCreator {
   )
 
 
-  final List<PositionModel>? position;
+  final int? position;
 
 
 
@@ -207,15 +178,13 @@ class BlockWithCreator {
   bool operator ==(Object other) => identical(this, other) || other is BlockWithCreator &&
      other.id == id &&
      other.blockPosInChild == blockPosInChild &&
-     other.blockPosInParent == blockPosInParent &&
-     other.childId == childId &&
      other.childThreadId == childThreadId &&
      other.content == content &&
      other.createdAt == createdAt &&
      other.creator == creator &&
      other.creatorId == creatorId &&
      other.lastModified == lastModified &&
-     other.parentThreadId == parentThreadId &&
+     other.mainThreadId == mainThreadId &&
      other.position == position &&
      other.tenantId == tenantId;
 
@@ -223,16 +192,14 @@ class BlockWithCreator {
   int get hashCode =>
     id.hashCode +
     blockPosInChild.hashCode +
-    blockPosInParent.hashCode +
-    childId.hashCode +
     childThreadId.hashCode +
     content.hashCode +
     createdAt.hashCode +
     creator.hashCode +
     creatorId.hashCode +
     lastModified.hashCode +
-    parentThreadId.hashCode +
-    position.hashCode +
+    mainThreadId.hashCode +
+    (position == null ? 0 : position.hashCode) +
     tenantId.hashCode;
 
   factory BlockWithCreator.fromJson(Map<String, dynamic> json) => _$BlockWithCreatorFromJson(json);

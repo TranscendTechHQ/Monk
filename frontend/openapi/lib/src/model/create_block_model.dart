@@ -20,7 +20,7 @@ class CreateBlockModel {
 
     required  this.content,
 
-    required  this.parentThreadId,
+    required  this.mainThreadId,
   });
 
   @JsonKey(
@@ -37,25 +37,25 @@ class CreateBlockModel {
 
   @JsonKey(
     
-    name: r'parent_thread_id',
+    name: r'main_thread_id',
     required: true,
     includeIfNull: false
   )
 
 
-  final String parentThreadId;
+  final String mainThreadId;
 
 
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateBlockModel &&
      other.content == content &&
-     other.parentThreadId == parentThreadId;
+     other.mainThreadId == mainThreadId;
 
   @override
   int get hashCode =>
     content.hashCode +
-    parentThreadId.hashCode;
+    mainThreadId.hashCode;
 
   factory CreateBlockModel.fromJson(Map<String, dynamic> json) => _$CreateBlockModelFromJson(json);
 

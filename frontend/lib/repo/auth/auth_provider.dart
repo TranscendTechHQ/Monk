@@ -1,8 +1,8 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:openapi/openapi.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'auth_provider.freezed.dart';
 part 'auth_provider.g.dart';
 

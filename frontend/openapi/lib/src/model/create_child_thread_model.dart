@@ -21,9 +21,9 @@ class CreateChildThreadModel {
 
      this.content,
 
-    required  this.parentBlockId,
+    required  this.mainThreadId,
 
-    required  this.parentThreadId,
+    required  this.parentBlockId,
 
     required  this.title,
 
@@ -44,6 +44,18 @@ class CreateChildThreadModel {
 
   @JsonKey(
     
+    name: r'mainThreadId',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final String mainThreadId;
+
+
+
+  @JsonKey(
+    
     name: r'parentBlockId',
     required: true,
     includeIfNull: false
@@ -51,18 +63,6 @@ class CreateChildThreadModel {
 
 
   final String parentBlockId;
-
-
-
-  @JsonKey(
-    
-    name: r'parentThreadId',
-    required: true,
-    includeIfNull: false
-  )
-
-
-  final String parentThreadId;
 
 
 
@@ -93,16 +93,16 @@ class CreateChildThreadModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateChildThreadModel &&
      other.content == content &&
+     other.mainThreadId == mainThreadId &&
      other.parentBlockId == parentBlockId &&
-     other.parentThreadId == parentThreadId &&
      other.title == title &&
      other.type == type;
 
   @override
   int get hashCode =>
     content.hashCode +
+    mainThreadId.hashCode +
     parentBlockId.hashCode +
-    parentThreadId.hashCode +
     title.hashCode +
     type.hashCode;
 

@@ -55,7 +55,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       title: "myownchildthread",
       type: "/new-plan",
       parentBlockId: "a73a294e-367a-437d-b71e-e53f7058b49f",
-      parentThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
+      mainThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
     );
     await threadApi.childThreadBlocksChildPost(
         createChildThreadModel: createChildThreadModel);

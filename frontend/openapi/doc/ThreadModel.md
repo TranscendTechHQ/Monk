@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 **createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **creatorId** | **String** |  | 
 **headline** | **String** |  | [optional] 
-**parentBlockId** | **String** |  | [optional] [default to '']
+**parentBlockId** | **String** |  | [optional] 
 **tenantId** | **String** |  | 
 **title** | **String** |  | 
 **type** | **String** |  | 

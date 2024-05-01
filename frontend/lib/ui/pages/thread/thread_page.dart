@@ -202,7 +202,7 @@ class ChatListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final blocks = currentThread.value?.content?.reversed.toList();
-    final parentThreadId = currentThread.value?.id;
+    final mainThreadId = currentThread.value?.id;
     return SizedBox(
       width: containerWidth,
       child: type == '/new-task'
@@ -227,7 +227,7 @@ class ChatListView extends ConsumerWidget {
                         emojiParser: emojiParser,
                         title: title,
                         type: type,
-                        parentThreadId: parentThreadId,
+                        mainThreadId: mainThreadId,
                         threadType: threadType,
                       );
                     }).toList() ??
@@ -246,7 +246,7 @@ class ChatListView extends ConsumerWidget {
                   emojiParser: emojiParser,
                   title: title,
                   type: type,
-                  parentThreadId: parentThreadId,
+                  mainThreadId: mainThreadId,
                   threadType: threadType,
                 );
               },

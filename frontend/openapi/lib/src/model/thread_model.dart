@@ -29,7 +29,7 @@ class ThreadModel {
 
      this.headline,
 
-     this.parentBlockId = '',
+     this.parentBlockId,
 
     required  this.tenantId,
 
@@ -99,7 +99,7 @@ class ThreadModel {
 
 
   @JsonKey(
-    defaultValue: '',
+    
     name: r'parent_block_id',
     required: false,
     includeIfNull: false
@@ -165,7 +165,7 @@ class ThreadModel {
     createdDate.hashCode +
     creatorId.hashCode +
     headline.hashCode +
-    parentBlockId.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     tenantId.hashCode +
     title.hashCode +
     type.hashCode;

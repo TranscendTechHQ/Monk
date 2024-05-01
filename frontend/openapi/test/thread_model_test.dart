@@ -32,7 +32,7 @@ void main() {
       // TODO
     });
 
-    // String parentBlockId (default value: '')
+    // String parentBlockId
     test('to test the property `parentBlockId`', () async {
       // TODO
     });

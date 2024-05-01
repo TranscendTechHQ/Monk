@@ -20,6 +20,7 @@ Method | HTTP request | Description
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
+[**updateBlockPositionBlocksIdPositionPut**](ThreadsApi.md#updateblockpositionblocksidpositionput) | **PUT** /blocks/{id}/position | Update Block Position
 [**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
 [**updateThThreadsIdPut**](ThreadsApi.md#updateththreadsidput) | **PUT** /threads/{id} | Update Th
 
@@ -467,6 +468,49 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateBlockPositionBlocksIdPositionPut**
+> UpdateBlockPositionModel updateBlockPositionBlocksIdPositionPut(id, updateBlockPositionModel)
+
+Update Block Position
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+final UpdateBlockPositionModel updateBlockPositionModel = ; // UpdateBlockPositionModel | 
+
+try {
+    final response = api.updateBlockPositionBlocksIdPositionPut(id, updateBlockPositionModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateBlockPositionBlocksIdPositionPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **updateBlockPositionModel** | [**UpdateBlockPositionModel**](UpdateBlockPositionModel.md)|  | 
+
+### Return type
+
+[**UpdateBlockPositionModel**](UpdateBlockPositionModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

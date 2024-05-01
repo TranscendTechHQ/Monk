@@ -26,7 +26,7 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
           creatorId: $checkedConvert('creator_id', (v) => v as String),
           headline: $checkedConvert('headline', (v) => v as String?),
           parentBlockId:
-              $checkedConvert('parent_block_id', (v) => v as String? ?? ''),
+              $checkedConvert('parent_block_id', (v) => v as String?),
           tenantId: $checkedConvert('tenant_id', (v) => v as String),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),

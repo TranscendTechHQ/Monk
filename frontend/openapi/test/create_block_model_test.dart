@@ -12,8 +12,8 @@ void main() {
       // TODO
     });
 
-    // String parentThreadId
-    test('to test the property `parentThreadId`', () async {
+    // String mainThreadId
+    test('to test the property `mainThreadId`', () async {
       // TODO
     });
 

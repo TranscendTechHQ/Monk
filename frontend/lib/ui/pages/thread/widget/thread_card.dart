@@ -21,19 +21,19 @@ class ThreadCard extends ConsumerWidget {
     required this.emojiParser,
     required this.title,
     required this.type,
-    required this.parentThreadId,
+    required this.mainThreadId,
     required this.threadType,
   });
   final BlockWithCreator block;
   final String type;
   final String title;
   final EmojiParser emojiParser;
-  final String? parentThreadId;
+  final String? mainThreadId;
   final ThreadType threadType;
 
   Future<void> onReplyClick(BuildContext context, WidgetRef ref,
       CurrentThread currentThreadNotifier) async {
-    if (block.id.isNullOrEmpty || parentThreadId.isNullOrEmpty) {
+    if (block.id.isNullOrEmpty || mainThreadId.isNullOrEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Thread Id or Block Id is missing'),
@@ -51,7 +51,7 @@ class ThreadCard extends ConsumerWidget {
           title: childThreadName,
           type: type,
           parentBlockId: block.id!,
-          parentThreadId: parentThreadId!,
+          mainThreadId: mainThreadId!,
         );
         loader.showLoader(context, message: 'Creating Thread');
         final newThread =

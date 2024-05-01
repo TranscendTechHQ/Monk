@@ -8,7 +8,6 @@ import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
 import 'package:openapi/src/model/full_thread_info.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
-import 'package:openapi/src/model/position_model.dart';
 import 'package:openapi/src/model/session_info.dart';
 import 'package:openapi/src/model/subscribe_channel_request.dart';
 import 'package:openapi/src/model/subscribed_channel_list.dart';
@@ -18,6 +17,7 @@ import 'package:openapi/src/model/threads_info.dart';
 import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
+import 'package:openapi/src/model/update_block_position_model.dart';
 import 'package:openapi/src/model/update_thread_title_model.dart';
 import 'package:openapi/src/model/user_map.dart';
 import 'package:openapi/src/model/user_model.dart';
@@ -62,8 +62,6 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return FullThreadInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
           return HTTPValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
-        case 'PositionModel':
-          return PositionModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SessionInfo':
           return SessionInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SubscribeChannelRequest':
@@ -82,6 +80,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return ThreadsModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateBlockModel':
           return UpdateBlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'UpdateBlockPositionModel':
+          return UpdateBlockPositionModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateThreadTitleModel':
           return UpdateThreadTitleModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UserMap':
