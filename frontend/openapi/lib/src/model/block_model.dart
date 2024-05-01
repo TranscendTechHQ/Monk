@@ -20,8 +20,6 @@ class BlockModel {
 
      this.id,
 
-     this.blockPosInChild = 0,
-
      this.childThreadId = '',
 
     required  this.content,
@@ -48,18 +46,6 @@ class BlockModel {
 
 
   final String? id;
-
-
-
-  @JsonKey(
-    defaultValue: 0,
-    name: r'block_pos_in_child',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final int? blockPosInChild;
 
 
 
@@ -162,7 +148,6 @@ class BlockModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
      other.id == id &&
-     other.blockPosInChild == blockPosInChild &&
      other.childThreadId == childThreadId &&
      other.content == content &&
      other.createdAt == createdAt &&
@@ -175,7 +160,6 @@ class BlockModel {
   @override
   int get hashCode =>
     id.hashCode +
-    blockPosInChild.hashCode +
     childThreadId.hashCode +
     content.hashCode +
     createdAt.hashCode +

@@ -9,7 +9,6 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
-**blockPosInChild** | **int** |  | [optional] [default to 0]
 **childThreadId** | **String** |  | [optional] [default to '']
 **content** | **String** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 

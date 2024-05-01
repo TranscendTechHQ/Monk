@@ -21,8 +21,6 @@ class BlockWithCreator {
 
      this.id,
 
-     this.blockPosInChild = 0,
-
      this.childThreadId = '',
 
     required  this.content,
@@ -37,7 +35,7 @@ class BlockWithCreator {
 
      this.mainThreadId = '',
 
-     this.position,
+     this.position = 0,
 
      this.tenantId = '',
   });
@@ -51,18 +49,6 @@ class BlockWithCreator {
 
 
   final String? id;
-
-
-
-  @JsonKey(
-    defaultValue: 0,
-    name: r'block_pos_in_child',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final int? blockPosInChild;
 
 
 
@@ -151,7 +137,7 @@ class BlockWithCreator {
 
 
   @JsonKey(
-    
+    defaultValue: 0,
     name: r'position',
     required: false,
     includeIfNull: false
@@ -177,7 +163,6 @@ class BlockWithCreator {
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockWithCreator &&
      other.id == id &&
-     other.blockPosInChild == blockPosInChild &&
      other.childThreadId == childThreadId &&
      other.content == content &&
      other.createdAt == createdAt &&
@@ -191,7 +176,6 @@ class BlockWithCreator {
   @override
   int get hashCode =>
     id.hashCode +
-    blockPosInChild.hashCode +
     childThreadId.hashCode +
     content.hashCode +
     createdAt.hashCode +
@@ -199,7 +183,7 @@ class BlockWithCreator {
     creatorId.hashCode +
     lastModified.hashCode +
     mainThreadId.hashCode +
-    (position == null ? 0 : position.hashCode) +
+    position.hashCode +
     tenantId.hashCode;
 
   factory BlockWithCreator.fromJson(Map<String, dynamic> json) => _$BlockWithCreatorFromJson(json);

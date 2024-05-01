@@ -5,11 +5,6 @@ components:
         _id:
           title: ' Id'
           type: string
-        block_pos_in_child:
-          default: 0
-          'null': true
-          title: Block Pos In Child
-          type: integer
         child_thread_id:
           default: ''
           title: Child Thread Id
@@ -52,11 +47,6 @@ components:
         _id:
           title: ' Id'
           type: string
-        block_pos_in_child:
-          default: 0
-          'null': true
-          title: Block Pos In Child
-          type: integer
         child_thread_id:
           default: ''
           title: Child Thread Id
@@ -83,9 +73,7 @@ components:
           title: Main Thread Id
           type: string
         position:
-          anyOf:
-          - type: integer
-          - type: 'null'
+          type: integer
           default: 0
           title: Position
         tenant_id:
@@ -241,6 +229,10 @@ components:
         headline:
           title: Headline
           type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
         read:
           default: false
           title: Read
@@ -350,6 +342,10 @@ components:
         headline:
           title: Headline
           type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
         read:
           default: false
           title: Read
@@ -397,9 +393,7 @@ components:
           title: Headline
           type: string
         parent_block_id:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: string
           'null': true
           title: Parent Block Id
         tenant_id:
@@ -460,9 +454,7 @@ components:
           title: Content
           type: string
         position:
-          anyOf:
-          - type: integer
-          - type: 'null'
+          type: integer
           title: Position
       title: UpdateBlockModel
       type: object

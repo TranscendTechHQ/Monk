@@ -165,7 +165,7 @@ class ThreadModel {
     createdDate.hashCode +
     creatorId.hashCode +
     headline.hashCode +
-    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
+    parentBlockId.hashCode +
     tenantId.hashCode +
     title.hashCode +
     type.hashCode;

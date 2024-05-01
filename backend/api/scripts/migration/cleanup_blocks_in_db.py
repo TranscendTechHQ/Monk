@@ -30,6 +30,12 @@ async def remove_some_fields():
     print(f'Dropped fields from {result.modified_count} documents.')
 
 
+async def drop_field():
+    # Define the field to drop
+    field_to_drop = 'block_pos_in_child'
+    asyncdb.blocks_collection.update_many({}, {"$unset": {field_to_drop: ""}})
+
+
 async def add_new_field():
     # Define the fields to add
     fields_to_add = [
@@ -104,7 +110,8 @@ async def main():
     # await add_new_field()
     # await migrate_blocks_to_new_collection()
     # await remove_blocks_from_blocks_collection()
-    await add_num_blocks_to_threads()
+    # await add_num_blocks_to_threads()
+    await drop_field()
     await shutdown_async_db_client()
 
 

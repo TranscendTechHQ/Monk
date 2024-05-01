@@ -17,8 +17,6 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
         );
         final val = BlockWithCreator(
           id: $checkedConvert('_id', (v) => v as String?),
-          blockPosInChild: $checkedConvert(
-              'block_pos_in_child', (v) => (v as num?)?.toInt() ?? 0),
           childThreadId:
               $checkedConvert('child_thread_id', (v) => v as String? ?? ''),
           content: $checkedConvert('content', (v) => v as String),
@@ -32,14 +30,14 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
               (v) => v == null ? null : DateTime.parse(v as String)),
           mainThreadId:
               $checkedConvert('main_thread_id', (v) => v as String? ?? ''),
-          position: $checkedConvert('position', (v) => (v as num?)?.toInt()),
+          position:
+              $checkedConvert('position', (v) => (v as num?)?.toInt() ?? 0),
           tenantId: $checkedConvert('tenant_id', (v) => v as String? ?? ''),
         );
         return val;
       },
       fieldKeyMap: const {
         'id': '_id',
-        'blockPosInChild': 'block_pos_in_child',
         'childThreadId': 'child_thread_id',
         'createdAt': 'created_at',
         'creatorId': 'creator_id',
@@ -59,7 +57,6 @@ Map<String, dynamic> _$BlockWithCreatorToJson(BlockWithCreator instance) {
   }
 
   writeNotNull('_id', instance.id);
-  writeNotNull('block_pos_in_child', instance.blockPosInChild);
   writeNotNull('child_thread_id', instance.childThreadId);
   val['content'] = instance.content;
   writeNotNull('created_at', instance.createdAt?.toIso8601String());

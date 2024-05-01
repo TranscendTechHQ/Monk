@@ -12,11 +12,6 @@ void main() {
       // TODO
     });
 
-    // int blockPosInChild (default value: 0)
-    test('to test the property `blockPosInChild`', () async {
-      // TODO
-    });
-
     // String childThreadId (default value: '')
     test('to test the property `childThreadId`', () async {
       // TODO
@@ -52,7 +47,7 @@ void main() {
       // TODO
     });
 
-    // int position
+    // int position (default value: 0)
     test('to test the property `position`', () async {
       // TODO
     });

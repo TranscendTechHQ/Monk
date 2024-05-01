@@ -29,6 +29,8 @@ class ThreadMetaData {
 
      this.headline,
 
+     this.lastModified,
+
      this.read = false,
 
     required  this.title,
@@ -101,6 +103,18 @@ class ThreadMetaData {
 
 
   @JsonKey(
+    
+    name: r'last_modified',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? lastModified;
+
+
+
+  @JsonKey(
     defaultValue: false,
     name: r'read',
     required: false,
@@ -167,6 +181,7 @@ class ThreadMetaData {
      other.createdDate == createdDate &&
      other.creator == creator &&
      other.headline == headline &&
+     other.lastModified == lastModified &&
      other.read == read &&
      other.title == title &&
      other.type == type &&
@@ -180,6 +195,7 @@ class ThreadMetaData {
     createdDate.hashCode +
     creator.hashCode +
     headline.hashCode +
+    lastModified.hashCode +
     read.hashCode +
     title.hashCode +
     type.hashCode +

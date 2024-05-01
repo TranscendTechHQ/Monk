@@ -37,6 +37,11 @@ void main() {
       // TODO
     });
 
+    // DateTime lastModified
+    test('to test the property `lastModified`', () async {
+      // TODO
+    });
+
     // bool read (default value: false)
     test('to test the property `read`', () async {
       // TODO

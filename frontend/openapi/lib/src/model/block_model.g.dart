@@ -16,8 +16,6 @@ BlockModel _$BlockModelFromJson(Map<String, dynamic> json) => $checkedCreate(
         );
         final val = BlockModel(
           id: $checkedConvert('_id', (v) => v as String?),
-          blockPosInChild: $checkedConvert(
-              'block_pos_in_child', (v) => (v as num?)?.toInt() ?? 0),
           childThreadId:
               $checkedConvert('child_thread_id', (v) => v as String? ?? ''),
           content: $checkedConvert('content', (v) => v as String),
@@ -36,7 +34,6 @@ BlockModel _$BlockModelFromJson(Map<String, dynamic> json) => $checkedCreate(
       },
       fieldKeyMap: const {
         'id': '_id',
-        'blockPosInChild': 'block_pos_in_child',
         'childThreadId': 'child_thread_id',
         'createdAt': 'created_at',
         'creatorId': 'creator_id',
@@ -56,7 +53,6 @@ Map<String, dynamic> _$BlockModelToJson(BlockModel instance) {
   }
 
   writeNotNull('_id', instance.id);
-  writeNotNull('block_pos_in_child', instance.blockPosInChild);
   writeNotNull('child_thread_id', instance.childThreadId);
   val['content'] = instance.content;
   writeNotNull('created_at', instance.createdAt?.toIso8601String());

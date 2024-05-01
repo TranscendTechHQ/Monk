@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **createdDate** | **String** |  | 
 **creator** | [**UserModel**](UserModel.md) |  | 
 **headline** | **String** |  | [optional] 
+**lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **read** | **bool** |  | [optional] [default to false]
 **title** | **String** |  | 
 **type** | **String** |  | 

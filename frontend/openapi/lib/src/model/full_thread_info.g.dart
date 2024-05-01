@@ -34,6 +34,8 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
           creator: $checkedConvert(
               'creator', (v) => UserModel.fromJson(v as Map<String, dynamic>)),
           headline: $checkedConvert('headline', (v) => v as String?),
+          lastModified: $checkedConvert('last_modified',
+              (v) => v == null ? null : DateTime.parse(v as String)),
           read: $checkedConvert('read', (v) => v as bool? ?? false),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
@@ -42,7 +44,11 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
         );
         return val;
       },
-      fieldKeyMap: const {'id': '_id', 'createdDate': 'created_date'},
+      fieldKeyMap: const {
+        'id': '_id',
+        'createdDate': 'created_date',
+        'lastModified': 'last_modified'
+      },
     );
 
 Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
@@ -61,6 +67,7 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
   val['created_date'] = instance.createdDate;
   val['creator'] = instance.creator.toJson();
   writeNotNull('headline', instance.headline);
+  writeNotNull('last_modified', instance.lastModified?.toIso8601String());
   writeNotNull('read', instance.read);
   val['title'] = instance.title;
   val['type'] = instance.type;

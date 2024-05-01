@@ -2,6 +2,7 @@ import asyncio
 
 from pymongo import MongoClient
 
+from scripts.db.thread_headline import generate_all_thread_headlines
 from config import settings
 from utils.headline import generate_single_thread_headline
 
@@ -22,16 +23,6 @@ def shutdown_db_client():
     app.mongodb_client.close()
 
 
-def generate_all_thread_headlines(num_thread_limit, use_ai=False):
-    thread_collection = app.mongodb["threads"]
-    # headline_collection = app.mongodb["thread_headlines"]
-    for doc in thread_collection.find({'title': {"$exists": True}}).limit(num_thread_limit):
-        content = doc['content']
-        # if len(content) < 1:
-        #    continue
-        generate_single_thread_headline(doc, thread_collection, use_ai=use_ai)
-
-        # pprint.pprint(headline['text'])
 
 
 async def main():

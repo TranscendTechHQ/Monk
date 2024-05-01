@@ -58,7 +58,6 @@ class BlockModel(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.now)
     creator_id: str = Field(default="unknown id")
     main_thread_id: str = Field(default="")
-    block_pos_in_child: int = Field(default=0, null=True)
     position: Optional[int] = Field(default=0)
     child_thread_id: str = Field(default="")
     tenant_id: str = Field(default="")
