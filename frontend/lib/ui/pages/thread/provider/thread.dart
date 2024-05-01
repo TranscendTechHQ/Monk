@@ -19,6 +19,8 @@ import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'thread.freezed.dart';
 
 part 'thread.g.dart';
 
@@ -78,11 +80,12 @@ Future<FullThreadInfo> createOrGetThread(
 @riverpod
 class CurrentThread extends _$CurrentThread {
   @override
-  Future<FullThreadInfo?> build({
+  Future<CurrentTreadState> build({
     required String title,
     required String type,
     ThreadType threadType = ThreadType.thread,
     String? threadChildId,
+    String? mainThreadId,
   }) async {
     state = const AsyncValue.loading();
     FullThreadInfo? thread;
@@ -91,24 +94,25 @@ class CurrentThread extends _$CurrentThread {
     } else {
       thread = await fetchThreadFromIdAsync(threadChildId!);
     }
-
-    state = AsyncValue.data(thread);
-    return state.value;
+    print("\n ---- Block Order ---- \n");
+    print(thread?.content?.map((e) => e.position).toList());
+    return CurrentTreadState.result(blocks: thread?.content, thread: thread);
   }
 
   Future<bool> createBlock(String text, {String? customTitle}) async {
+    final thread = state.value?.thread;
+    if (thread == null) {
+      throw Exception("Thread is null");
+    }
     final res = await AsyncRequest.handle<BlockWithCreator>(() async {
-      String? threadTitle = state.value?.title ?? customTitle;
+      String? threadTitle = thread.title ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
         logger.e("Thread title is null");
         throw Exception("Thread title is null");
       }
       logger.d("creating new Thread title $threadTitle");
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
-      final mainThreadId = state.value!.id;
-      if (mainThreadId != null) {
-        logger.d("creating new block with parent thread id $mainThreadId");
-      }
+      final mainThreadId = thread.id;
 
       final newThreadState = await blockApi.createBlocksPost(
         threadTitle: threadTitle!,
@@ -123,17 +127,19 @@ class CurrentThread extends _$CurrentThread {
     return res.fold((l) {
       throw Exception(l.message ?? "Failed to create block");
     }, (block) {
-      final list = state.value?.content.getOrEmpty ?? [];
+      final list = state.value?.blocks.getOrEmpty ?? [];
       list.add(block);
+
       final updatedThreadModel = FullThreadInfo(
-        title: state.value!.title,
-        type: state.value!.type,
+        title: thread.title,
+        type: thread.type,
         content: list,
-        creator: state.value!.creator,
-        id: state.value!.id,
-        createdDate: state.value!.createdDate,
+        creator: thread.creator,
+        id: thread.id,
+        createdDate: thread.createdDate,
       );
-      state = AsyncValue.data(updatedThreadModel);
+      state = AsyncValue.data(
+          CurrentTreadState.result(blocks: list, thread: updatedThreadModel));
       return true;
     });
   }
@@ -156,103 +162,108 @@ class CurrentThread extends _$CurrentThread {
     });
     return res.fold((l) {
       throw Exception(l.message);
-    }, (r) => r);
+    }, (r) {
+      print(r.content?.map((e) => e.position).toList());
+      return r;
+    });
   }
 
   void addChildThreadIdToBlock(String childThreadId, String blockId) {
-    final thread = state.value;
+    final thread = state.value?.thread;
+    final blocks = state.value?.blocks.getOrEmpty;
     if (thread == null) {
       logger.e("There is no thread to add child thread id to");
       return;
+    } else if (blocks.isNullOrEmpty) {
+      logger.e("There is no block to add child thread id to");
+      return;
     }
 
-    var block = thread.content?.firstWhere((element) => element.id == blockId);
+    var block = blocks!.firstWhere((element) => element.id == blockId);
 
-    if (block != null) {
+    final map = block.toJson()
+      ..putIfAbsent("child_thread_id", () => childThreadId)
+      ..update("child_thread_id", (value) => childThreadId);
+
+    block = BlockWithCreator.fromJson(map);
+    final updatedBlocks = blocks.map((e) {
+      if (e.id == blockId) {
+        return block;
+      }
+      return e;
+    }).toList();
+    final updatedThreadModel = FullThreadInfo(
+      title: thread.title,
+      type: thread.type,
+      content: updatedBlocks,
+      creator: thread.creator,
+      id: thread.id,
+      createdDate: thread.createdDate,
+    );
+
+    state = AsyncValue.data(CurrentTreadState.result(
+        blocks: updatedBlocks, thread: updatedThreadModel));
+  }
+
+  Future<void> updateBlock(String blockId, String content) async {
+    final thread = state.value?.thread;
+    final blocks = state.value?.blocks.getOrEmpty;
+    if (thread == null) {
+      logger.e("There is no thread to add child thread id to");
+      return;
+    } else if (blocks.isNullOrEmpty) {
+      logger.e("There is no block to add child thread id to");
+      return;
+    }
+    var block = blocks?.firstWhere((element) => element.id == blockId);
+    if (block == null) {
+      logger.e("Block not found");
+      throw Exception("Block not found");
+    }
+
+    final res = await AsyncRequest.handle<BlockModel>(() async {
+      logger.i('updating block with id $blockId');
+      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+      final result = await threadApi.updateBlocksIdPut(
+        id: blockId,
+        threadTitle: thread.title,
+        updateBlockModel: UpdateBlockModel(
+          content: content,
+        ),
+      );
+      return result.data!;
+    });
+    return res.fold((l) {
+      throw Exception(l.message);
+    }, (r) {
       final map = block.toJson()
-        ..putIfAbsent("child_thread_id", () => childThreadId)
-        ..update("child_thread_id", (value) => childThreadId);
+        ..putIfAbsent("content", () => content)
+        ..update("content", (value) => content);
 
-      block = BlockWithCreator.fromJson(map);
-      final newContent = thread.content?.map((e) {
+      final updatedBlock = BlockWithCreator.fromJson(map);
+      final updatedBlocks = thread.content?.map((e) {
         if (e.id == blockId) {
-          return block!;
+          return updatedBlock;
         }
         return e;
       }).toList();
       final updatedThreadModel = FullThreadInfo(
         title: thread.title,
         type: thread.type,
-        content: newContent!,
+        content: updatedBlocks!,
         creator: thread.creator,
         id: thread.id,
         createdDate: thread.createdDate,
       );
-
-      state = AsyncValue.data(updatedThreadModel);
-    } else {
-      logger.e("Can't find block with id $blockId");
-    }
-  }
-
-  List<String> getBlocks() {
-    final blocks =
-        state.value?.content?.map((e) => e.content).toList().reversed.toList();
-    return blocks ?? [];
-  }
-
-  Future<void> updateBlock(String blockId, String content) async {
-    final res = await AsyncRequest.handle(() async {
-      final thread = state.value;
-      if (thread == null) {
-        logger.e("There is no thread to update block");
-        return;
-      }
-
-      final block =
-          thread.content?.firstWhere((element) => element.id == blockId);
-
-      if (block != null) {
-        final map = block.toJson()
-          ..putIfAbsent("content", () => content)
-          ..update("content", (value) => content);
-
-        final updatedBlock = BlockWithCreator.fromJson(map);
-        final newContent = thread.content?.map((e) {
-          if (e.id == blockId) {
-            return updatedBlock;
-          }
-          return e;
-        }).toList();
-        final updatedThreadModel = FullThreadInfo(
-          title: thread.title,
-          type: thread.type,
-          content: newContent!,
-          creator: thread.creator,
-          id: thread.id,
-          createdDate: thread.createdDate,
-        );
-        logger.i('updating block with id $blockId');
-        final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-        await threadApi.updateBlocksIdPut(
-          id: blockId,
-          threadTitle: thread.title,
-          updateBlockModel: UpdateBlockModel(
-            content: content,
-          ),
-        );
-        state = AsyncValue.data(updatedThreadModel);
-      } else {
-        logger.e("Can't find block with id $blockId");
-      }
+      state = AsyncValue.data(
+        CurrentTreadState.result(
+            blocks: updatedBlocks, thread: updatedThreadModel),
+      );
     });
-    return res.fold((l) {
-      throw Exception(l.message);
-    }, (r) => r);
   }
 
   Future<void> updateThreadTitle(String title) async {
-    final thread = state.value;
+    final thread = state.value?.thread;
     if (thread == null) {
       logger.e("There is no thread to update title");
       return;
@@ -276,19 +287,22 @@ class CurrentThread extends _$CurrentThread {
         id: thread.id,
         createdDate: thread.createdDate,
       );
-      state = AsyncValue.data(updatedThreadModel);
+      state = AsyncValue.data(
+        CurrentTreadState.result(
+            blocks: state.value?.blocks, thread: updatedThreadModel),
+      );
     });
   }
 
   void reorderBlocks(int oldIndex, int newIndex) {
-    final thread = state.value;
+    final thread = state.value?.thread;
+    final blocks = state.value?.blocks.getOrEmpty;
     if (thread == null) {
       logger.e("There is no thread to reorder blocks");
       return;
     }
 
-    final blocks = thread.content.getAbsoluteOrNull;
-    if (blocks == null) {
+    if (blocks.isNullOrEmpty) {
       logger.e("There are no blocks to reorder");
       return;
     }
@@ -297,19 +311,67 @@ class CurrentThread extends _$CurrentThread {
       newIndex -= 1;
     }
 
-    final block = blocks.removeAt(oldIndex);
-    blocks.insert(newIndex, block);
+    BlockWithCreator draggedBlock = blocks![oldIndex];
+    draggedBlock = BlockWithCreator.fromJson(draggedBlock.toJson()
+      ..putIfAbsent("position", () => newIndex)
+      ..update("position", (value) => newIndex));
+
+    // Update the position of the rest affected blocks
+    final updatedBlocks = blocks.map((block) {
+      if (block.id != draggedBlock.id) {
+        if (newIndex < oldIndex) {
+          if (block.position! >= newIndex && block.position! < oldIndex) {
+            // block.position++;
+            return BlockWithCreator.fromJson(block.toJson()
+              ..putIfAbsent("position", () => block.position! + 1)
+              ..update("position", (value) => block.position! + 1));
+          }
+          return block;
+        } else {
+          if (block.position! <= newIndex && block.position! > oldIndex) {
+            return BlockWithCreator.fromJson(block.toJson()
+              ..putIfAbsent("position", () => block.position! - 1)
+              ..update("position", (value) => block.position! - 1));
+          }
+          return block;
+        }
+      }
+      return block;
+    }).toList();
+
+    // for (BlockWithCreator block in blocks) {
+    //   if (block.id != draggedBlock.id) {
+    //     if (newIndex < oldIndex) {
+    //       if (block.position! >= newIndex && block.position! < oldIndex) {
+    //         // block.position++;
+    //       }
+    //     } else {
+    //       if (block.position! <= newIndex && block.position! > oldIndex) {
+    //         // block.position--;
+    //       }
+    //     }
+    //   }
+    // }
+
+    updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
+
+    print(updatedBlocks.map((e) => e.position).toList());
 
     final updatedThreadModel = FullThreadInfo(
       title: thread.title,
       type: thread.type,
-      content: blocks,
+      content: updatedBlocks,
       creator: thread.creator,
       id: thread.id,
       createdDate: thread.createdDate,
     );
 
-    state = AsyncValue.data(updatedThreadModel);
+    state = AsyncValue.data(
+      CurrentTreadState.result(
+        blocks: updatedBlocks,
+        thread: updatedThreadModel,
+      ),
+    );
   }
 
   Future<FullThreadInfo?> createChildThread(
@@ -325,7 +387,7 @@ class CurrentThread extends _$CurrentThread {
         if (response.data != null) {
           logger.d("Child thread is created");
 
-          List<BlockWithCreator> list = state.value?.content.getOrEmpty ?? [];
+          List<BlockWithCreator> list = state.value?.blocks.getOrEmpty ?? [];
           final index = list.indexWhere(
               (element) => element.id == createChildThreadModel.parentBlockId);
           if (index != -1) {
@@ -344,17 +406,22 @@ class CurrentThread extends _$CurrentThread {
             printPretty(map);
 
             final updatedThreadModel = BlockWithCreator.fromJson(map);
+            List<BlockWithCreator> updatedBlocks = [];
             list[index] = updatedThreadModel;
-            final threadInfo = state.value!.toJson();
+            final threadInfo = state.value!.thread!.toJson();
             if (threadInfo.containsKey("content")) {
               threadInfo["content"] = list.map((e) => e.toJson()).toList();
+              updatedBlocks = list;
             } else {
               threadInfo.putIfAbsent("content", () => list);
             }
 
             final updatedThreadModel2 = FullThreadInfo.fromJson(threadInfo);
 
-            state = AsyncValue.data(updatedThreadModel2);
+            state = AsyncValue.data(
+              CurrentTreadState.result(
+                  blocks: updatedBlocks, thread: updatedThreadModel2),
+            );
             logger.d("Updated in state");
           } else {
             logger.e("Parent block not found");
@@ -373,4 +440,21 @@ class CurrentThread extends _$CurrentThread {
       throw Exception(l.message);
     }, (r) => r);
   }
+}
+
+@freezed
+class CurrentTreadState with _$CurrentTreadState {
+  const factory CurrentTreadState({
+    @Default([]) List<BlockWithCreator> blocks,
+    FullThreadInfo? thread,
+  }) = _CurrentTreadState;
+  factory CurrentTreadState.initial() => const CurrentTreadState();
+  factory CurrentTreadState.result({
+    List<BlockWithCreator>? blocks,
+    FullThreadInfo? thread,
+  }) =>
+      CurrentTreadState(
+        blocks: blocks ?? [],
+        thread: thread,
+      );
 }

@@ -557,7 +557,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
 
     block_id = block_position.block_id
     new_position = block_position.new_position
-    old_position = block_position.position
+    old_position = block["position"]
     # parent thread of the block
     thread_id = block_position.thread_id
 

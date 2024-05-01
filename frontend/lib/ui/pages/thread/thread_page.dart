@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
-import 'package:frontend/repo/thread.dart';
+import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -60,7 +60,7 @@ class ThreadPage extends ConsumerWidget {
     );
     final currentThread = ref.watch(provider);
     final threadTitle = currentThread.maybeWhen(
-      data: (state) => state?.title ?? title,
+      data: (state) => state.thread?.title ?? title,
       orElse: () => title,
     );
     final blockInput = CommandBox(title: title, type: type);
@@ -190,7 +190,7 @@ class ChatListView extends ConsumerWidget {
     required this.type,
     required this.threadType,
   });
-  final AsyncValue<FullThreadInfo?> currentThread;
+  final AsyncValue<CurrentTreadState?> currentThread;
   final String type;
   final String title;
   final ThreadType threadType;
@@ -204,13 +204,13 @@ class ChatListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blocks = currentThread.value?.content?.reversed.toList();
-    final mainThreadId = currentThread.value?.id;
+    final blocks = currentThread.value?.blocks;
+    final mainThreadId = currentThread.value?.thread?.id;
     return SizedBox(
       width: containerWidth,
       child: type == '/new-task'
           ? ReorderableListView(
-              reverse: true,
+              // reverse: true,
               padding: const EdgeInsets.only(bottom: 30),
               onReorder: (int oldIndex, int newIndex) {
                 ref

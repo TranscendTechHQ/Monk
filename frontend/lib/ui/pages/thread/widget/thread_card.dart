@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
-import 'package:frontend/repo/thread.dart';
+import 'package:frontend/ui/pages/thread/provider/thread.dart';
 
 import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
