@@ -667,7 +667,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FullThreadInfo'
+                $ref: '#/components/schemas/BlockModel'
           description: Update a block
         '422':
           content:

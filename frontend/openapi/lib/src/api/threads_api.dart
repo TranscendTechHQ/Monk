@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
+import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/block_with_creator.dart';
 import 'package:openapi/src/model/create_block_model.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
@@ -1015,9 +1016,9 @@ _responseData = rawData == null ? null : deserialize<UpdateBlockPositionModel, U
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [FullThreadInfo] as data
+  /// Returns a [Future] containing a [Response] with a [BlockModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<FullThreadInfo>> updateBlocksIdPut({ 
+  Future<Response<BlockModel>> updateBlocksIdPut({ 
     required String id,
     required String threadTitle,
     required UpdateBlockModel updateBlockModel,
@@ -1073,11 +1074,11 @@ _bodyData=jsonEncode(updateBlockModel);
       onReceiveProgress: onReceiveProgress,
     );
 
-    FullThreadInfo? _responseData;
+    BlockModel? _responseData;
 
     try {
 final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadInfo>(rawData, 'FullThreadInfo', growable: true);
+_responseData = rawData == null ? null : deserialize<BlockModel, BlockModel>(rawData, 'BlockModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1088,7 +1089,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
       );
     }
 
-    return Response<FullThreadInfo>(
+    return Response<BlockModel>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

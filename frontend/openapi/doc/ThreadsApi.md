@@ -516,7 +516,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateBlocksIdPut**
-> FullThreadInfo updateBlocksIdPut(id, threadTitle, updateBlockModel)
+> BlockModel updateBlocksIdPut(id, threadTitle, updateBlockModel)
 
 Update
 
@@ -547,7 +547,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**FullThreadInfo**](FullThreadInfo.md)
+[**BlockModel**](BlockModel.md)
 
 ### Authorization
 

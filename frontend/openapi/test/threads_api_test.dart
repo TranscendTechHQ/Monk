@@ -93,7 +93,7 @@ void main() {
 
     // Update
     //
-    //Future<FullThreadInfo> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<BlockModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
     test('test updateBlocksIdPut', () async {
       // TODO
     });

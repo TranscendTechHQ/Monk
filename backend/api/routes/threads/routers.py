@@ -493,7 +493,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
-@router.put("/blocks/{id}", response_model=FullThreadInfo, response_description="Update a block")
+@router.put("/blocks/{id}", response_model=BlockModel, response_description="Update a block")
 async def update(request: Request, id: str, thread_title: str, block: UpdateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
 
@@ -504,51 +504,41 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     # Logic to store the block in MongoDB backend database
     # Index the block by userId
     input_block = block.model_dump()
+    block_content = input_block["content"]
+    bloc_position = input_block["position"]
 
-    block = await get_block_by_id(id, block_collection)
-    # TODO: Check if the block exists
-    block = block["content"]
+    print("\n Fetching block from db using Id:", id)
+    block_in_db = await get_block_by_id(id, block_collection)
+
+    if not block_in_db:
+        return JSONResponse(status_code=404, content={"message": "Block with ${id} not found"})
+
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
 
-    if block["creator_id"] != user_id:
+    if block_in_db["creator_id"] != user_id:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
-    # new_block_dict = new_block.model_dump()
-    # new_block_dict["id"] = str(new_block_dict["id"])
-    # to store the block as a json string in the db
-    # we need the following. We have chose to insert
-    # the block as a dictionary object in the db
-    # json_new_block = json_util.dumps(new_block_dict)
-    thread = await get_mongo_document({"title": thread_title}, thread_collection, tenant_id)
-    if not thread:
-        return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
-
-    update_block = block
+    update_block = block_in_db
     update_block["content"] = input_block["content"]
 
-    # change new_block_dict to json_new_block if you want to store
-    # block as a json string in the db
-    for content in thread["content"]:
-        if content["_id"] == block["_id"]:
-            content["content"] = update_block["content"]
+    if (block_content is not None):
+        print("\n Updating block content")
+        update_block["content"] = block_content
 
-    updated_thread = await update_mongo_document_fields({"_id": thread["_id"]}, thread, thread_collection)
+    if (bloc_position is not None):
+        print("\n Updating block position")
+        update_block["position"] = bloc_position
 
-    user_thread_flag = await get_mongo_document({"thread_id": thread["_id"], "user_id": user_id},
-                                                request.app.mongodb["user_thread_flags"], tenant_id)
+    update_block["last_modified"] = dt.datetime.now()
 
-    if user_thread_flag:
-        user_thread_flag["read"] = False
-        updated_user_thread_flags = await update_mongo_document_fields(
-            {"thread_id": thread["_id"], "user_id": user_id},
-            jsonable_encoder(user_thread_flag),
-            request.app.mongodb["user_thread_flags"])
+    print("\n Updating block in db")
 
-    ret_thread = await get_thread_from_db(updated_thread["_id"], tenant_id)
+    updated_block = await update_mongo_document_fields({"_id": id}, update_block, block_collection)
 
-    return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(ret_thread))
+    logger.debug("\n Block updated in DB")
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content=jsonable_encoder(updated_block))
 
 
 @router.put("/blocks/{id}/position", response_model=UpdateBlockPositionModel, response_description="Update a block position")
