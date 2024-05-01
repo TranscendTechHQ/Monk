@@ -686,30 +686,38 @@ async def get_thread_id(request: Request,
 @router.put("/threads/{id}", response_model=FullThreadInfo, response_description="Update a thread by id")
 async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleModel = Body(...),
                     session: SessionContainer = Depends(verify_session())):
-    # Create a new thread in MongoDB using the thread_data
-    # Index the thread by user_id
-    user_id = session.get_user_id()
-    tenant_id = await get_tenant_id(session)
+    try:
+        # Create a new thread in MongoDB using the thread_data
+        # Index the thread by user_id
+        user_id = session.get_user_id()
+        tenant_id = await get_tenant_id(session)
 
-    thread_collection = request.app.mongodb["threads"]
-    logger.info("\nFetching thread from the DB")
-    old_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
-    if not old_thread:
-        return JSONResponse(status_code=404, content={"message": "Thread not found"})
+        thread_collection = request.app.mongodb["threads"]
+        print("\nFetching thread from the DB")
+        old_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
+        if not old_thread:
+            return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
-    if old_thread["creator_id"] != user_id:
-        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
+        if old_thread["creator_id"] != user_id:
+            return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
-    thread_title = jsonable_encoder(thread_data)["title"]
-    # content = jsonable_encoder(thread_data)["content"]
+        thread_title = jsonable_encoder(thread_data)["title"]
+        # content = jsonable_encoder(thread_data)["content"]
 
-    logger.info("\n Updating the thread in DB")
-    await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title, 'last_modified': dt.datetime.now}})
-    updated_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
+        print("\n Updating the thread in DB")
+        await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title, 'last_modified': dt.datetime.now()}})
 
-    ret_thread = await get_thread_from_db(updated_thread["_id"], tenant_id)
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(ret_thread))
+        print('\n Thread title is updated i DB')
+        updated_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
+
+        print('\n Getting updated thread from DB', updated_thread)
+
+        ret_thread = await get_thread_from_db(updated_thread["_id"], tenant_id)
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder(ret_thread))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.post("/thread/flag", response_model=UserThreadFlagModel, response_description="Create a new thread flag")
