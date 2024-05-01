@@ -179,6 +179,7 @@ class ThreadMetaData(BaseModel):
     title: str
     type: str
     created_date: str
+    last_modified: datetime = Field(default_factory=datetime.now)
     creator: UserModel
     headline: str = Field(default=None)
     read: bool = Field(default=False)

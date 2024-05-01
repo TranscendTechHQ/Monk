@@ -3,8 +3,8 @@ import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/utils.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/repo/thread.dart';
-import 'package:frontend/ui/pages/thread/page/thread_detail_page.dart';
 import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -116,6 +116,8 @@ class ThreadPage extends ConsumerWidget {
                           ),
                           TextButton(
                             onPressed: () async {
+                              loader.showLoader(context,
+                                  message: 'Updating title');
                               await ref
                                   .read(provider.notifier)
                                   .updateThreadTitle(controller.text);
@@ -123,6 +125,7 @@ class ThreadPage extends ConsumerWidget {
                                 title: title,
                                 type: type,
                               ));
+                              loader.hideLoader();
                               Navigator.of(context).pop();
                             },
                             child: const Text('Save'),

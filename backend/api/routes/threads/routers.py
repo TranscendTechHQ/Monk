@@ -493,6 +493,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
+# TODO: It should return BlockWithCreator model
 @router.put("/blocks/{id}", response_model=BlockModel, response_description="Update a block")
 async def update(request: Request, id: str, thread_title: str, block: UpdateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
@@ -691,7 +692,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
     tenant_id = await get_tenant_id(session)
 
     thread_collection = request.app.mongodb["threads"]
-
+    logger.info("\nFetching thread from the DB")
     old_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
     if not old_thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
@@ -702,11 +703,12 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
     thread_title = jsonable_encoder(thread_data)["title"]
     # content = jsonable_encoder(thread_data)["content"]
 
-    await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title}})
+    logger.info("\n Updating the thread in DB")
+    await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title, 'last_modified': dt.datetime.now}})
     updated_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
 
     ret_thread = await get_thread_from_db(updated_thread["_id"], tenant_id)
-    return JSONResponse(status_code=status.HTTP_201_CREATED,
+    return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ret_thread))
 
 

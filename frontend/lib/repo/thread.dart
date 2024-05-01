@@ -97,7 +97,7 @@ class CurrentThread extends _$CurrentThread {
   }
 
   Future<bool> createBlock(String text, {String? customTitle}) async {
-    final res = await AsyncRequest.handle<bool>(() async {
+    final res = await AsyncRequest.handle<BlockWithCreator>(() async {
       String? threadTitle = state.value?.title ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
         logger.e("Thread title is null");
@@ -117,31 +117,25 @@ class CurrentThread extends _$CurrentThread {
           mainThreadId: mainThreadId,
         ),
       );
-
-      if (newThreadState.statusCode != 201) {
-        throw Exception("Failed to create block");
-      }
-      if (newThreadState.data is BlockWithCreator) {
-        final list = state.value?.content.getOrEmpty ?? [];
-        list.add(newThreadState.data!);
-
-        final updatedThreadModel = FullThreadInfo(
-          title: state.value!.title,
-          type: state.value!.type,
-          content: list,
-          creator: state.value!.creator,
-          id: state.value!.id,
-          createdDate: state.value!.createdDate,
-        );
-        state = AsyncValue.data(updatedThreadModel);
-      } else {
-        return false;
-      }
+      return newThreadState.data!;
     });
 
     return res.fold((l) {
-      return false;
-    }, (r) => r);
+      throw Exception(l.message ?? "Failed to create block");
+    }, (block) {
+      final list = state.value?.content.getOrEmpty ?? [];
+      list.add(block);
+      final updatedThreadModel = FullThreadInfo(
+        title: state.value!.title,
+        type: state.value!.type,
+        content: list,
+        creator: state.value!.creator,
+        id: state.value!.id,
+        createdDate: state.value!.createdDate,
+      );
+      state = AsyncValue.data(updatedThreadModel);
+      return true;
+    });
   }
 
   Future<FullThreadInfo?> fetchThreadFromIdAsync(String id) async {
@@ -258,13 +252,22 @@ class CurrentThread extends _$CurrentThread {
   }
 
   Future<void> updateThreadTitle(String title) async {
-    final res = await AsyncRequest.handle(() async {
-      final thread = state.value;
-      if (thread == null) {
-        logger.e("There is no thread to update title");
-        return;
-      }
-
+    final thread = state.value;
+    if (thread == null) {
+      logger.e("There is no thread to update title");
+      return;
+    }
+    final res = await AsyncRequest.handle<FullThreadInfo>(() async {
+      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+      final result = await threadApi.updateThThreadsIdPut(
+        id: thread.id,
+        updateThreadTitleModel: UpdateThreadTitleModel(title: title),
+      );
+      return result.data!;
+    });
+    return res.fold((l) {
+      throw Exception(l.message ?? "Failed to update thread title");
+    }, (thread) {
       final updatedThreadModel = FullThreadInfo(
         title: title,
         type: thread.type,
@@ -273,20 +276,8 @@ class CurrentThread extends _$CurrentThread {
         id: thread.id,
         createdDate: thread.createdDate,
       );
-      final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-      final res = await threadApi.updateThThreadsIdPut(
-        id: thread.id,
-        updateThreadTitleModel: UpdateThreadTitleModel(title: title),
-      );
-      if (res.statusCode != 200) {
-        throw Exception("Failed to update thread title");
-      } else {
-        state = AsyncValue.data(updatedThreadModel);
-      }
+      state = AsyncValue.data(updatedThreadModel);
     });
-    return res.fold((l) {
-      throw Exception(l.message);
-    }, (r) => r);
   }
 
   void reorderBlocks(int oldIndex, int newIndex) {
