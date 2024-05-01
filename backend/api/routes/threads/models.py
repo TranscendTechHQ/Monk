@@ -43,15 +43,7 @@ class UserMap(BaseModel):
                               arbitrary_types_allowed=True,)
 
 
-class PositionModel(BaseModel):
-    thread_id: str = Field(default='')
-    position: int = Field(default=0)
-    model_config = ConfigDict(extra='ignore',
-                              populate_by_name=True,
-                              arbitrary_types_allowed=True,)
-
-
-class UpdateBlockPositionModel(PositionModel):
+class UpdateBlockPositionModel(BaseModel):
     block_id: str = Field(default='')
     new_position: int = Field(default=0)
     model_config = ConfigDict(extra='ignore',
@@ -67,11 +59,9 @@ class BlockModel(BaseModel):
     creator_id: str = Field(default="unknown id")
     main_thread_id: str = Field(default="")
     block_pos_in_child: int = Field(default=0, null=True)
-    position: int = Field(default=0, null=True)
+    position: Optional[int] = Field(default=0)
     child_thread_id: str = Field(default="")
     tenant_id: str = Field(default="")
-    position: Union[List[PositionModel],
-                    SkipJsonSchema[None]] = Field(default=None)
 
 
 class CreateBlockModel(BaseModel):
@@ -85,8 +75,7 @@ class CreateBlockModel(BaseModel):
 
 class UpdateBlockModel(BaseModel):
     content: Union[str, SkipJsonSchema[None]] = None
-    block_pos_in_child: int = Field(default=None)
-    position: int = Field(default=None)
+    position: Optional[int] = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

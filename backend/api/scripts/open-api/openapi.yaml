@@ -10,15 +10,6 @@ components:
           'null': true
           title: Block Pos In Child
           type: integer
-        block_pos_in_parent:
-          default: 0
-          'null': true
-          title: Block Pos In Parent
-          type: integer
-        child_id:
-          default: ''
-          title: Child Id
-          type: string
         child_thread_id:
           default: ''
           title: Child Thread Id
@@ -38,15 +29,16 @@ components:
           format: date-time
           title: Last Modified
           type: string
-        parent_thread_id:
+        main_thread_id:
           default: ''
-          title: Parent Thread Id
+          title: Main Thread Id
           type: string
         position:
-          items:
-            $ref: '#/components/schemas/PositionModel'
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: 0
           title: Position
-          type: array
         tenant_id:
           default: ''
           title: Tenant Id
@@ -65,15 +57,6 @@ components:
           'null': true
           title: Block Pos In Child
           type: integer
-        block_pos_in_parent:
-          default: 0
-          'null': true
-          title: Block Pos In Parent
-          type: integer
-        child_id:
-          default: ''
-          title: Child Id
-          type: string
         child_thread_id:
           default: ''
           title: Child Thread Id
@@ -95,15 +78,16 @@ components:
           format: date-time
           title: Last Modified
           type: string
-        parent_thread_id:
+        main_thread_id:
           default: ''
-          title: Parent Thread Id
+          title: Main Thread Id
           type: string
         position:
-          items:
-            $ref: '#/components/schemas/PositionModel'
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: 0
           title: Position
-          type: array
         tenant_id:
           default: ''
           title: Tenant Id
@@ -156,12 +140,12 @@ components:
         content:
           title: Content
           type: string
-        parent_thread_id:
-          title: Parent Thread Id
+        main_thread_id:
+          title: Main Thread Id
           type: string
       required:
       - content
-      - parent_thread_id
+      - main_thread_id
       title: CreateBlockModel
       type: object
     CreateChildThreadModel:
@@ -171,11 +155,11 @@ components:
             $ref: '#/components/schemas/BlockModel'
           title: Content
           type: array
+        mainThreadId:
+          title: Mainthreadid
+          type: string
         parentBlockId:
           title: Parentblockid
-          type: string
-        parentThreadId:
-          title: Parentthreadid
           type: string
         title:
           maxLength: 100
@@ -190,7 +174,7 @@ components:
       - type
       - title
       - parentBlockId
-      - parentThreadId
+      - mainThreadId
       title: CreateChildThreadModel
       type: object
     CreateThreadModel:
@@ -291,18 +275,6 @@ components:
           title: Detail
           type: array
       title: HTTPValidationError
-      type: object
-    PositionModel:
-      properties:
-        position:
-          default: 0
-          title: Position
-          type: integer
-        thread_id:
-          default: ''
-          title: Thread Id
-          type: string
-      title: PositionModel
       type: object
     SessionInfo:
       properties:
@@ -425,9 +397,11 @@ components:
           title: Headline
           type: string
         parent_block_id:
-          default: ''
+          anyOf:
+          - type: string
+          - type: 'null'
+          'null': true
           title: Parent Block Id
-          type: string
         tenant_id:
           title: Tenant Id
           type: string
@@ -482,16 +456,27 @@ components:
       type: object
     UpdateBlockModel:
       properties:
-        block_pos_in_child:
-          title: Block Pos In Child
-          type: integer
-        block_pos_in_parent:
-          title: Block Pos In Parent
-          type: integer
         content:
           title: Content
           type: string
+        position:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Position
       title: UpdateBlockModel
+      type: object
+    UpdateBlockPositionModel:
+      properties:
+        block_id:
+          default: ''
+          title: Block Id
+          type: string
+        new_position:
+          default: 0
+          title: New Position
+          type: integer
+      title: UpdateBlockPositionModel
       type: object
     UpdateThreadTitleModel:
       properties:
@@ -691,6 +676,38 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Update
+      tags:
+      - threads
+  /blocks/{id}/position:
+    put:
+      operationId: update_block_position_blocks__id__position_put
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBlockPositionModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBlockPositionModel'
+          description: Update a block position
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Block Position
       tags:
       - threads
   /channel_list:

@@ -17,7 +17,7 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, PositionModel, UpdateBlockModel, UpdateBlockPositionModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, UpdateBlockModel, UpdateBlockPositionModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -275,8 +275,8 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str):
     if user_info is None:
         return None
     block = block.model_dump()
-    new_block = BlockModel(**block, tenant_id=tenant_id, creator_id=user_id,
-                           position=pos, position=[PositionModel(position=pos, thread_id=thread_id)])
+    new_block = BlockModel(**block, tenant_id=tenant_id,
+                           creator_id=user_id, position=pos,)
     await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
 
     # now update the thread block count
@@ -350,7 +350,7 @@ async def get_thread_from_db(thread_id, tenant_id):
                 '$unwind': '$content'
             }, {
                 '$sort': {
-                    'content.block_pos_in_child': 1
+                    'content.position': 1
                 }
             }, {
                 '$lookup': {
