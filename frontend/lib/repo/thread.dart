@@ -176,8 +176,8 @@ class CurrentThread extends _$CurrentThread {
 
     if (block != null) {
       final map = block.toJson()
-        ..putIfAbsent("child_id", () => childThreadId)
-        ..update("child_id", (value) => childThreadId);
+        ..putIfAbsent("child_thread_id", () => childThreadId)
+        ..update("child_thread_id", (value) => childThreadId);
 
       block = BlockWithCreator.fromJson(map);
       final newContent = thread.content?.map((e) {

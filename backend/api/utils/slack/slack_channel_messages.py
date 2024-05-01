@@ -265,7 +265,8 @@ async def main():
 
                 if "reply_count" in message:
                     if message["reply_count"] > 0:
-                        new_parent_block = CreateBlockModel(content=message["text"], parent_thread_id=thread_id)
+                        new_parent_block = CreateBlockModel(
+                            content=message["text"], main_thread_id=thread_id)
                         print(new_parent_block)
                         new_parent_block = await create_new_block( 
                                                                   block=new_parent_block, 
@@ -281,7 +282,8 @@ async def main():
 
                         new_thread_title = new_thread["title"]
 
-                        new_block = CreateBlockModel(content=message["text"], parent_thread_id=new_thread["_id"])
+                        new_block = CreateBlockModel(
+                            content=message["text"], main_thread_id=new_thread["_id"])
                         print(new_block)
                         await create_new_block(block=new_block,
                                                user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
@@ -291,7 +293,8 @@ async def main():
                                                                            thread_id=thread_id,
                                                                            child_thread_id=new_thread["_id"])
                     else:
-                        new_block = CreateBlockModel(content=message["text"], parent_thread_id=thread_id)
+                        new_block = CreateBlockModel(
+                            content=message["text"], main_thread_id=thread_id)
                         print(new_block)
                         await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
 
@@ -305,7 +308,8 @@ async def main():
                     parent_thread = await threads_collection.find_one({"title": new_thread_title})
 
                     thread_id = parent_thread["_id"]
-                    new_block = CreateBlockModel(content=message["text"], parent_thread_id=parent_thread["_id"])
+                    new_block = CreateBlockModel(
+                        content=message["text"], main_thread_id=parent_thread["_id"])
                     print(new_block)
                     await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
 
