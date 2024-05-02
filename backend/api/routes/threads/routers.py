@@ -603,37 +603,79 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
 @router.put("/blocks/{id}/position", response_model=UpdateBlockPositionModel, response_description="Update a block position")
 async def update_block_position(request: Request, id: str, block_position: UpdateBlockPositionModel = Body(...),
                                 session: SessionContainer = Depends(verify_session())):
-    print("\nReceived request to update block position")
-    block_collection = request.app.mongodb["blocks"]
-    block = await get_block_by_id(id, block_collection)
+    try:
+        print('🏁 -------------------- Update Block Position -------------------- 🏁')
+        block_collection = request.app.mongodb["blocks"]
 
-    user_id = session.get_user_id()
-    tenant_id = await get_tenant_id(session)
+        print('\n👉 Fetching block from db using Id:', id)
+        block_id = block_position.block_id
+        new_position = block_position.new_position
+        block_to_move = await get_block_by_id(block_id, block_collection)
 
-    if block["creator_id"] != user_id:
-        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
+        if not block_to_move:
+            return JSONResponse(status_code=404, content={"message": f"Block with ${id} not found"})
 
-    block_id = block_position.block_id
-    new_position = block_position.new_position
-    old_position = block["position"]
-    # parent thread of the block
-    thread_id = block_position.thread_id
+        old_position = block_to_move["position"]
+        user_id = session.get_user_id()
+        tenant_id = await get_tenant_id(session)
 
-    if (old_position < new_position):
-        new_position = new_position - 1
+        if block_to_move["creator_id"] != user_id:
+            return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
 
-    # get the block to be moved to the new position
-    block_to_move = await get_block_by_id(block_id, block_collection)
+        if (old_position < new_position):
+            new_position = new_position - 1
 
-    if block_to_move["creator_id"] != user_id:
-        return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
+        # parent thread of the block
+        thread_id = block_to_move["main_thread_id"]
 
-    # Remove the block from the old position and update the position of the blocks in the thread
-    # get the blocks in the parent thread
-    blocks = await get_mongo_documents({"main_thread_id": thread_id}, block_collection, tenant_id)
+        if not thread_id:
+            return JSONResponse(status_code=404, content={"message": "Dragged block doesn't have threadId"})
 
-    # get the block to be moved
-    block_to_move = blocks
+        print('\n👉 Fetching all block from same thread:',
+              thread_id, 'for tenant_id:', tenant_id)
+        # get the blocks in the parent thread
+        # blocks = await get_mongo_documents({"main_thread_id": thread_id}, block_collection, tenant_id)
+        blocks = await block_collection.find({"main_thread_id": thread_id}).to_list(None)
+
+        if not blocks:
+            return JSONResponse(status_code=404, content={"message": f"Thread with ${thread_id} not found"})
+
+        print('\n👉 Performing sorting on  thread. Elements:', len(blocks))
+        # sort the blocks by position
+        blocks = sorted(blocks, key=lambda x: x["position"])
+
+        print('\n👉 Removing the block from old position. Blocks length:', len(blocks))
+        # remove the block from the old position
+        blocks = [block for block in blocks if block["_id"] != block_id]
+
+        print('\n👉 Block is removed the block from old position: Rest blocks length', len(blocks))
+
+        print('\n👉 updating the position of the blocks in the thread')
+        # update the position of the blocks in the thread
+        for i in range(len(blocks)):
+            if blocks[i]["position"] >= new_position:
+                blocks[i]["position"] += 1
+
+        print('\n👉 Inserting the block at new position in the blocks list')
+        # insert the block to the new position
+        block_to_move["position"] = new_position
+        blocks.insert(new_position, block_to_move)
+        print(
+            '\n👉 Block is Inserted at new position in the blocks list: Elements', len(blocks))
+
+        # update the positions of the blocks in the thread
+        print("\n👉 Updating block position in db")
+        for i in range(len(blocks)):
+            new_block_position = i + 1
+            # await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": i}, block_collection)
+            print(
+                f"    → Changing block position from {blocks[i]['position']} to {new_block_position}"),
+
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder(block_to_move))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.post("/blocks/child", response_model=FullThreadInfo, response_description="Create a new child thread from a block")

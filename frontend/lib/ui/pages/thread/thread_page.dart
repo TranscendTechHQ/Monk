@@ -210,35 +210,51 @@ class ChatListView extends ConsumerWidget {
     return SizedBox(
       width: containerWidth,
       child: type == '/new-task'
-          ? ReorderableListView(
-              // reverse: true,
-              padding: const EdgeInsets.only(bottom: 30),
-              onReorder: (int oldIndex, int newIndex) {
-                ref
-                    .read(currentThreadProvider
-                        .call(
-                          title: title,
-                          type: type,
-                        )
-                        .notifier)
-                    .reorderBlocks(oldIndex, newIndex);
-              },
+          ? Column(
               children: [
-                ...blocks?.map((block) {
-                      return ThreadCard(
-                        key: ValueKey(block.id),
-                        block: block,
-                        emojiParser: emojiParser,
-                        title: title,
-                        type: type,
-                        mainThreadId: mainThreadId,
-                        threadType: threadType,
-                      );
-                    }).toList() ??
-                    [],
+                if (currentThread.value?.thread?.defaultBlock != null)
+                  ThreadCard(
+                    key:
+                        ValueKey(currentThread.value?.thread?.defaultBlock!.id),
+                    block: currentThread.value!.thread!.defaultBlock!,
+                    emojiParser: emojiParser,
+                    title: title,
+                    type: type,
+                    mainThreadId: mainThreadId,
+                    threadType: threadType,
+                  ),
+                ReorderableListView(
+                  // reverse: true,
+                  padding: const EdgeInsets.only(bottom: 30),
+                  onReorder: (int oldIndex, int newIndex) async {
+                    await ref
+                        .read(currentThreadProvider
+                            .call(
+                              title: title,
+                              type: type,
+                            )
+                            .notifier)
+                        .reorderBlocks(oldIndex, newIndex);
+                  },
+                  children: [
+                    ...blocks?.map((block) {
+                          return ThreadCard(
+                            // key: ValueKey(block.id),
+                            key: UniqueKey(),
+                            block: block,
+                            emojiParser: emojiParser,
+                            title: title,
+                            type: type,
+                            mainThreadId: mainThreadId,
+                            threadType: threadType,
+                          );
+                        }).toList() ??
+                        [],
+                  ],
+                ).extended,
               ],
             )
-          : ListView.builder(
+          : ListView.separated(
               reverse: true,
               controller: scrollController,
               itemCount: blocks?.length ?? 0,
@@ -253,6 +269,20 @@ class ChatListView extends ConsumerWidget {
                   mainThreadId: mainThreadId,
                   threadType: threadType,
                 );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                if (index == 0 &&
+                    currentThread.value?.thread?.defaultBlock != null) {
+                  return ThreadCard(
+                    block: currentThread.value!.thread!.defaultBlock!,
+                    emojiParser: emojiParser,
+                    title: title,
+                    type: type,
+                    mainThreadId: mainThreadId,
+                    threadType: threadType,
+                  );
+                }
+                return const SizedBox();
               },
             ),
     );
