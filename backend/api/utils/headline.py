@@ -4,6 +4,7 @@ from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 # Define prompt
 from langchain_openai import ChatOpenAI
+from utils.db import asyncdb
 
 from config import settings
 
@@ -38,11 +39,44 @@ def generate_headline(text: str) -> str:
     # print(summary)
     return headline
 
+def update_single_headline_in_db(thread_doc, headline):
+    print(f"Updating headline for thread {thread_doc['_id']} to {headline}")
+    
+    threads_collection = asyncdb.threads_collection
+    threads_collection.update_one({'_id': thread_doc['_id']},
+                                      {'$set': {'headline': headline}}, upsert=True)
 
-def generate_single_thread_headline(thread_doc, threads_collection, use_ai=False):
-    blocks = thread_doc['content']
-    headline = {}
+async def generate_single_thread_headline(thread_id, use_ai=False):
+    #blocks = thread_doc['content']
+    threads_collection = asyncdb.threads_collection
+    thread_doc = await threads_collection.find_one({'_id': thread_id})
+    if not thread_doc:
+        raise ValueError("Thread with id {thread_id} not found")
+    
+    num_blocks = thread_doc['num_blocks']
+    headline = "blank thread"
+    if num_blocks == 0:
+        update_single_headline_in_db(thread_doc, headline)
+        return
+    
+    blocks_collection = asyncdb.blocks_collection
+    default_block = await blocks_collection.find_one({'child_thread_id': thread_id})
+    
+    blocks = []
+    
+    if default_block:
+        if not use_ai:
+            headline = default_block['content']
+            update_single_headline_in_db(thread_doc, headline)
+            return
+        else:
+            blocks.append(default_block)
+        
+    
     if use_ai:
+        more_blocks = await blocks_collection.find(
+        {'main_thread_id': thread_id}).sort('position', 1).to_list(length=None)
+        blocks.extend(more_blocks)
         text = ""
         for block in blocks:
             # print(block['content'])
@@ -51,14 +85,7 @@ def generate_single_thread_headline(thread_doc, threads_collection, use_ai=False
 
     else:
         # print(thread_doc['title'])
+        first_block = await blocks_collection.find_one({'main_thread_id': thread_id, 'position': 0})
+        headline = first_block['content']
 
-        if len(blocks) > 0:
-            headline['text'] = blocks[0]['content']
-            headline['last_modified'] = str(blocks[-1]['created_at'])
-        else:
-            headline['text'] = "blank thread"
-            headline['last_modified'] = str(thread_doc['created_date'])
-
-        threads_collection.update_one({'_id': thread_doc['_id']},
-                                      {'$set': {'headline': headline['text'],
-                                                'last_modified': headline['last_modified']}}, upsert=True)
+    update_single_headline_in_db(thread_doc, headline)
