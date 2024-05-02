@@ -122,7 +122,7 @@ class ThreadPage extends ConsumerWidget {
                                   .read(provider.notifier)
                                   .updateThreadTitle(controller.text);
                               ref.refresh(currentThreadProvider.call(
-                                title: title,
+                                title: controller.text,
                                 type: type,
                               ));
                               loader.hideLoader();
