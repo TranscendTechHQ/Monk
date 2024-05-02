@@ -300,34 +300,73 @@ async def get_thread_from_db(thread_id, tenant_id):
             {
                 '$match': {
                     '_id': thread_id,
-                    'tenant_id': tenant_id
+                    'tenant_id': tenant_id,
                 }
             }, {
                 '$lookup': {
                     'from': 'blocks',
                     'localField': '_id',
                     'foreignField': 'child_thread_id',
-                    'as': 'content1'
+                    'as': 'default_block'
+                }
+            }, {
+                '$addFields': {
+                    'default_block': {
+                        '$cond': {
+                            'if': {
+                                '$eq': [
+                                    {
+                                        '$size': '$default_block'
+                                    }, 0
+                                ]
+                            },
+                            'then': [
+                                {}
+                            ],
+                            'else': '$default_block'
+                        }
+                    }
+                }
+            }, {
+                '$unwind': {
+                    'path': '$default_block'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'users',
+                    'localField': 'default_block.creator_id',
+                    'foreignField': '_id',
+                    'as': 'default_block.creator'
+                }
+            }, {
+                '$addFields': {
+                    'default_block.creator': {
+                        '$cond': {
+                            'if': {
+                                '$eq': [
+                                    {
+                                        '$size': '$default_block.creator'
+                                    }, 0
+                                ]
+                            },
+                            'then': [
+                                {}
+                            ],
+                            'else': '$default_block.creator'
+                        }
+                    }
+                }
+            }, {
+                '$unwind': {
+                    'path': '$default_block.creator'
                 }
             }, {
                 '$lookup': {
                     'from': 'blocks',
                     'localField': '_id',
                     'foreignField': 'main_thread_id',
-                    'as': 'content2'
+                    'as': 'content'
                 }
-            }, {
-                '$set': {
-                    'content': {
-                        '$concatArrays': [
-                            '$content1', '$content2'
-                        ]
-                    }
-                }
-            }, {
-                '$unset': [
-                    'content1', 'content2'
-                ]
             }, {
                 '$addFields': {
                     'content': {
@@ -407,6 +446,12 @@ async def get_thread_from_db(thread_id, tenant_id):
                     },
                     'content': {
                         '$push': '$content'
+                    },
+                    'parent_block_id': {
+                        '$first': '$parent_block_id'
+                    },
+                    'default_block': {
+                        '$first': '$default_block'
                     }
                 }
             }, {
@@ -423,9 +468,11 @@ async def get_thread_from_db(thread_id, tenant_id):
                     '_id': 1,
                     'title': 1,
                     'type': 1,
+                    'default_block': 1,
                     'created_date': 1,
                     'headline': 1,
                     'content': 1,
+                    'parent_block_id': 1,
                     'creator._id': 1,
                     'creator.name': 1,
                     'creator.picture': 1,
@@ -437,14 +484,25 @@ async def get_thread_from_db(thread_id, tenant_id):
         result = asyncdb.threads_collection.aggregate(pipeline)
         thread = await result.to_list(None)
         # print(thread[0]["content"][0])
+
+        # TODO: Since function is intended to return a single thread object,
+        # not sure it should return a empty list here
         if len(thread) == 0:
             return []
-        if not 'content' in thread[0].keys():
-            return thread[0]
-        if not 'creator_id' in thread[0]["content"][0].keys():
-            thread[0]["content"] = None
-        # print(thread[0]["content"][0])
-        return thread[0]
+        thread_to_return = thread[0]
+
+        # Check if thread contains and empty default block
+        # If yes, then remove the key from object
+        if thread_to_return['default_block'].keys():
+            if not '_id' in thread_to_return['default_block'].keys():
+                thread_to_return['default_block'] = None
+
+        if not 'content' in thread_to_return.keys():
+            return thread_to_return
+        if not 'creator_id' in thread_to_return["content"][0].keys():
+            thread_to_return["content"] = None
+
+        return thread_to_return
     except Exception as e:
         logger.error(e, exc_info=True)
         return None

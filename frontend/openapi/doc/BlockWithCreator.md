@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 **creatorId** | **String** |  | [optional] [default to 'unknown id']
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **mainThreadId** | **String** |  | [optional] [default to '']
-**position** | **int** |  | [optional] [default to 0]
+**position** | **int** |  | [optional] 
 **tenantId** | **String** |  | [optional] [default to '']
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

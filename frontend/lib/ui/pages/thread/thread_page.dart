@@ -74,6 +74,7 @@ class ThreadPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(),
         centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,

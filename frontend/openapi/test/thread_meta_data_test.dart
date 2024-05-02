@@ -37,6 +37,11 @@ void main() {
       // TODO
     });
 
+    // String parentBlockId
+    test('to test the property `parentBlockId`', () async {
+      // TODO
+    });
+
     // bool read (default value: false)
     test('to test the property `read`', () async {
       // TODO
@@ -61,6 +66,5 @@ void main() {
     test('to test the property `upvote`', () async {
       // TODO
     });
-
   });
 }

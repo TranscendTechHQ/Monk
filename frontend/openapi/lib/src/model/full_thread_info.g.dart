@@ -33,9 +33,16 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
           createdDate: $checkedConvert('created_date', (v) => v as String),
           creator: $checkedConvert(
               'creator', (v) => UserModel.fromJson(v as Map<String, dynamic>)),
+          defaultBlock: $checkedConvert(
+              'default_block',
+              (v) => v == null
+                  ? null
+                  : BlockWithCreator.fromJson(v as Map<String, dynamic>)),
           headline: $checkedConvert('headline', (v) => v as String?),
           lastModified: $checkedConvert('last_modified',
               (v) => v == null ? null : DateTime.parse(v as String)),
+          parentBlockId:
+              $checkedConvert('parent_block_id', (v) => v as String?),
           read: $checkedConvert('read', (v) => v as bool? ?? false),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
@@ -47,7 +54,9 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
       fieldKeyMap: const {
         'id': '_id',
         'createdDate': 'created_date',
-        'lastModified': 'last_modified'
+        'defaultBlock': 'default_block',
+        'lastModified': 'last_modified',
+        'parentBlockId': 'parent_block_id'
       },
     );
 
@@ -66,8 +75,10 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
   val['created_date'] = instance.createdDate;
   val['creator'] = instance.creator.toJson();
+  writeNotNull('default_block', instance.defaultBlock?.toJson());
   writeNotNull('headline', instance.headline);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
+  writeNotNull('parent_block_id', instance.parentBlockId);
   writeNotNull('read', instance.read);
   val['title'] = instance.title;
   val['type'] = instance.type;

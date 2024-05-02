@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **creator** | [**UserModel**](UserModel.md) |  | 
 **headline** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
+**parentBlockId** | **String** |  | [optional] 
 **read** | **bool** |  | [optional] [default to false]
 **title** | **String** |  | 
 **type** | **String** |  | 

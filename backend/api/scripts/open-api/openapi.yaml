@@ -73,7 +73,9 @@ components:
           title: Main Thread Id
           type: string
         position:
-          type: integer
+          anyOf:
+          - type: integer
+          - type: 'null'
           default: 0
           title: Position
         tenant_id:
@@ -226,6 +228,10 @@ components:
           type: string
         creator:
           $ref: '#/components/schemas/UserModel'
+        default_block:
+          anyOf:
+          - $ref: '#/components/schemas/BlockWithCreator'
+          - type: 'null'
         headline:
           title: Headline
           type: string
@@ -233,6 +239,11 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        parent_block_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Block Id
         read:
           default: false
           title: Read
@@ -346,6 +357,11 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        parent_block_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Block Id
         read:
           default: false
           title: Read
@@ -393,7 +409,9 @@ components:
           title: Headline
           type: string
         parent_block_id:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           'null': true
           title: Parent Block Id
         tenant_id:
@@ -454,7 +472,9 @@ components:
           title: Content
           type: string
         position:
-          type: integer
+          anyOf:
+          - type: integer
+          - type: 'null'
           title: Position
       title: UpdateBlockModel
       type: object

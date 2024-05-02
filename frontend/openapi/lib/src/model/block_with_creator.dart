@@ -35,7 +35,7 @@ class BlockWithCreator {
 
      this.mainThreadId = '',
 
-     this.position = 0,
+     this.position,
 
      this.tenantId = '',
   });
@@ -137,7 +137,7 @@ class BlockWithCreator {
 
 
   @JsonKey(
-    defaultValue: 0,
+    
     name: r'position',
     required: false,
     includeIfNull: false
@@ -183,7 +183,7 @@ class BlockWithCreator {
     creatorId.hashCode +
     lastModified.hashCode +
     mainThreadId.hashCode +
-    position.hashCode +
+    (position == null ? 0 : position.hashCode) +
     tenantId.hashCode;
 
   factory BlockWithCreator.fromJson(Map<String, dynamic> json) => _$BlockWithCreatorFromJson(json);

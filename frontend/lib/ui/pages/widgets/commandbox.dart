@@ -38,7 +38,7 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
   final screenVisibility = ref.read(screenVisibilityProvider().notifier);
   screenVisibility.setVisibility(InputBoxType.thread);
   // logger.v('Switching to thread $newThreadTitle of type $newThreadType');
-  Navigator.pushReplacement(
+  Navigator.push(
     context,
     ThreadPage.launchRoute(title: newThreadTitle, type: newThreadType),
   );

@@ -165,6 +165,7 @@ class CreateUserThreadFlagModel(BaseModel):
                               )
 
 
+# TODO: Deprecate this model. Use ThreadMetaData instead
 class ThreadsModel(BaseModel):
     threads: List[ThreadModel]
     model_config = ConfigDict(extra='ignore',
@@ -180,6 +181,7 @@ class ThreadMetaData(BaseModel):
     created_date: str
     last_modified: datetime = Field(default_factory=datetime.now)
     creator: UserModel
+    parent_block_id: Optional[str] = Field(default=None)
     headline: str = Field(default=None)
     read: bool = Field(default=False)
     unfollow: bool = Field(default=False)
@@ -209,6 +211,7 @@ class BlockWithCreator(BlockModel):
 
 class FullThreadInfo(ThreadMetaData):
     content: Union[List[BlockWithCreator], SkipJsonSchema[None]] = None
+    default_block: Optional[BlockWithCreator] = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

@@ -30,6 +30,8 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
           headline: $checkedConvert('headline', (v) => v as String?),
           lastModified: $checkedConvert('last_modified',
               (v) => v == null ? null : DateTime.parse(v as String)),
+          parentBlockId:
+              $checkedConvert('parent_block_id', (v) => v as String?),
           read: $checkedConvert('read', (v) => v as bool? ?? false),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
@@ -41,7 +43,8 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
       fieldKeyMap: const {
         'id': '_id',
         'createdDate': 'created_date',
-        'lastModified': 'last_modified'
+        'lastModified': 'last_modified',
+        'parentBlockId': 'parent_block_id'
       },
     );
 
@@ -61,6 +64,7 @@ Map<String, dynamic> _$ThreadMetaDataToJson(ThreadMetaData instance) {
   val['creator'] = instance.creator.toJson();
   writeNotNull('headline', instance.headline);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
+  writeNotNull('parent_block_id', instance.parentBlockId);
   writeNotNull('read', instance.read);
   val['title'] = instance.title;
   val['type'] = instance.type;

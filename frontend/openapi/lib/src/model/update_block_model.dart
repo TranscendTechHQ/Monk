@@ -55,7 +55,7 @@ class UpdateBlockModel {
   @override
   int get hashCode =>
     content.hashCode +
-    position.hashCode;
+    (position == null ? 0 : position.hashCode);
 
   factory UpdateBlockModel.fromJson(Map<String, dynamic> json) => _$UpdateBlockModelFromJson(json);
 

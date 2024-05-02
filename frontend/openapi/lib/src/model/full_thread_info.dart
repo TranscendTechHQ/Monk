@@ -30,9 +30,13 @@ class FullThreadInfo {
 
     required  this.creator,
 
+     this.defaultBlock,
+
      this.headline,
 
      this.lastModified,
+
+     this.parentBlockId,
 
      this.read = false,
 
@@ -107,6 +111,18 @@ class FullThreadInfo {
 
   @JsonKey(
     
+    name: r'default_block',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final BlockWithCreator? defaultBlock;
+
+
+
+  @JsonKey(
+    
     name: r'headline',
     required: false,
     includeIfNull: false
@@ -126,6 +142,18 @@ class FullThreadInfo {
 
 
   final DateTime? lastModified;
+
+
+
+  @JsonKey(
+    
+    name: r'parent_block_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? parentBlockId;
 
 
 
@@ -196,8 +224,10 @@ class FullThreadInfo {
      other.content == content &&
      other.createdDate == createdDate &&
      other.creator == creator &&
+     other.defaultBlock == defaultBlock &&
      other.headline == headline &&
      other.lastModified == lastModified &&
+     other.parentBlockId == parentBlockId &&
      other.read == read &&
      other.title == title &&
      other.type == type &&
@@ -211,8 +241,10 @@ class FullThreadInfo {
     content.hashCode +
     createdDate.hashCode +
     creator.hashCode +
+    (defaultBlock == null ? 0 : defaultBlock.hashCode) +
     headline.hashCode +
     lastModified.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     read.hashCode +
     title.hashCode +
     type.hashCode +
