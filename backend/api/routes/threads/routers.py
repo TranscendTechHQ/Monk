@@ -606,7 +606,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print('🏁 -------------------- Update Block Position -------------------- 🏁')
         block_collection = request.app.mongodb["blocks"]
 
-        print('\n👉 Fetching block from db using Id:', id)
+        print('\n👉 Fetching block from db using having main_thread_id:', id)
         block_id = block_position.block_id
         new_position = block_position.new_position
         block_to_move = await get_block_by_id(block_id, block_collection)
@@ -614,61 +614,61 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         if not block_to_move:
             return JSONResponse(status_code=404, content={"message": f"Block with ${id} not found"})
 
-        old_position = block_to_move["position"]
         user_id = session.get_user_id()
+
+        # TODO: Check if tenant_id is required here. Ideally it should be required
         tenant_id = await get_tenant_id(session)
 
         if block_to_move["creator_id"] != user_id:
             return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
 
-        if (old_position < new_position):
-            new_position = new_position - 1
-
-        # parent thread of the block
+        # main_thread_id of the block
         thread_id = block_to_move["main_thread_id"]
 
         if not thread_id:
+            logger.error("Found a block without threadId. BlockId:", block_id)
             return JSONResponse(status_code=404, content={"message": "Dragged block doesn't have threadId"})
 
-        print('\n👉 Fetching all block from same thread:',
-              thread_id, 'for tenant_id:', tenant_id)
-        # get the blocks in the parent thread
-        # blocks = await get_mongo_documents({"main_thread_id": thread_id}, block_collection, tenant_id)
-        blocks = await block_collection.find({"main_thread_id": thread_id}).to_list(None)
+        print('\n👉 Fetching all block from from db having same thread:', thread_id, )
+
+        filter = {'main_thread_id': thread_id}
+        sort = list({'position': 1}.items())
+        blocks = await block_collection.find(filter=filter, sort=sort).to_list(None)
 
         if not blocks:
-            return JSONResponse(status_code=404, content={"message": f"Thread with ${thread_id} not found"})
+            return JSONResponse(status_code=404, content={"message": f"Blocks with ${thread_id} id not found"})
 
-        print('\n👉 Performing sorting on  thread. Elements:', len(blocks))
-        # sort the blocks by position
-        blocks = sorted(blocks, key=lambda x: x["position"])
+        print(
+            '\n👉 Removing the dragged block from old position. Updated Blocks length:', len(blocks))
+        for i in range(len(blocks)):
+            print(
+                f"  → DB blocks positions {blocks[i]['content']}"),
 
-        print('\n👉 Removing the block from old position. Blocks length:', len(blocks))
         # remove the block from the old position
         blocks = [block for block in blocks if block["_id"] != block_id]
 
         print('\n👉 Block is removed the block from old position: Rest blocks length', len(blocks))
 
-        print('\n👉 updating the position of the blocks in the thread')
-        # update the position of the blocks in the thread
-        for i in range(len(blocks)):
-            if blocks[i]["position"] >= new_position:
-                blocks[i]["position"] += 1
-
-        print('\n👉 Inserting the block at new position in the blocks list')
+        print(
+            f'\n👉 Inserting the block at new position {new_position} in the blocks list')
         # insert the block to the new position
         block_to_move["position"] = new_position
         blocks.insert(new_position, block_to_move)
+
+        # for i in range(len(blocks)):
+        #     print(
+        #         f"  → New Positions block position from {blocks[i]['content']}"),
+
         print(
-            '\n👉 Block is Inserted at new position in the blocks list: Elements', len(blocks))
+            '\n👉 Block is Inserted at new position in the blocks list: Updated blocks length', len(blocks))
 
         # update the positions of the blocks in the thread
         print("\n👉 Updating block position in db")
         for i in range(len(blocks)):
             new_block_position = i + 1
-            # await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": i}, block_collection)
+            await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": new_block_position, 'last_modified': dt.datetime.now()}, block_collection)
             print(
-                f"    → Changing block position from {blocks[i]['position']} to {new_block_position}"),
+                f"    → Changing block position from {blocks[i]['content']} to {new_block_position}"),
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(block_to_move))

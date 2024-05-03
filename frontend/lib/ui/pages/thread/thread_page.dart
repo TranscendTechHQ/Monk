@@ -227,6 +227,7 @@ class ChatListView extends ConsumerWidget {
                   // reverse: true,
                   padding: const EdgeInsets.only(bottom: 30),
                   onReorder: (int oldIndex, int newIndex) async {
+                    loader.showLoader(context, message: 'Saving..');
                     await ref
                         .read(currentThreadProvider
                             .call(
@@ -235,6 +236,8 @@ class ChatListView extends ConsumerWidget {
                             )
                             .notifier)
                         .reorderBlocks(oldIndex, newIndex);
+
+                    loader.hideLoader();
                   },
                   children: [
                     ...blocks?.map((block) {
