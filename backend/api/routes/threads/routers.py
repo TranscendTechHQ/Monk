@@ -282,8 +282,7 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str):
     # now update the thread block count
     await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": pos + 1}, thread_collection)
 
-    # TODO: Implement AI headline generation
-    # generate_single_thread_headline(thread, thread_collection, use_ai=False)
+    await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
 
     return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
 

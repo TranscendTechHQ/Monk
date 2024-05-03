@@ -58,7 +58,7 @@ class BlockModel(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.now)
     creator_id: str = Field(default="unknown id")
     main_thread_id: str = Field(default="")
-    position: Optional[int] = Field(default=0)
+    position: int = Field(default=0)
     child_thread_id: str = Field(default="")
     tenant_id: str = Field(default="")
 
@@ -74,7 +74,7 @@ class CreateBlockModel(BaseModel):
 
 class UpdateBlockModel(BaseModel):
     content: Union[str, SkipJsonSchema[None]] = None
-    position: Optional[int] = Field(default=None)
+    position: int = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -115,6 +115,7 @@ class ThreadModel(BaseModel):
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     headline: str = Field(default=None)
     tenant_id: str
+    num_blocks: int = Field(default=0)
     parent_block_id: Optional[str] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
@@ -183,6 +184,7 @@ class ThreadMetaData(BaseModel):
     creator: UserModel
     parent_block_id: Optional[str] = Field(default=None)
     headline: str = Field(default=None)
+    num_blocks: int = Field(default=0)
     read: bool = Field(default=False)
     unfollow: bool = Field(default=False)
     bookmark: bool = Field(default=False)
@@ -211,7 +213,7 @@ class BlockWithCreator(BlockModel):
 
 class FullThreadInfo(ThreadMetaData):
     content: Union[List[BlockWithCreator], SkipJsonSchema[None]] = None
-    default_block: Optional[BlockWithCreator] = Field(default=None)
+    default_block: BlockWithCreator = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

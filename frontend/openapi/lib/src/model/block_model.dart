@@ -32,7 +32,7 @@ class BlockModel {
 
      this.mainThreadId = '',
 
-     this.position,
+     this.position = 0,
 
      this.tenantId = '',
   });
@@ -122,7 +122,7 @@ class BlockModel {
 
 
   @JsonKey(
-    
+    defaultValue: 0,
     name: r'position',
     required: false,
     includeIfNull: false
@@ -166,7 +166,7 @@ class BlockModel {
     creatorId.hashCode +
     lastModified.hashCode +
     mainThreadId.hashCode +
-    (position == null ? 0 : position.hashCode) +
+    position.hashCode +
     tenantId.hashCode;
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => _$BlockModelFromJson(json);

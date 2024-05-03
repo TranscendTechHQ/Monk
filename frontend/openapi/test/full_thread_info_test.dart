@@ -47,6 +47,11 @@ void main() {
       // TODO
     });
 
+    // int numBlocks (default value: 0)
+    test('to test the property `numBlocks`', () async {
+      // TODO
+    });
+
     // String parentBlockId
     test('to test the property `parentBlockId`', () async {
       // TODO

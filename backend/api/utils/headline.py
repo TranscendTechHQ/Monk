@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from langchain.chains.llm import LLMChain
@@ -5,6 +6,7 @@ from langchain.prompts import PromptTemplate
 # Define prompt
 from langchain_openai import ChatOpenAI
 from utils.db import asyncdb
+from utils.db import shutdown_async_db_client, startup_async_db_client
 
 from config import settings
 
@@ -54,6 +56,7 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
         raise ValueError("Thread with id {thread_id} not found")
     
     num_blocks = thread_doc['num_blocks']
+    
     headline = "blank thread"
     if num_blocks == 0:
         update_single_headline_in_db(thread_doc, headline)
@@ -66,17 +69,20 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
     
     if default_block:
         if not use_ai:
+            
             headline = default_block['content']
+            
             update_single_headline_in_db(thread_doc, headline)
             return
         else:
             blocks.append(default_block)
         
-    
-    if use_ai:
-        more_blocks = await blocks_collection.find(
+    more_blocks = await blocks_collection.find(
         {'main_thread_id': thread_id}).sort('position', 1).to_list(length=None)
-        blocks.extend(more_blocks)
+    blocks.extend(more_blocks)
+        
+    if use_ai:
+        
         text = ""
         for block in blocks:
             # print(block['content'])
@@ -85,7 +91,34 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
 
     else:
         # print(thread_doc['title'])
-        first_block = await blocks_collection.find_one({'main_thread_id': thread_id, 'position': 0})
+        first_block = blocks[0]
+        
         headline = first_block['content']
+        
 
     update_single_headline_in_db(thread_doc, headline)
+    
+    
+def generate_all_thread_headlines(num_thread_limit, use_ai=False):
+    thread_collection = asyncdb.threads_collection
+    # headline_collection = app.mongodb["thread_headlines"]
+    for doc in thread_collection.find({'title': {"$exists": True}}).limit(num_thread_limit):
+        content = doc['content']
+        # if len(content) < 1:
+        #    continue
+        generate_single_thread_headline(doc, thread_collection, use_ai=use_ai)
+
+        # pprint.pprint(headline['text'])
+        
+        
+async def main():
+    await startup_async_db_client()
+    #generate_all_thread_headlines(500, use_ai=False)
+    await generate_single_thread_headline(
+        "af6f0744-0679-47d4-8838-db02312cc61e", use_ai=False
+    )
+    await shutdown_async_db_client()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

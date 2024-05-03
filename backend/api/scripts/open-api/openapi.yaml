@@ -29,11 +29,9 @@ components:
           title: Main Thread Id
           type: string
         position:
-          anyOf:
-          - type: integer
-          - type: 'null'
           default: 0
           title: Position
+          type: integer
         tenant_id:
           default: ''
           title: Tenant Id
@@ -73,11 +71,9 @@ components:
           title: Main Thread Id
           type: string
         position:
-          anyOf:
-          - type: integer
-          - type: 'null'
           default: 0
           title: Position
+          type: integer
         tenant_id:
           default: ''
           title: Tenant Id
@@ -229,9 +225,8 @@ components:
         creator:
           $ref: '#/components/schemas/UserModel'
         default_block:
-          anyOf:
+          allOf:
           - $ref: '#/components/schemas/BlockWithCreator'
-          - type: 'null'
         headline:
           title: Headline
           type: string
@@ -239,10 +234,12 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        num_blocks:
+          default: 0
+          title: Num Blocks
+          type: integer
         parent_block_id:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: string
           title: Parent Block Id
         read:
           default: false
@@ -357,10 +354,12 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        num_blocks:
+          default: 0
+          title: Num Blocks
+          type: integer
         parent_block_id:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: string
           title: Parent Block Id
         read:
           default: false
@@ -408,10 +407,12 @@ components:
         headline:
           title: Headline
           type: string
+        num_blocks:
+          default: 0
+          title: Num Blocks
+          type: integer
         parent_block_id:
-          anyOf:
-          - type: string
-          - type: 'null'
+          type: string
           'null': true
           title: Parent Block Id
         tenant_id:
@@ -472,10 +473,8 @@ components:
           title: Content
           type: string
         position:
-          anyOf:
-          - type: integer
-          - type: 'null'
           title: Position
+          type: integer
       title: UpdateBlockModel
       type: object
     UpdateBlockPositionModel:

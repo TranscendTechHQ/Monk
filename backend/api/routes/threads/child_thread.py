@@ -39,8 +39,8 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
                                                          asyncdb.threads_collection)
 
             print("\n 5.a.2 Created thread\n", created_thread)
-            # TODO: Fix: generate headline
-            # generate_single_thread_headline(created_thread, asyncdb.threads_collection, use_ai=False)
+            
+            await generate_single_thread_headline(thread_id=created_thread["_id"], use_ai=False)
             asyncdb.threads_collection.update_one({'_id': created_thread['_id']},
                                                   {'$set': {'headline': 'blank thread'}}, upsert=True)
         else:

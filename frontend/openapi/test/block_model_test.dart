@@ -42,7 +42,7 @@ void main() {
       // TODO
     });
 
-    // int position
+    // int position (default value: 0)
     test('to test the property `position`', () async {
       // TODO
     });
