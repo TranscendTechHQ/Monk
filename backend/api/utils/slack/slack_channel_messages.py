@@ -39,13 +39,15 @@ def shutdown_db_client():
 # Function to fetch and print replies to a message in a Slack channel
 def fetch_and_print_replies(slack_client, channel_id, message_ts):
     try:
-        reply_count = 0
-        parent_message_id = ""
+        
 
         # Call conversations.replies method using the WebClient
         result = slack_client.conversations_replies(channel=channel_id, ts=message_ts)
 
         message_list = []
+        
+        parent_message_id = ""
+        
         # Print the replies
         for reply in result['messages']:
             
@@ -72,6 +74,7 @@ def fetch_and_print_replies(slack_client, channel_id, message_ts):
             select_message_data["reply"] = True if "parent_user_id" in reply else False
             if "parent_user_id" in reply:
                 select_message_data["parent_message_id"] = parent_message_id
+                select_message_data["parent_user_id"] = reply["parent_user_id"]
 
             if not 'subtype' in reply.keys():
             # if 'attachments' in reply.keys():
@@ -86,7 +89,10 @@ def fetch_and_print_replies(slack_client, channel_id, message_ts):
                     thread_ts = reply['thread_ts']
                 if 'client_msg_id' in reply.keys():
                     client_msg_id = reply['client_msg_id']
-                print(f"{reply['user']} + --- + {reply['text']} reply_count: {reply_count} parent_user_id: {parent_message_id} , thread_ts {thread_ts} client_msg_id:{client_msg_id}")  # Adjust this based on the structure of your messages
+                parent_user_id = ""
+                if 'parent_user_id' in reply.keys():
+                    parent_user_id = reply['parent_user_id']
+                print(f"{reply['user']} + --- + {reply['text']} reply_count: {reply_count} parent_user_id: {parent_user_id} , thread_ts {thread_ts} client_msg_id:{client_msg_id}")  # Adjust this based on the structure of your messages
         # print('\n\n')
 
     except SlackApiError as e:
@@ -256,53 +262,48 @@ async def main():
             current_slack_thread_id=""
             current_thread_id = {}
             # check if user exists else create new user
-            for message in message_list:
+            for i, message in enumerate(message_list):
                 thirdparty_user_id = message['creator_id']
                 message_user = await update_third_party_user_info(thirdparty_user_id, tenant_id, slack_client_for_user_info)
-                block_thread_id = main_thread_id
+                block_thread_id = main_thread_id # this is default unless there are child threads
+                
+                if "reply" in message and message["reply"]:
+                    #this means this is a reply message
+                    if not 'parent_message_id' in message:
+                        raise ValueError("Parent message id not found")
+                    if not message["parent_message_id"] in current_thread_id:
+                        raise ValueError("Parent thread id not found")
+                    block_thread_id = current_thread_id[message["parent_message_id"]]
+
+                # create a new block either in the main thread or the child thread
+                new_block = CreateBlockModel(
+                content=message["text"], main_thread_id=block_thread_id)
+                    
+                created_block = await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant_id)   
                 
                 if "reply_count" in message:
                     #this means this is a parent message
-                    # create a new block in the main thread
-            
-                    new_parent_block = CreateBlockModel(
-                        content=message["text"], main_thread_id=block_thread_id)
-                    print(new_parent_block)
-                    new_parent_block = await create_new_block( 
-                                                                block=new_parent_block, 
-                                                                user_id=message_user["_id"],
-                                                                tenant_id=tenant_id)
                     
-                    new_parent_block_id = new_parent_block.id
+                    new_parent_block_id = created_block.id
                     current_slack_thread_id=message['parent_message_id']
                     new_thread_title = f"Reply{thread_title}{new_parent_block_id[0:4].replace('-', '')}"
+                    #  we need to get the user who created the next message
+                    if (i+1) >= len(message_list):
+                        raise ValueError("Next message not found, was a reply deleted?")
+                    thirdparty_user_id = message_list[i+1]['creator_id']
+                    new_thread_creator = await update_third_party_user_info(thirdparty_user_id, tenant_id, slack_client_for_user_info)
+                    new_thread_creator_id = new_thread_creator["_id"]
                     #start a new thread
                     child_thread = await create_child_thread(thread_collection=threads_collection,
                                                 parent_block_id=new_parent_block_id,
                                                 main_thread_id=main_thread_id,
                                                 thread_title=new_thread_title,
                                                 thread_type=thread_type,
-                                                user_id=message_user["_id"],
+                                                user_id=new_thread_creator_id,
                                                 tenant_id=tenant_id,
-                                                parentBlock=new_parent_block)
+                                                parentBlock=created_block)
                     current_thread_id[current_slack_thread_id] = child_thread['_id']
                     
-                elif "parent_message_id" in message:
-                    #this means this is a reply message
-
-                    block_thread_id = current_thread_id[message['parent_message_id']]
-                    new_block = CreateBlockModel(
-                        content=message["text"], main_thread_id=block_thread_id)
-                    
-                    await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant_id)
-                else:
-                    block_thread_id = main_thread_id
-                    new_block = CreateBlockModel(
-                        content=message["text"], main_thread_id=block_thread_id)
-                    
-                    await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant_id)
-                
-
 
     await shutdown_async_db_client()
 

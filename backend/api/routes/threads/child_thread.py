@@ -54,7 +54,7 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
         logger.error("❌ Error in create_new_thread()", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-
+# TODO: cleanup unused code here. thread colleciton not needed. parent_block_id or parentBlock, one of them not needed.
 async def create_child_thread(thread_collection, parent_block_id, main_thread_id, thread_title, thread_type, user_id,
                               tenant_id, parentBlock: BlockModel):
     print("\n 5.a Inside create_child_thread", parentBlock)
