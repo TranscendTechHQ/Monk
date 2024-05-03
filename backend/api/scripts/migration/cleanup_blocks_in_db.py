@@ -94,15 +94,20 @@ async def remove_blocks_from_blocks_collection():
         if not block['main_thread_id'] == "0e87e9bb-27c5-4e2c-9f0b-c7d80f97cc2a":
             await asyncdb.blocks_collection.delete_one({"_id": block["_id"]})
 
-
 async def add_num_blocks_to_threads():
-    threads = await asyncdb.threads_collection.find({}).to_list(length=None)
+    threads_collection = asyncdb.threads_collection
+    blocks_collection = asyncdb.blocks_collection
+    threads = await threads_collection.find({}).to_list(length=None)
     for thread in threads:
-        blocks = thread['content']
-        num_blocks = len(blocks)
-        await asyncdb.threads_collection.update_one({"_id": thread['_id']}, {'$set': {'num_blocks': num_blocks}})
+        if not 'num_blocks' in thread:
+            default_block = await blocks_collection.find_one({'child_thread_id': thread['_id']})
+            blocks = await blocks_collection.find({"main_thread_id": thread['_id']}).to_list(length=None)
+            num_blocks = len(blocks) + 1 if default_block else 0
+            await threads_collection.update_one({"_id": thread['_id']}, {'$set': {'num_blocks': num_blocks}})
 
 
+
+            
 async def main():
     await startup_async_db_client()
     # await print_block_keys()
@@ -110,8 +115,8 @@ async def main():
     # await add_new_field()
     # await migrate_blocks_to_new_collection()
     # await remove_blocks_from_blocks_collection()
-    # await add_num_blocks_to_threads()
-    await drop_field()
+    await add_num_blocks_to_threads()
+    #await drop_field()
     await shutdown_async_db_client()
 
 

@@ -99,24 +99,21 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
     update_single_headline_in_db(thread_doc, headline)
     
     
-def generate_all_thread_headlines(num_thread_limit, use_ai=False):
+async def generate_all_thread_headlines(use_ai=False):
     thread_collection = asyncdb.threads_collection
+    threads = await thread_collection.find({}).to_list(length=None)
     # headline_collection = app.mongodb["thread_headlines"]
-    for doc in thread_collection.find({'title': {"$exists": True}}).limit(num_thread_limit):
-        content = doc['content']
-        # if len(content) < 1:
-        #    continue
-        generate_single_thread_headline(doc, thread_collection, use_ai=use_ai)
+    for doc in threads:
+        print(f"Generating headline for thread {doc['_id']}")
+        await generate_single_thread_headline(thread_id=doc["_id"], use_ai=use_ai)
 
         # pprint.pprint(headline['text'])
         
-        
+    
 async def main():
     await startup_async_db_client()
-    #generate_all_thread_headlines(500, use_ai=False)
-    await generate_single_thread_headline(
-        "af6f0744-0679-47d4-8838-db02312cc61e", use_ai=False
-    )
+    await generate_all_thread_headlines(use_ai=False)
+    #await generate_single_thread_headline("af6f0744-0679-47d4-8838-db02312cc61e", use_ai=False)
     await shutdown_async_db_client()
 
 
