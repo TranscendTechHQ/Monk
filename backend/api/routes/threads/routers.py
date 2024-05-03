@@ -588,7 +588,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
         print("\n Updating block position")
         update_block["position"] = bloc_position
 
-    update_block["last_modified"] = dt.datetime.now()
+    update_block["last_modified"] = str(dt.datetime.now())
 
     print("\n Updating block in db")
 
@@ -667,7 +667,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print("\n👉 Updating block position in db")
         for i in range(len(blocks)):
             new_block_position = i + 1
-            await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": new_block_position, 'last_modified': dt.datetime.now()}, block_collection)
+            await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
             print(
                 f"    → Changing block position from {blocks[i]['content']} to {new_block_position}"),
 
@@ -805,7 +805,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
         # content = jsonable_encoder(thread_data)["content"]
 
         print("\n Updating the thread in DB")
-        await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title, 'last_modified': dt.datetime.now()}})
+        await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title, 'last_modified': str(dt.datetime.now())}})
 
         print('\n Thread title is updated i DB')
         updated_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)

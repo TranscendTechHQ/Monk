@@ -1,3 +1,4 @@
+import pprint
 from pymongo import MongoClient
 import asyncio
 import json
@@ -5,7 +6,7 @@ import uuid
 
 from config import settings
 from routes.threads.models import CreateBlockModel, UpdateBlockModel
-from routes.threads.child_thread import create_new_thread
+from routes.threads.child_thread import create_child_thread, create_new_thread
 from routes.threads.routers import create_new_block
 from routes.slack.models import ChannelModel, PublicChannelList
 
@@ -47,34 +48,45 @@ def fetch_and_print_replies(slack_client, channel_id, message_ts):
         message_list = []
         # Print the replies
         for reply in result['messages']:
+            
+            reply_count = 0
             if "subtype" in reply and reply["subtype"] == "bot_message":
                 continue
 
             if "reply_count" in reply and reply["reply_count"] > 0:
                 reply_count = reply["reply_count"]
-
+            
             # global count
             # count += 1
             select_message_data = {}
             message_id = str(uuid.uuid4())
             if "reply_count" in reply and reply["reply_count"] > 0:
+                print(f"reply_count: {reply_count}")
                 parent_message_id = message_id
-            # print(reply["text"])
+                select_message_data["reply_count"] = reply_count
+                select_message_data["parent_message_id"] = parent_message_id
+            
             select_message_data["creator_id"] = reply['user']
             select_message_data["text"] = reply["text"]
             select_message_data['message_id'] = message_id
             select_message_data["reply"] = True if "parent_user_id" in reply else False
             if "parent_user_id" in reply:
                 select_message_data["parent_message_id"] = parent_message_id
-            else:
-                select_message_data["reply_count"] = reply_count
 
+            if not 'subtype' in reply.keys():
             # if 'attachments' in reply.keys():
             #    select_message_data["attachments"] = reply["attachments"]
-            message_list.append(select_message_data)
-            overall_list.append(select_message_data)
-            # print(reply.keys())
-            # print(reply["user"] + '---' + reply["text"])  # Adjust this based on the structure of your messages
+                message_list.append(select_message_data)
+                overall_list.append(select_message_data)
+                print(reply.keys())
+                thread_ts = ""
+                client_msg_id = ""
+            
+                if 'thread_ts' in reply.keys():
+                    thread_ts = reply['thread_ts']
+                if 'client_msg_id' in reply.keys():
+                    client_msg_id = reply['client_msg_id']
+                print(f"{reply['user']} + --- + {reply['text']} reply_count: {reply_count} parent_user_id: {parent_message_id} , thread_ts {thread_ts} client_msg_id:{client_msg_id}")  # Adjust this based on the structure of your messages
         # print('\n\n')
 
     except SlackApiError as e:
@@ -96,10 +108,10 @@ def get_channel_messages(slack_client, channel_id, write_to_json=False, limit=10
                 # print(message.keys())
                 # if 'blocks' in message.keys():
                 #    print(message['blocks'])
-                # print(f"{message['ts']} - {message['user']}: {message['text']}")
-                # pprint.pprint(json.dumps(message))
+                #print(f"{message['ts']} - {message['user']}: {message['text']}")
+                
                 fetch_and_print_replies(slack_client, channel_id, message['ts'])
-                # print('\n\n')
+                print('\n\n')
             # Specify the file path to write the array
 
             overall_messages = {"messages": overall_list}
@@ -155,6 +167,40 @@ def get_user_info(slack_client, user_id):
     except SlackApiError as e:
         print("Error fetching conversations: {}".format(e))
 
+async def update_third_party_user_info(third_party_id, tenant_id, slack_client_for_user_info):
+
+    users_collection = asyncdb.users_collection
+    user = await users_collection.find_one({"thirdparty_user_id": third_party_id})
+    if not user:
+        slack_user_info = get_user_info(slack_client_for_user_info, third_party_id)
+        email = 'unknown email'
+        if 'email'  in slack_user_info["user"]["profile"]:
+            email = slack_user_info["user"]["profile"]["email"]
+        user_id = str(uuid.uuid4())
+        update_result = await users_collection.update_one({"_id": user_id},
+                                                            {"$set":
+                                                                {
+                                                                    "name":
+                                                                        slack_user_info["user"]["profile"][
+                                                                            "real_name"],
+                                                                    "picture":
+                                                                        slack_user_info["user"]["profile"][
+                                                                            "image_original"],
+                                                                    "email":
+                                                                        email,
+                                                                    "tenant_id": tenant_id,
+                                                                    "super_token_id": "",
+                                                                    "thirdparty_provider": "slack",
+                                                                    "thirdparty_user_id":
+                                                                        slack_user_info["user"]["id"],
+                                                                    "thirdparty_team_id":
+                                                                        slack_user_info["user"]["profile"][
+                                                                            "team"],
+                                                                }}, upsert=True)
+
+        user = await users_collection.find_one({"_id": user_id})
+    return user
+
 
 async def main():
     print("Starting db client...")
@@ -170,9 +216,7 @@ async def main():
         if "bot_user_id" not in tenant:
             continue
 
-        if tenant["tenant_name"] == "Monk":
-            continue
-
+        tenant_id = tenant["tenant_id"]
         print("Tenant found successfully.")
         SLACK_USER_TOKEN = tenant["user_token"]
         SLACK_BOT_TOKEN = tenant["bot_token"]
@@ -184,134 +228,81 @@ async def main():
         print("Slack client created successfully.")
         # fetch all public channels
         channel_list = get_channel_list(slack_client)
-        print(channel_list)
+        #print(channel_list)
         for channel in channel_list.public_channels:
             overall_list.clear()
             thread_title = channel.name
+            if channel.name != "ailearning":
+                continue
             channel_id = channel.id
             print(f"Fetching messages from channel {channel_id}...")
+            # fetch max 10000 messages per channel
+            message_list = get_channel_messages(slack_client, channel_id, write_to_json=False, limit=10000)
+            #continue
+            
+            
             # get or create user with slack user ID who created the channel
-            users_collection = asyncdb.users_collection
-            user = await users_collection.find_one({"thirdparty_user_id": channel.creator})
-            if not user:
-                slack_user_info = get_user_info(slack_client_for_user_info, channel.creator)
-
-                user_id = uuid.uuid4()
-                update_result = await users_collection.update_one({"_id": user_id},
-                                                                  {"$set":
-                                                                      {
-                                                                          "name":
-                                                                              slack_user_info["user"]["profile"][
-                                                                                  "real_name"],
-                                                                          "picture":
-                                                                              slack_user_info["user"]["profile"][
-                                                                                  "image_original"],
-                                                                          "email":
-                                                                              slack_user_info["user"]["profile"][
-                                                                                  "email"],
-                                                                          "tenant_id": tenant["tenant_id"],
-                                                                          "super_token_id": "",
-                                                                          "thirdparty_provider": "slack",
-                                                                          "thirdparty_user_id":
-                                                                              slack_user_info["user"]["id"],
-                                                                          "thirdparty_team_id":
-                                                                              slack_user_info["user"]["profile"][
-                                                                                  "team"],
-                                                                      }}, upsert=True)
-
-                user = users_collection.find_one({"_id": user_id})
+            user = await update_third_party_user_info(channel.creator, tenant_id, slack_client_for_user_info)
 
             # create threads for each public channel
-            thread_type = "/new-thread"
+            thread_type = "/new-slack-thread"
             user_id = user["_id"]
 
-            new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant["tenant_id"], title=thread_title,
+            new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, title=thread_title,
                                                  thread_type=thread_type)
-            thread_id = new_thread["_id"]
+            main_thread_id = new_thread["_id"]
+            
 
-            # fetch 100 messages per channel
-            message_list = get_channel_messages(slack_client, channel_id, write_to_json=False, limit=100)
+            current_slack_thread_id=""
+            current_thread_id = {}
             # check if user exists else create new user
             for message in message_list:
                 thirdparty_user_id = message['creator_id']
-                message_user = await users_collection.find_one({"thirdparty_user_id": thirdparty_user_id})
-                if not message_user:
-                    slack_user_info = get_user_info(slack_client_for_user_info, thirdparty_user_id)
-
-                    user_id = uuid.uuid4()
-                    update_result = await users_collection.update_one({"_id": user_id},
-                                                                      {"$set":
-                                                                          {
-                                                                              "name":
-                                                                                  slack_user_info["user"]["profile"][
-                                                                                      "real_name"],
-                                                                              "picture":
-                                                                                  slack_user_info["user"]["profile"][
-                                                                                      "image_original"],
-                                                                              "email":
-                                                                                  slack_user_info["user"]["profile"][
-                                                                                      "email"],
-                                                                              "tenant_id": tenant["tenant_id"],
-                                                                              "super_token_id": "",
-                                                                              "thirdparty_provider": "slack",
-                                                                              "thirdparty_user_id":
-                                                                                  slack_user_info["user"]["id"],
-                                                                              "thirdparty_team_id":
-                                                                                  slack_user_info["user"]["profile"][
-                                                                                      "team"],
-                                                                          }}, upsert=True)
-
-                    message_user = users_collection.find_one({"_id": user_id})
-
+                message_user = await update_third_party_user_info(thirdparty_user_id, tenant_id, slack_client_for_user_info)
+                block_thread_id = main_thread_id
+                
                 if "reply_count" in message:
-                    if message["reply_count"] > 0:
-                        new_parent_block = CreateBlockModel(
-                            content=message["text"], main_thread_id=thread_id)
-                        print(new_parent_block)
-                        new_parent_block = await create_new_block( 
-                                                                  block=new_parent_block, 
-                                                                  user_id=message_user["_id"],
-                                                                  tenant_id=tenant["tenant_id"])
-                        new_parent_block_id = new_parent_block['content'][-1]['_id']
-
-                        new_thread = await create_new_thread(
-                            user_id=message_user["_id"],
-                            tenant_id=tenant["tenant_id"],
-                            title=f"Reply{thread_title}{new_parent_block_id[0:4].replace('-', '')}",
-                            thread_type=thread_type)
-
-                        new_thread_title = new_thread["title"]
-
-                        new_block = CreateBlockModel(
-                            content=message["text"], main_thread_id=new_thread["_id"])
-                        print(new_block)
-                        await create_new_block(block=new_block,
-                                               user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
-
-                        updated_parent_block = await update_block_child_id(threads_collection=threads_collection,
-                                                                           parent_block_id=new_parent_block_id,
-                                                                           thread_id=thread_id,
-                                                                           child_thread_id=new_thread["_id"])
-                    else:
-                        new_block = CreateBlockModel(
-                            content=message["text"], main_thread_id=thread_id)
-                        print(new_block)
-                        await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
-
+                    #this means this is a parent message
+                    # create a new block in the main thread
+            
+                    new_parent_block = CreateBlockModel(
+                        content=message["text"], main_thread_id=block_thread_id)
+                    print(new_parent_block)
+                    new_parent_block = await create_new_block( 
+                                                                block=new_parent_block, 
+                                                                user_id=message_user["_id"],
+                                                                tenant_id=tenant_id)
+                    
+                    new_parent_block_id = new_parent_block.id
+                    current_slack_thread_id=message['parent_message_id']
+                    new_thread_title = f"Reply{thread_title}{new_parent_block_id[0:4].replace('-', '')}"
+                    #start a new thread
+                    child_thread = await create_child_thread(thread_collection=threads_collection,
+                                                parent_block_id=new_parent_block_id,
+                                                main_thread_id=main_thread_id,
+                                                thread_title=new_thread_title,
+                                                thread_type=thread_type,
+                                                user_id=message_user["_id"],
+                                                tenant_id=tenant_id,
+                                                parentBlock=new_parent_block)
+                    current_thread_id[current_slack_thread_id] = child_thread['_id']
+                    
                 elif "parent_message_id" in message:
-                    parent_message = {}
-                    for msg in message_list:
-                        if msg["message_id"] == message["parent_message_id"]:
-                            parent_message = msg
-                            break
+                    #this means this is a reply message
 
-                    parent_thread = await threads_collection.find_one({"title": new_thread_title})
-
-                    thread_id = parent_thread["_id"]
+                    block_thread_id = current_thread_id[message['parent_message_id']]
                     new_block = CreateBlockModel(
-                        content=message["text"], main_thread_id=parent_thread["_id"])
-                    print(new_block)
-                    await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant["tenant_id"])
+                        content=message["text"], main_thread_id=block_thread_id)
+                    
+                    await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant_id)
+                else:
+                    block_thread_id = main_thread_id
+                    new_block = CreateBlockModel(
+                        content=message["text"], main_thread_id=block_thread_id)
+                    
+                    await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant_id)
+                
+
 
     await shutdown_async_db_client()
 
