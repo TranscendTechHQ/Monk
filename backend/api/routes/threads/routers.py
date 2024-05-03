@@ -619,6 +619,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         # TODO: Check if tenant_id is required here. Ideally it should be required
         tenant_id = await get_tenant_id(session)
 
+        # TODO: Who is allowed to update the block position? Thread creator or block creator?
         if block_to_move["creator_id"] != user_id:
             return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
 

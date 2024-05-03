@@ -316,36 +316,6 @@ class CurrentThread extends _$CurrentThread {
 
     BlockWithCreator draggedBlock = blocks[oldIndex];
 
-    blocks.removeAt(oldIndex);
-    blocks.insert(newIndex, draggedBlock);
-
-    blocks.asMap().forEach((index, block) {
-      blocks[index] = BlockWithCreator.fromJson(block.toJson()
-        ..putIfAbsent("position", () => index)
-        ..update("position", (value) => index));
-    });
-    final updatedBlocks = blocks;
-
-    print(updatedBlocks.map((e) => e.position).toList());
-    updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
-
-    final updatedThreadModel = FullThreadInfo(
-      title: thread.title,
-      type: thread.type,
-      content: updatedBlocks,
-      creator: thread.creator,
-      id: thread.id,
-      defaultBlock: thread.defaultBlock,
-      createdDate: thread.createdDate,
-    );
-
-    state = AsyncValue.data(
-      CurrentTreadState.result(
-        blocks: updatedBlocks,
-        thread: updatedThreadModel,
-      ),
-    );
-
     final res = await AsyncRequest.handle<UpdateBlockPositionModel>(() async {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final result = await threadApi.updateBlockPositionBlocksIdPositionPut(
@@ -360,6 +330,36 @@ class CurrentThread extends _$CurrentThread {
     res.fold(
       (l) => logger.e("Failed to reorder block", error: l.message),
       (r) {
+        blocks.removeAt(oldIndex);
+        blocks.insert(newIndex, draggedBlock);
+
+        blocks.asMap().forEach((index, block) {
+          blocks[index] = BlockWithCreator.fromJson(block.toJson()
+            ..putIfAbsent("position", () => index)
+            ..update("position", (value) => index));
+        });
+        final updatedBlocks = blocks;
+
+        print(updatedBlocks.map((e) => e.position).toList());
+        updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
+
+        final updatedThreadModel = FullThreadInfo(
+          title: thread.title,
+          type: thread.type,
+          content: updatedBlocks,
+          creator: thread.creator,
+          id: thread.id,
+          defaultBlock: thread.defaultBlock,
+          createdDate: thread.createdDate,
+        );
+
+        state = AsyncValue.data(
+          CurrentTreadState.result(
+            blocks: updatedBlocks,
+            thread: updatedThreadModel,
+          ),
+        );
+
         logger.f(
             'Reordered block with id ${r.blockId} to position ${r.newPosition}');
       },
