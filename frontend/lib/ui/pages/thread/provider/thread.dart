@@ -8,9 +8,8 @@
 //  - the backend will store the journal entry in the database
 // ...
 
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/helper/utils.dart';
@@ -19,9 +18,7 @@ import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 part 'thread.freezed.dart';
-
 part 'thread.g.dart';
 
 @riverpod
@@ -94,8 +91,6 @@ class CurrentThread extends _$CurrentThread {
     } else {
       thread = await fetchThreadFromIdAsync(threadChildId!);
     }
-    print("\n ---- Block Order ---- \n");
-    print(thread?.content?.map((e) => e.position).toList());
     return CurrentTreadState.result(blocks: thread?.content, thread: thread);
   }
 

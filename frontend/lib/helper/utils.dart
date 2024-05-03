@@ -8,6 +8,6 @@ void showMessage(BuildContext context, String message) {
   ));
 }
 
-void printPretty(Map<String, dynamic> map) {
+void printPretty(Map<String, dynamic>? map) {
   print(JsonEncoder.withIndent(' ').convert(map));
 }

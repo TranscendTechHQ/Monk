@@ -517,7 +517,7 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
     filtered = [];
   }
 
-  Widget Wrapper({required Widget child}) {
+  Widget listenerWrapper({required Widget child}) {
     return (KeyboardListener(
         focusNode: keyboardFocusNode,
         autofocus: true,
@@ -646,6 +646,12 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
           widget.controller.text = '/';
           return;
         }
+        if (widget.controller.text == '/news') {
+          // Navigator.pushAndRemoveUntil(
+          //     context, NewsPage.launchRoute(), (route) => false);
+          Navigator.pushReplacement(context, NewsPage.launchRoute());
+          return;
+        }
         if (!widget.controller.text.contains('#') && filtered.isNotEmpty) {
           widget.controller.text = '${widget.controller.text} #';
           setState(() {
@@ -655,6 +661,11 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
           return;
         } else if (widget.controller.text.contains((' #'))) {
           widget.onSubmit!(widget.controller.text);
+          setState(() {
+            filtered = [];
+            selectedIndex = null;
+          });
+          widget.controller.clear();
           print('Submitted ${widget.controller.text}');
         }
       },
@@ -691,6 +702,7 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
                 });
                 return;
               }
+
               List<String> parts = pattern.split(' ');
               if (parts.length == 1) {
                 // we are displaying a list of commands now

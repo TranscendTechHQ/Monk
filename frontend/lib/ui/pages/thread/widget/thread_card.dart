@@ -92,8 +92,8 @@ class ThreadCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final authUserId = authState.session?.userId;
-    final creatorId = block.creator.id ?? block.creatorId;
+    final authUserId = authState.value?.session?.userId;
+    final creatorId = block.creatorId;
     final isCreator = creatorId == authUserId;
 
     final cardProvider = threadCardProvider.call(block, type);

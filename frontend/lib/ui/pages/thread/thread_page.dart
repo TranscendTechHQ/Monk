@@ -207,16 +207,16 @@ class ChatListView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final blocks = currentThread.value?.blocks;
     final mainThreadId = currentThread.value?.thread?.id;
+    final defaultBlock = currentThread.value?.thread?.defaultBlock;
     return SizedBox(
       width: containerWidth,
       child: type == '/new-task'
           ? Column(
               children: [
-                if (currentThread.value?.thread?.defaultBlock != null)
+                if (defaultBlock != null)
                   ThreadCard(
-                    key:
-                        ValueKey(currentThread.value?.thread?.defaultBlock!.id),
-                    block: currentThread.value!.thread!.defaultBlock!,
+                    key: ValueKey(defaultBlock.id),
+                    block: defaultBlock,
                     emojiParser: emojiParser,
                     title: title,
                     type: type,
@@ -257,36 +257,40 @@ class ChatListView extends ConsumerWidget {
                 ).extended,
               ],
             )
-          : ListView.separated(
-              reverse: true,
-              controller: scrollController,
-              itemCount: blocks?.length ?? 0,
-              padding: const EdgeInsets.only(bottom: 30),
-              itemBuilder: (context, index) {
-                final block = blocks?[index];
-                return ThreadCard(
-                  block: block!,
-                  emojiParser: emojiParser,
-                  title: title,
-                  type: type,
-                  mainThreadId: mainThreadId,
-                  threadType: threadType,
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                if (index == 0 &&
-                    currentThread.value?.thread?.defaultBlock != null) {
-                  return ThreadCard(
-                    block: currentThread.value!.thread!.defaultBlock!,
-                    emojiParser: emojiParser,
-                    title: title,
-                    type: type,
-                    mainThreadId: mainThreadId,
-                    threadType: threadType,
-                  );
-                }
-                return const SizedBox();
-              },
+          : Column(
+              children: [
+                ListView(
+                  reverse: true,
+                  controller: scrollController,
+                  padding: const EdgeInsets.only(bottom: 30),
+                  children: [
+                    if (defaultBlock != null)
+                      ThreadCard(
+                        key: ValueKey(defaultBlock.id),
+                        block: defaultBlock,
+                        emojiParser: emojiParser,
+                        title: title,
+                        type: type,
+                        mainThreadId: mainThreadId,
+                        threadType: threadType,
+                      ),
+                    ...blocks?.map((block) {
+                          return ThreadCard(
+                            key: ValueKey(block.id),
+                            block: block,
+                            emojiParser: emojiParser,
+                            title: title,
+                            type: type,
+                            mainThreadId: mainThreadId,
+                            threadType: threadType,
+                          );
+                        }).toList() ??
+                        [
+                          const SizedBox(),
+                        ],
+                  ],
+                ).extended,
+              ],
             ),
     );
   }
