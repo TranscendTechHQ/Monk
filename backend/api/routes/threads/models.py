@@ -9,18 +9,10 @@ from pydantic.json_schema import SkipJsonSchema
 THREADTYPES = [
     "/new-thread",
     "/new-plan",
-    "/news",
-    "/new-report",
-    "/new-project",
     "/new-task",
-    "/new-note",
     "/new-idea",
-    "/new-event",
-    "/new-blocker",
-    "/new-thought",
     "/new-strategy",
-    "/new-private",
-    "/new-experiment",
+    "/new-slack-thread",
     "/go"]
 
 
