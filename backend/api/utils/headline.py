@@ -42,7 +42,7 @@ def generate_headline(text: str) -> str:
     return headline
 
 def update_single_headline_in_db(thread_doc, headline):
-    print(f"Updating headline for thread {thread_doc['_id']} to {headline}")
+    #print(f"Updating headline for thread {thread_doc['_id']} to {headline}")
     
     threads_collection = asyncdb.threads_collection
     threads_collection.update_one({'_id': thread_doc['_id']},

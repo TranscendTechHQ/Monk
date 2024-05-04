@@ -260,17 +260,13 @@ async def filter(
 
 
 async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:str = None, created_at: str = None):
+    print("\n profile 1")
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     thread_collection = asyncdb.threads_collection
     thread_id = block.main_thread_id
-    # thread = await get_mongo_document({"_id": thread_id}, thread_collection, tenant_id)
-    # if not thread:
-    #     raise HTTPException(status_code=404, detail="Thread not found")
-    # if 'num_blocks' not in thread.keys():
-    #     thread['num_blocks'] = 0
-    # create the new block
-    # pos = thread["num_blocks"]
+    print("\n profile 2")
     pos = await get_blocks_count(thread_id)
+    print("\n profile 3")
     blocks_collection = asyncdb.blocks_collection
     if user_info is None:
         return None
@@ -284,13 +280,15 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:
     await create_mongo_document(id=new_block.id, 
                                 document=jsonable_encoder(new_block), 
                                 collection=blocks_collection)
+    print("\n profile 4")
     thread_last_modified = str(new_block.created_at)
     # now update the thread block count
     num_blocks = await get_blocks_count(thread_id)
+    print("\n profile 5")
     await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
-
+    print("\n profile 6")
     await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
-
+    print("\n profile 7")
     return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
 
 # Get blocks count in a collection for a given thread
@@ -523,14 +521,17 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
     try:
         # Logic to store the block in MongoDB backend database
         # Index the block by userId
-
+        print("\n profile 01")
         user_id = session.get_user_id()
+        print("\n profile 02")
         tenant_id = await get_tenant_id(session)
+        print("\n profile 03")
         thread = await get_mongo_document(
             {"title": thread_title},
             request.app.mongodb["threads"],
             tenant_id=tenant_id
         )
+        print("\n profile 04")
 
         if not thread:
             return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
@@ -538,10 +539,11 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         thread_id = thread["_id"]
 
         new_block = await create_new_block(block, user_id, tenant_id)
+        print("\n profile 05")
 
         user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
                                                     request.app.mongodb["user_thread_flags"], tenant_id)
-
+        print("\n profile 06")
     #  TODO:
         if user_thread_flag:
             user_thread_flag["read"] = False
@@ -549,7 +551,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
                 {"thread_id": thread_id, "user_id": user_id},
                 jsonable_encoder(user_thread_flag),
                 request.app.mongodb["user_thread_flags"])
-
+        print("\n profile 07")
     #  ret_thread = await get_thread_from_db(thread_id, tenant_id)
 
         return JSONResponse(status_code=status.HTTP_201_CREATED,
