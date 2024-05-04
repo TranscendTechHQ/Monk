@@ -112,7 +112,7 @@ async def delete_mongo_document(query: dict, collection):
         return doc
 
 
-async def create_mongo_document(document: dict, collection):
+async def create_mongo_document(id: str, document: dict, collection):
     # print(document)
     # print(collection)
 
@@ -120,7 +120,8 @@ async def create_mongo_document(document: dict, collection):
         print("collection is none")
     if document is None:
         print("document is none")
-    result = await collection.find_one(document)
+        
+    result = await collection.find_one({"_id": id})
 
     if result is not None:
         ## if the document already exists, return the existing document

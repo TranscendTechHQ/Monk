@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # creates a new thread or returns an existing thread. Content
 # is blank for the new thread
-async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadType, content: List[BlockModel] = [], parent_block_id: str = None):
+async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadType, content: List[BlockModel] = [], parent_block_id: str = None, created_at=None):
     try:
         old_thread = await get_mongo_document({"title": title}, asyncdb.threads_collection, tenant_id)
         if not old_thread:
@@ -31,12 +31,14 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
             print("\n\n 👉 5.a.1 Creating new thread Model",
                   parent_block_id, "\n\n")
             new_thread = ThreadModel(creator_id=creator['id'], title=title, type=thread_type,
-                                     tenant_id=userinfo['tenant_id'], parent_block_id=parent_block_id)
+                                     tenant_id=userinfo['tenant_id'], parent_block_id=parent_block_id, created_date=created_at)
 
             print("\n\n 👉 5.a.1.1 Created new thread Model", new_thread, "\n\n")
             new_thread_jsonable = jsonable_encoder(new_thread)
-            created_thread = await create_mongo_document(new_thread_jsonable,
-                                                         asyncdb.threads_collection)
+            created_thread = await create_mongo_document(
+                id=new_thread.id, 
+                document= new_thread_jsonable,
+                collection=asyncdb.threads_collection)
 
             print("\n 5.a.2 Created thread\n", created_thread)
             
@@ -56,7 +58,7 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
 
 # TODO: cleanup unused code here. thread colleciton not needed. parent_block_id or parentBlock, one of them not needed.
 async def create_child_thread(thread_collection, parent_block_id, main_thread_id, thread_title, thread_type, user_id,
-                              tenant_id, parentBlock: BlockModel):
+                              tenant_id, parentBlock: BlockModel, created_at=None):
     print("\n 5.a Inside create_child_thread", parentBlock)
 
     # fetch the parent block
@@ -74,7 +76,7 @@ async def create_child_thread(thread_collection, parent_block_id, main_thread_id
     # blocks = [jsonable_encoder(parent_block)]
 
     # print("Initiating create new thread")
-    created_child_thread = await create_new_thread(user_id, tenant_id, thread_title, thread_type, parent_block_id=parentBlock.id)
+    created_child_thread = await create_new_thread(user_id, tenant_id, thread_title, thread_type, parent_block_id=parentBlock.id, created_at=created_at)
     print("\n 5.b Created child thread")
     child_thread_id = created_child_thread["_id"]
 

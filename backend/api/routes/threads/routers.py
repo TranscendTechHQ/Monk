@@ -259,7 +259,7 @@ async def filter(
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
 
-async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str):
+async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:str = None, created_at: str = None):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     thread_collection = asyncdb.threads_collection
     thread_id = block.main_thread_id
@@ -270,17 +270,24 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str):
     #     thread['num_blocks'] = 0
     # create the new block
     # pos = thread["num_blocks"]
-    pos = await get_blocks_count(thread_id, asyncdb.blocks_collection) + 1
+    pos = await get_blocks_count(thread_id)
     blocks_collection = asyncdb.blocks_collection
     if user_info is None:
         return None
     block = block.model_dump()
+    if created_at is not None:
+        block["created_at"] = created_at
+    if id is not None:
+        block["_id"] = id
     new_block = BlockModel(**block, tenant_id=tenant_id,
                            creator_id=user_id, position=pos,)
-    await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
-
+    await create_mongo_document(id=new_block.id, 
+                                document=jsonable_encoder(new_block), 
+                                collection=blocks_collection)
+    thread_last_modified = str(new_block.created_at)
     # now update the thread block count
-    await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": pos + 1}, thread_collection)
+    num_blocks = await get_blocks_count(thread_id)
+    await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
 
     await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
 
@@ -289,8 +296,11 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str):
 # Get blocks count in a collection for a given thread
 
 
-async def get_blocks_count(thread_id, collection):
-    return await collection.count_documents({"main_thread_id": thread_id})
+async def get_blocks_count(thread_id):
+    count = 0
+    count += await asyncdb.blocks_collection.count_documents({"main_thread_id": thread_id})
+    count += await asyncdb.blocks_collection.count_documents({"child_thread_id": thread_id})
+    return count
 
 
 async def get_thread_from_db(thread_id, tenant_id):
@@ -853,7 +863,10 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
             upvote=upvote if upvote else False
         )
         user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
-        await create_mongo_document(user_thread_flag_jsonable, request.app.mongodb["user_thread_flags"])
+        await create_mongo_document(
+            id=user_thread_flag_doc.id,
+            document=user_thread_flag_jsonable, 
+            collection=request.app.mongodb["user_thread_flags"])
 
         return JSONResponse(status_code=status.HTTP_200_OK, content=user_thread_flag_jsonable)
 

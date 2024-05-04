@@ -1,3 +1,4 @@
+import datetime
 import pprint
 from pymongo import MongoClient
 import asyncio
@@ -18,23 +19,16 @@ from utils.db import startup_async_db_client, shutdown_async_db_client, asyncdb,
 overall_list = []
 
 
-class App:
-    pass
 
-
-app = App()
-
-
-def startup_db_client():
-    app.mongodb_client = MongoClient(settings.DB_URL)
-    app.mongodb = app.mongodb_client[settings.DB_NAME]
-
-
-def shutdown_db_client():
-    app.mongodb_client.close()
-
-
-# count = 0
+def convert_unix_timestamp_to_iso_string(unix_timestamp):
+    # Convert the unix_timestamp from a string to a float
+    unix_timestamp_float = float(unix_timestamp)
+    
+    # Create a datetime object from the unix timestamp
+    datetime_obj = datetime.datetime.fromtimestamp(unix_timestamp_float)
+    
+    # Convert the datetime object to an ISO-formatted string
+    return datetime_obj.isoformat()
 
 # Function to fetch and print replies to a message in a Slack channel
 def fetch_and_print_replies(slack_client, channel_id, message_ts):
@@ -61,16 +55,24 @@ def fetch_and_print_replies(slack_client, channel_id, message_ts):
             # global count
             # count += 1
             select_message_data = {}
-            message_id = str(uuid.uuid4())
+            if 'client_msg_id' in reply.keys():
+                message_id = reply['client_msg_id']
+            else:
+                message_id = str(uuid.uuid4())
+            if 'ts' in reply.keys():
+                message_ts = reply['ts']
             if "reply_count" in reply and reply["reply_count"] > 0:
                 print(f"reply_count: {reply_count}")
                 parent_message_id = message_id
                 select_message_data["reply_count"] = reply_count
                 select_message_data["parent_message_id"] = parent_message_id
+                if 'thread_ts' in reply.keys():
+                    select_message_data["child_thread_created_at"] = reply['thread_ts']
             
             select_message_data["creator_id"] = reply['user']
             select_message_data["text"] = reply["text"]
             select_message_data['message_id'] = message_id
+            select_message_data['created_at'] = message_ts
             select_message_data["reply"] = True if "parent_user_id" in reply else False
             if "parent_user_id" in reply:
                 select_message_data["parent_message_id"] = parent_message_id
@@ -151,9 +153,13 @@ def get_channel_list(slack_client):
         # print("Channel list fetched successfully.")
         # Print the list of channels
         for channel in result['channels']:
-            # print(channel.keys())
+            #print(channel.keys())
+           
             # print(channel['name'] + ' - ' + channel['id'])
-            this_channel = ChannelModel(id=channel['id'], name=channel['name'], creator=channel["creator"])
+            this_channel = ChannelModel(id=channel['id'], 
+                                        name=channel['name'], 
+                                        creator=channel["creator"], 
+                                        created_at=convert_unix_timestamp_to_iso_string(channel["created"]))
             channel_list.append(this_channel)
             # print(channel['name'] + ' - ' + channel['id'])
         return PublicChannelList(public_channels=channel_list)
@@ -207,10 +213,23 @@ async def update_third_party_user_info(third_party_id, tenant_id, slack_client_f
         user = await users_collection.find_one({"_id": user_id})
     return user
 
+async def cleanup_slack_data():
+    # cleanup all slack data
+    
+    threads = await asyncdb.threads_collection.find({"type": "/new-slack-thread"}).to_list(length=None)
+    for thread in threads:
+        thread_id = thread["_id"]
+        await asyncdb.blocks_collection.delete_many({"main_thread_id": thread_id})
+        await asyncdb.blocks_collection.delete_many({"child_thread_id": thread_id})
+    await asyncdb.threads_collection.delete_many({"type": "/new-slack-thread"})
+    #await asyncdb.users_collection.delete_many({"thirdparty_provider": "slack"})
+    raise ValueError("cleanup slack data")
 
 async def main():
     print("Starting db client...")
     await startup_async_db_client()
+    #await cleanup_slack_data()
+    
     print("DB client started successfully.")
     # print(db.mongodb_client.list_database_names())
     print("Fetching tenant...")
@@ -255,7 +274,7 @@ async def main():
             user_id = user["_id"]
 
             new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, title=thread_title,
-                                                 thread_type=thread_type)
+                                                 thread_type=thread_type, created_at=channel.created_at)
             main_thread_id = new_thread["_id"]
             
 
@@ -279,7 +298,11 @@ async def main():
                 new_block = CreateBlockModel(
                 content=message["text"], main_thread_id=block_thread_id)
                     
-                created_block = await create_new_block(block=new_block, user_id=message_user["_id"], tenant_id=tenant_id)   
+                created_block = await create_new_block(block=new_block, 
+                                                       user_id=message_user["_id"], 
+                                                       tenant_id=tenant_id, 
+                                                       id=message['message_id'], 
+                                                       created_at=convert_unix_timestamp_to_iso_string(message['created_at']))   
                 
                 if "reply_count" in message:
                     #this means this is a parent message
@@ -293,6 +316,7 @@ async def main():
                     thirdparty_user_id = message_list[i+1]['creator_id']
                     new_thread_creator = await update_third_party_user_info(thirdparty_user_id, tenant_id, slack_client_for_user_info)
                     new_thread_creator_id = new_thread_creator["_id"]
+                    child_thread_created_at = convert_unix_timestamp_to_iso_string(message['child_thread_created_at'])
                     #start a new thread
                     child_thread = await create_child_thread(thread_collection=threads_collection,
                                                 parent_block_id=new_parent_block_id,
@@ -301,7 +325,8 @@ async def main():
                                                 thread_type=thread_type,
                                                 user_id=new_thread_creator_id,
                                                 tenant_id=tenant_id,
-                                                parentBlock=created_block)
+                                                parentBlock=created_block,
+                                                created_at=child_thread_created_at)
                     current_thread_id[current_slack_thread_id] = child_thread['_id']
                     
 

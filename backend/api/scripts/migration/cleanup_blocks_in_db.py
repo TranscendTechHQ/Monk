@@ -74,7 +74,10 @@ async def migrate_blocks_to_new_collection():
                 new_block.tenant_id = thread['tenant_id']
                 new_block.last_modified = thread['last_modified']
 
-                await create_mongo_document(jsonable_encoder(new_block), blocks_collection)
+                await create_mongo_document(
+                    id=new_block.id,
+                    document=jsonable_encoder(new_block), 
+                    collection=blocks_collection)
 
             pos += 1
 
