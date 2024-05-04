@@ -146,11 +146,18 @@ async def get_unfiltered_newsfeed(tenant_id):
                     "type": 1,
                     "created_date": 1,
                     "headline": 1,
+                    "last_modified": 1,
                     "creator._id": 1,
                     "creator.name": 1,
                     "creator.picture": 1,
                     "creator.email": 1,
-                    "creator.last_login": 1
+                    "creator.last_login": 1,
+                    
+                }
+            },
+            {
+                "$sort": {
+                    "last_modified": -1
                 }
             }
         ]
@@ -212,6 +219,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
                 "type": 1,
                 "created_date": 1,
                 "headline": 1,
+                "last_modified": 1,
                 "creator._id": 1,
                 "creator.name": 1,
                 "creator.picture": 1,
@@ -222,6 +230,11 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
                 "read": 1,
                 "upvote": 1
             }
+        },
+        {
+                "$sort": {
+                    "last_modified": -1
+                }
         }
     ]
     # print(pipeline)
