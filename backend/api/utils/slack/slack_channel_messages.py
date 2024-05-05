@@ -4,6 +4,7 @@ from pymongo import MongoClient
 import asyncio
 import json
 import uuid
+import pandas as pd
 
 from config import settings
 from routes.threads.models import CreateBlockModel, UpdateBlockModel
@@ -72,7 +73,7 @@ def fetch_and_print_replies(slack_client, channel_id, message_ts):
             select_message_data["creator_id"] = reply['user']
             select_message_data["text"] = reply["text"]
             select_message_data['message_id'] = message_id
-            select_message_data['created_at'] = message_ts
+            select_message_data['created_at'] = convert_unix_timestamp_to_iso_string(message_ts)
             select_message_data["reply"] = True if "parent_user_id" in reply else False
             if "parent_user_id" in reply:
                 select_message_data["parent_message_id"] = parent_message_id
@@ -127,10 +128,20 @@ def get_channel_messages(slack_client, channel_id, write_to_json=False, limit=10
             if write_to_json:
                 # File path to write the JSON data
                 file_path = "messages.json"
-
+                df = pd.DataFrame(overall_list)
+                # choose the columns you want to write to the file
+                current_df = df[['message_id','created_at', 'creator_id', 'text']]
+                current_df = current_df.rename(columns={
+                                'message_id': 'message',
+                                'created_at': 'time',
+                                'creator_id': 'user',
+                                'text': 'message.1'
+                            })
+                
+                current_df.to_json(file_path)
                 # Write the dictionary as JSON to the file
-                with open(file_path, "w") as outfile:
-                    json.dump(overall_messages, outfile)
+                #with open(file_path, "w") as outfile:
+                #    json.dump(overall_messages, outfile)
                 # print(overall_list)
                 # print(count)
             return overall_list
