@@ -313,7 +313,7 @@ async def main():
                                                        user_id=message_user["_id"], 
                                                        tenant_id=tenant_id, 
                                                        id=message['message_id'], 
-                                                       created_at=convert_unix_timestamp_to_iso_string(message['created_at']))   
+                                                       created_at=message['created_at'])   
                 
                 if "reply_count" in message:
                     #this means this is a parent message
