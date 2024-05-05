@@ -29,6 +29,7 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
               $checkedConvert('num_blocks', (v) => (v as num?)?.toInt() ?? 0),
           parentBlockId:
               $checkedConvert('parent_block_id', (v) => v as String?),
+          slackThreadTs: $checkedConvert('slack_thread_ts', (v) => v as num?),
           tenantId: $checkedConvert('tenant_id', (v) => v as String),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
@@ -41,6 +42,7 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
         'creatorId': 'creator_id',
         'numBlocks': 'num_blocks',
         'parentBlockId': 'parent_block_id',
+        'slackThreadTs': 'slack_thread_ts',
         'tenantId': 'tenant_id'
       },
     );
@@ -61,6 +63,7 @@ Map<String, dynamic> _$ThreadModelToJson(ThreadModel instance) {
   writeNotNull('headline', instance.headline);
   writeNotNull('num_blocks', instance.numBlocks);
   writeNotNull('parent_block_id', instance.parentBlockId);
+  writeNotNull('slack_thread_ts', instance.slackThreadTs);
   val['tenant_id'] = instance.tenantId;
   val['title'] = instance.title;
   val['type'] = instance.type;

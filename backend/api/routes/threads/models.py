@@ -109,6 +109,7 @@ class ThreadModel(BaseModel):
     tenant_id: str
     num_blocks: int = Field(default=0)
     parent_block_id: Optional[str] = Field(default=None, null=True)
+    slack_thread_ts: Optional[float] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

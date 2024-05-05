@@ -337,7 +337,8 @@ async def main():
                                                 user_id=new_thread_creator_id,
                                                 tenant_id=tenant_id,
                                                 parentBlock=created_block,
-                                                created_at=child_thread_created_at)
+                                                created_at=child_thread_created_at,
+                                                slack_thread_ts=message['child_thread_created_at'])
                     current_thread_id[current_slack_thread_id] = child_thread['_id']
                     
 

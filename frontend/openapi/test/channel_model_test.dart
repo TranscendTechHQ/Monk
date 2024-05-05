@@ -7,6 +7,11 @@ void main() {
   // TODO add properties to the entity
 
   group(ChannelModel, () {
+    // String createdAt
+    test('to test the property `createdAt`', () async {
+      // TODO
+    });
+
     // String creator
     test('to test the property `creator`', () async {
       // TODO

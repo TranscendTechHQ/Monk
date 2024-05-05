@@ -42,6 +42,11 @@ void main() {
       // TODO
     });
 
+    // num slackThreadTs
+    test('to test the property `slackThreadTs`', () async {
+      // TODO
+    });
+
     // String tenantId
     test('to test the property `tenantId`', () async {
       // TODO

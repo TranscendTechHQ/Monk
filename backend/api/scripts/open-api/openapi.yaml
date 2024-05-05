@@ -85,6 +85,9 @@ components:
       type: object
     ChannelModel:
       properties:
+        created_at:
+          title: Created At
+          type: string
         creator:
           title: Creator
           type: string
@@ -98,6 +101,7 @@ components:
       - id
       - name
       - creator
+      - created_at
       title: ChannelModel
       type: object
     CompositeChannelList:
@@ -239,7 +243,9 @@ components:
           title: Num Blocks
           type: integer
         parent_block_id:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Parent Block Id
         read:
           default: false
@@ -359,7 +365,9 @@ components:
           title: Num Blocks
           type: integer
         parent_block_id:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Parent Block Id
         read:
           default: false
@@ -412,9 +420,17 @@ components:
           title: Num Blocks
           type: integer
         parent_block_id:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           'null': true
           title: Parent Block Id
+        slack_thread_ts:
+          anyOf:
+          - type: number
+          - type: 'null'
+          'null': true
+          title: Slack Thread Ts
         tenant_id:
           title: Tenant Id
           type: string

@@ -260,7 +260,7 @@ class FullThreadInfo {
     headline.hashCode +
     lastModified.hashCode +
     numBlocks.hashCode +
-    parentBlockId.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     read.hashCode +
     title.hashCode +
     type.hashCode +

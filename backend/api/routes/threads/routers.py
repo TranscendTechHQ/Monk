@@ -303,12 +303,12 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:
     num_blocks = await get_blocks_count(thread_id)
     
     print(f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
-    
+    print("profiling performance 1.2")
+    start_time = time.time()
     
     
     await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
-    print("profiling performance 1.2")
-    start_time = time.time()
+    
     await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
     
     print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")

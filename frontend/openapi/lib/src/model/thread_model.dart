@@ -33,6 +33,8 @@ class ThreadModel {
 
      this.parentBlockId,
 
+     this.slackThreadTs,
+
     required  this.tenantId,
 
     required  this.title,
@@ -126,6 +128,18 @@ class ThreadModel {
 
   @JsonKey(
     
+    name: r'slack_thread_ts',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final num? slackThreadTs;
+
+
+
+  @JsonKey(
+    
     name: r'tenant_id',
     required: true,
     includeIfNull: false
@@ -169,6 +183,7 @@ class ThreadModel {
      other.headline == headline &&
      other.numBlocks == numBlocks &&
      other.parentBlockId == parentBlockId &&
+     other.slackThreadTs == slackThreadTs &&
      other.tenantId == tenantId &&
      other.title == title &&
      other.type == type;
@@ -181,7 +196,8 @@ class ThreadModel {
     creatorId.hashCode +
     headline.hashCode +
     numBlocks.hashCode +
-    parentBlockId.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
+    (slackThreadTs == null ? 0 : slackThreadTs.hashCode) +
     tenantId.hashCode +
     title.hashCode +
     type.hashCode;
