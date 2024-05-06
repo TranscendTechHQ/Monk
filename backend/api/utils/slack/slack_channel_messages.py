@@ -273,8 +273,10 @@ async def main():
             channel_id = channel.id
             print(f"Fetching messages from channel {channel_id}...")
             # fetch max 10000 messages per channel
-            message_list = get_channel_messages(slack_client, channel_id, write_to_json=False, limit=10000)
-            #continue
+            write_to_json = False
+            message_list = get_channel_messages(slack_client, channel_id, write_to_json=write_to_json, limit=10000)
+            if write_to_json:
+                continue
             
             
             # get or create user with slack user ID who created the channel
