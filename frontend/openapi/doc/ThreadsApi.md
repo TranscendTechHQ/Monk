@@ -21,6 +21,7 @@ Method | HTTP request | Description
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
 [**updateBlockPositionBlocksIdPositionPut**](ThreadsApi.md#updateblockpositionblocksidpositionput) | **PUT** /blocks/{id}/position | Update Block Position
+[**updateBlockTaskStatusBlocksIdTaskStatusPut**](ThreadsApi.md#updateblocktaskstatusblocksidtaskstatusput) | **PUT** /blocks/{id}/taskStatus | Update Block Task Status
 [**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
 [**updateThThreadsIdPut**](ThreadsApi.md#updateththreadsidput) | **PUT** /threads/{id} | Update Th
 
@@ -503,6 +504,49 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**UpdateBlockPositionModel**](UpdateBlockPositionModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateBlockTaskStatusBlocksIdTaskStatusPut**
+> BlockWithCreator updateBlockTaskStatusBlocksIdTaskStatusPut(id, body)
+
+Update Block Task Status
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+final String body = body_example; // String | 
+
+try {
+    final response = api.updateBlockTaskStatusBlocksIdTaskStatusPut(id, body);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateBlockTaskStatusBlocksIdTaskStatusPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **body** | **String**|  | 
+
+### Return type
+
+[**BlockWithCreator**](BlockWithCreator.md)
 
 ### Authorization
 

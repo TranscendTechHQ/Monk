@@ -12,7 +12,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
-from utils.db import get_mongo_document, get_mongo_documents, get_tenant_id, update_mongo_document_fields, asyncdb, \
+from utils.db import get_creator_block_by_id, get_mongo_document, get_mongo_documents, get_tenant_id, update_mongo_document_fields, asyncdb, \
     create_mongo_document, delete_mongo_document
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
@@ -153,7 +153,7 @@ async def get_unfiltered_newsfeed(tenant_id):
                     "creator.picture": 1,
                     "creator.email": 1,
                     "creator.last_login": 1,
-                    
+
                 }
             },
             {
@@ -233,9 +233,9 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
             }
         },
         {
-                "$sort": {
-                    "last_modified": -1
-                }
+            "$sort": {
+                "last_modified": -1
+            }
         }
     ]
     # print(pipeline)
@@ -273,17 +273,17 @@ async def filter(
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
 
-async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:str = None, created_at: str = None):
-    
+async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
+
     print("profiling performance 1.1")
     start_time = time.time()
-    
+
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     thread_collection = asyncdb.threads_collection
     thread_id = block.main_thread_id
-    
+
     pos = await get_blocks_count(thread_id)
-    
+
     blocks_collection = asyncdb.blocks_collection
     if user_info is None:
         return None
@@ -294,25 +294,26 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:
         block["_id"] = id
     new_block = BlockModel(**block, tenant_id=tenant_id,
                            creator_id=user_id, position=pos,)
-    await create_mongo_document(id=new_block.id, 
-                                document=jsonable_encoder(new_block), 
+    await create_mongo_document(id=new_block.id,
+                                document=jsonable_encoder(new_block),
                                 collection=blocks_collection)
-    
+
     thread_last_modified = str(new_block.created_at)
     # now update the thread block count
     num_blocks = await get_blocks_count(thread_id)
-    
-    print(f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
+
+    print(
+        f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
     print("profiling performance 1.2")
     start_time = time.time()
-    
-    
+
     await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
-    
+
     await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
-    
-    print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
-    
+
+    print(
+        f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
+
     return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
 
 # Get blocks count in a collection for a given thread
@@ -483,6 +484,9 @@ async def get_thread_from_db(thread_id, tenant_id):
                     },
                     'default_block': {
                         '$first': '$default_block'
+                    },
+                    'task_status': {
+                        '$first': '$task_status'
                     }
                 }
             }, {
@@ -499,6 +503,7 @@ async def get_thread_from_db(thread_id, tenant_id):
                     '_id': 1,
                     'title': 1,
                     'type': 1,
+                    'task_status': 1,
                     'default_block': 1,
                     'created_date': 1,
                     'headline': 1,
@@ -545,30 +550,28 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
     try:
         # Logic to store the block in MongoDB backend database
         # Index the block by userId
-        #print("profiling performance 0")
+        # print("profiling performance 0")
         user_id = session.get_user_id()
-        
+
         tenant_id = await get_tenant_id(session)
-        
+
         thread = await get_mongo_document(
             {"title": thread_title},
             request.app.mongodb["threads"],
             tenant_id=tenant_id
         )
-        
 
         if not thread:
             return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
 
         thread_id = thread["_id"]
-        #print("profiling performance 1")
+        # print("profiling performance 1")
         new_block = await create_new_block(block, user_id, tenant_id)
-        #print("profiling performance 2")
-        
+        # print("profiling performance 2")
 
         user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
                                                     request.app.mongodb["user_thread_flags"], tenant_id)
-        
+
     #  TODO:
         if user_thread_flag:
             user_thread_flag["read"] = False
@@ -576,7 +579,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
                 {"thread_id": thread_id, "user_id": user_id},
                 jsonable_encoder(user_thread_flag),
                 request.app.mongodb["user_thread_flags"])
-        
+
     #  ret_thread = await get_thread_from_db(thread_id, tenant_id)
 
         return JSONResponse(status_code=status.HTTP_201_CREATED,
@@ -634,6 +637,42 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     logger.debug("\n Block updated in DB")
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(updated_block))
+
+# API to update the block task status
+
+
+@router.put("/blocks/{id}/taskStatus", response_model=BlockWithCreator, response_description="Update a block task status")
+async def update_block_task_status(request: Request, id: str, task_status: str = Body(...),
+                                   session: SessionContainer = Depends(verify_session())):
+    try:
+        print('🏁 -------------------- Update Block Task Status -------------------- 🏁')
+        if (task_status not in ['todo', 'inprogress', 'done']):
+            return JSONResponse(status_code=400, content={"message": "Invalid task status"})
+
+        block_collection = request.app.mongodb["blocks"]
+        print('\n👉 Fetching block from db using Id:', id)
+        block_to_update = await get_block_by_id(id, block_collection)
+
+        if not block_to_update:
+            return JSONResponse(status_code=404, content={"message": f"Block with ${id} not found"})
+
+        user_id = session.get_user_id()
+
+        if block_to_update["creator_id"] != user_id:
+            return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
+
+        print('\n👉 Updating block task status in db')
+
+        await update_mongo_document_fields({"_id": id}, {"task_status": task_status, 'last_modified': str(dt.datetime.now())}, block_collection)
+
+        updated_block = await get_creator_block_by_id(id, block_collection)
+
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder(updated_block))
+
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.put("/blocks/{id}/position", response_model=UpdateBlockPositionModel, response_description="Update a block position")
@@ -892,7 +931,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
         user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
         await create_mongo_document(
             id=user_thread_flag_doc.id,
-            document=user_thread_flag_jsonable, 
+            document=user_thread_flag_jsonable,
             collection=request.app.mongodb["user_thread_flags"])
 
         return JSONResponse(status_code=status.HTTP_200_OK, content=user_thread_flag_jsonable)

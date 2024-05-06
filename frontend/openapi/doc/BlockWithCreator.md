@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **mainThreadId** | **String** |  | [optional] [default to '']
 **position** | **int** |  | [optional] [default to 0]
+**taskStatus** | **String** |  | [optional] [default to 'todo']
 **tenantId** | **String** |  | [optional] [default to '']
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

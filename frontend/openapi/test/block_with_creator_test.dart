@@ -52,6 +52,11 @@ void main() {
       // TODO
     });
 
+    // String taskStatus (default value: 'todo')
+    test('to test the property `taskStatus`', () async {
+      // TODO
+    });
+
     // String tenantId (default value: '')
     test('to test the property `tenantId`', () async {
       // TODO

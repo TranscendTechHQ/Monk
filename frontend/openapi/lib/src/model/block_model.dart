@@ -34,6 +34,8 @@ class BlockModel {
 
      this.position = 0,
 
+     this.taskStatus = 'todo',
+
      this.tenantId = '',
   });
 
@@ -134,6 +136,18 @@ class BlockModel {
 
 
   @JsonKey(
+    defaultValue: 'todo',
+    name: r'task_status',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? taskStatus;
+
+
+
+  @JsonKey(
     defaultValue: '',
     name: r'tenant_id',
     required: false,
@@ -155,6 +169,7 @@ class BlockModel {
      other.lastModified == lastModified &&
      other.mainThreadId == mainThreadId &&
      other.position == position &&
+     other.taskStatus == taskStatus &&
      other.tenantId == tenantId;
 
   @override
@@ -167,6 +182,7 @@ class BlockModel {
     lastModified.hashCode +
     mainThreadId.hashCode +
     position.hashCode +
+    taskStatus.hashCode +
     tenantId.hashCode;
 
   factory BlockModel.fromJson(Map<String, dynamic> json) => _$BlockModelFromJson(json);

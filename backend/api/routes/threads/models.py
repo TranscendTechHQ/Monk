@@ -52,6 +52,8 @@ class BlockModel(BaseModel):
     main_thread_id: str = Field(default="")
     position: int = Field(default=0)
     child_thread_id: str = Field(default="")
+    task_status: str = Field(
+        default="todo", pattern="^(todo|inprogress|done)$")
     tenant_id: str = Field(default="")
 
 

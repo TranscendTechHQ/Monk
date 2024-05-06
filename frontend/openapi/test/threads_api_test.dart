@@ -91,6 +91,13 @@ void main() {
       // TODO
     });
 
+    // Update Block Task Status
+    //
+    //Future<BlockWithCreator> updateBlockTaskStatusBlocksIdTaskStatusPut(String id, String body) async
+    test('test updateBlockTaskStatusBlocksIdTaskStatusPut', () async {
+      // TODO
+    });
+
     // Update
     //
     //Future<BlockModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async

@@ -102,7 +102,8 @@ class ThreadCard extends ConsumerWidget {
     final isHovered = card.hoverEnabled;
     final taskStatus = card.taskStatus;
     final controller = TextEditingController(text: block.content);
-
+    print(
+        'ThreadCard: ${block.id}.Block status: ${block.taskStatus}  State Status: $taskStatus');
     //print(block.creatorId?.toString());
     final userInfo = block.creator;
     //print('userInfo: $userInfo');
@@ -212,7 +213,7 @@ class ThreadCard extends ConsumerWidget {
                           await ref
                               .read(cardProvider.notifier)
                               .setTaskStatus(taskStatus == ETaskStatus.done
-                                  ? ETaskStatus.todo
+                                  ? ETaskStatus.inProgress
                                   : taskStatus == ETaskStatus.todo
                                       ? ETaskStatus.inProgress
                                       : ETaskStatus.done);

@@ -32,6 +32,8 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
               $checkedConvert('main_thread_id', (v) => v as String? ?? ''),
           position:
               $checkedConvert('position', (v) => (v as num?)?.toInt() ?? 0),
+          taskStatus:
+              $checkedConvert('task_status', (v) => v as String? ?? 'todo'),
           tenantId: $checkedConvert('tenant_id', (v) => v as String? ?? ''),
         );
         return val;
@@ -43,6 +45,7 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
         'creatorId': 'creator_id',
         'lastModified': 'last_modified',
         'mainThreadId': 'main_thread_id',
+        'taskStatus': 'task_status',
         'tenantId': 'tenant_id'
       },
     );
@@ -65,6 +68,7 @@ Map<String, dynamic> _$BlockWithCreatorToJson(BlockWithCreator instance) {
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
   writeNotNull('main_thread_id', instance.mainThreadId);
   writeNotNull('position', instance.position);
+  writeNotNull('task_status', instance.taskStatus);
   writeNotNull('tenant_id', instance.tenantId);
   return val;
 }

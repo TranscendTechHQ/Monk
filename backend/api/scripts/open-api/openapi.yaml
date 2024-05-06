@@ -32,6 +32,11 @@ components:
           default: 0
           title: Position
           type: integer
+        task_status:
+          default: todo
+          pattern: ^(todo|inprogress|done)$
+          title: Task Status
+          type: string
         tenant_id:
           default: ''
           title: Tenant Id
@@ -74,6 +79,11 @@ components:
           default: 0
           title: Position
           type: integer
+        task_status:
+          default: todo
+          pattern: ^(todo|inprogress|done)$
+          title: Task Status
+          type: string
         tenant_id:
           default: ''
           title: Tenant Id
@@ -735,6 +745,39 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Update Block Position
+      tags:
+      - threads
+  /blocks/{id}/taskStatus:
+    put:
+      operationId: update_block_task_status_blocks__id__taskStatus_put
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Task Status
+              type: string
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockWithCreator'
+          description: Update a block task status
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Block Task Status
       tags:
       - threads
   /channel_list:
