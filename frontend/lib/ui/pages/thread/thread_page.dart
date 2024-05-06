@@ -213,18 +213,19 @@ class ChatListView extends ConsumerWidget {
       child: type == '/new-task'
           ? Column(
               children: [
-                if (defaultBlock != null)
-                  ThreadCard(
-                    key: ValueKey(defaultBlock.id),
-                    block: defaultBlock,
-                    emojiParser: emojiParser,
-                    title: title,
-                    type: type,
-                    mainThreadId: mainThreadId,
-                    threadType: threadType,
-                  ),
                 ReorderableListView(
-                  // reverse: true,
+                  reverse: true,
+                  footer: defaultBlock != null
+                      ? ThreadCard(
+                          key: ValueKey(defaultBlock.id),
+                          block: defaultBlock,
+                          emojiParser: emojiParser,
+                          title: title,
+                          type: type,
+                          mainThreadId: mainThreadId,
+                          threadType: threadType,
+                        )
+                      : null,
                   padding: const EdgeInsets.only(bottom: 30),
                   onReorder: (int oldIndex, int newIndex) async {
                     loader.showLoader(context, message: 'Saving..');
@@ -240,7 +241,7 @@ class ChatListView extends ConsumerWidget {
                     loader.hideLoader();
                   },
                   children: [
-                    ...blocks?.map((block) {
+                    ...blocks?.reversed.map((block) {
                           return ThreadCard(
                             // key: ValueKey(block.id),
                             key: UniqueKey(),
@@ -264,17 +265,7 @@ class ChatListView extends ConsumerWidget {
                   controller: scrollController,
                   padding: const EdgeInsets.only(bottom: 30),
                   children: [
-                    if (defaultBlock != null)
-                      ThreadCard(
-                        key: ValueKey(defaultBlock.id),
-                        block: defaultBlock,
-                        emojiParser: emojiParser,
-                        title: title,
-                        type: type,
-                        mainThreadId: mainThreadId,
-                        threadType: threadType,
-                      ),
-                    ...blocks?.map((block) {
+                    ...blocks?.reversed.map((block) {
                           return ThreadCard(
                             key: ValueKey(block.id),
                             block: block,
@@ -288,6 +279,16 @@ class ChatListView extends ConsumerWidget {
                         [
                           const SizedBox(),
                         ],
+                    if (defaultBlock != null)
+                      ThreadCard(
+                        key: ValueKey(defaultBlock.id),
+                        block: defaultBlock,
+                        emojiParser: emojiParser,
+                        title: title,
+                        type: type,
+                        mainThreadId: mainThreadId,
+                        threadType: threadType,
+                      ),
                   ],
                 ).extended,
               ],
