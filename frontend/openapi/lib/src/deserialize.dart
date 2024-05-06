@@ -17,6 +17,7 @@ import 'package:openapi/src/model/threads_info.dart';
 import 'package:openapi/src/model/threads_meta_data.dart';
 import 'package:openapi/src/model/threads_model.dart';
 import 'package:openapi/src/model/update_block_model.dart';
+import 'package:openapi/src/model/update_block_position_model.dart';
 import 'package:openapi/src/model/update_thread_title_model.dart';
 import 'package:openapi/src/model/user_map.dart';
 import 'package:openapi/src/model/user_model.dart';
@@ -79,6 +80,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return ThreadsModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateBlockModel':
           return UpdateBlockModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'UpdateBlockPositionModel':
+          return UpdateBlockPositionModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UpdateThreadTitleModel':
           return UpdateThreadTitleModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'UserMap':

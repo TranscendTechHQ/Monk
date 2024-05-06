@@ -32,8 +32,28 @@ void main() {
       // TODO
     });
 
+    // BlockWithCreator defaultBlock
+    test('to test the property `defaultBlock`', () async {
+      // TODO
+    });
+
     // String headline
     test('to test the property `headline`', () async {
+      // TODO
+    });
+
+    // DateTime lastModified
+    test('to test the property `lastModified`', () async {
+      // TODO
+    });
+
+    // int numBlocks (default value: 0)
+    test('to test the property `numBlocks`', () async {
+      // TODO
+    });
+
+    // String parentBlockId
+    test('to test the property `parentBlockId`', () async {
       // TODO
     });
 

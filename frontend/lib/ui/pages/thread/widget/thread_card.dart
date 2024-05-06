@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
-import 'package:frontend/repo/thread.dart';
+import 'package:frontend/ui/pages/thread/provider/thread.dart';
 
 import 'package:frontend/ui/pages/thread/page/provider/thread_detail_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
@@ -20,19 +21,19 @@ class ThreadCard extends ConsumerWidget {
     required this.emojiParser,
     required this.title,
     required this.type,
-    required this.parentThreadId,
+    required this.mainThreadId,
     required this.threadType,
   });
   final BlockWithCreator block;
   final String type;
   final String title;
   final EmojiParser emojiParser;
-  final String? parentThreadId;
+  final String? mainThreadId;
   final ThreadType threadType;
 
   Future<void> onReplyClick(BuildContext context, WidgetRef ref,
       CurrentThread currentThreadNotifier) async {
-    if (block.id.isNullOrEmpty || parentThreadId.isNullOrEmpty) {
+    if (block.id.isNullOrEmpty || mainThreadId.isNullOrEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Thread Id or Block Id is missing'),
@@ -50,17 +51,15 @@ class ThreadCard extends ConsumerWidget {
           title: childThreadName,
           type: type,
           parentBlockId: block.id!,
-          parentThreadId: parentThreadId!,
+          mainThreadId: mainThreadId!,
         );
         loader.showLoader(context, message: 'Creating Thread');
         final newThread =
             await threadNotifier.createChildThread(createChildThreadModel);
+
+        // Navigate to child thread page
         if (newThread != null && newThread.id.isNotNullEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Thread created successfully'),
-            ),
-          );
+          showMessage(context, 'Thread created successfully');
           Navigator.push(
               context,
               ThreadPage.launchRoute(
@@ -70,11 +69,7 @@ class ThreadCard extends ConsumerWidget {
               ));
           logger.d('Thread created successfully');
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to create thread'),
-            ),
-          );
+          showMessage(context, 'Failed to create thread');
         }
       } else {
         Navigator.push(
@@ -97,8 +92,8 @@ class ThreadCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final authUserId = authState.session?.userId;
-    final creatorId = block.creator.id ?? block.creatorId;
+    final authUserId = authState.value?.session?.userId;
+    final creatorId = block.creatorId;
     final isCreator = creatorId == authUserId;
 
     final cardProvider = threadCardProvider.call(block, type);
@@ -113,6 +108,7 @@ class ThreadCard extends ConsumerWidget {
     //print('userInfo: $userInfo');
     // final replyProvider = threadDetailProvider.call();
     final provider = currentThreadProvider.call(title: title, type: type);
+    final currentThread = ref.watch(provider);
     final currentThreadNotifier = ref.read(provider.notifier);
     // TODO: Update block when child thread is created
     // final replyProvider = ref.watch(provider);

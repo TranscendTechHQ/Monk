@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/repo/search.dart';
-import 'package:frontend/repo/thread.dart';
+import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 
 class SearchInput extends ConsumerWidget {

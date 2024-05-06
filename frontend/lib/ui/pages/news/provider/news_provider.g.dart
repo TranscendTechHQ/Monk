@@ -21,7 +21,7 @@ final newsFeedProvider =
 );
 
 typedef _$NewsFeed = AutoDisposeAsyncNotifier<List<ThreadMetaData>>;
-String _$newsCardPodHash() => r'f2612b05477d546d9fb466aaa7783e5152fa21f9';
+String _$newsCardPodHash() => r'577c850d31b312577464faa2d73ca5f24b5acf6a';
 
 /// Copied from Dart SDK
 class _SystemHash {

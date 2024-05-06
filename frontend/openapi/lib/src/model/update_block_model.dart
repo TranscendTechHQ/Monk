@@ -18,36 +18,10 @@ class UpdateBlockModel {
   /// Returns a new [UpdateBlockModel] instance.
   UpdateBlockModel({
 
-     this.blockPosInChild,
-
-     this.blockPosInParent,
-
      this.content,
+
+     this.position,
   });
-
-  @JsonKey(
-    
-    name: r'block_pos_in_child',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final int? blockPosInChild;
-
-
-
-  @JsonKey(
-    
-    name: r'block_pos_in_parent',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final int? blockPosInParent;
-
-
 
   @JsonKey(
     
@@ -61,17 +35,27 @@ class UpdateBlockModel {
 
 
 
+  @JsonKey(
+    
+    name: r'position',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? position;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is UpdateBlockModel &&
-     other.blockPosInChild == blockPosInChild &&
-     other.blockPosInParent == blockPosInParent &&
-     other.content == content;
+     other.content == content &&
+     other.position == position;
 
   @override
   int get hashCode =>
-    (blockPosInChild == null ? 0 : blockPosInChild.hashCode) +
-    (blockPosInParent == null ? 0 : blockPosInParent.hashCode) +
-    content.hashCode;
+    content.hashCode +
+    position.hashCode;
 
   factory UpdateBlockModel.fromJson(Map<String, dynamic> json) => _$UpdateBlockModelFromJson(json);
 

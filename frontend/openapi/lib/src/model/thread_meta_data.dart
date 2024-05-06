@@ -29,6 +29,12 @@ class ThreadMetaData {
 
      this.headline,
 
+     this.lastModified,
+
+     this.numBlocks = 0,
+
+     this.parentBlockId,
+
      this.read = false,
 
     required  this.title,
@@ -101,6 +107,42 @@ class ThreadMetaData {
 
 
   @JsonKey(
+    
+    name: r'last_modified',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? lastModified;
+
+
+
+  @JsonKey(
+    defaultValue: 0,
+    name: r'num_blocks',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? numBlocks;
+
+
+
+  @JsonKey(
+    
+    name: r'parent_block_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? parentBlockId;
+
+
+
+  @JsonKey(
     defaultValue: false,
     name: r'read',
     required: false,
@@ -167,6 +209,9 @@ class ThreadMetaData {
      other.createdDate == createdDate &&
      other.creator == creator &&
      other.headline == headline &&
+     other.lastModified == lastModified &&
+     other.numBlocks == numBlocks &&
+     other.parentBlockId == parentBlockId &&
      other.read == read &&
      other.title == title &&
      other.type == type &&
@@ -180,6 +225,9 @@ class ThreadMetaData {
     createdDate.hashCode +
     creator.hashCode +
     headline.hashCode +
+    lastModified.hashCode +
+    numBlocks.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     read.hashCode +
     title.hashCode +
     type.hashCode +

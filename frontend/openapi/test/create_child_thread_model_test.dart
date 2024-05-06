@@ -12,13 +12,13 @@ void main() {
       // TODO
     });
 
-    // String parentBlockId
-    test('to test the property `parentBlockId`', () async {
+    // String mainThreadId
+    test('to test the property `mainThreadId`', () async {
       // TODO
     });
 
-    // String parentThreadId
-    test('to test the property `parentThreadId`', () async {
+    // String parentBlockId
+    test('to test the property `parentBlockId`', () async {
       // TODO
     });
 

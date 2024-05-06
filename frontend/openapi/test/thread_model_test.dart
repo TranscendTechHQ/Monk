@@ -32,6 +32,21 @@ void main() {
       // TODO
     });
 
+    // int numBlocks (default value: 0)
+    test('to test the property `numBlocks`', () async {
+      // TODO
+    });
+
+    // String parentBlockId
+    test('to test the property `parentBlockId`', () async {
+      // TODO
+    });
+
+    // num slackThreadTs
+    test('to test the property `slackThreadTs`', () async {
+      // TODO
+    });
+
     // String tenantId
     test('to test the property `tenantId`', () async {
       // TODO

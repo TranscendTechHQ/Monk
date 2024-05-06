@@ -22,8 +22,6 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   String userId = "";
-  // String email = "";
-  // String fullName = "";
 
   @override
   void initState() {
@@ -32,10 +30,6 @@ class _HomePageState extends ConsumerState<HomePage> {
       setState(() {
         userId = value;
       });
-    });
-
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      ref.read(authProvider.notifier).getSession();
     });
   }
 
@@ -55,7 +49,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       title: "myownchildthread",
       type: "/new-plan",
       parentBlockId: "a73a294e-367a-437d-b71e-e53f7058b49f",
-      parentThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
+      mainThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
     );
     await threadApi.childThreadBlocksChildPost(
         createChildThreadModel: createChildThreadModel);
@@ -148,10 +142,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: context.scale(240, 200, 160),
               ),
               const SizedBox(width: 100),
-              if (authState.state == EState.loading) ...[
+              if (authState.value is AsyncLoading) ...[
                 const SizedBox(height: 100),
                 const CircularProgressIndicator.adaptive()
-              ] else if (authState.session != null)
+              ] else if (authState.value?.session != null)
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -178,7 +172,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      "Welcome ${authState?.session?.fullName}.",
+                      "Welcome ${authState.value?.session?.fullName}.",
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),

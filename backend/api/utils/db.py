@@ -112,7 +112,7 @@ async def delete_mongo_document(query: dict, collection):
         return doc
 
 
-async def create_mongo_document(document: dict, collection):
+async def create_mongo_document(id: str, document: dict, collection):
     # print(document)
     # print(collection)
 
@@ -120,7 +120,8 @@ async def create_mongo_document(document: dict, collection):
         print("collection is none")
     if document is None:
         print("document is none")
-    result = await collection.find_one(document)
+        
+    result = await collection.find_one({"_id": id})
 
     if result is not None:
         ## if the document already exists, return the existing document
@@ -135,32 +136,34 @@ async def create_mongo_document(document: dict, collection):
 
 
 async def get_block_by_id(block_id, thread_collection):
-    # Filter with unwind and match
+   try:
+     # Filter with unwind and match
+    print("block_id: ", block_id)
     pipeline = [
         {
-            "$match": {"content._id": block_id}
+            "$match": {"_id": block_id}
         },
-        {
-            "$unwind": "$content"
-        },
-        {
-            "$match": {"content._id": block_id}
-        }
     ]
-
-    result = thread_collection.aggregate(pipeline)
-
+    print("pipeline: ", pipeline)
+    result = await thread_collection.aggregate(pipeline).to_list(length=None)
+    # result = result.to_list(None)
     # Fetch the first element (assuming there's only one matching block)
-    block = await result.next()
+    print(result.__len__() > 0)
+    block = result[0]
 
     # Access block content
     return block
+   except Exception as e:
+         print(e)
 
+         return None
 
+#
 async def update_block_child_id(blocks_collection,
                                 parent_block_id,
                                 thread_id,
                                 child_thread_id):
+    print("\n 5c.1 Updating block with child_thread_id: ", child_thread_id)
     result = await blocks_collection.update_one(
         {"_id": parent_block_id},
         {"$set": {"child_thread_id": child_thread_id}}
@@ -171,7 +174,7 @@ async def update_block_child_id(blocks_collection,
     # document = threads_collection.find_one(query)
     # print(parent_block_id)
 
-    update = {'$set': {'content.$[elem].child_thread_id': child_thread_id}}
+    # update = {'$set': {'content.$[elem].child_thread_id': child_thread_id}}
     # Find the document with the "_id" of "385029"
 
     # result = await threads_collection.update_one(query, update,
@@ -179,7 +182,7 @@ async def update_block_child_id(blocks_collection,
     #                                              upsert=True)
 
     if result.modified_count > 0:
-        print("Updated successfully")
+        print("\n 5.c.2 Child thread id updated in block")
     else:
         print("could not update the block with block_id: ", parent_block_id)
 
@@ -204,3 +207,6 @@ async def update_mongo_document_fields(query: dict, fields: dict, collection):
         return existing_doc
 
     return None
+
+# Get document count in a collection
+

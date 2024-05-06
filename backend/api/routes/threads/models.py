@@ -1,7 +1,7 @@
 import datetime as dt
 import uuid
 from datetime import datetime
-from typing import Annotated, List, Union, Optional
+from typing import Annotated, List, Optional, Union
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
@@ -9,18 +9,10 @@ from pydantic.json_schema import SkipJsonSchema
 THREADTYPES = [
     "/new-thread",
     "/new-plan",
-    "/news",
-    "/new-report",
-    "/new-project",
     "/new-task",
-    "/new-note",
     "/new-idea",
-    "/new-event",
-    "/new-blocker",
-    "/new-thought",
     "/new-strategy",
-    "/new-private",
-    "/new-experiment",
+    "/new-slack-thread",
     "/go"]
 
 
@@ -35,11 +27,21 @@ class UserModel(BaseModel):
                               arbitrary_types_allowed=True,
                               )
 
+
 class UserMap(BaseModel):
     users: dict[str, UserModel]
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,)
+
+
+class UpdateBlockPositionModel(BaseModel):
+    block_id: str = Field(default='')
+    new_position: int = Field(default=0)
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,)
+
 
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
@@ -47,33 +49,28 @@ class BlockModel(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     last_modified: datetime = Field(default_factory=datetime.now)
     creator_id: str = Field(default="unknown id")
-    child_id: str = Field(default="")
-    parent_thread_id: Optional[str] = Field(default="")
-    block_pos_in_child: int = Field(default=0,null=True)
-    block_pos_in_parent: int = Field(default=0,null=True)
+    main_thread_id: str = Field(default="")
+    position: int = Field(default=0)
     child_thread_id: str = Field(default="")
     tenant_id: str = Field(default="")
 
 
-
 class CreateBlockModel(BaseModel):
-    content: Union[str, SkipJsonSchema[None]] = None
-    parent_thread_id: Optional[str] = Field(default=None)
+    content: str
+    main_thread_id: str
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               )
+
+
 class UpdateBlockModel(BaseModel):
     content: Union[str, SkipJsonSchema[None]] = None
-    block_pos_in_child: Optional[int] = Field(default=None)
-    block_pos_in_parent: Optional[int] = Field(default=None)
+    position: int = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               )
-
-
-
 
 
 def allowed_thread_types(thread_type: str) -> str:
@@ -86,7 +83,8 @@ ThreadType = Annotated[str, AfterValidator(allowed_thread_types)]
 
 class CreateThreadModel(BaseModel):
     type: ThreadType
-    title: str = Field(..., min_length=1, max_length=100, pattern="^[a-zA-Z0-9]+$")
+    title: str = Field(..., min_length=1, max_length=100,
+                       pattern="^[a-zA-Z0-9]+$")
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
@@ -96,7 +94,7 @@ class CreateThreadModel(BaseModel):
 
 class CreateChildThreadModel(CreateThreadModel):
     parent_block_id: str = Field(..., alias="parentBlockId")
-    parent_thread_id: str = Field(..., alias="parentThreadId")
+    main_thread_id: str = Field(..., alias="mainThreadId")
 
 
 class ThreadModel(BaseModel):
@@ -104,10 +102,14 @@ class ThreadModel(BaseModel):
     creator_id: str
     created_date: datetime = Field(default_factory=datetime.now)
     type: ThreadType
-    title: str = Field(..., min_length=1, max_length=100, pattern="^[a-zA-Z0-9]+$")
+    title: str = Field(..., min_length=1, max_length=100,
+                       pattern="^[a-zA-Z0-9]+$")
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     headline: str = Field(default=None)
     tenant_id: str
+    num_blocks: int = Field(default=0)
+    parent_block_id: Optional[str] = Field(default=None, null=True)
+    slack_thread_ts: Optional[float] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -157,6 +159,7 @@ class CreateUserThreadFlagModel(BaseModel):
                               )
 
 
+# TODO: Deprecate this model. Use ThreadMetaData instead
 class ThreadsModel(BaseModel):
     threads: List[ThreadModel]
     model_config = ConfigDict(extra='ignore',
@@ -170,8 +173,11 @@ class ThreadMetaData(BaseModel):
     title: str
     type: str
     created_date: str
+    last_modified: datetime = Field(default_factory=datetime.now)
     creator: UserModel
+    parent_block_id: Optional[str] = Field(default=None)
     headline: str = Field(default=None)
+    num_blocks: int = Field(default=0)
     read: bool = Field(default=False)
     unfollow: bool = Field(default=False)
     bookmark: bool = Field(default=False)
@@ -188,16 +194,19 @@ class ThreadsMetaData(BaseModel):
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               )
-    
+
+
 class BlockWithCreator(BlockModel):
     creator: UserModel
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               )
-    
+
+
 class FullThreadInfo(ThreadMetaData):
     content: Union[List[BlockWithCreator], SkipJsonSchema[None]] = None
+    default_block: BlockWithCreator = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -210,5 +219,3 @@ class ThreadsInfo(BaseModel):
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
                               )
-
-

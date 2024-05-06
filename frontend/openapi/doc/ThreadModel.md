@@ -13,6 +13,9 @@ Name | Type | Description | Notes
 **createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **creatorId** | **String** |  | 
 **headline** | **String** |  | [optional] 
+**numBlocks** | **int** |  | [optional] [default to 0]
+**parentBlockId** | **String** |  | [optional] 
+**slackThreadTs** | **num** |  | [optional] 
 **tenantId** | **String** |  | 
 **title** | **String** |  | 
 **type** | **String** |  | 

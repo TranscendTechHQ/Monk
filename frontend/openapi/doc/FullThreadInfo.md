@@ -13,7 +13,11 @@ Name | Type | Description | Notes
 **content** | [**List&lt;BlockWithCreator&gt;**](BlockWithCreator.md) |  | [optional] 
 **createdDate** | **String** |  | 
 **creator** | [**UserModel**](UserModel.md) |  | 
+**defaultBlock** | [**BlockWithCreator**](BlockWithCreator.md) |  | [optional] 
 **headline** | **String** |  | [optional] 
+**lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
+**numBlocks** | **int** |  | [optional] [default to 0]
+**parentBlockId** | **String** |  | [optional] 
 **read** | **bool** |  | [optional] [default to false]
 **title** | **String** |  | 
 **type** | **String** |  | 

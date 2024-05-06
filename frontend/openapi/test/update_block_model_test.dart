@@ -7,18 +7,13 @@ void main() {
   // TODO add properties to the entity
 
   group(UpdateBlockModel, () {
-    // int blockPosInChild
-    test('to test the property `blockPosInChild`', () async {
-      // TODO
-    });
-
-    // int blockPosInParent
-    test('to test the property `blockPosInParent`', () async {
-      // TODO
-    });
-
     // String content
     test('to test the property `content`', () async {
+      // TODO
+    });
+
+    // int position
+    test('to test the property `position`', () async {
       // TODO
     });
 

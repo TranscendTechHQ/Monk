@@ -84,9 +84,16 @@ void main() {
       // TODO
     });
 
+    // Update Block Position
+    //
+    //Future<UpdateBlockPositionModel> updateBlockPositionBlocksIdPositionPut(String id, UpdateBlockPositionModel updateBlockPositionModel) async
+    test('test updateBlockPositionBlocksIdPositionPut', () async {
+      // TODO
+    });
+
     // Update
     //
-    //Future<FullThreadInfo> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<BlockModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
     test('test updateBlocksIdPut', () async {
       // TODO
     });

@@ -11,26 +11,21 @@ CreateBlockModel _$CreateBlockModelFromJson(Map<String, dynamic> json) =>
       'CreateBlockModel',
       json,
       ($checkedConvert) {
+        $checkKeys(
+          json,
+          requiredKeys: const ['content', 'main_thread_id'],
+        );
         final val = CreateBlockModel(
-          content: $checkedConvert('content', (v) => v as String?),
-          parentThreadId:
-              $checkedConvert('parent_thread_id', (v) => v as String?),
+          content: $checkedConvert('content', (v) => v as String),
+          mainThreadId: $checkedConvert('main_thread_id', (v) => v as String),
         );
         return val;
       },
-      fieldKeyMap: const {'parentThreadId': 'parent_thread_id'},
+      fieldKeyMap: const {'mainThreadId': 'main_thread_id'},
     );
 
-Map<String, dynamic> _$CreateBlockModelToJson(CreateBlockModel instance) {
-  final val = <String, dynamic>{};
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('content', instance.content);
-  writeNotNull('parent_thread_id', instance.parentThreadId);
-  return val;
-}
+Map<String, dynamic> _$CreateBlockModelToJson(CreateBlockModel instance) =>
+    <String, dynamic>{
+      'content': instance.content,
+      'main_thread_id': instance.mainThreadId,
+    };

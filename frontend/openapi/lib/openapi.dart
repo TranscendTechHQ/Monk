@@ -32,6 +32,7 @@ export 'package:openapi/src/model/threads_info.dart';
 export 'package:openapi/src/model/threads_meta_data.dart';
 export 'package:openapi/src/model/threads_model.dart';
 export 'package:openapi/src/model/update_block_model.dart';
+export 'package:openapi/src/model/update_block_position_model.dart';
 export 'package:openapi/src/model/update_thread_title_model.dart';
 export 'package:openapi/src/model/user_map.dart';
 export 'package:openapi/src/model/user_model.dart';
