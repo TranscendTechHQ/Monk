@@ -102,14 +102,14 @@ class ThreadCard extends ConsumerWidget {
     final isHovered = card.hoverEnabled;
     final taskStatus = card.taskStatus;
     final controller = TextEditingController(text: block.content);
-    print(
-        'ThreadCard: ${block.id}.Block status: ${block.taskStatus}  State Status: $taskStatus');
+    // print(
+    //     'ThreadCard: ${block.id}.Block status: ${block.taskStatus}  State Status: $taskStatus');
     //print(block.creatorId?.toString());
     final userInfo = block.creator;
     //print('userInfo: $userInfo');
     // final replyProvider = threadDetailProvider.call();
     final provider = currentThreadProvider.call(title: title, type: type);
-    final currentThread = ref.watch(provider);
+    // final currentThread = ref.watch(provider);
     final currentThreadNotifier = ref.read(provider.notifier);
     // TODO: Update block when child thread is created
     // final replyProvider = ref.watch(provider);

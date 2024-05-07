@@ -295,7 +295,7 @@ class CurrentThread extends _$CurrentThread {
 
   Future<void> reorderBlocks(int oldIndex, int newIndex) async {
     final thread = state.value?.thread;
-    final blocks = state.value?.blocks.getOrEmpty;
+    final blocks = state.value?.blocks.getOrEmpty.reversed.toList();
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
@@ -311,13 +311,46 @@ class CurrentThread extends _$CurrentThread {
 
     BlockWithCreator draggedBlock = blocks[oldIndex];
 
+    blocks.removeAt(oldIndex);
+    blocks.insert(newIndex, draggedBlock);
+
+    blocks.asMap().forEach((index, block) {
+      blocks[index] = BlockWithCreator.fromJson(block.toJson()
+        ..putIfAbsent("position", () => index)
+        ..update("position", (value) => index));
+    });
+    final updatedBlocks = blocks;
+
+    // print(updatedBlocks.map((e) => e.position).toList());
+    updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
+
+    final updatedThreadModel = FullThreadInfo(
+      title: thread.title,
+      type: thread.type,
+      content: updatedBlocks,
+      creator: thread.creator,
+      id: thread.id,
+      defaultBlock: thread.defaultBlock,
+      createdDate: thread.createdDate,
+    );
+
+    final updatedIndex = updatedBlocks.indexWhere((element) {
+      return element.id == draggedBlock.id;
+    });
+    state = AsyncValue.data(
+      CurrentTreadState.result(
+        blocks: updatedBlocks.reversed.toList(),
+        thread: updatedThreadModel,
+      ),
+    );
+
     final res = await AsyncRequest.handle<UpdateBlockPositionModel>(() async {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final result = await threadApi.updateBlockPositionBlocksIdPositionPut(
           id: state.value!.thread!.id,
           updateBlockPositionModel: UpdateBlockPositionModel(
             blockId: draggedBlock.id,
-            newPosition: newIndex,
+            newPosition: updatedBlocks.length - updatedIndex - 1,
           ));
       return result.data!;
     });
@@ -325,36 +358,6 @@ class CurrentThread extends _$CurrentThread {
     res.fold(
       (l) => logger.e("Failed to reorder block", error: l.message),
       (r) {
-        blocks.removeAt(oldIndex);
-        blocks.insert(newIndex, draggedBlock);
-
-        blocks.asMap().forEach((index, block) {
-          blocks[index] = BlockWithCreator.fromJson(block.toJson()
-            ..putIfAbsent("position", () => index)
-            ..update("position", (value) => index));
-        });
-        final updatedBlocks = blocks;
-
-        print(updatedBlocks.map((e) => e.position).toList());
-        updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
-
-        final updatedThreadModel = FullThreadInfo(
-          title: thread.title,
-          type: thread.type,
-          content: updatedBlocks,
-          creator: thread.creator,
-          id: thread.id,
-          defaultBlock: thread.defaultBlock,
-          createdDate: thread.createdDate,
-        );
-
-        state = AsyncValue.data(
-          CurrentTreadState.result(
-            blocks: updatedBlocks,
-            thread: updatedThreadModel,
-          ),
-        );
-
         logger.f(
             'Reordered block with id ${r.blockId} to position ${r.newPosition}');
       },
