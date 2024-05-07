@@ -275,8 +275,8 @@ async def filter(
 
 async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
 
-    print("profiling performance 1.1")
-    start_time = time.time()
+    # print("profiling performance 1.1")
+    # start_time = time.time()
 
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     thread_collection = asyncdb.threads_collection
@@ -302,17 +302,15 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:
     # now update the thread block count
     num_blocks = await get_blocks_count(thread_id)
 
-    print(
-        f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
-    print("profiling performance 1.2")
-    start_time = time.time()
+    # print(f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
+    # print("profiling performance 1.2")
+    # start_time = time.time()
 
     await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
 
     await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
 
-    print(
-        f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
+    # print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
 
     return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
 
@@ -547,6 +545,7 @@ async def get_thread_from_db(thread_id, tenant_id):
 @router.post("/blocks", response_model=BlockWithCreator, response_description="Create a new block")
 async def create(request: Request, thread_title: str, block: CreateBlockModel = Body(...),
                  session: SessionContainer = Depends(verify_session())):
+    start_time = time.time()
     try:
         # Logic to store the block in MongoDB backend database
         # Index the block by userId
@@ -566,9 +565,14 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
 
         thread_id = thread["_id"]
         # print("profiling performance 1")
+        part_1 = time.time()
+        print(
+            f"profiling Time elapsed for first part(): { part_1 - start_time:.6f} seconds")
         new_block = await create_new_block(block, user_id, tenant_id)
         # print("profiling performance 2")
-
+        part_2 = time.time()
+        print(
+            f"profiling Time elapsed for create_new_block(): {part_2 - part_1:.6f} seconds")
         user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
                                                     request.app.mongodb["user_thread_flags"], tenant_id)
 
@@ -581,7 +585,11 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
                 request.app.mongodb["user_thread_flags"])
 
     #  ret_thread = await get_thread_from_db(thread_id, tenant_id)
-
+        end_time = time.time()
+        print(
+            f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
+        print(
+            f"profiling Time elapsed for create block(): {end_time - start_time:.6f} seconds")
         return JSONResponse(status_code=status.HTTP_201_CREATED,
                             content=jsonable_encoder(new_block)
                             )
