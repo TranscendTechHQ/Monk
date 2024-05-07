@@ -83,14 +83,38 @@ def rename_thread_types():
                 threads_collection.update_one({"_id": thread_id}, {'$set': {
                     'type': 'slack'}})
             
-       
+def delete_thread(thread_id):
+    threads_collection = app.mongodb["threads"]
+    blocks_collection = app.mongodb["blocks"]
+    thread = threads_collection.find_one({"_id": thread_id})
+    if thread:
+        blocks_collection.delete_many({"main_thread_id": thread_id})
+        blocks = blocks_collection.find({"child_thread_id": thread_id})
+        for block in blocks:
+            blocks_collection.update_one({"_id": block["_id"]}, {'$set': {
+                'child_thread_id': ''
+            }})
+        threads_collection.delete_one({"_id": thread_id})
+        print(f"Deleted thread {thread_id} named {thread['title']}")
+    else:
+        print(f"Thread {thread_id} not found") 
+        
+def delete_threads_with_less_than_3_blocks():
+    threads_collection = app.mongodb["threads"]
+    for doc in threads_collection.find():
+        thread_id = doc['_id']
+        num_blocks = doc['num_blocks']
+        if num_blocks < 3:
+            #print(f"Thread {doc['title']} has {num_blocks} blocks")
+            delete_thread(thread_id)
         
 async def main():
     startup_db_client()
     #remove_thread_content_data()
     #update_last_modified()
     #rename_created_date_to_created_at()
-    rename_thread_types()
+    #rename_thread_types()
+    delete_threads_with_less_than_3_blocks()
     shutdown_db_client()
 
 
