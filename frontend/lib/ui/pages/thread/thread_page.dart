@@ -144,10 +144,8 @@ class ThreadPage extends ConsumerWidget {
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
             onPressed: () {
-              ref.refresh(currentThreadProvider.call(
-                title: title,
-                type: type,
-              ));
+              ref.invalidate(currentThreadProvider);
+              ref.read(provider);
             },
           ),
         ],

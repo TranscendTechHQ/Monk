@@ -14,13 +14,14 @@ import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
-import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 part 'thread.freezed.dart';
 part 'thread.g.dart';
 
+/// This is a provider that maintains the list of all threads title
 @riverpod
 Future<Map<String, String>> fetchThreadsInfo(FetchThreadsInfoRef ref) async {
   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
@@ -80,18 +81,19 @@ class CurrentThread extends _$CurrentThread {
   Future<CurrentTreadState> build({
     required String title,
     required String type,
-    ThreadType threadType = ThreadType.thread,
+    // ThreadType threadType = ThreadType.thread,
     String? threadChildId,
     String? mainThreadId,
   }) async {
     state = const AsyncValue.loading();
     FullThreadInfo? thread;
-    if (threadType == ThreadType.thread) {
-      thread = await createOrGetThread(title: title, type: type);
-    } else {
-      thread = await fetchThreadFromIdAsync(threadChildId!);
-    }
-    return CurrentTreadState.result(blocks: thread?.content, thread: thread);
+    // if (threadType == ThreadType.thread) {
+    // }
+    thread = await createOrGetThread(title: title, type: type);
+    // else {
+    //   thread = await fetchThreadFromIdAsync(threadChildId!);
+    // }
+    return CurrentTreadState.result(blocks: thread.content, thread: thread);
   }
 
   Future<bool> createBlock(String text, {String? customTitle}) async {
