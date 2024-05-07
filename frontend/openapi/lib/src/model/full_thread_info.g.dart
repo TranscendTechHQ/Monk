@@ -13,13 +13,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const [
-            '_id',
-            'created_date',
-            'creator',
-            'title',
-            'type'
-          ],
+          requiredKeys: const ['_id', 'created_at', 'creator', 'title', 'type'],
         );
         final val = FullThreadInfo(
           id: $checkedConvert('_id', (v) => v as String),
@@ -30,7 +24,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
                   ?.map((e) =>
                       BlockWithCreator.fromJson(e as Map<String, dynamic>))
                   .toList()),
-          createdDate: $checkedConvert('created_date', (v) => v as String),
+          createdAt: $checkedConvert('created_at', (v) => v as String),
           creator: $checkedConvert(
               'creator', (v) => UserModel.fromJson(v as Map<String, dynamic>)),
           defaultBlock: $checkedConvert(
@@ -55,7 +49,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
       },
       fieldKeyMap: const {
         'id': '_id',
-        'createdDate': 'created_date',
+        'createdAt': 'created_at',
         'defaultBlock': 'default_block',
         'lastModified': 'last_modified',
         'numBlocks': 'num_blocks',
@@ -76,7 +70,7 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
 
   writeNotNull('bookmark', instance.bookmark);
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
-  val['created_date'] = instance.createdDate;
+  val['created_at'] = instance.createdAt;
   val['creator'] = instance.creator.toJson();
   writeNotNull('default_block', instance.defaultBlock?.toJson());
   writeNotNull('headline', instance.headline);

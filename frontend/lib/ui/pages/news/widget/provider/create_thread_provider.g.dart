@@ -6,7 +6,7 @@ part of 'create_thread_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$createThreadPodHash() => r'18e44072399fc2fea107a57791cbf7f909a23aa2';
+String _$createThreadPodHash() => r'7d03efacd34df368defb5e623630f9cb9d166b34';
 
 /// See also [CreateThreadPod].
 @ProviderFor(CreateThreadPod)

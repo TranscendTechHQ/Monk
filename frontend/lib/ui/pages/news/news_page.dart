@@ -100,7 +100,7 @@ class NewsPage extends ConsumerWidget {
                     TextButton(
                       onPressed: () {
                         CreateThreadModal.show(context,
-                            titlesList: titlesList, type: '/new-thread');
+                            titlesList: titlesList, type: 'chat');
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
@@ -117,7 +117,7 @@ class NewsPage extends ConsumerWidget {
                     TextButton(
                       onPressed: () {
                         CreateThreadModal.show(context,
-                            titlesList: titlesList, type: '/new-task');
+                            titlesList: titlesList, type: 'todo');
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(

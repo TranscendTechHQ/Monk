@@ -145,7 +145,7 @@ async def get_unfiltered_newsfeed(tenant_id):
                     "_id": 1,
                     "title": 1,
                     "type": 1,
-                    "created_date": 1,
+                    "created_at": 1,
                     "headline": 1,
                     "last_modified": 1,
                     "creator._id": 1,
@@ -218,7 +218,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
                 "_id": 1,
                 "title": 1,
                 "type": 1,
-                "created_date": 1,
+                "created_at": 1,
                 "headline": 1,
                 "last_modified": 1,
                 "creator._id": 1,
@@ -453,8 +453,8 @@ async def get_thread_from_db(thread_id, tenant_id):
             }, {
                 '$group': {
                     '_id': '$_id',
-                    'created_date': {
-                        '$first': '$created_date'
+                    'created_at': {
+                        '$first': '$created_at'
                     },
                     'type': {
                         '$first': '$type'
@@ -503,7 +503,7 @@ async def get_thread_from_db(thread_id, tenant_id):
                     'type': 1,
                     'task_status': 1,
                     'default_block': 1,
-                    'created_date': 1,
+                    'created_at': 1,
                     'headline': 1,
                     'content': 1,
                     'parent_block_id': 1,
@@ -796,7 +796,7 @@ async def child_thread(request: Request,
 
     print("\n 5. Creating new child thread")
 
-    created_child_thread = await create_child_thread(thread_collection=thread_collection,
+    created_child_thread = await create_child_thread(
                                                      parent_block_id=parent_block_id,
                                                      main_thread_id=main_thread_id,
                                                      thread_title=thread_title,

@@ -7,15 +7,14 @@ from fastapi.encoders import jsonable_encoder
 from utils.db import create_mongo_document, get_block_by_id, get_mongo_document, get_user_name, update_block_child_id, \
     asyncdb
 from utils.headline import generate_single_thread_headline
-from .models import BlockModel, ThreadModel, ThreadType
+from .models import BlockModel, ThreadMetaData, ThreadModel, ThreadType
 
 logger = logging.getLogger(__name__)
 
 
 # creates a new thread or returns an existing thread. Content
 # is blank for the new thread
-async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadType, 
-                            content: List[BlockModel] = [], 
+async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadType,  
                             parent_block_id: str = None, 
                             created_at=None, slack_thread_ts:float=None):
     try:
@@ -38,7 +37,7 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
                 created_at = datetime.datetime.now()
             new_thread = ThreadModel(creator_id=creator['id'], title=title, type=thread_type,
                                      tenant_id=userinfo['tenant_id'], parent_block_id=parent_block_id, 
-                                     created_date=created_at, slack_thread_ts=slack_thread_ts)
+                                     created_at=created_at, slack_thread_ts=slack_thread_ts, last_modified=str(created_at))
 
             print("\n\n 👉 5.a.1.1 Created new thread Model", new_thread, "\n\n")
             new_thread_jsonable = jsonable_encoder(new_thread)
@@ -64,23 +63,10 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 # TODO: cleanup unused code here. thread colleciton not needed. parent_block_id or parentBlock, one of them not needed.
-async def create_child_thread(thread_collection, parent_block_id, main_thread_id, thread_title, thread_type, user_id,
+async def create_child_thread(parent_block_id, main_thread_id, thread_title, thread_type, user_id,
                               tenant_id, parentBlock: BlockModel, created_at=None, slack_thread_ts:float=None):
     print("\n 5.a Inside create_child_thread", parentBlock)
 
-    # fetch the parent block
-
-    # block = block["content"]
-    # if "child_thread_id" in block.keys():
-    #     if block["child_thread_id"] != "":
-    #         print("block already has a child thread")
-    #         # throw = Exception("block already has a child thread")
-    #         raise HTTPException(status_code=400, detail="block already has a child thread")
-    # print(block)
-    # create a new child thread
-
-    # parent_block = BlockModel(**block)
-    # blocks = [jsonable_encoder(parent_block)]
 
     # print("Initiating create new thread")
     created_child_thread = await create_new_thread(user_id, tenant_id, thread_title, thread_type, parent_block_id=parentBlock.id, created_at=created_at, slack_thread_ts=slack_thread_ts)

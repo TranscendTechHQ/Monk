@@ -8,7 +8,7 @@ import 'package:frontend/ui/theme/theme.dart';
 
 class CreateThreadModal extends ConsumerWidget {
   const CreateThreadModal(
-      {super.key, this.type = '/new-thread', required this.titlesList});
+      {super.key, this.type = 'chat', required this.titlesList});
   final String type;
   final List<String> titlesList;
 

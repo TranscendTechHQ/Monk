@@ -202,7 +202,7 @@ class ThreadCard extends ConsumerWidget {
                   ),
                 // TOOLS - Update task status
                 // Display task status icon only `new-task` type thread
-                if (type == '/new-task')
+                if (type == 'todo')
                   if (taskStatus == ETaskStatus.loading)
                     const CircularProgressIndicator.adaptive()
                   else

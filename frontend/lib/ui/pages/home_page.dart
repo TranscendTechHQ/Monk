@@ -47,7 +47,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     
     CreateChildThreadModel createChildThreadModel = CreateChildThreadModel(
       title: "myownchildthread",
-      type: "/new-plan",
+      type: "chat",
       parentBlockId: "a73a294e-367a-437d-b71e-e53f7058b49f",
       mainThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
     );

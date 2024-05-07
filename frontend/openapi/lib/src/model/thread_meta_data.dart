@@ -23,7 +23,7 @@ class ThreadMetaData {
 
      this.bookmark = false,
 
-    required  this.createdDate,
+    required  this.createdAt,
 
     required  this.creator,
 
@@ -72,13 +72,13 @@ class ThreadMetaData {
 
   @JsonKey(
     
-    name: r'created_date',
+    name: r'created_at',
     required: true,
     includeIfNull: false
   )
 
 
-  final String createdDate;
+  final String createdAt;
 
 
 
@@ -206,7 +206,7 @@ class ThreadMetaData {
   bool operator ==(Object other) => identical(this, other) || other is ThreadMetaData &&
      other.id == id &&
      other.bookmark == bookmark &&
-     other.createdDate == createdDate &&
+     other.createdAt == createdAt &&
      other.creator == creator &&
      other.headline == headline &&
      other.lastModified == lastModified &&
@@ -222,7 +222,7 @@ class ThreadMetaData {
   int get hashCode =>
     id.hashCode +
     bookmark.hashCode +
-    createdDate.hashCode +
+    createdAt.hashCode +
     creator.hashCode +
     headline.hashCode +
     lastModified.hashCode +

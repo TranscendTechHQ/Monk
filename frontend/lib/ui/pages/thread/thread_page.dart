@@ -208,7 +208,7 @@ class ChatListView extends ConsumerWidget {
     final defaultBlock = currentThread.value?.thread?.defaultBlock;
     return SizedBox(
       width: containerWidth,
-      child: type == '/new-task'
+      child: type == 'todo'
           ? Column(
               children: [
                 ReorderableListView(

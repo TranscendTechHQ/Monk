@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
 **bookmark** | **bool** |  | [optional] [default to false]
-**createdDate** | **String** |  | 
+**createdAt** | **String** |  | 
 **creator** | [**UserModel**](UserModel.md) |  | 
 **headline** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 

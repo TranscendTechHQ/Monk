@@ -22,8 +22,8 @@ void main() {
       // TODO
     });
 
-    // String createdDate
-    test('to test the property `createdDate`', () async {
+    // String createdAt
+    test('to test the property `createdAt`', () async {
       // TODO
     });
 

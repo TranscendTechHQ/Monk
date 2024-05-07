@@ -17,8 +17,8 @@ void main() {
       // TODO
     });
 
-    // DateTime createdDate
-    test('to test the property `createdDate`', () async {
+    // DateTime createdAt
+    test('to test the property `createdAt`', () async {
       // TODO
     });
 
@@ -29,6 +29,11 @@ void main() {
 
     // String headline
     test('to test the property `headline`', () async {
+      // TODO
+    });
+
+    // String lastModified
+    test('to test the property `lastModified`', () async {
       // TODO
     });
 

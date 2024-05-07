@@ -26,7 +26,7 @@ class FullThreadInfo {
 
      this.content,
 
-    required  this.createdDate,
+    required  this.createdAt,
 
     required  this.creator,
 
@@ -89,13 +89,13 @@ class FullThreadInfo {
 
   @JsonKey(
     
-    name: r'created_date',
+    name: r'created_at',
     required: true,
     includeIfNull: false
   )
 
 
-  final String createdDate;
+  final String createdAt;
 
 
 
@@ -236,7 +236,7 @@ class FullThreadInfo {
      other.id == id &&
      other.bookmark == bookmark &&
      other.content == content &&
-     other.createdDate == createdDate &&
+     other.createdAt == createdAt &&
      other.creator == creator &&
      other.defaultBlock == defaultBlock &&
      other.headline == headline &&
@@ -254,7 +254,7 @@ class FullThreadInfo {
     id.hashCode +
     bookmark.hashCode +
     content.hashCode +
-    createdDate.hashCode +
+    createdAt.hashCode +
     creator.hashCode +
     defaultBlock.hashCode +
     headline.hashCode +

@@ -13,18 +13,12 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const [
-            '_id',
-            'created_date',
-            'creator',
-            'title',
-            'type'
-          ],
+          requiredKeys: const ['_id', 'created_at', 'creator', 'title', 'type'],
         );
         final val = ThreadMetaData(
           id: $checkedConvert('_id', (v) => v as String),
           bookmark: $checkedConvert('bookmark', (v) => v as bool? ?? false),
-          createdDate: $checkedConvert('created_date', (v) => v as String),
+          createdAt: $checkedConvert('created_at', (v) => v as String),
           creator: $checkedConvert(
               'creator', (v) => UserModel.fromJson(v as Map<String, dynamic>)),
           headline: $checkedConvert('headline', (v) => v as String?),
@@ -44,7 +38,7 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
       },
       fieldKeyMap: const {
         'id': '_id',
-        'createdDate': 'created_date',
+        'createdAt': 'created_at',
         'lastModified': 'last_modified',
         'numBlocks': 'num_blocks',
         'parentBlockId': 'parent_block_id'
@@ -63,7 +57,7 @@ Map<String, dynamic> _$ThreadMetaDataToJson(ThreadMetaData instance) {
   }
 
   writeNotNull('bookmark', instance.bookmark);
-  val['created_date'] = instance.createdDate;
+  val['created_at'] = instance.createdAt;
   val['creator'] = instance.creator.toJson();
   writeNotNull('headline', instance.headline);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());

@@ -227,12 +227,12 @@ async def update_third_party_user_info(third_party_id, tenant_id, slack_client_f
 async def cleanup_slack_data():
     # cleanup all slack data
     
-    threads = await asyncdb.threads_collection.find({"type": "/new-slack-thread"}).to_list(length=None)
+    threads = await asyncdb.threads_collection.find({"type": "slack"}).to_list(length=None)
     for thread in threads:
         thread_id = thread["_id"]
         await asyncdb.blocks_collection.delete_many({"main_thread_id": thread_id})
         await asyncdb.blocks_collection.delete_many({"child_thread_id": thread_id})
-    await asyncdb.threads_collection.delete_many({"type": "/new-slack-thread"})
+    await asyncdb.threads_collection.delete_many({"type": "slack"})
     #await asyncdb.users_collection.delete_many({"thirdparty_provider": "slack"})
     raise ValueError("cleanup slack data")
 
@@ -283,7 +283,7 @@ async def main():
             user = await update_third_party_user_info(channel.creator, tenant_id, slack_client_for_user_info)
 
             # create threads for each public channel
-            thread_type = "/new-slack-thread"
+            thread_type = "slack"
             user_id = user["_id"]
 
             new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, title=thread_title,
@@ -331,7 +331,7 @@ async def main():
                     new_thread_creator_id = new_thread_creator["_id"]
                     child_thread_created_at = convert_unix_timestamp_to_iso_string(message['child_thread_created_at'])
                     #start a new thread
-                    child_thread = await create_child_thread(thread_collection=threads_collection,
+                    child_thread = await create_child_thread(
                                                 parent_block_id=new_parent_block_id,
                                                 main_thread_id=main_thread_id,
                                                 thread_title=new_thread_title,

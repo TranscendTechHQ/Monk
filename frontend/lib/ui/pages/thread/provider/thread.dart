@@ -134,7 +134,7 @@ class CurrentThread extends _$CurrentThread {
         creator: thread.creator,
         id: thread.id,
         defaultBlock: thread.defaultBlock,
-        createdDate: thread.createdDate,
+        createdAt: thread.createdAt,
       );
       state = AsyncValue.data(
           CurrentTreadState.result(blocks: list, thread: updatedThreadModel));
@@ -197,7 +197,7 @@ class CurrentThread extends _$CurrentThread {
       creator: thread.creator,
       id: thread.id,
       defaultBlock: thread.defaultBlock,
-      createdDate: thread.createdDate,
+      createdAt: thread.createdAt,
     );
 
     state = AsyncValue.data(CurrentTreadState.result(
@@ -253,7 +253,7 @@ class CurrentThread extends _$CurrentThread {
         creator: thread.creator,
         id: thread.id,
         defaultBlock: thread.defaultBlock,
-        createdDate: thread.createdDate,
+        createdAt: thread.createdAt,
       );
       state = AsyncValue.data(
         CurrentTreadState.result(
@@ -286,7 +286,7 @@ class CurrentThread extends _$CurrentThread {
         creator: thread.creator,
         id: thread.id,
         defaultBlock: thread.defaultBlock,
-        createdDate: thread.createdDate,
+        createdAt: thread.createdAt,
       );
       state = AsyncValue.data(
         CurrentTreadState.result(
@@ -333,7 +333,7 @@ class CurrentThread extends _$CurrentThread {
       creator: thread.creator,
       id: thread.id,
       defaultBlock: thread.defaultBlock,
-      createdDate: thread.createdDate,
+      createdAt: thread.createdAt,
     );
 
     final updatedIndex = updatedBlocks.indexWhere((element) {

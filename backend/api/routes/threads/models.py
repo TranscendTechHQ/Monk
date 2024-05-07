@@ -7,13 +7,9 @@ from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
 
 THREADTYPES = [
-    "/new-thread",
-    "/new-plan",
-    "/new-task",
-    "/new-idea",
-    "/new-strategy",
-    "/new-slack-thread",
-    "/go"]
+    "chat",
+    "todo",
+    "slack"]
 
 
 class UserModel(BaseModel):
@@ -102,7 +98,8 @@ class CreateChildThreadModel(CreateThreadModel):
 class ThreadModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     creator_id: str
-    created_date: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=datetime.now)
+    last_modified: str
     type: ThreadType
     title: str = Field(..., min_length=1, max_length=100,
                        pattern="^[a-zA-Z0-9]+$")
@@ -174,7 +171,7 @@ class ThreadMetaData(BaseModel):
     id: str = Field(..., alias="_id")
     title: str
     type: str
-    created_date: str
+    created_at: str
     last_modified: datetime = Field(default_factory=datetime.now)
     creator: UserModel
     parent_block_id: Optional[str] = Field(default=None)
