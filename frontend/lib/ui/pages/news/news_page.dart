@@ -5,6 +5,7 @@ import 'package:frontend/ui/pages/news/news_card.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
 import 'package:frontend/ui/pages/news/widget/news_feed_filter.dart';
+import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -74,28 +75,30 @@ class NewsPage extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(
-                    //       horizontal: 16, vertical: 8),
-                    //   decoration: BoxDecoration(
-                    //     color: context.colorScheme.surface,
-                    //     borderRadius: BorderRadius.circular(20),
-                    //   ),
-                    //   child: Row(
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     children: [
-                    //       const Icon(Icons.search),
-                    //       const SizedBox(width: 8),
-                    //       Text(
-                    //         'Search',
-                    //         style: context.textTheme.bodyLarge?.copyWith(
-                    //           color:
-                    //               context.colorScheme.onSurface.withOpacity(.8),
-                    //         ),
-                    //       )
-                    //     ],
-                    //   ),
-                    // ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.search),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Search',
+                            style: context.textTheme.bodyLarge?.copyWith(
+                              color:
+                                  context.colorScheme.onSurface.withOpacity(.8),
+                            ),
+                          )
+                        ],
+                      ),
+                    ).onPressed(() async {
+                      SearchModal2.show(context, threadsMap: threadList.value!);
+                    }),
                     const SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
