@@ -181,6 +181,9 @@ extension ListHelper<T> on Iterable<T>? {
   /// Both above examples will return the same result.
   List<T>? get getAbsoluteOrNull => this == null ? null : List<T>.from(this!);
   // value.fold(() => null, (a) => List<T>.from(a));
+
+  // Return the copy of the list or empty list.
+  List<T> get getOrEmpty => this == null ? [] : List<T>.from(this!);
 }
 
 extension on String? {

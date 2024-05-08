@@ -81,6 +81,8 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [*ThreadsApi*](doc/ThreadsApi.md) | [**ttThreadTypesGet**](doc/ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
+[*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlockPositionBlocksIdPositionPut**](doc/ThreadsApi.md#updateblockpositionblocksidpositionput) | **PUT** /blocks/{id}/position | Update Block Position
+[*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlockTaskStatusBlocksIdTaskStatusPut**](doc/ThreadsApi.md#updateblocktaskstatusblocksidtaskstatusput) | **PUT** /blocks/{id}/taskStatus | Update Block Task Status
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlocksIdPut**](doc/ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateThThreadsIdPut**](doc/ThreadsApi.md#updateththreadsidput) | **PUT** /threads/{id} | Update Th
 
@@ -91,6 +93,7 @@ Class | Method | HTTP request | Description
  - [BlockWithCreator](doc/BlockWithCreator.md)
  - [ChannelModel](doc/ChannelModel.md)
  - [CompositeChannelList](doc/CompositeChannelList.md)
+ - [CreateBlockModel](doc/CreateBlockModel.md)
  - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)
@@ -105,6 +108,7 @@ Class | Method | HTTP request | Description
  - [ThreadsMetaData](doc/ThreadsMetaData.md)
  - [ThreadsModel](doc/ThreadsModel.md)
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
+ - [UpdateBlockPositionModel](doc/UpdateBlockPositionModel.md)
  - [UpdateThreadTitleModel](doc/UpdateThreadTitleModel.md)
  - [UserMap](doc/UserMap.md)
  - [UserModel](doc/UserModel.md)

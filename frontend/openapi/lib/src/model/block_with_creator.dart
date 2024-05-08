@@ -21,7 +21,7 @@ class BlockWithCreator {
 
      this.id,
 
-     this.childId = '',
+     this.childThreadId = '',
 
     required  this.content,
 
@@ -30,6 +30,16 @@ class BlockWithCreator {
     required  this.creator,
 
      this.creatorId = 'unknown id',
+
+     this.lastModified,
+
+     this.mainThreadId = '',
+
+     this.position = 0,
+
+     this.taskStatus = 'todo',
+
+     this.tenantId = '',
   });
 
   @JsonKey(
@@ -46,13 +56,13 @@ class BlockWithCreator {
 
   @JsonKey(
     defaultValue: '',
-    name: r'child_id',
+    name: r'child_thread_id',
     required: false,
     includeIfNull: false
   )
 
 
-  final String? childId;
+  final String? childThreadId;
 
 
 
@@ -104,23 +114,93 @@ class BlockWithCreator {
 
 
 
+  @JsonKey(
+    
+    name: r'last_modified',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? lastModified;
+
+
+
+  @JsonKey(
+    defaultValue: '',
+    name: r'main_thread_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? mainThreadId;
+
+
+
+  @JsonKey(
+    defaultValue: 0,
+    name: r'position',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? position;
+
+
+
+  @JsonKey(
+    defaultValue: 'todo',
+    name: r'task_status',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? taskStatus;
+
+
+
+  @JsonKey(
+    defaultValue: '',
+    name: r'tenant_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? tenantId;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockWithCreator &&
      other.id == id &&
-     other.childId == childId &&
+     other.childThreadId == childThreadId &&
      other.content == content &&
      other.createdAt == createdAt &&
      other.creator == creator &&
-     other.creatorId == creatorId;
+     other.creatorId == creatorId &&
+     other.lastModified == lastModified &&
+     other.mainThreadId == mainThreadId &&
+     other.position == position &&
+     other.taskStatus == taskStatus &&
+     other.tenantId == tenantId;
 
   @override
   int get hashCode =>
     id.hashCode +
-    childId.hashCode +
+    childThreadId.hashCode +
     content.hashCode +
     createdAt.hashCode +
     creator.hashCode +
-    creatorId.hashCode;
+    creatorId.hashCode +
+    lastModified.hashCode +
+    mainThreadId.hashCode +
+    position.hashCode +
+    taskStatus.hashCode +
+    tenantId.hashCode;
 
   factory BlockWithCreator.fromJson(Map<String, dynamic> json) => _$BlockWithCreatorFromJson(json);
 

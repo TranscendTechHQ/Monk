@@ -26,11 +26,19 @@ class FullThreadInfo {
 
      this.content,
 
-    required  this.createdDate,
+    required  this.createdAt,
 
     required  this.creator,
 
+     this.defaultBlock,
+
      this.headline,
+
+     this.lastModified,
+
+     this.numBlocks = 0,
+
+     this.parentBlockId,
 
      this.read = false,
 
@@ -81,13 +89,13 @@ class FullThreadInfo {
 
   @JsonKey(
     
-    name: r'created_date',
+    name: r'created_at',
     required: true,
     includeIfNull: false
   )
 
 
-  final String createdDate;
+  final String createdAt;
 
 
 
@@ -105,6 +113,18 @@ class FullThreadInfo {
 
   @JsonKey(
     
+    name: r'default_block',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final BlockWithCreator? defaultBlock;
+
+
+
+  @JsonKey(
+    
     name: r'headline',
     required: false,
     includeIfNull: false
@@ -112,6 +132,42 @@ class FullThreadInfo {
 
 
   final String? headline;
+
+
+
+  @JsonKey(
+    
+    name: r'last_modified',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? lastModified;
+
+
+
+  @JsonKey(
+    defaultValue: 0,
+    name: r'num_blocks',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? numBlocks;
+
+
+
+  @JsonKey(
+    
+    name: r'parent_block_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? parentBlockId;
 
 
 
@@ -180,9 +236,13 @@ class FullThreadInfo {
      other.id == id &&
      other.bookmark == bookmark &&
      other.content == content &&
-     other.createdDate == createdDate &&
+     other.createdAt == createdAt &&
      other.creator == creator &&
+     other.defaultBlock == defaultBlock &&
      other.headline == headline &&
+     other.lastModified == lastModified &&
+     other.numBlocks == numBlocks &&
+     other.parentBlockId == parentBlockId &&
      other.read == read &&
      other.title == title &&
      other.type == type &&
@@ -194,9 +254,13 @@ class FullThreadInfo {
     id.hashCode +
     bookmark.hashCode +
     content.hashCode +
-    createdDate.hashCode +
+    createdAt.hashCode +
     creator.hashCode +
+    defaultBlock.hashCode +
     headline.hashCode +
+    lastModified.hashCode +
+    numBlocks.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     read.hashCode +
     title.hashCode +
     type.hashCode +

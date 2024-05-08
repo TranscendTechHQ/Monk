@@ -69,7 +69,7 @@ class NewsCard extends StatelessWidget {
                               ),
                               Text(
                                 DateFormat('dd MMM yyyy').format(
-                                    DateTime.tryParse(metaData.createdDate)!
+                                    DateTime.tryParse(metaData.createdAt)!
                                         .toLocal()),
                                 style: TextStyle(
                                   fontSize: 10,

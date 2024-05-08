@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
-import 'package:frontend/repo/thread.dart';
-import 'package:frontend/ui/pages/thread/page/thread_detail_page.dart';
+import 'package:frontend/helper/utils.dart';
+import 'package:frontend/main.dart';
+import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -59,7 +60,7 @@ class ThreadPage extends ConsumerWidget {
     );
     final currentThread = ref.watch(provider);
     final threadTitle = currentThread.maybeWhen(
-      data: (state) => state?.title ?? title,
+      data: (state) => state.thread?.title ?? title,
       orElse: () => title,
     );
     final blockInput = CommandBox(title: title, type: type);
@@ -67,16 +68,13 @@ class ThreadPage extends ConsumerWidget {
     ref.listen(provider, (prev, next) {
       if (next is AsyncError) {
         final data = next.value;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data.toString().replaceFirst('Exception: ', '')),
-          ),
-        );
+        showMessage(context, data.toString().replaceFirst('Exception: ', ''));
       }
     });
 
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(),
         centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,
@@ -119,13 +117,16 @@ class ThreadPage extends ConsumerWidget {
                           ),
                           TextButton(
                             onPressed: () async {
+                              loader.showLoader(context,
+                                  message: 'Updating title');
                               await ref
                                   .read(provider.notifier)
                                   .updateThreadTitle(controller.text);
                               ref.refresh(currentThreadProvider.call(
-                                title: title,
+                                title: controller.text,
                                 type: type,
                               ));
+                              loader.hideLoader();
                               Navigator.of(context).pop();
                             },
                             child: const Text('Save'),
@@ -143,10 +144,8 @@ class ThreadPage extends ConsumerWidget {
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',
             onPressed: () {
-              ref.refresh(currentThreadProvider.call(
-                title: title,
-                type: type,
-              ));
+              ref.invalidate(currentThreadProvider);
+              ref.read(provider);
             },
           ),
         ],
@@ -154,28 +153,27 @@ class ThreadPage extends ConsumerWidget {
       body: PageScaffold(
         body: Align(
           alignment: Alignment.center,
-          child: Column(
-            children: [
-              Expanded(
-                  child: currentThread.when(
-                data: (state) => ChatListView(
+          child: currentThread.when(
+            data: (state) => Column(
+              children: [
+                ChatListView(
                   currentThread: currentThread,
                   title: title,
                   type: type,
                   threadType: threadType,
-                ),
-                error: (error, stack) => Center(
-                  child: Text(
-                    error.toString().replaceFirst('Exception: ', ''),
-                    style: context.textTheme.bodySmall,
-                  ),
-                ),
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )),
-              blockInput,
-            ],
+                ).extended,
+                blockInput,
+              ],
+            ),
+            error: (error, stack) => Center(
+              child: Text(
+                error.toString().replaceFirst('Exception: ', ''),
+                style: context.textTheme.bodySmall,
+              ),
+            ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
           ),
         ),
       ),
@@ -191,7 +189,7 @@ class ChatListView extends ConsumerWidget {
     required this.type,
     required this.threadType,
   });
-  final AsyncValue<FullThreadInfo?> currentThread;
+  final AsyncValue<CurrentTreadState?> currentThread;
   final String type;
   final String title;
   final ThreadType threadType;
@@ -205,55 +203,93 @@ class ChatListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blocks = currentThread.value?.content?.reversed.toList();
-    final parentThreadId = currentThread.value?.id;
+    final blocks = currentThread.value?.blocks;
+    final mainThreadId = currentThread.value?.thread?.id;
+    final defaultBlock = currentThread.value?.thread?.defaultBlock;
     return SizedBox(
       width: containerWidth,
-      child: type == '/new-task'
-          ? ReorderableListView(
-              reverse: threadType == ThreadType.thread,
-              padding: const EdgeInsets.only(bottom: 30),
-              onReorder: (int oldIndex, int newIndex) {
-                ref
-                    .read(currentThreadProvider
-                        .call(
+      child: type == 'todo'
+          ? Column(
+              children: [
+                ReorderableListView(
+                  reverse: true,
+                  footer: defaultBlock != null
+                      ? ThreadCard(
+                          key: ValueKey(defaultBlock.id),
+                          block: defaultBlock,
+                          emojiParser: emojiParser,
                           title: title,
                           type: type,
+                          mainThreadId: mainThreadId,
+                          threadType: threadType,
                         )
-                        .notifier)
-                    .reorderBlocks(oldIndex, newIndex);
-              },
+                      : null,
+                  padding: const EdgeInsets.only(bottom: 30),
+                  onReorder: (int oldIndex, int newIndex) async {
+                    loader.showLoader(context, message: 'Saving..');
+                    await ref
+                        .read(currentThreadProvider
+                            .call(
+                              title: title,
+                              type: type,
+                            )
+                            .notifier)
+                        .reorderBlocks(oldIndex, newIndex);
+
+                    loader.hideLoader();
+                  },
+                  children: [
+                    ...blocks?.reversed.map((block) {
+                          return ThreadCard(
+                            // key: ValueKey(block.id),
+                            key: UniqueKey(),
+                            block: block,
+                            emojiParser: emojiParser,
+                            title: title,
+                            type: type,
+                            mainThreadId: mainThreadId,
+                            threadType: threadType,
+                          );
+                        }).toList() ??
+                        [],
+                  ],
+                ).extended,
+              ],
+            )
+          : Column(
               children: [
-                ...blocks?.reversed.map((block) {
-                      return ThreadCard(
-                        key: ValueKey(block.id),
-                        block: block,
+                ListView(
+                  reverse: true,
+                  controller: scrollController,
+                  padding: const EdgeInsets.only(bottom: 30),
+                  children: [
+                    ...blocks?.reversed.map((block) {
+                          return ThreadCard(
+                            key: ValueKey(block.id),
+                            block: block,
+                            emojiParser: emojiParser,
+                            title: title,
+                            type: type,
+                            mainThreadId: mainThreadId,
+                            threadType: threadType,
+                          );
+                        }).toList() ??
+                        [
+                          const SizedBox(),
+                        ],
+                    if (defaultBlock != null)
+                      ThreadCard(
+                        key: ValueKey(defaultBlock.id),
+                        block: defaultBlock,
                         emojiParser: emojiParser,
                         title: title,
                         type: type,
-                        parentThreadId: parentThreadId,
+                        mainThreadId: mainThreadId,
                         threadType: threadType,
-                      );
-                    }).toList() ??
-                    [],
+                      ),
+                  ],
+                ).extended,
               ],
-            )
-          : ListView.builder(
-              reverse: threadType == ThreadType.thread,
-              controller: scrollController,
-              itemCount: blocks?.length ?? 0,
-              padding: const EdgeInsets.only(bottom: 30),
-              itemBuilder: (context, index) {
-                final block = blocks?[index];
-                return ThreadCard(
-                  block: block!,
-                  emojiParser: emojiParser,
-                  title: title,
-                  type: type,
-                  parentThreadId: parentThreadId,
-                  threadType: threadType,
-                );
-              },
             ),
     );
   }

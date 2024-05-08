@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/helper/monk-exception.dart';
+import 'package:frontend/helper/network.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -9,7 +11,15 @@ part 'thread_card_provider.g.dart';
 class ThreadCard extends _$ThreadCard {
   @override
   ThreadCardState build(BlockWithCreator block, String type) {
-    return ThreadCardState.initial(block, type);
+    return ThreadCardState.initial(
+      block,
+      type,
+      block.taskStatus == "done"
+          ? ETaskStatus.done
+          : block.taskStatus == "inprogress"
+              ? ETaskStatus.inProgress
+              : ETaskStatus.todo,
+    );
   }
 
   void toggleEdit() {
@@ -30,10 +40,31 @@ class ThreadCard extends _$ThreadCard {
 
   Future<void> setTaskStatus(ETaskStatus status) async {
     state = state.copyWith(taskStatus: ETaskStatus.loading);
-    await Future.delayed(const Duration(seconds: 1), () {
+    // await Future.delayed(const Duration(seconds: 1), () {
+    //   state = state.copyWith(taskStatus: status);
+    // });
+    // state = state.copyWith(taskStatus: status);
+
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final blockId = state.block.id;
+    final body = status == ETaskStatus.todo
+        ? 'todo'
+        : status == ETaskStatus.inProgress
+            ? 'inprogress'
+            : 'done';
+    final res = await AsyncRequest.handle<BlockWithCreator>(() async {
+      final res = await threadApi.updateBlockTaskStatusBlocksIdTaskStatusPut(
+          id: blockId!, body: body);
+      return res.data!;
+    });
+
+    res.fold((l) {
+      state = state.copyWith(taskStatus: status);
+      throw Exception('Failed to update task status');
+    }, (r) {
+      print('Setting task status to $status');
       state = state.copyWith(taskStatus: status);
     });
-    state = state.copyWith(taskStatus: status);
   }
 }
 
@@ -46,8 +77,9 @@ class ThreadCardState with _$ThreadCardState {
     @Default(false) hoverEnabled,
     @Default(ETaskStatus.todo) ETaskStatus taskStatus,
   }) = _ThreadCardState;
-  factory ThreadCardState.initial(BlockWithCreator block, String type) =>
-      ThreadCardState(block: block, type: type);
+  factory ThreadCardState.initial(
+          BlockWithCreator block, String type, ETaskStatus taskStatus) =>
+      ThreadCardState(block: block, type: type, taskStatus: taskStatus);
 }
 
 enum EThreadCardState { edit, idle }
@@ -69,7 +101,7 @@ enum ETaskStatus {
   ),
   done(
     'Done',
-    'Mark as In Todo',
+    'Mark as In progress',
     Icons.check_circle_outline,
     Colors.green,
     Colors.white,

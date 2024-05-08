@@ -23,7 +23,7 @@ void main() {
 
     // Create
     //
-    //Future<FullThreadInfo> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<BlockWithCreator> createBlocksPost(String threadTitle, CreateBlockModel createBlockModel) async
     test('test createBlocksPost', () async {
       // TODO
     });
@@ -84,9 +84,23 @@ void main() {
       // TODO
     });
 
+    // Update Block Position
+    //
+    //Future<UpdateBlockPositionModel> updateBlockPositionBlocksIdPositionPut(String id, UpdateBlockPositionModel updateBlockPositionModel) async
+    test('test updateBlockPositionBlocksIdPositionPut', () async {
+      // TODO
+    });
+
+    // Update Block Task Status
+    //
+    //Future<BlockWithCreator> updateBlockTaskStatusBlocksIdTaskStatusPut(String id, String body) async
+    test('test updateBlockTaskStatusBlocksIdTaskStatusPut', () async {
+      // TODO
+    });
+
     // Update
     //
-    //Future<FullThreadInfo> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<BlockModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
     test('test updateBlocksIdPut', () async {
       // TODO
     });

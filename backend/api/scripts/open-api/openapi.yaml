@@ -5,9 +5,9 @@ components:
         _id:
           title: ' Id'
           type: string
-        child_id:
+        child_thread_id:
           default: ''
-          title: Child Id
+          title: Child Thread Id
           type: string
         content:
           title: Content
@@ -20,6 +20,27 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        main_thread_id:
+          default: ''
+          title: Main Thread Id
+          type: string
+        position:
+          default: 0
+          title: Position
+          type: integer
+        task_status:
+          default: todo
+          pattern: ^(todo|inprogress|done)$
+          title: Task Status
+          type: string
+        tenant_id:
+          default: ''
+          title: Tenant Id
+          type: string
       required:
       - content
       title: BlockModel
@@ -29,9 +50,9 @@ components:
         _id:
           title: ' Id'
           type: string
-        child_id:
+        child_thread_id:
           default: ''
-          title: Child Id
+          title: Child Thread Id
           type: string
         content:
           title: Content
@@ -46,6 +67,27 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        main_thread_id:
+          default: ''
+          title: Main Thread Id
+          type: string
+        position:
+          default: 0
+          title: Position
+          type: integer
+        task_status:
+          default: todo
+          pattern: ^(todo|inprogress|done)$
+          title: Task Status
+          type: string
+        tenant_id:
+          default: ''
+          title: Tenant Id
+          type: string
       required:
       - content
       - creator
@@ -53,6 +95,9 @@ components:
       type: object
     ChannelModel:
       properties:
+        created_at:
+          title: Created At
+          type: string
         creator:
           title: Creator
           type: string
@@ -66,6 +111,7 @@ components:
       - id
       - name
       - creator
+      - created_at
       title: ChannelModel
       type: object
     CompositeChannelList:
@@ -89,6 +135,19 @@ components:
       - public_channels
       title: CompositeChannelList
       type: object
+    CreateBlockModel:
+      properties:
+        content:
+          title: Content
+          type: string
+        main_thread_id:
+          title: Main Thread Id
+          type: string
+      required:
+      - content
+      - main_thread_id
+      title: CreateBlockModel
+      type: object
     CreateChildThreadModel:
       properties:
         content:
@@ -96,11 +155,11 @@ components:
             $ref: '#/components/schemas/BlockModel'
           title: Content
           type: array
+        mainThreadId:
+          title: Mainthreadid
+          type: string
         parentBlockId:
           title: Parentblockid
-          type: string
-        parentThreadId:
-          title: Parentthreadid
           type: string
         title:
           maxLength: 100
@@ -115,7 +174,7 @@ components:
       - type
       - title
       - parentBlockId
-      - parentThreadId
+      - mainThreadId
       title: CreateChildThreadModel
       type: object
     CreateThreadModel:
@@ -174,14 +233,30 @@ components:
             $ref: '#/components/schemas/BlockWithCreator'
           title: Content
           type: array
-        created_date:
-          title: Created Date
+        created_at:
+          title: Created At
           type: string
         creator:
           $ref: '#/components/schemas/UserModel'
+        default_block:
+          allOf:
+          - $ref: '#/components/schemas/BlockWithCreator'
         headline:
           title: Headline
           type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        num_blocks:
+          default: 0
+          title: Num Blocks
+          type: integer
+        parent_block_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Block Id
         read:
           default: false
           title: Read
@@ -204,7 +279,7 @@ components:
       - _id
       - title
       - type
-      - created_date
+      - created_at
       - creator
       title: FullThreadInfo
       type: object
@@ -283,14 +358,27 @@ components:
           default: false
           title: Bookmark
           type: boolean
-        created_date:
-          title: Created Date
+        created_at:
+          title: Created At
           type: string
         creator:
           $ref: '#/components/schemas/UserModel'
         headline:
           title: Headline
           type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        num_blocks:
+          default: 0
+          title: Num Blocks
+          type: integer
+        parent_block_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Parent Block Id
         read:
           default: false
           title: Read
@@ -313,7 +401,7 @@ components:
       - _id
       - title
       - type
-      - created_date
+      - created_at
       - creator
       title: ThreadMetaData
       type: object
@@ -327,9 +415,9 @@ components:
             $ref: '#/components/schemas/BlockModel'
           title: Content
           type: array
-        created_date:
+        created_at:
           format: date-time
-          title: Created Date
+          title: Created At
           type: string
         creator_id:
           title: Creator Id
@@ -337,6 +425,25 @@ components:
         headline:
           title: Headline
           type: string
+        last_modified:
+          title: Last Modified
+          type: string
+        num_blocks:
+          default: 0
+          title: Num Blocks
+          type: integer
+        parent_block_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          'null': true
+          title: Parent Block Id
+        slack_thread_ts:
+          anyOf:
+          - type: number
+          - type: 'null'
+          'null': true
+          title: Slack Thread Ts
         tenant_id:
           title: Tenant Id
           type: string
@@ -351,6 +458,7 @@ components:
           type: string
       required:
       - creator_id
+      - last_modified
       - type
       - title
       - tenant_id
@@ -394,7 +502,22 @@ components:
         content:
           title: Content
           type: string
+        position:
+          title: Position
+          type: integer
       title: UpdateBlockModel
+      type: object
+    UpdateBlockPositionModel:
+      properties:
+        block_id:
+          default: ''
+          title: Block Id
+          type: string
+        new_position:
+          default: 0
+          title: New Position
+          type: integer
+      title: UpdateBlockPositionModel
       type: object
     UpdateThreadTitleModel:
       properties:
@@ -515,14 +638,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateBlockModel'
+              $ref: '#/components/schemas/CreateBlockModel'
         required: true
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FullThreadInfo'
+                $ref: '#/components/schemas/BlockWithCreator'
           description: Create a new block
         '422':
           content:
@@ -585,7 +708,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FullThreadInfo'
+                $ref: '#/components/schemas/BlockModel'
           description: Update a block
         '422':
           content:
@@ -594,6 +717,71 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Update
+      tags:
+      - threads
+  /blocks/{id}/position:
+    put:
+      operationId: update_block_position_blocks__id__position_put
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBlockPositionModel'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBlockPositionModel'
+          description: Update a block position
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Block Position
+      tags:
+      - threads
+  /blocks/{id}/taskStatus:
+    put:
+      operationId: update_block_task_status_blocks__id__taskStatus_put
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Task Status
+              type: string
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockWithCreator'
+          description: Update a block task status
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Block Task Status
       tags:
       - threads
   /channel_list:

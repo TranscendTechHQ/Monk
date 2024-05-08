@@ -67,11 +67,11 @@ async def main():
     # "713059f7-b4ca-49ed-a35c-d28e6569da81",
     # "4564")
 
-    # child_thread = await create_child_thread(app.mongodb["threads"],
+    # child_thread = await create_child_thread(
     #                         "b342a310-cd4e-444e-8f0f-8e511d908b7f",
     #                         "713059f7-b4ca-49ed-a35c-d28e6569da81",
     #                         "childThread",
-    #                         "/new-thread",
+    #                         "chat",
     #                         "yogesh")
 
     await fix_block_ids()

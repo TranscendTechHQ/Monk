@@ -18,12 +18,26 @@ class ChannelModel {
   /// Returns a new [ChannelModel] instance.
   ChannelModel({
 
+    required  this.createdAt,
+
     required  this.creator,
 
     required  this.id,
 
     required  this.name,
   });
+
+  @JsonKey(
+    
+    name: r'created_at',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final String createdAt;
+
+
 
   @JsonKey(
     
@@ -63,12 +77,14 @@ class ChannelModel {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is ChannelModel &&
+     other.createdAt == createdAt &&
      other.creator == creator &&
      other.id == id &&
      other.name == name;
 
   @override
   int get hashCode =>
+    createdAt.hashCode +
     creator.hashCode +
     id.hashCode +
     name.hashCode;

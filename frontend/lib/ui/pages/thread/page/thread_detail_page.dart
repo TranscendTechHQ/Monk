@@ -15,7 +15,7 @@ class ThreadDetailPage extends ConsumerWidget {
   final BlockWithCreator? block;
   final String parentBlockId;
   final String type;
-  final String parentThreadId;
+  final String mainThreadId;
   final String title;
   const ThreadDetailPage({
     super.key,
@@ -23,7 +23,7 @@ class ThreadDetailPage extends ConsumerWidget {
     required this.type,
     this.block,
     required this.parentBlockId,
-    required this.parentThreadId,
+    required this.mainThreadId,
   });
 
   static String route = "/thread-detail";
@@ -31,7 +31,7 @@ class ThreadDetailPage extends ConsumerWidget {
       {required String title,
       required String type,
       required String parentBlockId,
-      required String parentThreadId,
+      required String mainThreadId,
       BlockWithCreator? block}) {
     return MaterialPageRoute<void>(
       builder: (_) => ThreadDetailPage(
@@ -39,7 +39,7 @@ class ThreadDetailPage extends ConsumerWidget {
         type: type,
         parentBlockId: parentBlockId,
         block: block,
-        parentThreadId: parentThreadId,
+        mainThreadId: mainThreadId,
       ),
     );
   }
@@ -59,7 +59,7 @@ class ThreadDetailPage extends ConsumerWidget {
       title: title,
       type: type,
       parentBlockId: parentBlockId,
-      parentThreadId: parentThreadId,
+      mainThreadId: mainThreadId,
     );
     final provider = threadDetailProvider.call();
     // provider.fetchThreadFromIdAsync(parentBlockId);createChildThreadModel:

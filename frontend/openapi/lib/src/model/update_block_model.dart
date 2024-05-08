@@ -19,6 +19,8 @@ class UpdateBlockModel {
   UpdateBlockModel({
 
      this.content,
+
+     this.position,
   });
 
   @JsonKey(
@@ -33,13 +35,27 @@ class UpdateBlockModel {
 
 
 
+  @JsonKey(
+    
+    name: r'position',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? position;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is UpdateBlockModel &&
-     other.content == content;
+     other.content == content &&
+     other.position == position;
 
   @override
   int get hashCode =>
-    content.hashCode;
+    content.hashCode +
+    position.hashCode;
 
   factory UpdateBlockModel.fromJson(Map<String, dynamic> json) => _$UpdateBlockModelFromJson(json);
 

@@ -12,7 +12,13 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['creator_id', 'tenant_id', 'title', 'type'],
+          requiredKeys: const [
+            'creator_id',
+            'last_modified',
+            'tenant_id',
+            'title',
+            'type'
+          ],
         );
         final val = ThreadModel(
           id: $checkedConvert('_id', (v) => v as String?),
@@ -21,10 +27,16 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
               (v) => (v as List<dynamic>?)
                   ?.map((e) => BlockModel.fromJson(e as Map<String, dynamic>))
                   .toList()),
-          createdDate: $checkedConvert('created_date',
+          createdAt: $checkedConvert('created_at',
               (v) => v == null ? null : DateTime.parse(v as String)),
           creatorId: $checkedConvert('creator_id', (v) => v as String),
           headline: $checkedConvert('headline', (v) => v as String?),
+          lastModified: $checkedConvert('last_modified', (v) => v as String),
+          numBlocks:
+              $checkedConvert('num_blocks', (v) => (v as num?)?.toInt() ?? 0),
+          parentBlockId:
+              $checkedConvert('parent_block_id', (v) => v as String?),
+          slackThreadTs: $checkedConvert('slack_thread_ts', (v) => v as num?),
           tenantId: $checkedConvert('tenant_id', (v) => v as String),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
@@ -33,8 +45,12 @@ ThreadModel _$ThreadModelFromJson(Map<String, dynamic> json) => $checkedCreate(
       },
       fieldKeyMap: const {
         'id': '_id',
-        'createdDate': 'created_date',
+        'createdAt': 'created_at',
         'creatorId': 'creator_id',
+        'lastModified': 'last_modified',
+        'numBlocks': 'num_blocks',
+        'parentBlockId': 'parent_block_id',
+        'slackThreadTs': 'slack_thread_ts',
         'tenantId': 'tenant_id'
       },
     );
@@ -50,9 +66,13 @@ Map<String, dynamic> _$ThreadModelToJson(ThreadModel instance) {
 
   writeNotNull('_id', instance.id);
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
-  writeNotNull('created_date', instance.createdDate?.toIso8601String());
+  writeNotNull('created_at', instance.createdAt?.toIso8601String());
   val['creator_id'] = instance.creatorId;
   writeNotNull('headline', instance.headline);
+  val['last_modified'] = instance.lastModified;
+  writeNotNull('num_blocks', instance.numBlocks);
+  writeNotNull('parent_block_id', instance.parentBlockId);
+  writeNotNull('slack_thread_ts', instance.slackThreadTs);
   val['tenant_id'] = instance.tenantId;
   val['title'] = instance.title;
   val['type'] = instance.type;

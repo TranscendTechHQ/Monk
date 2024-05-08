@@ -5,6 +5,7 @@ class ChannelModel(BaseModel):
     id: str
     name: str
     creator: str
+    created_at: str
 
 
 class PublicChannelList(BaseModel):

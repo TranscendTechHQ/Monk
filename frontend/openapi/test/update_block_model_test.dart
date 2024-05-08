@@ -12,5 +12,10 @@ void main() {
       // TODO
     });
 
+    // int position
+    test('to test the property `position`', () async {
+      // TODO
+    });
+
   });
 }
