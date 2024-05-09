@@ -61,11 +61,6 @@ class NewsPage extends ConsumerWidget {
     return Scaffold(
       body: PageScaffold(
         body: WithMonkAppbar(
-          /*actions: IconButton(
-            tooltip: 'Filter',
-            onPressed: () async => onFilterPressed(context, ref),
-            icon: const Icon(Icons.filter_alt_outlined),
-          ),*/
           child: Container(
             padding: const EdgeInsets.only(top: 36, left: 100),
             alignment: Alignment.center,
@@ -100,11 +95,30 @@ class NewsPage extends ConsumerWidget {
                       SearchModal2.show(context, threadsMap: threadList.value!);
                     }),
                     const SizedBox(height: 10),
-                    IconButton(
-                      tooltip: 'Filter',
-                      onPressed: () async => onFilterPressed(context, ref),
-                      icon: const Icon(Icons.filter_alt_outlined),
-                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.filter_alt_outlined),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Filter',
+                            style: context.textTheme.bodyLarge?.copyWith(
+                              color:
+                                  context.colorScheme.onSurface.withOpacity(.8),
+                            ),
+                          )
+                        ],
+                      ),
+                    ).onPressed(() async {
+                      onFilterPressed(context, ref);
+                    }),
                     const SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
