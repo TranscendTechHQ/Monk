@@ -11,6 +11,32 @@ import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 
+Widget leftMenuItem(
+    BuildContext context, IconData icon, String title, Function onTap) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    decoration: BoxDecoration(
+      color: context.colorScheme.surface,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: context.textTheme.bodyLarge?.copyWith(
+            color: context.colorScheme.onSurface.withOpacity(.8),
+          ),
+        )
+      ],
+    ),
+  ).onPressed(() async {
+    await onTap();
+  });
+}
+
 class NewsPage extends ConsumerWidget {
   final String title;
   final String type;
@@ -70,28 +96,7 @@ class NewsPage extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: context.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.search),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Search',
-                            style: context.textTheme.bodyLarge?.copyWith(
-                              color:
-                                  context.colorScheme.onSurface.withOpacity(.8),
-                            ),
-                          )
-                        ],
-                      ),
-                    ).onPressed(() async {
+                    leftMenuItem(context, Icons.search, 'Search', () async {
                       SearchModal2.show(context, threadsMap: threadList.value!);
                     }),
                     const SizedBox(height: 10),
