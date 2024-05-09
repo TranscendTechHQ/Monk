@@ -106,7 +106,7 @@ class NewsPage extends ConsumerWidget {
                       onFilterPressed(context, ref);
                     }),
                     const SizedBox(height: 10),
-                    leftMenuItem(context, Icons.post_add, 'Post', () async {
+                    leftMenuItem(context, Icons.message, 'Post', () async {
                       CreateThreadModal.show(context,
                           titlesList: titlesList, type: 'chat');
                     }),
