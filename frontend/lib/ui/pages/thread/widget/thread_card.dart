@@ -72,11 +72,13 @@ class ThreadCard extends ConsumerWidget {
           showMessage(context, 'Failed to create thread');
         }
       } else {
+        final replyThread =
+            await threadNotifier.fetchThreadFromIdAsync(block.childThreadId!);
         Navigator.push(
           context,
           ThreadPage.launchRoute(
-            title: childThreadName,
-            type: type,
+            title: replyThread!.title,
+            type: replyThread.type,
             threadType: ThreadType.reply,
             threadChildId: block.childThreadId,
           ),
