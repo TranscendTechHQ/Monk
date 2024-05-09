@@ -15,6 +15,7 @@ Widget leftMenuItem(
     BuildContext context, IconData icon, String title, Function onTap) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    width: 135,
     decoration: BoxDecoration(
       color: context.colorScheme.surface,
       borderRadius: BorderRadius.circular(20),
