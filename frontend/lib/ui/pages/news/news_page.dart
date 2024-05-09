@@ -61,13 +61,13 @@ class NewsPage extends ConsumerWidget {
     return Scaffold(
       body: PageScaffold(
         body: WithMonkAppbar(
-          actions: IconButton(
+          /*actions: IconButton(
             tooltip: 'Filter',
             onPressed: () async => onFilterPressed(context, ref),
             icon: const Icon(Icons.filter_alt_outlined),
-          ),
+          ),*/
           child: Container(
-            padding: const EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.only(top: 36, left: 100),
             alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -99,6 +99,12 @@ class NewsPage extends ConsumerWidget {
                     ).onPressed(() async {
                       SearchModal2.show(context, threadsMap: threadList.value!);
                     }),
+                    const SizedBox(height: 10),
+                    IconButton(
+                      tooltip: 'Filter',
+                      onPressed: () async => onFilterPressed(context, ref),
+                      icon: const Icon(Icons.filter_alt_outlined),
+                    ),
                     const SizedBox(height: 10),
                     TextButton(
                       onPressed: () {
