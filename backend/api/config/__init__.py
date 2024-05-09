@@ -41,8 +41,8 @@ class CommonSettings(BaseSettings):
 
 class ServerSettings(BaseSettings):
     HOST: str = "0.0.0.0"
-    PORT: int = os.getenv("FASTAPI_PORT", 8000)
-    API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
+    PORT: int = os.getenv("FASTAPI_PORT", 8001)
+    API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8001")
     WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:3000")
     INSTALL_DOMAIN: str = os.getenv("INSTALL_DOMAIN", "http://localhost:3000")
 
@@ -193,7 +193,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                         update_result = await mongodb_users.update_one({"super_token_id": super_token_id},
                                                                        {"$set":
                                                                            {
-                                                                               "_id": uuid.uuid4(),
+                                                                               "_id": super_token_id,
                                                                                "name": name,
                                                                                "picture": picture,
                                                                                "email": email,

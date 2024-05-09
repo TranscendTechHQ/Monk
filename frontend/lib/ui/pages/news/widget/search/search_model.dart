@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/helper/network.dart';
 import 'package:frontend/helper/utils.dart';
+import 'package:frontend/repo/search.dart';
 import 'package:frontend/ui/pages/news/widget/provider/create_thread_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -253,7 +255,7 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                 // prefix: Text(searchType),
                 prefixIcon: searchType.isNotNullEmpty
                     ? SizedBox(
-                        width: searchType == "title" ? 50 : 80,
+                        width: searchType == "title" ? 50 : 100,
                         child: Center(
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -348,12 +350,12 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                     ListTile(
                       onTap: () {
                         setState(() {
-                          searchType = 'content';
+                          searchType = 'semantic';
                         });
                         inputFocusNode!.requestFocus();
                       },
                       title: Text(
-                        'Content',
+                        'Semantic',
                         style: context.textTheme.bodyMedium!.copyWith(
                           color: context.colorScheme.onSurface.withOpacity(.9),
                         ),
@@ -485,10 +487,20 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
               const SizedBox(height: 30),
             ] else
               const SizedBox(height: 100),
-            if (searchType == 'content')
+            if (searchType == 'semantic')
               // List Of Titles
               FilledButton.tonal(
-                onPressed: () {},
+                onPressed: () async {
+                  final value = titleController.text;
+                  print(value);
+                  final List<String> queryResults = await ref
+                      .watch(queryMatchingThreadsProvider.call(value).future);
+                  ref
+                      .read(queryResultsProvider.notifier)
+                      .setResults(queryResults);
+                  print(queryResults);
+                  //SearchModal(focusNode: _searchFocusNode)
+                },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
                     context.colorScheme.secondary,
