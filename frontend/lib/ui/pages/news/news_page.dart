@@ -161,7 +161,7 @@ class ChatListView extends ConsumerWidget {
           ]),
           color: context.colorScheme.onSurface.withOpacity(.9),
           child: Container(
-            width: 400,
+            width: 500,
             alignment: Alignment.center,
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
