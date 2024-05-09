@@ -41,8 +41,8 @@ class CommonSettings(BaseSettings):
 
 class ServerSettings(BaseSettings):
     HOST: str = "0.0.0.0"
-    PORT: int = os.getenv("FASTAPI_PORT", 8000)
-    API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
+    PORT: int = os.getenv("FASTAPI_PORT", 8001)
+    API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8001")
     WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:3000")
     INSTALL_DOMAIN: str = os.getenv("INSTALL_DOMAIN", "http://localhost:3000")
 
