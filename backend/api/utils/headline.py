@@ -37,17 +37,19 @@ def generate_headline(text: str) -> str:
 
     # docs = loader.load()
 
-    headline = llm_chain.invoke(text)
+    headline_with_quotes = llm_chain.invoke(text)['text']
+    headline = headline_with_quotes.replace('"', '')
     # print(summary)
     return headline
 
-def update_single_headline_in_db(thread_doc, headline):
+async def update_single_headline_in_db(thread_doc, headline):
     #print(f"Updating headline for thread {thread_doc['_id']} to {headline}")
     
     threads_collection = asyncdb.threads_collection
-    threads_collection.update_one({'_id': thread_doc['_id']},
+    result = await threads_collection.update_one({'_id': thread_doc['_id']},
                                       {'$set': {'headline': headline}}, upsert=True)
-
+    #print(result.raw_result)
+    
 async def generate_single_thread_headline(thread_id, use_ai=False):
     #blocks = thread_doc['content']
     threads_collection = asyncdb.threads_collection
@@ -59,7 +61,7 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
     
     headline = "blank thread"
     if num_blocks == 0:
-        update_single_headline_in_db(thread_doc, headline)
+        await update_single_headline_in_db(thread_doc, headline)
         return
     
     blocks_collection = asyncdb.blocks_collection
@@ -72,7 +74,7 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
             
             headline = default_block['content']
             
-            update_single_headline_in_db(thread_doc, headline)
+            await update_single_headline_in_db(thread_doc, headline)
             return
         else:
             blocks.append(default_block)
@@ -95,8 +97,8 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
         
         headline = first_block['content']
         
-
-    update_single_headline_in_db(thread_doc, headline)
+    print(f"Updating headline for thread {thread_id} to {headline}")
+    await update_single_headline_in_db(thread_doc, headline)
     
     
 async def generate_all_thread_headlines(use_ai=False):
@@ -112,8 +114,8 @@ async def generate_all_thread_headlines(use_ai=False):
     
 async def main():
     await startup_async_db_client()
-    await generate_all_thread_headlines(use_ai=False)
-    #await generate_single_thread_headline("af6f0744-0679-47d4-8838-db02312cc61e", use_ai=False)
+    await generate_all_thread_headlines(use_ai=True)
+    #await generate_single_thread_headline("af6f0744-0679-47d4-8838-db02312cc61e", use_ai=True)
     await shutdown_async_db_client()
 
 
