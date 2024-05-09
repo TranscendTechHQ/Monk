@@ -100,64 +100,20 @@ class NewsPage extends ConsumerWidget {
                       SearchModal2.show(context, threadsMap: threadList.value!);
                     }),
                     const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: context.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.filter_alt_outlined),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Filter',
-                            style: context.textTheme.bodyLarge?.copyWith(
-                              color:
-                                  context.colorScheme.onSurface.withOpacity(.8),
-                            ),
-                          )
-                        ],
-                      ),
-                    ).onPressed(() async {
+                    leftMenuItem(context, Icons.filter_alt_outlined, 'Filter',
+                        () async {
                       onFilterPressed(context, ref);
                     }),
                     const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        CreateThreadModal.show(context,
-                            titlesList: titlesList, type: 'chat');
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          context.colorScheme.secondary,
-                        ),
-                      ),
-                      child: Text(
-                        "Create thread",
-                        style: context.textTheme.bodySmall!
-                            .copyWith(color: context.colorScheme.onSecondary),
-                      ),
-                    ),
+                    leftMenuItem(context, Icons.post_add, 'Post', () async {
+                      CreateThreadModal.show(context,
+                          titlesList: titlesList, type: 'chat');
+                    }),
                     const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        CreateThreadModal.show(context,
-                            titlesList: titlesList, type: 'todo');
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          context.colorScheme.secondary,
-                        ),
-                      ),
-                      child: Text(
-                        "Create todo",
-                        style: context.textTheme.bodySmall!
-                            .copyWith(color: context.colorScheme.onSecondary),
-                      ),
-                    ),
+                    leftMenuItem(context, Icons.list, 'Todo', () async {
+                      CreateThreadModal.show(context,
+                          titlesList: titlesList, type: 'todo');
+                    }),
                   ],
                 ).hP8.extended,
                 Column(
