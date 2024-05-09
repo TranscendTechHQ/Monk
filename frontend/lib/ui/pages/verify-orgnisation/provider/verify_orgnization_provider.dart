@@ -18,5 +18,6 @@ final whiteListedEmails = [
   'suhas@zignite.io',
   'sonu.sharma045@gmail.com',
   'yksoni@gmail.com',
-  'yksoni@transcendtech.io'
+  'yksoni@transcendtech.io',
+  'satadrug@gmail.com',
 ];
