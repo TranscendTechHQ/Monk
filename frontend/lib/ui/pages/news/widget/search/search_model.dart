@@ -228,7 +228,7 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                     handleSemanticSearch();
                     return;
                   }
-                  print('Submitted: $value');
+                  //print('Submitted: $value');
                   if (value.isNotEmpty) {
                     if (widget.threadsMap.values.contains(value)) {
                       launchThread(
@@ -370,7 +370,7 @@ class SearchInput extends StatelessWidget {
         // prefix: Text(searchType),
         prefixIcon: searchType.isNotNullEmpty
             ? SizedBox(
-                width: searchType == "Title" ? 50 : 100,
+                width: searchType == "Title" ? 80 : 100,
                 child: Center(
                   child: Container(
                     padding:
@@ -455,7 +455,7 @@ class SearchOptions extends StatelessWidget {
               // inputFocusNode!.requestFocus();
             },
             title: Text(
-              'Title',
+              'Title <search thread by title>',
               style: context.textTheme.bodyMedium!.copyWith(
                 color: context.colorScheme.onSurface.withOpacity(.9),
               ),
@@ -469,7 +469,7 @@ class SearchOptions extends StatelessWidget {
               onOptionSelect('Semantic');
             },
             title: Text(
-              'Semantic',
+              'Semantic <search thread by describing it in a sentence>',
               style: context.textTheme.bodyMedium!.copyWith(
                 color: context.colorScheme.onSurface.withOpacity(.9),
               ),
