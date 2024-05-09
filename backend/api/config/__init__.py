@@ -193,7 +193,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                         update_result = await mongodb_users.update_one({"super_token_id": super_token_id},
                                                                        {"$set":
                                                                            {
-                                                                               "_id": str(uuid.uuid4()),
+                                                                               "_id": super_token_id,
                                                                                "name": name,
                                                                                "picture": picture,
                                                                                "email": email,
