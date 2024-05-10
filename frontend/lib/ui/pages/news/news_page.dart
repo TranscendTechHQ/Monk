@@ -11,6 +11,33 @@ import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 
+Widget leftMenuItem(
+    BuildContext context, IconData icon, String title, Function onTap) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    width: 135,
+    decoration: BoxDecoration(
+      color: context.colorScheme.surface,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: context.textTheme.bodyLarge?.copyWith(
+            color: context.colorScheme.onSurface.withOpacity(.8),
+          ),
+        )
+      ],
+    ),
+  ).onPressed(() async {
+    await onTap();
+  });
+}
+
 class NewsPage extends ConsumerWidget {
   final String title;
   final String type;
@@ -61,13 +88,8 @@ class NewsPage extends ConsumerWidget {
     return Scaffold(
       body: PageScaffold(
         body: WithMonkAppbar(
-          actions: IconButton(
-            tooltip: 'Filter',
-            onPressed: () async => onFilterPressed(context, ref),
-            icon: const Icon(Icons.filter_alt_outlined),
-          ),
           child: Container(
-            padding: const EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.only(top: 36, left: 100),
             alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -75,64 +97,24 @@ class NewsPage extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: context.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.search),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Search',
-                            style: context.textTheme.bodyLarge?.copyWith(
-                              color:
-                                  context.colorScheme.onSurface.withOpacity(.8),
-                            ),
-                          )
-                        ],
-                      ),
-                    ).onPressed(() async {
+                    leftMenuItem(context, Icons.search, 'Search', () async {
                       SearchModal2.show(context, threadsMap: threadList.value!);
                     }),
                     const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        CreateThreadModal.show(context,
-                            titlesList: titlesList, type: 'chat');
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          context.colorScheme.secondary,
-                        ),
-                      ),
-                      child: Text(
-                        "Create thread",
-                        style: context.textTheme.bodySmall!
-                            .copyWith(color: context.colorScheme.onSecondary),
-                      ),
-                    ),
+                    leftMenuItem(context, Icons.filter_alt_outlined, 'Filter',
+                        () async {
+                      onFilterPressed(context, ref);
+                    }),
                     const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        CreateThreadModal.show(context,
-                            titlesList: titlesList, type: 'todo');
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          context.colorScheme.secondary,
-                        ),
-                      ),
-                      child: Text(
-                        "Create todo",
-                        style: context.textTheme.bodySmall!
-                            .copyWith(color: context.colorScheme.onSecondary),
-                      ),
-                    ),
+                    leftMenuItem(context, Icons.message, 'Post', () async {
+                      CreateThreadModal.show(context,
+                          titlesList: titlesList, type: 'chat');
+                    }),
+                    const SizedBox(height: 10),
+                    leftMenuItem(context, Icons.list, 'Todo', () async {
+                      CreateThreadModal.show(context,
+                          titlesList: titlesList, type: 'todo');
+                    }),
                   ],
                 ).hP8.extended,
                 Column(
@@ -179,7 +161,7 @@ class ChatListView extends ConsumerWidget {
           ]),
           color: context.colorScheme.onSurface.withOpacity(.9),
           child: Container(
-            width: 400,
+            width: 500,
             alignment: Alignment.center,
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {

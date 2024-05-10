@@ -98,7 +98,7 @@ class CreateThreadModal extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Create Thread',
+                'New Thread',
                 style: context.textTheme.bodyLarge,
               ),
               const CloseButton()
@@ -117,7 +117,7 @@ class CreateThreadModal extends ConsumerWidget {
               messageController.text,
             ),
             decoration: InputDecoration(
-                hintText: 'Thread title',
+                hintText: 'Title',
                 filled: false,
                 hintStyle: context.textTheme.bodyMedium?.copyWith(
                   color: context.colorScheme.onSurface.withOpacity(.4),
