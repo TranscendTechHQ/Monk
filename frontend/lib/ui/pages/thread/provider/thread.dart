@@ -108,6 +108,10 @@ class CurrentThread extends _$CurrentThread {
         throw Exception("Thread title is null");
       }
       logger.d("creating new Thread title $threadTitle");
+      // final storageApi = NetworkManager.instance.openApi.getStorageApi();
+      // final response = await storageApi.createUploadFilesPost(
+      //   files:[]
+      // );
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
       final mainThreadId = thread.id;
 

@@ -78,7 +78,14 @@ class ClientSettings(BaseSettings):
     SLACK_USER_TOKEN: str = HCP_SECRET_RESPONSE["SLACK_USER_TOKEN"]
 
 
-class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings):
+class StorageSettings(BaseSettings):
+    STORAGE_ACCESS_KEY_ID: str = os.getenv("STORAGE_ACCESS_KEY_ID")
+    STORAGE_SECRET_ACCESS_KEY: str = os.getenv("STORAGE_SECRET_ACCESS_KEY")
+    STORAGE_ENDPOINT: str = os.getenv("STORAGE_ENDPOINT")
+    STORAGE_DOMAIN: str = os.getenv("STORAGE_DOMAIN")
+
+
+class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings, StorageSettings):
     pass
 
 
@@ -222,7 +229,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 # await update_user_metadata(user_id=user_id, metadata_update={
                 #   "name": name
                 # })
-            # This gives the user's info from the returned ID token 
+            # This gives the user's info from the returned ID token
             # if the provider gave us an ID token
             # if result.raw_user_info_from_provider.from_id_token_payload is not None:
             #   print(result.raw_user_info_from_provider.from_id_token_payload["name"])
@@ -256,8 +263,8 @@ init(
             ),
             sign_in_and_up_feature=thirdparty.SignInAndUpFeature(providers=[
 
-                # When frontend sends auth code using signinup API, 
-                # use BACKEND_CLIENT_ID and BACKEND_CLIENT_SECRET 
+                # When frontend sends auth code using signinup API,
+                # use BACKEND_CLIENT_ID and BACKEND_CLIENT_SECRET
                 # to exchange the auth code for access token
                 # When frontend sends access token using signinup API,
                 # use FRONTEND_CLIENT_ID to validate the access token

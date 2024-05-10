@@ -1,4 +1,4 @@
-import 'package:frontend/helper/touple2.dart';
+import 'package:frontend/core/touple2.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 AsyncValue<Tuple2<T, R>> combineAsync2<T, R>(

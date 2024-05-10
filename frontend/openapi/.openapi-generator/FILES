@@ -17,6 +17,7 @@ doc/HTTPValidationError.md
 doc/SessionApi.md
 doc/SessionInfo.md
 doc/SlackApi.md
+doc/StorageApi.md
 doc/SubscribeChannelRequest.md
 doc/SubscribedChannelList.md
 doc/ThreadMetaData.md
@@ -37,6 +38,7 @@ lib/src/api.dart
 lib/src/api/default_api.dart
 lib/src/api/session_api.dart
 lib/src/api/slack_api.dart
+lib/src/api/storage_api.dart
 lib/src/api/threads_api.dart
 lib/src/auth/api_key_auth.dart
 lib/src/auth/auth.dart
@@ -84,6 +86,7 @@ test/http_validation_error_test.dart
 test/session_api_test.dart
 test/session_info_test.dart
 test/slack_api_test.dart
+test/storage_api_test.dart
 test/subscribe_channel_request_test.dart
 test/subscribed_channel_list_test.dart
 test/thread_meta_data_test.dart

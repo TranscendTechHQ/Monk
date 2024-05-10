@@ -11,6 +11,7 @@ export 'package:openapi/src/auth/oauth.dart';
 export 'package:openapi/src/api/default_api.dart';
 export 'package:openapi/src/api/session_api.dart';
 export 'package:openapi/src/api/slack_api.dart';
+export 'package:openapi/src/api/storage_api.dart';
 export 'package:openapi/src/api/threads_api.dart';
 
 export 'package:openapi/src/model/block_model.dart';

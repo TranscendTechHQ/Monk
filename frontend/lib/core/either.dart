@@ -3,12 +3,13 @@
 abstract class Either<L, R> {
   const Either();
 
-  B fold<B>(B ifLeft(L l), B ifRight(R r));
+  B fold<B>(B Function(L l) ifLeft, B Function(R r) ifRight);
 
-  Either<L, R> orElse(Either<L, R> other()) =>
+  Either<L, R> orElse(Either<L, R> Function() other) =>
       fold((_) => other(), (_) => this);
 
-  Either<L2, R> leftMap<L2>(L2 f(L l)) => fold((L l) => left(f(l)), right);
+  Either<L2, R> leftMap<L2>(L2 Function(L l) f) =>
+      fold((L l) => left(f(l)), right);
 
   bool isLeft() => fold((_) => true, (_) => false);
   bool isRight() => fold((_) => false, (_) => true);
@@ -22,7 +23,7 @@ class Left<L, R> extends Either<L, R> {
   const Left(this._l);
   L get value => _l;
   @override
-  B fold<B>(B ifLeft(L l), B ifRight(R r)) => ifLeft(_l);
+  B fold<B>(B Function(L l) ifLeft, B Function(R r) ifRight) => ifLeft(_l);
   @override
   bool operator ==(other) => other is Left && other._l == _l;
   @override
@@ -34,7 +35,7 @@ class Right<L, R> extends Either<L, R> {
   const Right(this._r);
   R get value => _r;
   @override
-  B fold<B>(B ifLeft(L l), B ifRight(R r)) => ifRight(_r);
+  B fold<B>(B Function(L l) ifLeft, B Function(R r) ifRight) => ifRight(_r);
   @override
   bool operator ==(other) => other is Right && other._r == _r;
   @override
