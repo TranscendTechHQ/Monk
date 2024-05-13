@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/helper/file_utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/commandparser.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
@@ -31,6 +33,22 @@ class ScreenVisibility extends _$ScreenVisibility {
   }
 
   InputBoxType get() => state;
+}
+
+@riverpod
+class BlockAttachment extends _$BlockAttachment {
+  @override
+  File? build() {
+    return null;
+  }
+
+  void setAttachment(File file) {
+    state = file;
+  }
+
+  void clearAttachment() {
+    state = null;
+  }
 }
 
 void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
@@ -73,6 +91,8 @@ class CommandBox extends ConsumerWidget {
         screenVisibilityProvider(visibility: allowedInputTypes.first);
     InputBoxType commandVisibility = ref.watch(screenVisibilityProviderVal);
 
+    final attachment = ref.watch(blockAttachmentProvider);
+
     final threadInput = TextField(
       autofocus: true,
       controller: _blockController,
@@ -82,9 +102,14 @@ class CommandBox extends ConsumerWidget {
       onTap: () => _blockFocusNode.requestFocus(),
       showCursor: true,
       decoration: InputDecoration(
-          hintText:
-              'Write your text block here. Press Meta+Enter to save. Press "/" for commands',
-          hintStyle: context.textTheme.bodyMedium),
+        hintText:
+            'Write your text block here. Press Meta+Enter to save. Press "/" for commands',
+        hintStyle: context.textTheme.bodyMedium,
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        filled: false,
+      ),
       onChanged: (text) async {
         if (text.isNotEmpty && text.startsWith('/')) {
           if (!context.mounted) return;
@@ -113,9 +138,16 @@ class CommandBox extends ConsumerWidget {
             _searchFocusNode.requestFocus();
           },
         if (allowedInputTypes.contains(InputBoxType.thread))
-          const SingleActivator(LogicalKeyboardKey.enter, meta: true): () {
+          const SingleActivator(LogicalKeyboardKey.enter, meta: true):
+              () async {
             String blockText = _blockController.text;
-            threadNotifier.createBlock(blockText, customTitle: title);
+            await threadNotifier.createBlock(
+              context,
+              blockText,
+              customTitle: title,
+              image: attachment,
+            );
+            ref.read(blockAttachmentProvider.notifier).clearAttachment();
             _blockController.clear();
           },
       };
@@ -151,29 +183,90 @@ class CommandBox extends ConsumerWidget {
           child: callbackShortcutWrapper(
             child: Stack(children: [
               Visibility(
-                visible: (commandVisibility == InputBoxType.thread),
-                child: threadInput,
-                //  CallbackShortcuts(
-                //   bindings: {
-                //     const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
-                //         () {
-                //       ref
-                //           .read(screenVisibilityProvider().notifier)
-                //           .setVisibility(InputBoxType.searchBox);
-                //       _searchFocusNode.requestFocus();
-                //     },
-                //     const SingleActivator(LogicalKeyboardKey.enter, shift: true):
-                //         () {
-                //       String blockText = _blockController.text;
-                //       // Submit the text
+                  visible: (commandVisibility == InputBoxType.thread),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (attachment != null)
+                        Stack(
+                          children: [
+                            Image.file(
+                              attachment,
+                              height: 300,
+                              // width: containerWidth,
+                            ).p(20),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: IconButton(
+                                onPressed: () {
+                                  ref
+                                      .read(blockAttachmentProvider.notifier)
+                                      .clearAttachment();
+                                },
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color:
+                                context.colorScheme.onSurface.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              onPressed: () async {
+                                final attachmentProvider =
+                                    ref.read(blockAttachmentProvider.notifier);
+                                attachmentProvider.clearAttachment();
 
-                //       threadNotifier.createBlock(blockText);
-                //       _blockController.clear();
-                //     },
-                //   },
-                //   child: threadInput,
-                // ),
-              ),
+                                final file = await FileUtility.pickImage();
+                                file.fold(
+                                  (value) {
+                                    attachmentProvider.setAttachment(value);
+                                  },
+                                  () => null,
+                                );
+                              },
+                              icon: const Icon(Icons.image_outlined),
+                            ),
+                            threadInput.extended,
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                  //  CallbackShortcuts(
+                  //   bindings: {
+                  //     const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
+                  //         () {
+                  //       ref
+                  //           .read(screenVisibilityProvider().notifier)
+                  //           .setVisibility(InputBoxType.searchBox);
+                  //       _searchFocusNode.requestFocus();
+                  //     },
+                  //     const SingleActivator(LogicalKeyboardKey.enter, shift: true):
+                  //         () {
+                  //       String blockText = _blockController.text;
+                  //       // Submit the text
+
+                  //       threadNotifier.createBlock(blockText);
+                  //       _blockController.clear();
+                  //     },
+                  //   },
+                  //   child: threadInput,
+                  // ),
+                  ),
               // COMMAND BOX
               Visibility(
                 visible: (commandVisibility == InputBoxType.commandBox),

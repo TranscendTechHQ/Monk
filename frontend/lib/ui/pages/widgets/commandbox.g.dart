@@ -171,5 +171,22 @@ class _ScreenVisibilityProviderElement
   InputBoxType get visibility =>
       (origin as ScreenVisibilityProvider).visibility;
 }
+
+String _$blockAttachmentHash() => r'fab5522092afc4c0d373d04a93b9f90dbcc6145d';
+
+/// See also [BlockAttachment].
+@ProviderFor(BlockAttachment)
+final blockAttachmentProvider =
+    AutoDisposeNotifierProvider<BlockAttachment, File?>.internal(
+  BlockAttachment.new,
+  name: r'blockAttachmentProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$blockAttachmentHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$BlockAttachment = AutoDisposeNotifier<File?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

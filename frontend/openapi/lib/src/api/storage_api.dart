@@ -13,15 +13,16 @@ import 'package:openapi/src/model/files_response_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 
 class StorageApi {
+
   final Dio _dio;
 
   const StorageApi(this._dio);
 
   /// Upload Files
-  ///
+  /// 
   ///
   /// Parameters:
-  /// * [files]
+  /// * [files] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -31,7 +32,7 @@ class StorageApi {
   ///
   /// Returns a [Future] containing a [Response] with a [FilesResponseModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<FilesResponseModel>> uploadFilesUploadFilesPost({
+  Future<Response<FilesResponseModel>> uploadFilesUploadFilesPost({ 
     required List<MultipartFile> files,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -56,9 +57,11 @@ class StorageApi {
 
     dynamic _bodyData;
 
-    try {} catch (error, stackTrace) {
+    try {
+
+    } catch(error, stackTrace) {
       throw DioException(
-        requestOptions: _options.compose(
+         requestOptions: _options.compose(
           _dio.options,
           _path,
         ),
@@ -80,12 +83,8 @@ class StorageApi {
     FilesResponseModel? _responseData;
 
     try {
-      final rawData = _response.data;
-      _responseData = rawData == null
-          ? null
-          : deserialize<FilesResponseModel, FilesResponseModel>(
-              rawData, 'FilesResponseModel',
-              growable: true);
+final rawData = _response.data;
+_responseData = rawData == null ? null : deserialize<FilesResponseModel, FilesResponseModel>(rawData, 'FilesResponseModel', growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -107,4 +106,5 @@ class StorageApi {
       extra: _response.extra,
     );
   }
+
 }
