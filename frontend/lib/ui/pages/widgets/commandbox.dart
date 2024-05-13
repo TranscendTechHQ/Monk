@@ -102,8 +102,7 @@ class CommandBox extends ConsumerWidget {
       onTap: () => _blockFocusNode.requestFocus(),
       showCursor: true,
       decoration: InputDecoration(
-        hintText:
-            'Write your text block here. Press Meta+Enter to save. Press "/" for commands',
+        hintText: 'Write your text block here. Press Meta+Enter to save.',
         hintStyle: context.textTheme.bodyMedium,
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
@@ -111,6 +110,7 @@ class CommandBox extends ConsumerWidget {
         filled: false,
       ),
       onChanged: (text) async {
+        /*
         if (text.isNotEmpty && text.startsWith('/')) {
           if (!context.mounted) return;
           // show the popup
@@ -125,6 +125,8 @@ class CommandBox extends ConsumerWidget {
         } else {
           _blockFocusNode.requestFocus();
         }
+        */
+        _blockFocusNode.requestFocus();
       },
     );
 
