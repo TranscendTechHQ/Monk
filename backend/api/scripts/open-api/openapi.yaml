@@ -20,6 +20,11 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Image
         last_modified:
           format: date-time
           title: Last Modified
@@ -67,6 +72,11 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Image
         last_modified:
           format: date-time
           title: Last Modified
@@ -93,7 +103,7 @@ components:
         - creator
       title: BlockWithCreator
       type: object
-    Body_create_uploadFiles__post:
+    Body_Upload_Files_uploadFiles__post:
       properties:
         files:
           items:
@@ -103,7 +113,7 @@ components:
           type: array
       required:
         - files
-      title: Body_create_uploadFiles__post
+      title: Body_Upload_Files_uploadFiles__post
       type: object
     ChannelModel:
       properties:
@@ -152,6 +162,11 @@ components:
         content:
           title: Content
           type: string
+        image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Image
         main_thread_id:
           title: Main Thread Id
           type: string
@@ -230,6 +245,15 @@ components:
       required:
         - thread_id
       title: CreateUserThreadFlagModel
+      type: object
+    FilesResponseModel:
+      properties:
+        urls:
+          items:
+            type: string
+          title: Urls
+          type: array
+      title: FilesResponseModel
       type: object
     FullThreadInfo:
       properties:
@@ -1121,38 +1145,27 @@ paths:
         - threads
   /uploadFiles/:
     post:
-      operationId: create_uploadFiles__post
-      parameters:
-        - in: query
-          name: response_model
-          required: false
-          schema:
-            title: Response Model
-        - in: query
-          name: response_description
-          required: false
-          schema:
-            default: Returns the uploaded file url
-            title: Response Description
+      operationId: Upload_Files_uploadFiles__post
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Body_create_uploadFiles__post"
+              $ref: "#/components/schemas/Body_Upload_Files_uploadFiles__post"
         required: true
       responses:
         "200":
           content:
             application/json:
-              schema: {}
-          description: Successful Response
+              schema:
+                $ref: "#/components/schemas/FilesResponseModel"
+          description: Returns the uploaded file url
         "422":
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
-      summary: Create
+      summary: Upload Files
       tags:
         - storage
   /user:

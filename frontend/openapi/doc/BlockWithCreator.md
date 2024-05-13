@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **creator** | [**UserModel**](UserModel.md) |  | 
 **creatorId** | **String** |  | [optional] [default to 'unknown id']
+**image** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **mainThreadId** | **String** |  | [optional] [default to '']
 **position** | **int** |  | [optional] [default to 0]

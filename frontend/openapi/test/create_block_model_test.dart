@@ -12,6 +12,11 @@ void main() {
       // TODO
     });
 
+    // String image
+    test('to test the property `image`', () async {
+      // TODO
+    });
+
     // String mainThreadId
     test('to test the property `mainThreadId`', () async {
       // TODO

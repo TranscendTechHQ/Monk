@@ -9,21 +9,19 @@ import 'dart:convert';
 import 'package:openapi/src/deserialize.dart';
 import 'package:dio/dio.dart';
 
+import 'package:openapi/src/model/files_response_model.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 
 class StorageApi {
-
   final Dio _dio;
 
   const StorageApi(this._dio);
 
-  /// Create
-  /// 
+  /// Upload Files
+  ///
   ///
   /// Parameters:
-  /// * [files] 
-  /// * [responseModel] 
-  /// * [responseDescription] 
+  /// * [files]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -31,12 +29,10 @@ class StorageApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [Object] as data
+  /// Returns a [Future] containing a [Response] with a [FilesResponseModel] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<Object>> createUploadFilesPost({ 
+  Future<Response<FilesResponseModel>> uploadFilesUploadFilesPost({
     required List<MultipartFile> files,
-    Object? responseModel,
-    Object? responseDescription,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -58,21 +54,13 @@ class StorageApi {
       validateStatus: validateStatus,
     );
 
-    final _queryParameters = <String, dynamic>{
-      if (responseModel != null) r'response_model': responseModel,
-      if (responseDescription != null) r'response_description': responseDescription,
-    };
-
     dynamic _bodyData;
 
-    try {
-
-    } catch(error, stackTrace) {
+    try {} catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
+        requestOptions: _options.compose(
           _dio.options,
           _path,
-          queryParameters: _queryParameters,
         ),
         type: DioExceptionType.unknown,
         error: error,
@@ -84,17 +72,20 @@ class StorageApi {
       _path,
       data: _bodyData,
       options: _options,
-      queryParameters: _queryParameters,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
       onReceiveProgress: onReceiveProgress,
     );
 
-    Object? _responseData;
+    FilesResponseModel? _responseData;
 
     try {
-final rawData = _response.data;
-_responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'Object', growable: true);
+      final rawData = _response.data;
+      _responseData = rawData == null
+          ? null
+          : deserialize<FilesResponseModel, FilesResponseModel>(
+              rawData, 'FilesResponseModel',
+              growable: true);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -105,7 +96,7 @@ _responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'O
       );
     }
 
-    return Response<Object>(
+    return Response<FilesResponseModel>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -116,5 +107,4 @@ _responseData = rawData == null ? null : deserialize<Object, Object>(rawData, 'O
       extra: _response.extra,
     );
   }
-
 }

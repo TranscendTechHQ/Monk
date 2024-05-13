@@ -9,13 +9,13 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createUploadFilesPost**](StorageApi.md#createuploadfilespost) | **POST** /uploadFiles/ | Create
+[**uploadFilesUploadFilesPost**](StorageApi.md#uploadfilesuploadfilespost) | **POST** /uploadFiles/ | Upload Files
 
 
-# **createUploadFilesPost**
-> Object createUploadFilesPost(files, responseModel, responseDescription)
+# **uploadFilesUploadFilesPost**
+> FilesResponseModel uploadFilesUploadFilesPost(files)
 
-Create
+Upload Files
 
 ### Example
 ```dart
@@ -23,14 +23,12 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getStorageApi();
 final List<MultipartFile> files = /path/to/file.txt; // List<MultipartFile> | 
-final Object responseModel = ; // Object | 
-final Object responseDescription = ; // Object | 
 
 try {
-    final response = api.createUploadFilesPost(files, responseModel, responseDescription);
+    final response = api.uploadFilesUploadFilesPost(files);
     print(response);
 } catch on DioException (e) {
-    print('Exception when calling StorageApi->createUploadFilesPost: $e\n');
+    print('Exception when calling StorageApi->uploadFilesUploadFilesPost: $e\n');
 }
 ```
 
@@ -39,12 +37,10 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **files** | [**List&lt;MultipartFile&gt;**](MultipartFile.md)|  | 
- **responseModel** | [**Object**](.md)|  | [optional] 
- **responseDescription** | [**Object**](.md)|  | [optional] 
 
 ### Return type
 
-**Object**
+[**FilesResponseModel**](FilesResponseModel.md)
 
 ### Authorization
 

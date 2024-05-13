@@ -37,6 +37,11 @@ void main() {
       // TODO
     });
 
+    // String image
+    test('to test the property `image`', () async {
+      // TODO
+    });
+
     // DateTime lastModified
     test('to test the property `lastModified`', () async {
       // TODO

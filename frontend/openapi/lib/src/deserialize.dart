@@ -6,6 +6,7 @@ import 'package:openapi/src/model/create_block_model.dart';
 import 'package:openapi/src/model/create_child_thread_model.dart';
 import 'package:openapi/src/model/create_thread_model.dart';
 import 'package:openapi/src/model/create_user_thread_flag_model.dart';
+import 'package:openapi/src/model/files_response_model.dart';
 import 'package:openapi/src/model/full_thread_info.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
 import 'package:openapi/src/model/session_info.dart';
@@ -58,6 +59,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return CreateThreadModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'CreateUserThreadFlagModel':
           return CreateUserThreadFlagModel.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'FilesResponseModel':
+          return FilesResponseModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'FullThreadInfo':
           return FullThreadInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':

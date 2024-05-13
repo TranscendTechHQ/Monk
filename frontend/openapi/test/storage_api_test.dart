@@ -7,10 +7,10 @@ void main() {
   final instance = Openapi().getStorageApi();
 
   group(StorageApi, () {
-    // Create
+    // Upload Files
     //
-    //Future<Object> createUploadFilesPost(List<MultipartFile> files, { Object responseModel, Object responseDescription }) async
-    test('test createUploadFilesPost', () async {
+    //Future<FilesResponseModel> uploadFilesUploadFilesPost(List<MultipartFile> files) async
+    test('test uploadFilesUploadFilesPost', () async {
       // TODO
     });
 

@@ -12,6 +12,7 @@ doc/CreateChildThreadModel.md
 doc/CreateThreadModel.md
 doc/CreateUserThreadFlagModel.md
 doc/DefaultApi.md
+doc/FilesResponseModel.md
 doc/FullThreadInfo.md
 doc/HTTPValidationError.md
 doc/SessionApi.md
@@ -54,6 +55,7 @@ lib/src/model/create_block_model.dart
 lib/src/model/create_child_thread_model.dart
 lib/src/model/create_thread_model.dart
 lib/src/model/create_user_thread_flag_model.dart
+lib/src/model/files_response_model.dart
 lib/src/model/full_thread_info.dart
 lib/src/model/http_validation_error.dart
 lib/src/model/session_info.dart
@@ -81,6 +83,7 @@ test/create_child_thread_model_test.dart
 test/create_thread_model_test.dart
 test/create_user_thread_flag_model_test.dart
 test/default_api_test.dart
+test/files_response_model_test.dart
 test/full_thread_info_test.dart
 test/http_validation_error_test.dart
 test/session_api_test.dart
