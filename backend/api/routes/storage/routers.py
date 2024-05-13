@@ -19,8 +19,8 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.post("/uploadFiles/")
-async def create(files: list[UploadFile], response_model=FilesResponseModel, session: SessionContainer = Depends(verify_session()), response_description="Returns the uploaded file url"):
+@router.post("/uploadFiles/", response_model=FilesResponseModel, tags=["storage"], response_description="Returns the uploaded file url", name="Upload Files")
+async def create(files: list[UploadFile],  session: SessionContainer = Depends(verify_session())):
     try:
         # Get user ID from session
         user_id = session.get_user_id()
@@ -41,7 +41,9 @@ async def create(files: list[UploadFile], response_model=FilesResponseModel, ses
         if len(file_urls) == 0:
             return JSONResponse(status_code=400, content={"message": "Something went wrong. Please try again later."})
 
-        response = {"urls": file_url}
+        response = FilesResponseModel(
+            urls=file_urls,
+        )
 
         return JSONResponse(
             status_code=status.HTTP_200_OK, content=jsonable_encoder(response)

@@ -42,6 +42,7 @@ class UpdateBlockPositionModel(BaseModel):
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
+    image: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.now)
     last_modified: datetime = Field(default_factory=datetime.now)
     creator_id: str = Field(default="unknown id")
@@ -55,6 +56,7 @@ class BlockModel(BaseModel):
 
 class CreateBlockModel(BaseModel):
     content: str
+    image: Optional[str] = Field(default=None)
     main_thread_id: str
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
