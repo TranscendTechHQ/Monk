@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **content** | **String** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **creatorId** | **String** |  | [optional] [default to 'unknown id']
+**image** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **mainThreadId** | **String** |  | [optional] [default to '']
 **position** | **int** |  | [optional] [default to 0]

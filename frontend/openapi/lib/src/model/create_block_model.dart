@@ -20,6 +20,8 @@ class CreateBlockModel {
 
     required  this.content,
 
+     this.image,
+
     required  this.mainThreadId,
   });
 
@@ -32,6 +34,18 @@ class CreateBlockModel {
 
 
   final String content;
+
+
+
+  @JsonKey(
+    
+    name: r'image',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? image;
 
 
 
@@ -50,11 +64,13 @@ class CreateBlockModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateBlockModel &&
      other.content == content &&
+     other.image == image &&
      other.mainThreadId == mainThreadId;
 
   @override
   int get hashCode =>
     content.hashCode +
+    (image == null ? 0 : image.hashCode) +
     mainThreadId.hashCode;
 
   factory CreateBlockModel.fromJson(Map<String, dynamic> json) => _$CreateBlockModelFromJson(json);

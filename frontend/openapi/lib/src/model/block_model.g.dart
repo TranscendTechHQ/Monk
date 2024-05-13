@@ -23,6 +23,7 @@ BlockModel _$BlockModelFromJson(Map<String, dynamic> json) => $checkedCreate(
               (v) => v == null ? null : DateTime.parse(v as String)),
           creatorId: $checkedConvert(
               'creator_id', (v) => v as String? ?? 'unknown id'),
+          image: $checkedConvert('image', (v) => v as String?),
           lastModified: $checkedConvert('last_modified',
               (v) => v == null ? null : DateTime.parse(v as String)),
           mainThreadId:
@@ -61,6 +62,7 @@ Map<String, dynamic> _$BlockModelToJson(BlockModel instance) {
   val['content'] = instance.content;
   writeNotNull('created_at', instance.createdAt?.toIso8601String());
   writeNotNull('creator_id', instance.creatorId);
+  writeNotNull('image', instance.image);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
   writeNotNull('main_thread_id', instance.mainThreadId);
   writeNotNull('position', instance.position);

@@ -193,3 +193,8 @@ extension on String? {
     return this!.substring(0, m);
   }
 }
+
+extension on dynamic {
+  bool get hasValue => this != null;
+  bool get isNull => this == null;
+}

@@ -31,6 +31,8 @@ class BlockWithCreator {
 
      this.creatorId = 'unknown id',
 
+     this.image,
+
      this.lastModified,
 
      this.mainThreadId = '',
@@ -116,6 +118,18 @@ class BlockWithCreator {
 
   @JsonKey(
     
+    name: r'image',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? image;
+
+
+
+  @JsonKey(
+    
     name: r'last_modified',
     required: false,
     includeIfNull: false
@@ -182,6 +196,7 @@ class BlockWithCreator {
      other.createdAt == createdAt &&
      other.creator == creator &&
      other.creatorId == creatorId &&
+     other.image == image &&
      other.lastModified == lastModified &&
      other.mainThreadId == mainThreadId &&
      other.position == position &&
@@ -196,6 +211,7 @@ class BlockWithCreator {
     createdAt.hashCode +
     creator.hashCode +
     creatorId.hashCode +
+    (image == null ? 0 : image.hashCode) +
     lastModified.hashCode +
     mainThreadId.hashCode +
     position.hashCode +

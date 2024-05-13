@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:frontend/helper/either.dart';
+import 'package:frontend/core/either.dart';
 import 'package:frontend/main.dart';
 
 typedef ResultOrException<T> = Future<Either<DioException, T>>;

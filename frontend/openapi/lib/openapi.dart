@@ -11,6 +11,7 @@ export 'package:openapi/src/auth/oauth.dart';
 export 'package:openapi/src/api/default_api.dart';
 export 'package:openapi/src/api/session_api.dart';
 export 'package:openapi/src/api/slack_api.dart';
+export 'package:openapi/src/api/storage_api.dart';
 export 'package:openapi/src/api/threads_api.dart';
 
 export 'package:openapi/src/model/block_model.dart';
@@ -21,6 +22,7 @@ export 'package:openapi/src/model/create_block_model.dart';
 export 'package:openapi/src/model/create_child_thread_model.dart';
 export 'package:openapi/src/model/create_thread_model.dart';
 export 'package:openapi/src/model/create_user_thread_flag_model.dart';
+export 'package:openapi/src/model/files_response_model.dart';
 export 'package:openapi/src/model/full_thread_info.dart';
 export 'package:openapi/src/model/http_validation_error.dart';
 export 'package:openapi/src/model/session_info.dart';

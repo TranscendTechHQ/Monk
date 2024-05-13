@@ -8,7 +8,11 @@
 //  - the backend will store the journal entry in the database
 // ...
 
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
@@ -96,18 +100,28 @@ class CurrentThread extends _$CurrentThread {
     return CurrentTreadState.result(blocks: thread.content, thread: thread);
   }
 
-  Future<bool> createBlock(String text, {String? customTitle}) async {
+  Future<bool> createBlock(BuildContext context, String text,
+      {String? customTitle, File? image}) async {
     final thread = state.value?.thread;
     if (thread == null) {
       throw Exception("Thread is null");
     }
+    if (image != null) {
+      loader.showLoader(context, message: 'Uploading image');
+    }
+    final imageUrl = await uploadFile(image);
+    loader.hideLoader();
     final res = await AsyncRequest.handle<BlockWithCreator>(() async {
+      loader.hideLoader();
+      loader.showLoader(context, message: 'creating block');
+
       String? threadTitle = thread.title ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
         logger.e("Thread title is null");
         throw Exception("Thread title is null");
       }
       logger.d("creating new Thread title $threadTitle");
+
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
       final mainThreadId = thread.id;
 
@@ -116,8 +130,11 @@ class CurrentThread extends _$CurrentThread {
         createBlockModel: CreateBlockModel(
           content: text,
           mainThreadId: mainThreadId,
+          image: imageUrl,
         ),
       );
+
+      loader.hideLoader();
       return newThreadState.data!;
     });
 
@@ -431,6 +448,47 @@ class CurrentThread extends _$CurrentThread {
     return res.fold((l) {
       throw Exception(l.message);
     }, (r) => r);
+  }
+
+  Future<String?> uploadFile(File? file) async {
+    if (file == null) {
+      return null;
+    }
+    final res = await AsyncRequest.handle<FilesResponseModel>(() async {
+      final response = await NetworkManager.instance.client.post(
+        "/uploadFiles/",
+        data: FormData.fromMap(
+          {
+            "files": await MultipartFile.fromFile(file.path,
+                filename: file.path.split("/").last),
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception("Failed to upload image");
+      }
+
+      return FilesResponseModel.fromJson(response.data);
+
+      // Commented out because of the issue in generated code.
+      // openApi.getStorageApi();
+      // final data = await MultipartFile.fromFile(file.path, headers: {
+      //   "content-type": [
+      //     "multipart/form-data; boundary=322230792794089950611190"
+      //   ],
+      // });
+      // final response = await storageApi.uploadFilesUploadFilesPost(
+      //   files: [data],
+      //   headers: {"content-type": "multipart/form-data; boundary=something"},
+      // );
+      // return response.data;
+    });
+    return res.fold((l) {
+      //  Exception(l.message);
+      // logger.e("Failed to upload image");
+      return null;
+    }, (r) => r.urls?.first);
   }
 }
 

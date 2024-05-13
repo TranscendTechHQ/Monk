@@ -70,6 +70,7 @@ Class | Method | HTTP request | Description
 [*SessionApi*](doc/SessionApi.md) | [**secureApiSessioninfoGet**](doc/SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*SlackApi*](doc/SlackApi.md) | [**chChannelListGet**](doc/SlackApi.md#chchannellistget) | **GET** /channel_list | Ch
 [*SlackApi*](doc/SlackApi.md) | [**subscribeChannelSubscribeChannelPost**](doc/SlackApi.md#subscribechannelsubscribechannelpost) | **POST** /subscribe_channel | Subscribe Channel
+[*StorageApi*](doc/StorageApi.md) | [**uploadFilesUploadFilesPost**](doc/StorageApi.md#uploadfilesuploadfilespost) | **POST** /uploadFiles/ | Upload Files
 [*ThreadsApi*](doc/ThreadsApi.md) | [**allUsersUserGet**](doc/ThreadsApi.md#allusersuserget) | **GET** /user | All Users
 [*ThreadsApi*](doc/ThreadsApi.md) | [**childThreadBlocksChildPost**](doc/ThreadsApi.md#childthreadblockschildpost) | **POST** /blocks/child | Child Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
@@ -97,6 +98,7 @@ Class | Method | HTTP request | Description
  - [CreateChildThreadModel](doc/CreateChildThreadModel.md)
  - [CreateThreadModel](doc/CreateThreadModel.md)
  - [CreateUserThreadFlagModel](doc/CreateUserThreadFlagModel.md)
+ - [FilesResponseModel](doc/FilesResponseModel.md)
  - [FullThreadInfo](doc/FullThreadInfo.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [SessionInfo](doc/SessionInfo.md)

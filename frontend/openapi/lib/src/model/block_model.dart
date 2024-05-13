@@ -28,6 +28,8 @@ class BlockModel {
 
      this.creatorId = 'unknown id',
 
+     this.image,
+
      this.lastModified,
 
      this.mainThreadId = '',
@@ -101,6 +103,18 @@ class BlockModel {
 
   @JsonKey(
     
+    name: r'image',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? image;
+
+
+
+  @JsonKey(
+    
     name: r'last_modified',
     required: false,
     includeIfNull: false
@@ -166,6 +180,7 @@ class BlockModel {
      other.content == content &&
      other.createdAt == createdAt &&
      other.creatorId == creatorId &&
+     other.image == image &&
      other.lastModified == lastModified &&
      other.mainThreadId == mainThreadId &&
      other.position == position &&
@@ -179,6 +194,7 @@ class BlockModel {
     content.hashCode +
     createdAt.hashCode +
     creatorId.hashCode +
+    (image == null ? 0 : image.hashCode) +
     lastModified.hashCode +
     mainThreadId.hashCode +
     position.hashCode +

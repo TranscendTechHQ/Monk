@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/utils.dart';
@@ -11,6 +12,7 @@ import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/thread/widget/provider/thread_card_provider.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/cache_image.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -272,6 +274,21 @@ class ThreadCard extends ConsumerWidget {
               ),
             const SizedBox(height: 8),
 
+            if (block.image != null) ...[
+              const SizedBox(height: 8),
+              Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * .3,
+                  maxWidth: MediaQuery.of(context).size.width,
+                  minWidth: MediaQuery.of(context).size.width,
+                ),
+                child: CacheImage(
+                  path: block.image!,
+                  fit: BoxFit.fitHeight,
+                  tag: UniqueKey().toString(),
+                ),
+              ),
+            ],
             // Reply/Replies Button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

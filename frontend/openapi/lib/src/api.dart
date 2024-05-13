@@ -10,6 +10,7 @@ import 'package:openapi/src/auth/oauth.dart';
 import 'package:openapi/src/api/default_api.dart';
 import 'package:openapi/src/api/session_api.dart';
 import 'package:openapi/src/api/slack_api.dart';
+import 'package:openapi/src/api/storage_api.dart';
 import 'package:openapi/src/api/threads_api.dart';
 
 class Openapi {
@@ -79,6 +80,12 @@ class Openapi {
   /// by doing that all interceptors will not be executed
   SlackApi getSlackApi() {
     return SlackApi(dio);
+  }
+
+  /// Get StorageApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  StorageApi getStorageApi() {
+    return StorageApi(dio);
   }
 
   /// Get ThreadsApi instance, base route and serializer can be overridden by a given but be careful,
