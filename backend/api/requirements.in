@@ -11,3 +11,5 @@ openai
 langchain
 langchain-openai
 slack-sdk
+boto3
+pandas
