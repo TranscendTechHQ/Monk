@@ -16,6 +16,7 @@ Name | Type | Description | Notes
 **creatorId** | **String** |  | [optional] [default to 'unknown id']
 **image** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
+**linkMeta** | [**LinkMetaModel**](LinkMetaModel.md) |  | [optional] 
 **mainThreadId** | **String** |  | [optional] [default to '']
 **position** | **int** |  | [optional] [default to 0]
 **taskStatus** | **String** |  | [optional] [default to 'todo']

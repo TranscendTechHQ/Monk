@@ -9,6 +9,7 @@ import 'package:openapi/src/model/create_user_thread_flag_model.dart';
 import 'package:openapi/src/model/files_response_model.dart';
 import 'package:openapi/src/model/full_thread_info.dart';
 import 'package:openapi/src/model/http_validation_error.dart';
+import 'package:openapi/src/model/link_meta_model.dart';
 import 'package:openapi/src/model/session_info.dart';
 import 'package:openapi/src/model/subscribe_channel_request.dart';
 import 'package:openapi/src/model/subscribed_channel_list.dart';
@@ -65,6 +66,8 @@ final _regMap = RegExp(r'^Map<String,(.*)>$');
           return FullThreadInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'HTTPValidationError':
           return HTTPValidationError.fromJson(value as Map<String, dynamic>) as ReturnType;
+        case 'LinkMetaModel':
+          return LinkMetaModel.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SessionInfo':
           return SessionInfo.fromJson(value as Map<String, dynamic>) as ReturnType;
         case 'SubscribeChannelRequest':

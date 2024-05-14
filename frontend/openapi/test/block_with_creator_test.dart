@@ -47,6 +47,11 @@ void main() {
       // TODO
     });
 
+    // LinkMetaModel linkMeta
+    test('to test the property `linkMeta`', () async {
+      // TODO
+    });
+
     // String mainThreadId (default value: '')
     test('to test the property `mainThreadId`', () async {
       // TODO

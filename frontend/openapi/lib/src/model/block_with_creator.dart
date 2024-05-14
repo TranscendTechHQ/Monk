@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/link_meta_model.dart';
 import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -34,6 +35,8 @@ class BlockWithCreator {
      this.image,
 
      this.lastModified,
+
+     this.linkMeta,
 
      this.mainThreadId = '',
 
@@ -141,6 +144,18 @@ class BlockWithCreator {
 
 
   @JsonKey(
+    
+    name: r'link_meta',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final LinkMetaModel? linkMeta;
+
+
+
+  @JsonKey(
     defaultValue: '',
     name: r'main_thread_id',
     required: false,
@@ -198,6 +213,7 @@ class BlockWithCreator {
      other.creatorId == creatorId &&
      other.image == image &&
      other.lastModified == lastModified &&
+     other.linkMeta == linkMeta &&
      other.mainThreadId == mainThreadId &&
      other.position == position &&
      other.taskStatus == taskStatus &&
@@ -213,6 +229,7 @@ class BlockWithCreator {
     creatorId.hashCode +
     (image == null ? 0 : image.hashCode) +
     lastModified.hashCode +
+    (linkMeta == null ? 0 : linkMeta.hashCode) +
     mainThreadId.hashCode +
     position.hashCode +
     taskStatus.hashCode +

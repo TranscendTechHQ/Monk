@@ -49,12 +49,13 @@ import 'package:openapi/openapi.dart';
 
 
 final api = Openapi().getDefaultApi();
+final String url = url_example; // String | 
 
 try {
-    final response = await api.healthcheckHealthcheckGet();
+    final response = await api.getLinkMetaLinkmetaGet(url);
     print(response);
 } catch on DioException (e) {
-    print("Exception when calling DefaultApi->healthcheckHealthcheckGet: $e\n");
+    print("Exception when calling DefaultApi->getLinkMetaLinkmetaGet: $e\n");
 }
 
 ```
@@ -65,6 +66,7 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*DefaultApi*](doc/DefaultApi.md) | [**getLinkMetaLinkmetaGet**](doc/DefaultApi.md#getlinkmetalinkmetaget) | **GET** /linkmeta | Get Link Meta
 [*DefaultApi*](doc/DefaultApi.md) | [**healthcheckHealthcheckGet**](doc/DefaultApi.md#healthcheckhealthcheckget) | **GET** /healthcheck | Healthcheck
 [*DefaultApi*](doc/DefaultApi.md) | [**slackUserTokenSlackUserTokenPost**](doc/DefaultApi.md#slackusertokenslackusertokenpost) | **POST** /slack_user_token | Slack User Token
 [*SessionApi*](doc/SessionApi.md) | [**secureApiSessioninfoGet**](doc/SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
@@ -101,6 +103,7 @@ Class | Method | HTTP request | Description
  - [FilesResponseModel](doc/FilesResponseModel.md)
  - [FullThreadInfo](doc/FullThreadInfo.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
+ - [LinkMetaModel](doc/LinkMetaModel.md)
  - [SessionInfo](doc/SessionInfo.md)
  - [SubscribeChannelRequest](doc/SubscribeChannelRequest.md)
  - [SubscribedChannelList](doc/SubscribedChannelList.md)

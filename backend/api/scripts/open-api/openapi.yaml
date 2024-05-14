@@ -29,6 +29,10 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        link_meta:
+          anyOf:
+            - $ref: "#/components/schemas/LinkMetaModel"
+            - type: "null"
         main_thread_id:
           default: ""
           title: Main Thread Id
@@ -81,6 +85,10 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        link_meta:
+          anyOf:
+            - $ref: "#/components/schemas/LinkMetaModel"
+            - type: "null"
         main_thread_id:
           default: ""
           title: Main Thread Id
@@ -327,6 +335,30 @@ components:
           title: Detail
           type: array
       title: HTTPValidationError
+      type: object
+    LinkMetaModel:
+      properties:
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+        image:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Image
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+        url:
+          title: Url
+          type: string
+      required:
+        - url
+      title: LinkMetaModel
       type: object
     SessionInfo:
       properties:
@@ -843,6 +875,29 @@ paths:
               schema: {}
           description: Successful Response
       summary: Healthcheck
+  /linkmeta:
+    get:
+      operationId: get_link_meta_linkmeta_get
+      parameters:
+        - in: query
+          name: url
+          required: true
+          schema:
+            title: Url
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      summary: Get Link Meta
   /newsfeed:
     get:
       operationId: filter_newsfeed_get

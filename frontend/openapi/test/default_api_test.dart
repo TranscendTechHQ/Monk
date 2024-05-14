@@ -7,6 +7,13 @@ void main() {
   final instance = Openapi().getDefaultApi();
 
   group(DefaultApi, () {
+    // Get Link Meta
+    //
+    //Future<Object> getLinkMetaLinkmetaGet(String url) async
+    test('test getLinkMetaLinkmetaGet', () async {
+      // TODO
+    });
+
     // Healthcheck
     //
     //Future<Object> healthcheckHealthcheckGet() async

@@ -29,6 +29,11 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
           image: $checkedConvert('image', (v) => v as String?),
           lastModified: $checkedConvert('last_modified',
               (v) => v == null ? null : DateTime.parse(v as String)),
+          linkMeta: $checkedConvert(
+              'link_meta',
+              (v) => v == null
+                  ? null
+                  : LinkMetaModel.fromJson(v as Map<String, dynamic>)),
           mainThreadId:
               $checkedConvert('main_thread_id', (v) => v as String? ?? ''),
           position:
@@ -45,6 +50,7 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
         'createdAt': 'created_at',
         'creatorId': 'creator_id',
         'lastModified': 'last_modified',
+        'linkMeta': 'link_meta',
         'mainThreadId': 'main_thread_id',
         'taskStatus': 'task_status',
         'tenantId': 'tenant_id'
@@ -68,6 +74,7 @@ Map<String, dynamic> _$BlockWithCreatorToJson(BlockWithCreator instance) {
   writeNotNull('creator_id', instance.creatorId);
   writeNotNull('image', instance.image);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
+  writeNotNull('link_meta', instance.linkMeta?.toJson());
   writeNotNull('main_thread_id', instance.mainThreadId);
   writeNotNull('position', instance.position);
   writeNotNull('task_status', instance.taskStatus);
