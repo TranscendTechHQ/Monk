@@ -13,6 +13,7 @@ import 'package:frontend/ui/pages/thread/widget/provider/thread_card_provider.da
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
+import 'package:frontend/ui/widgets/link_meta_card.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -289,6 +290,7 @@ class ThreadCard extends ConsumerWidget {
                 ),
               ),
             ],
+            LinkMetaCard(linkMeta: block.linkMeta),
             // Reply/Replies Button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
