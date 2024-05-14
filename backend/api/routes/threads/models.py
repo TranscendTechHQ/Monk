@@ -39,6 +39,17 @@ class UpdateBlockPositionModel(BaseModel):
                               arbitrary_types_allowed=True,)
 
 
+class LinkMetaModel(BaseModel):
+    url: str
+    title: Optional[str] = Field(default=None)
+    description: Optional[str] = Field(default=None)
+    image: Optional[str] = Field(default=None)
+    model_config = ConfigDict(extra='ignore',
+                              populate_by_name=True,
+                              arbitrary_types_allowed=True,
+                              )
+
+
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     content: str = Field(...)
@@ -52,6 +63,7 @@ class BlockModel(BaseModel):
     task_status: str = Field(
         default="todo", pattern="^(todo|inprogress|done)$")
     tenant_id: str = Field(default="")
+    link_meta: Optional[LinkMetaModel] = Field(default=None)
 
 
 class CreateBlockModel(BaseModel):

@@ -1,4 +1,5 @@
 import datetime as dt
+import re
 import time
 from fastapi import FastAPI, HTTPException
 import logging
@@ -12,13 +13,14 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
+from utils.scrapper import getLinkMeta
 from utils.db import get_creator_block_by_id, get_mongo_document, get_mongo_documents, get_tenant_id, update_mongo_document_fields, asyncdb, \
     create_mongo_document, delete_mongo_document
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, UpdateBlockModel, UpdateBlockPositionModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, UpdateBlockModel, UpdateBlockPositionModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -274,47 +276,78 @@ async def filter(
 
 
 async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
+    try:
+        # print("profiling performance 1.1")
+        # start_time = time.time()
 
-    # print("profiling performance 1.1")
-    # start_time = time.time()
+        user_info = await asyncdb.users_collection.find_one({"_id": user_id})
+        thread_collection = asyncdb.threads_collection
+        thread_id = block.main_thread_id
 
-    user_info = await asyncdb.users_collection.find_one({"_id": user_id})
-    thread_collection = asyncdb.threads_collection
-    thread_id = block.main_thread_id
+        pos = await get_blocks_count(thread_id)
 
-    pos = await get_blocks_count(thread_id)
+        blocks_collection = asyncdb.blocks_collection
+        content = block.content
+        if user_info is None:
+            return None
+        block = block.model_dump()
+        if created_at is not None:
+            block["created_at"] = created_at
+        if id is not None:
+            block["_id"] = id
 
-    blocks_collection = asyncdb.blocks_collection
-    if user_info is None:
-        return None
-    block = block.model_dump()
-    if created_at is not None:
-        block["created_at"] = created_at
-    if id is not None:
-        block["_id"] = id
-    new_block = BlockModel(**block, tenant_id=tenant_id,
-                           creator_id=user_id, position=pos,)
-    await create_mongo_document(id=new_block.id,
-                                document=jsonable_encoder(new_block),
-                                collection=blocks_collection)
+        lastUrlAvailableInContent = ''
 
-    thread_last_modified = str(new_block.created_at)
-    # now update the thread block count
-    num_blocks = await get_blocks_count(thread_id)
+        # id content is not None or empty.
+        # then check if there is valid url in the content text. If there are multiple url available then take the last one
+        if content is not None:
+            urls = re.findall(
+                'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
+            if len(urls) > 0:
+                print(f'\n 👉 Link detected count: {len(urls)} ')
+                lastUrlAvailableInContent = urls[-1]
+            else:
+                print(f'\n 👉 No link detected in the content', content)
 
-    # print(f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
-    # print("profiling performance 1.2")
-    # start_time = time.time()
+        linkMeta = None
+        # if lastUrlAvailableInContent is not empty then get the meta data of the url
+        if lastUrlAvailableInContent != '':
+            print(f'\n 👉 Fetching link meta for: {lastUrlAvailableInContent} ')
+            # get the meta data of the url
+            rawMeta = getLinkMeta(lastUrlAvailableInContent)
+            if rawMeta is not None:
+                print(f'\n 👉 Link meta fetched: {rawMeta} ')
+                image = rawMeta.get('image', None)
+                if image is None:
+                    image = rawMeta.get('og:image', None)
+                linkMeta = LinkMetaModel(**rawMeta, image=image)
 
-    await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
+        new_block = BlockModel(**block, tenant_id=tenant_id,
+                               creator_id=user_id, position=pos, link_meta=linkMeta)
+        await create_mongo_document(id=new_block.id,
+                                    document=jsonable_encoder(new_block),
+                                    collection=blocks_collection)
 
-    await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
+        thread_last_modified = str(new_block.created_at)
+        # now update the thread block count
+        num_blocks = await get_blocks_count(thread_id)
 
-    # print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
+        # print(f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
+        # print("profiling performance 1.2")
+        # start_time = time.time()
 
-    return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
+        await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
 
-# Get blocks count in a collection for a given thread
+        await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
+
+        # print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
+
+        return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
+
+        # Get blocks count in a collection for a given thread
+    except Exception as e:
+        logger.error("❌ Error in create_new_block()", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 async def get_blocks_count(thread_id):
@@ -569,6 +602,9 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         print(
             f"profiling Time elapsed for first part(): { part_1 - start_time:.6f} seconds")
         new_block = await create_new_block(block, user_id, tenant_id)
+
+        if not new_block:
+            return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
         # print("profiling performance 2")
         part_2 = time.time()
         print(
@@ -797,11 +833,11 @@ async def child_thread(request: Request,
     print("\n 5. Creating new child thread")
 
     created_child_thread = await create_child_thread(
-                                                     parent_block_id=parent_block_id,
-                                                     main_thread_id=main_thread_id,
-                                                     thread_title=thread_title,
-                                                     thread_type=thread_type,
-                                                     user_id=user_id, tenant_id=tenant_id, parentBlock=BlockModel(**parentBlock))
+        parent_block_id=parent_block_id,
+        main_thread_id=main_thread_id,
+        thread_title=thread_title,
+        thread_type=thread_type,
+        user_id=user_id, tenant_id=tenant_id, parentBlock=BlockModel(**parentBlock))
 
     print("\n 6. Child thread created, Fetching child thread from db")
     ret_thread = await get_thread_from_db(created_child_thread["_id"], tenant_id)
