@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/repo/search.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
+import 'package:frontend/ui/theme/color/custom_color.g.dart';
 import 'package:frontend/ui/theme/theme.dart';
 
 class SearchModal2 extends ConsumerStatefulWidget {
@@ -24,7 +26,10 @@ class SearchModal2 extends ConsumerStatefulWidget {
           elevation: 0.0,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
-          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: context.colorScheme.secondaryContainer,
           child: SearchModal2(threadsMap: threadsMap),
         );
       },
@@ -188,12 +193,16 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
           constraints: BoxConstraints(
             maxWidth: context.width * .6,
             minWidth: 300,
-            maxHeight: context.width * .6,
+            maxHeight: context.width * .7,
             minHeight: 200,
           ),
           decoration: BoxDecoration(
-            color: context.colorScheme.surface,
+            color: context.colorScheme.secondaryContainer.withOpacity(.5),
             borderRadius: const BorderRadius.all(Radius.circular(10)),
+            border: Border.all(
+              color: context.customColors.monkBlue!,
+              width: .3,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -205,11 +214,31 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                     'Search',
                     style: context.textTheme.bodyLarge,
                   ),
-                  const CloseButton()
+                  CloseButton(
+                    onPressed: () {},
+                    style: ButtonStyle(
+                      maximumSize: MaterialStateProperty.all(
+                        const Size(40, 40),
+                      ),
+                      minimumSize: MaterialStateProperty.all(
+                        const Size(20, 20),
+                      ),
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.all(0),
+                      ),
+                      iconSize: MaterialStateProperty.all(14.0),
+                      backgroundColor: MaterialStateProperty.all(
+                          context.customColors.alertContainer),
+                    ),
+                  )
                 ],
               ),
-              const Divider(),
-              const Padding(padding: EdgeInsets.all(8)),
+              const SizedBox(height: 10),
+              Divider(
+                color: context.customColors.monkBlue!,
+                thickness: .2,
+              ),
+              const SizedBox(height: 10),
 
               // SEARCH INPUT
               SearchInput(
@@ -258,7 +287,6 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                   });
                 },
               ),
-              const Padding(padding: EdgeInsets.all(8)),
 
               // SEARCH OPTIONS
               if (searchType == '') ...[
@@ -278,8 +306,39 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                   },
                 ),
                 const SizedBox(height: 30),
-              ] else if (list.isNotEmpty) ...[
+              ] else
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Row(
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                            text: searchType == 'Title' ? 'Title:' : "Semantic",
+                            style: context.textTheme.bodyMedium!.copyWith(
+                              color:
+                                  context.colorScheme.onSurface.withOpacity(.9),
+                              fontSize: 16,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: searchType == 'Title'
+                                    ? ' Search by Thread titles'
+                                    : " Search by Thread describing in a sentence",
+                                style: context.textTheme.bodySmall!.copyWith(
+                                  color: context.colorScheme.onSurface
+                                      .withOpacity(.5),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ]),
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (list.isNotEmpty) ...[
                 // SUGGESTIONS AND SEARCH RESULTS
+
                 callbackShortcutWrapper(
                   filtered: list,
                   child: ThreadTitleList(
@@ -367,27 +426,33 @@ class SearchInput extends StatelessWidget {
         prefixStyle: context.textTheme.bodyMedium?.copyWith(
           color: context.colorScheme.onSurface,
         ),
-        // prefix: Text(searchType),
         prefixIcon: searchType.isNotNullEmpty
             ? SizedBox(
-                width: searchType == "Title" ? 80 : 100,
+                width: searchType == "Title" ? 60 : 100,
                 child: Center(
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: context.colorScheme.onSurface.withOpacity(.35),
-                      borderRadius: BorderRadius.circular(8),
+                      color: context.colorScheme.onSurface.withOpacity(.65),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       "$searchType:",
-                      style: context.textTheme.bodySmall,
+                      style: context.textTheme.bodySmall!.copyWith(
+                        color: context.colorScheme.background.withOpacity(.8),
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
               )
             : const Icon(Icons.search),
         hintText: 'Search',
+        constraints: const BoxConstraints(
+          minHeight: 40,
+          maxHeight: 40,
+        ),
         suffixIcon: searchType.isNullOrEmpty
             ? null
             : SizedBox(
@@ -395,7 +460,11 @@ class SearchInput extends StatelessWidget {
                 child: IconButton(
                   constraints: const BoxConstraints(maxHeight: 20),
                   padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.clear),
+                  icon: const Icon(
+                    Icons.clear,
+                    size: 18,
+                    color: monkBlue700,
+                  ),
                   onPressed: () {
                     titleController.clear();
                     onClear();
@@ -406,12 +475,14 @@ class SearchInput extends StatelessWidget {
         hintStyle: context.textTheme.bodyMedium?.copyWith(
           color: context.colorScheme.onSurface.withOpacity(.4),
         ),
-        enabledBorder: const UnderlineInputBorder(),
-        focusedBorder: const UnderlineInputBorder(),
-        border: UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: context.colorScheme.onSurface.withOpacity(.8),
-          ),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: monkBlue700),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: monkBlue700.withOpacity(.9)),
+        ),
+        border: const OutlineInputBorder(
+          borderSide: BorderSide(color: monkBlue700),
         ),
         errorBorder: UnderlineInputBorder(
           borderSide: BorderSide(
@@ -429,55 +500,70 @@ class SearchOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: context.colorScheme.onSurface.withOpacity(.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Text(
-              'Search Options',
-              style: context.textTheme.titleSmall,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            'Search Options',
+            style: context.textTheme.titleSmall,
           ),
-          const Divider(height: 0),
-          ListTile(
-            onTap: () {
-              onOptionSelect('Title');
-              // setState(() {
-              //   searchType = 'title';
-              // });
-              // inputFocusNode!.requestFocus();
-            },
-            title: Text(
-              'Title <search thread by title>',
-              style: context.textTheme.bodyMedium!.copyWith(
-                color: context.colorScheme.onSurface.withOpacity(.9),
-              ),
-            ),
-            hoverColor: context.colorScheme.onSurface,
-            focusColor: context.colorScheme.onSurface,
+        ),
+        ListTile(
+          onTap: () {
+            onOptionSelect('Title');
+          },
+          dense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+          minVerticalPadding: 0,
+          title: RichText(
+            text: TextSpan(
+                text: 'Title:',
+                style: context.textTheme.bodyMedium!.copyWith(
+                  color: context.colorScheme.onSurface.withOpacity(.9),
+                  fontSize: 14,
+                ),
+                children: [
+                  TextSpan(
+                    text: ' Search by Thread titles',
+                    style: context.textTheme.bodySmall!.copyWith(
+                      color: context.colorScheme.onSurface.withOpacity(.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ]),
           ),
-          const Divider(height: 0),
-          ListTile(
-            onTap: () {
-              onOptionSelect('Semantic');
-            },
-            title: Text(
-              'Semantic <search thread by describing it in a sentence>',
-              style: context.textTheme.bodyMedium!.copyWith(
-                color: context.colorScheme.onSurface.withOpacity(.9),
-              ),
-            ),
-            hoverColor: context.colorScheme.onSurface,
+          hoverColor: context.colorScheme.primary.withOpacity(0.8),
+          focusColor: context.colorScheme.onSurface,
+        ),
+        ListTile(
+          onTap: () {
+            onOptionSelect('Semantic');
+          },
+          contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+          dense: true,
+          title: RichText(
+            text: TextSpan(
+                text: 'Semantics:',
+                style: context.textTheme.bodyMedium!.copyWith(
+                  color: context.colorScheme.onSurface.withOpacity(.9),
+                  fontSize: 14,
+                ),
+                children: [
+                  TextSpan(
+                    text: ' Search by Thread describing in a sentence',
+                    style: context.textTheme.bodySmall!.copyWith(
+                      color: context.colorScheme.onSurface.withOpacity(.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ]),
           ),
-        ],
-      ),
+          hoverColor: context.colorScheme.primary.withOpacity(0.8),
+        ),
+      ],
     );
   }
 }
@@ -505,26 +591,24 @@ class ThreadTitleList extends StatelessWidget {
     String e,
     bool selected,
   ) {
-    return Material(
-      color: selected
-          ? context.colorScheme.onSurface.withOpacity(.2)
-          : context.colorScheme.surface.withOpacity(.3),
-      child: ListTile(
-        onTap: () {
-          onSelectedTitle(e);
-        },
-        title: Text(e),
-        focusColor: context.colorScheme.onSurface,
-        tileColor:
-            selected ? Colors.red : context.colorScheme.scrim.withOpacity(.5),
-        selected: selected,
-        selectedColor: Colors.blue,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        hoverColor: context.colorScheme.primary.withOpacity(0.2),
-        trailing: Icon(
-          Icons.open_in_new_rounded,
-          size: 16,
-          color: context.colorScheme.onSurface.withOpacity(.7),
+    return InkWell(
+      hoverColor: context.colorScheme.primary.withOpacity(0.8),
+      onTap: () => onSelectedTitle(e),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Row(
+          children: [
+            Text(
+              e,
+              style: context.textTheme.bodySmall!.copyWith(fontSize: 13),
+            ).extended,
+            SvgPicture.asset(
+              'assets/svg/open_in_new.svg',
+              color: context.customColors.monkBlue,
+              height: 16,
+              width: 16,
+            ),
+          ],
         ),
       ),
     );
@@ -533,31 +617,21 @@ class ThreadTitleList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      padding: const EdgeInsets.all(8),
       width: double.infinity,
-      constraints: const BoxConstraints(maxHeight: 300),
-      decoration: BoxDecoration(
-        color: context.colorScheme.onSurface.withOpacity(.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
+      constraints: const BoxConstraints(maxHeight: 300, minHeight: 100),
       duration: Durations.medium2,
       child: filtered.isNotNullEmpty
           ? ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: ListView.separated(
+              child: ListView.builder(
                 controller: scrollController,
                 itemCount: filtered.length,
+                shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
                   final e = filtered[index];
                   final selected = false;
                   //selectedIndex == index;
                   return title(context, e, selected);
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider(
-                    height: 1,
-                    color: context.colorScheme.onSurface.withOpacity(.2),
-                  );
                 },
               ),
             )
@@ -565,30 +639,28 @@ class ThreadTitleList extends StatelessWidget {
               // 5 SUGGESTIONS
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: ColoredBox(
-                    color: context.colorScheme.scrim.withOpacity(.5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          child: Text(
-                            'Suggestions',
-                            style: context.textTheme.titleSmall,
-                          ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        child: Text(
+                          'Suggestions',
+                          style: context.textTheme.titleSmall,
                         ),
-                        const Divider(height: 0),
-                        ListView(
-                          children: threadsMap.keys
-                              .take(5)
-                              .map(
-                                (e) => title(context, e, false),
-                              )
-                              .toList(),
-                        ).extended,
-                      ],
-                    ),
+                      ),
+                      const Divider(height: 0),
+                      ListView(
+                        children: threadsMap.keys
+                            .take(5)
+                            .map(
+                              (e) => title(context, e, false),
+                            )
+                            .toList(),
+                      ).extended,
+                    ],
                   ),
                 )
               : const Center(child: Text('No results found')),
