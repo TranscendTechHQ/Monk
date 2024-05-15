@@ -470,7 +470,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
   ///
   /// Parameters:
   /// * [bookmark] 
-  /// * [read] 
+  /// * [unread] 
   /// * [unfollow] 
   /// * [upvote] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -484,7 +484,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ThreadsMetaData>> filterNewsfeedGet({ 
     bool? bookmark = false,
-    bool? read = false,
+    bool? unread = false,
     bool? unfollow = false,
     bool? upvote = false,
     CancelToken? cancelToken,
@@ -509,7 +509,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
 
     final _queryParameters = <String, dynamic>{
       if (bookmark != null) r'bookmark': bookmark,
-      if (read != null) r'read': read,
+      if (unread != null) r'unread': unread,
       if (unfollow != null) r'unfollow': unfollow,
       if (upvote != null) r'upvote': upvote,
     };

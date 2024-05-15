@@ -10,10 +10,10 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
 **bookmark** | **bool** |  | [optional] [default to false]
-**read** | **bool** |  | [optional] [default to false]
 **tenantId** | **String** |  | 
 **threadId** | **String** |  | 
 **unfollow** | **bool** |  | [optional] [default to false]
+**unread** | **bool** |  | [optional] [default to false]
 **upvote** | **bool** |  | [optional] [default to false]
 **userId** | **String** |  | 
 

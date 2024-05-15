@@ -35,13 +35,13 @@ class ThreadMetaData {
 
      this.parentBlockId,
 
-     this.read = false,
-
     required  this.title,
 
     required  this.type,
 
      this.unfollow = false,
+
+     this.unread = false,
 
      this.upvote = false,
   });
@@ -143,18 +143,6 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
-    name: r'read',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final bool? read;
-
-
-
-  @JsonKey(
     
     name: r'title',
     required: true,
@@ -192,6 +180,18 @@ class ThreadMetaData {
 
   @JsonKey(
     defaultValue: false,
+    name: r'unread',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? unread;
+
+
+
+  @JsonKey(
+    defaultValue: false,
     name: r'upvote',
     required: false,
     includeIfNull: false
@@ -212,10 +212,10 @@ class ThreadMetaData {
      other.lastModified == lastModified &&
      other.numBlocks == numBlocks &&
      other.parentBlockId == parentBlockId &&
-     other.read == read &&
      other.title == title &&
      other.type == type &&
      other.unfollow == unfollow &&
+     other.unread == unread &&
      other.upvote == upvote;
 
   @override
@@ -228,10 +228,10 @@ class ThreadMetaData {
     lastModified.hashCode +
     numBlocks.hashCode +
     (parentBlockId == null ? 0 : parentBlockId.hashCode) +
-    read.hashCode +
     title.hashCode +
     type.hashCode +
     unfollow.hashCode +
+    unread.hashCode +
     upvote.hashCode;
 
   factory ThreadMetaData.fromJson(Map<String, dynamic> json) => _$ThreadMetaDataFromJson(json);

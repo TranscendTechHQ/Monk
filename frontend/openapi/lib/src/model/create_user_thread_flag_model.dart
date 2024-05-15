@@ -20,11 +20,11 @@ class CreateUserThreadFlagModel {
 
      this.bookmark,
 
-     this.read,
-
     required  this.threadId,
 
      this.unfollow,
+
+     this.unread,
 
      this.upvote,
   });
@@ -38,18 +38,6 @@ class CreateUserThreadFlagModel {
 
 
   final bool? bookmark;
-
-
-
-  @JsonKey(
-    
-    name: r'read',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final bool? read;
 
 
 
@@ -79,6 +67,18 @@ class CreateUserThreadFlagModel {
 
   @JsonKey(
     
+    name: r'unread',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? unread;
+
+
+
+  @JsonKey(
+    
     name: r'upvote',
     required: false,
     includeIfNull: false
@@ -92,17 +92,17 @@ class CreateUserThreadFlagModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateUserThreadFlagModel &&
      other.bookmark == bookmark &&
-     other.read == read &&
      other.threadId == threadId &&
      other.unfollow == unfollow &&
+     other.unread == unread &&
      other.upvote == upvote;
 
   @override
   int get hashCode =>
     bookmark.hashCode +
-    read.hashCode +
     threadId.hashCode +
     unfollow.hashCode +
+    unread.hashCode +
     upvote.hashCode;
 
   factory CreateUserThreadFlagModel.fromJson(Map<String, dynamic> json) => _$CreateUserThreadFlagModelFromJson(json);

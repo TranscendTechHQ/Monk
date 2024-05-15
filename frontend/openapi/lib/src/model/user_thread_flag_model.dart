@@ -22,13 +22,13 @@ class UserThreadFlagModel {
 
      this.bookmark = false,
 
-     this.read = false,
-
     required  this.tenantId,
 
     required  this.threadId,
 
      this.unfollow = false,
+
+     this.unread = false,
 
      this.upvote = false,
 
@@ -56,18 +56,6 @@ class UserThreadFlagModel {
 
 
   final bool? bookmark;
-
-
-
-  @JsonKey(
-    defaultValue: false,
-    name: r'read',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final bool? read;
 
 
 
@@ -109,6 +97,18 @@ class UserThreadFlagModel {
 
   @JsonKey(
     defaultValue: false,
+    name: r'unread',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? unread;
+
+
+
+  @JsonKey(
+    defaultValue: false,
     name: r'upvote',
     required: false,
     includeIfNull: false
@@ -135,10 +135,10 @@ class UserThreadFlagModel {
   bool operator ==(Object other) => identical(this, other) || other is UserThreadFlagModel &&
      other.id == id &&
      other.bookmark == bookmark &&
-     other.read == read &&
      other.tenantId == tenantId &&
      other.threadId == threadId &&
      other.unfollow == unfollow &&
+     other.unread == unread &&
      other.upvote == upvote &&
      other.userId == userId;
 
@@ -146,10 +146,10 @@ class UserThreadFlagModel {
   int get hashCode =>
     id.hashCode +
     bookmark.hashCode +
-    read.hashCode +
     tenantId.hashCode +
     threadId.hashCode +
     unfollow.hashCode +
+    unread.hashCode +
     upvote.hashCode +
     userId.hashCode;
 

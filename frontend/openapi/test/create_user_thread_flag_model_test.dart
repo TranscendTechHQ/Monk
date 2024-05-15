@@ -12,11 +12,6 @@ void main() {
       // TODO
     });
 
-    // bool read
-    test('to test the property `read`', () async {
-      // TODO
-    });
-
     // String threadId
     test('to test the property `threadId`', () async {
       // TODO
@@ -24,6 +19,11 @@ void main() {
 
     // bool unfollow
     test('to test the property `unfollow`', () async {
+      // TODO
+    });
+
+    // bool unread
+    test('to test the property `unread`', () async {
       // TODO
     });
 

@@ -168,15 +168,17 @@ async def get_unfiltered_newsfeed(tenant_id):
     return result
 
 
-async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, upvote):
+async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote):
+    print("🔍 Filtering newsfeed"
+          f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}")
     pipeline = [
         {
             "$match": {
                 "tenant_id": tenant_id,
                 "user_id": user_id,
-                "$or": [
+                "$and": [
                     {"bookmark": bookmark},
-                    {"read": read},
+                    {"unread": unread},
                     {"unfollow": unfollow},
                     {"upvote": upvote}
                 ]
@@ -209,7 +211,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
         {
             "$addFields": {
                 "threads.bookmark": "$bookmark",
-                "threads.read": "$read",
+                "threads.unread": "$unread",
                 "threads.upvote": "$upvote",
                 "threads.unfollow": "$unfollow"
             },
@@ -230,7 +232,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
                 "creator.last_login": 1,
                 "bookmark": 1,
                 "unfollow": 1,
-                "read": 1,
+                "unread": 1,
                 "upvote": 1
             }
         },
@@ -249,7 +251,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, read, unfollow, up
             response_description="Get news feed as  data for all threads")
 async def filter(
         bookmark: bool = False,
-        read: bool = False,
+        unread: bool = False,
         unfollow: bool = False,
         upvote: bool = False,
         session: SessionContainer = Depends(verify_session())
@@ -257,12 +259,12 @@ async def filter(
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
 
-    if bookmark or unfollow or read or upvote:
+    if bookmark or unfollow or unread or upvote:
         aggregate = await get_filtered_newsfeed(
             user_id=user_id,
             tenant_id=tenant_id,
             bookmark=bookmark,
-            read=read,
+            unread=unread,
             unfollow=unfollow,
             upvote=upvote)
 
@@ -614,7 +616,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
 
     #  TODO:
         if user_thread_flag:
-            user_thread_flag["read"] = False
+            user_thread_flag["unread"] = False
             updated_user_thread_flags = await update_mongo_document_fields(
                 {"thread_id": thread_id, "user_id": user_id},
                 jsonable_encoder(user_thread_flag),
@@ -949,7 +951,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
     tenant_id = await get_tenant_id(session)
 
     thread_id = jsonable_encoder(thread_read_data)["thread_id"]
-    read = jsonable_encoder(thread_read_data).get("read", None)
+    unread = jsonable_encoder(thread_read_data).get("unread", None)
     unfollow = jsonable_encoder(thread_read_data).get("unfollow", None)
     bookmark = jsonable_encoder(thread_read_data).get("bookmark", None)
     upvote = jsonable_encoder(thread_read_data).get("upvote", None)
@@ -967,7 +969,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
             user_id=user_id,
             thread_id=thread_id,
             tenant_id=tenant_id,
-            read=read if read else False,
+            unread=unread if unread else False,
             unfollow=unfollow if unfollow else False,
             bookmark=bookmark if bookmark else False,
             upvote=upvote if upvote else False
@@ -980,7 +982,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
 
         return JSONResponse(status_code=status.HTTP_200_OK, content=user_thread_flag_jsonable)
 
-    user_thread_flag["read"] = read if read is not None else user_thread_flag["read"]
+    user_thread_flag["unread"] = unread if unread is not None else user_thread_flag["unread"]
     user_thread_flag["unfollow"] = unfollow if unfollow is not None else user_thread_flag["unfollow"]
     user_thread_flag["bookmark"] = bookmark if bookmark is not None else user_thread_flag["bookmark"]
     user_thread_flag["upvote"] = upvote if upvote is not None else user_thread_flag["upvote"]

@@ -73,7 +73,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             threadId: "7ffefd35-2286-4377-ae4d-02bcfe9b121a",
             upvote: null,
             bookmark: null,
-            read: true));
+            unread: true));
   }
 
   Future<void> signOut() async {
