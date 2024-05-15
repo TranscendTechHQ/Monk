@@ -6,6 +6,7 @@ import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/cache_image.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -44,14 +45,12 @@ class NewsCard extends StatelessWidget {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(4),
-                            child: Image.network(
-                              creator.picture!.startsWith('https')
+                            child: CacheImage(
+                              path: creator.picture!.startsWith('https')
                                   ? creator.picture!
                                   : "https://api.dicebear.com/7.x/identicon/png?seed=${creator.name ?? "UN"}",
                               width: 35,
                               height: 35,
-                              cacheHeight: 35,
-                              cacheWidth: 35,
                               fit: BoxFit.fill,
                             ),
                           ),

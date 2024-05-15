@@ -7,36 +7,9 @@ import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
 import 'package:frontend/ui/pages/news/widget/news_feed_filter.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
-import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
-
-Widget leftMenuItem(
-    BuildContext context, IconData icon, String title, Function onTap) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    width: 135,
-    decoration: BoxDecoration(
-      color: context.colorScheme.surface,
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: context.textTheme.bodyLarge?.copyWith(
-            color: context.colorScheme.onSurface.withOpacity(.8),
-          ),
-        )
-      ],
-    ),
-  ).onPressed(() async {
-    await onTap();
-  });
-}
+import 'package:frontend/ui/widgets/outline_icon_button.dart';
 
 class NewsPage extends ConsumerWidget {
   final String title;
@@ -77,14 +50,6 @@ class NewsPage extends ConsumerWidget {
     final threadList = ref.watch(fetchThreadsInfoProvider);
     final List<String> titlesList = threadList.value?.keys.toList() ?? [];
 
-    final blockInput = CommandBox(
-      title: title,
-      type: type,
-      allowedInputTypes: const [
-        InputBoxType.commandBox,
-        InputBoxType.searchBox,
-      ],
-    );
     return Scaffold(
       body: PageScaffold(
         body: WithMonkAppbar(
@@ -94,42 +59,61 @@ class NewsPage extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    leftMenuItem(context, Icons.search, 'Search', () async {
-                      SearchModal2.show(context, threadsMap: threadList.value!);
-                    }),
-                    const SizedBox(height: 10),
-                    leftMenuItem(context, Icons.filter_alt_outlined, 'Filter',
-                        () async {
-                      onFilterPressed(context, ref);
-                    }),
-                    const SizedBox(height: 10),
-                    leftMenuItem(context, Icons.message, 'Post', () async {
-                      CreateThreadModal.show(context,
-                          titlesList: titlesList, type: 'chat');
-                    }),
-                    const SizedBox(height: 10),
-                    leftMenuItem(context, Icons.list, 'Todo', () async {
-                      CreateThreadModal.show(context,
-                          titlesList: titlesList, type: 'todo');
-                    }),
-                  ],
-                ).hP8.extended,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 130),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'search.svg',
+                        label: 'Search',
+                        onPressed: () {
+                          SearchModal2.show(context,
+                              threadsMap: threadList.value!);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'filter.svg',
+                        label: 'Filter',
+                        onPressed: () {
+                          onFilterPressed(context, ref);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'createthread.svg',
+                        label: 'Chat',
+                        onPressed: () {
+                          CreateThreadModal.show(context,
+                              titlesList: titlesList, type: 'chat');
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'todo.svg',
+                        label: 'Chat',
+                        iconSize: 16,
+                        onPressed: () {
+                          CreateThreadModal.show(context,
+                              titlesList: titlesList, type: 'todo');
+                        },
+                      ),
+                    ],
+                  ).hP8,
+                ),
+                const SizedBox(width: 20),
                 Column(
                   children: [
                     Expanded(child: ChatListView()),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(
-                    //       horizontal: 16, vertical: 8),
-                    //   width: containerWidth / 1.5,
-                    //   child: blockInput,
-                    // ),
                     const Padding(padding: EdgeInsets.all(8))
                   ],
                 ),
-                Spacer()
+                const Spacer()
               ],
             ),
           ),
