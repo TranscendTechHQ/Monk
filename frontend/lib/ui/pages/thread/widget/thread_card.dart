@@ -157,15 +157,14 @@ class ThreadCard extends ConsumerWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: Image.network(
-                        userInfo.picture!.startsWith('https')
+                      child: CacheImage(
+                        path: userInfo.picture!.startsWith('https')
                             ? userInfo.picture!
                             : "https://api.dicebear.com/7.x/identicon/png?seed=${userInfo.name!}",
-                        width: 25,
+                        fit: BoxFit.fitHeight,
+                        tag: UniqueKey().toString(),
                         height: 25,
-                        cacheHeight: 30,
-                        cacheWidth: 30,
-                        fit: BoxFit.fill,
+                        width: 25,
                       ),
                     ),
                     const SizedBox(width: 8),

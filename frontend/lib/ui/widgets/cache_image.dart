@@ -4,18 +4,33 @@ import 'package:flutter/widgets.dart';
 import 'package:frontend/ui/widgets/image-viewer.dart';
 
 class CacheImage extends StatelessWidget {
-  const CacheImage(
-      {super.key,
-      this.path,
-      this.onPressed,
-      this.fit = BoxFit.contain,
-      this.errorWidget,
-      this.tag = 'image'});
+  const CacheImage({
+    super.key,
+    this.path,
+    this.onPressed,
+    this.fit = BoxFit.contain,
+    this.errorWidget,
+    this.tag,
+    this.height,
+    this.width,
+  });
   final String? path;
   final BoxFit fit;
   final VoidCallback? onPressed;
   final Widget? errorWidget;
-  final Object tag;
+  final Object? tag;
+  final double? height;
+  final double? width;
+
+  Widget heroWrapper({required Widget child}) {
+    if (tag == null) {
+      return child;
+    }
+    return Hero(
+      tag: tag!,
+      child: child,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +44,13 @@ class CacheImage extends StatelessWidget {
                   context, ImageViewer.getRoute(path!, heroTag: tag));
             }
           },
-      child: Hero(
-        tag: tag,
+      child: heroWrapper(
         child: CachedNetworkImage(
           imageUrl: path!,
           fit: fit,
           maxWidthDiskCache: 800,
+          height: height,
+          width: width,
           placeholder: (context, url) => Container(
             color: Theme.of(context).disabledColor,
           ),

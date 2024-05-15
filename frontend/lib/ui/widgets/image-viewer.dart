@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:frontend/ui/theme/theme.dart';
 
 class ImageViewer extends StatelessWidget {
-  static MaterialPageRoute getRoute(String path, {Object heroTag = 'image'}) {
+  static MaterialPageRoute getRoute(String path, {Object? heroTag}) {
     return MaterialPageRoute(
       builder: (_) => ImageViewer(
         path: path,
@@ -14,9 +12,19 @@ class ImageViewer extends StatelessWidget {
     );
   }
 
-  const ImageViewer({super.key, this.path, this.heroTag = 'image'});
+  const ImageViewer({super.key, this.path, this.heroTag});
   final String? path;
-  final Object heroTag;
+  final Object? heroTag;
+
+  Widget heroWrapper({required Widget child}) {
+    if (heroTag == null) {
+      return child;
+    }
+    return Hero(
+      tag: heroTag!,
+      child: child,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +42,7 @@ class ImageViewer extends StatelessWidget {
               maxWidth: MediaQuery.of(context).size.width,
               minWidth: MediaQuery.of(context).size.width,
             ),
-            child: Hero(
-              tag: heroTag,
+            child: heroWrapper(
               child: InteractiveViewer(
                 minScale: .3,
                 maxScale: 5,
