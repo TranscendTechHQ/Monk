@@ -4,12 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
-import 'package:openapi/openapi.dart';
+import 'package:frontend/ui/widgets/outline_icon_button.dart';
 
 enum ThreadType { thread, reply }
 
@@ -72,9 +73,11 @@ class ThreadPage extends ConsumerWidget {
       }
     });
 
+    final threadList = ref.watch(fetchThreadsInfoProvider);
+
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(),
+        leading: const BackButton(),
         centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,
@@ -151,29 +154,46 @@ class ThreadPage extends ConsumerWidget {
         ],
       ),
       body: PageScaffold(
-        body: Align(
+        body: Container(
           alignment: Alignment.center,
-          child: currentThread.when(
-            data: (state) => Column(
-              children: [
-                ChatListView(
-                  currentThread: currentThread,
-                  title: title,
-                  type: type,
-                  threadType: threadType,
-                ).extended,
-                blockInput,
-              ],
-            ),
-            error: (error, stack) => Center(
-              child: Text(
-                error.toString().replaceFirst('Exception: ', ''),
-                style: context.textTheme.bodySmall,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  const SizedBox(height: 10),
+                  OutlineIconButton(
+                    svgPath: 'search.svg',
+                    label: 'Search',
+                    onPressed: () {
+                      SearchModal2.show(context, threadsMap: threadList.value!);
+                    },
+                  ),
+                ],
               ),
-            ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
-            ),
+              currentThread.when(
+                data: (state) => Column(
+                  children: [
+                    ChatListView(
+                      currentThread: currentThread,
+                      title: title,
+                      type: type,
+                      threadType: threadType,
+                    ).extended,
+                    blockInput,
+                  ],
+                ),
+                error: (error, stack) => Center(
+                  child: Text(
+                    error.toString().replaceFirst('Exception: ', ''),
+                    style: context.textTheme.bodySmall,
+                  ),
+                ),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ],
           ),
         ),
       ),
