@@ -126,47 +126,77 @@ async def ti(request: Request,
                         content=jsonable_encoder(ThreadsInfo(info=info)))
 
 
-async def get_unfiltered_newsfeed(tenant_id):
-    result = asyncdb.threads_collection.aggregate(
-        [
-            {
-                "$match": {"tenant_id": tenant_id}
-            },
-            {
-                "$lookup": {
-                    "from": "users",
-                    "localField": "creator_id",
-                    "foreignField": "_id",
-                    "as": "creator"
-                }
-            },
-            {
-                "$unwind": "$creator"
-            },
-            {
-                "$project": {
-                    "_id": 1,
-                    "title": 1,
-                    "type": 1,
-                    "created_at": 1,
-                    "headline": 1,
-                    "last_modified": 1,
-                    "creator._id": 1,
-                    "creator.name": 1,
-                    "creator.picture": 1,
-                    "creator.email": 1,
-                    "creator.last_login": 1,
+async def get_unfiltered_newsfeed(tenant_id, user_id):
+    default_flags = {"user_id": user_id, "unread": True, "bookmark": False, "upvote": False, "unfollow": False}
 
-                }
-            },
-            {
-                "$sort": {
-                    "last_modified": -1
+    pipeline = [
+        {
+            "$match": {"tenant_id": tenant_id}
+        },
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "creator_id",
+                "foreignField": "_id",
+                "as": "creator"
+            }
+        },
+        {
+            "$unwind": "$creator"
+        },
+        {
+            "$lookup": {
+                "from": "user_thread_flags",
+                "localField": "_id",
+                "foreignField": "thread_id",
+                "as": "user_thread_flags",
+                "pipeline": [
+                    {
+                        "$match": {"user_id": user_id}  # Filter by user_id here
+                    }
+                ]
+            }
+        },
+        {
+            "$addFields": {
+                "user_thread_flags": {
+                    "$cond": {
+                        "if": {"$eq": [{"$size": "$user_thread_flags"}, 0]},
+                        "then": default_flags,
+                        "else": {
+                            "$arrayElemAt": ["$user_thread_flags", 0]  # Assuming only one matching flag (optional)
+                        }
+                    }
                 }
             }
-        ]
-    )
+        },
+        {
+            "$project": {
+                "_id": 1,
+                "title": 1,
+                "type": 1,
+                "created_at": 1,
+                "headline": 1,
+                "last_modified": 1,
+                "creator._id": 1,
+                "creator.name": 1,
+                "creator.picture": 1,
+                "unread": "$user_thread_flags.unread",
+                "bookmark": "$user_thread_flags.bookmark",
+                "upvote": "$user_thread_flags.upvote",
+                "unfollow": "$user_thread_flags.unfollow"
+            }
+        },
+        {
+            "$sort": {
+                "last_modified": -1
+            }
+        }
+    ]
+
+    result = asyncdb.threads_collection.aggregate(pipeline)
     return result
+
 
 
 async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote):
@@ -274,7 +304,7 @@ async def filter(
             upvote=upvote)
 
     else:
-        aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id)
+        aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id, user_id=user_id)
 
     aggregate = await aggregate.to_list(None)
     print(aggregate.__len__())
