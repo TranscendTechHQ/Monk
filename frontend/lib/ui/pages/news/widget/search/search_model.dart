@@ -215,7 +215,6 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                     style: context.textTheme.bodyLarge,
                   ),
                   CloseButton(
-                    onPressed: () {},
                     style: ButtonStyle(
                       maximumSize: MaterialStateProperty.all(
                         const Size(40, 40),

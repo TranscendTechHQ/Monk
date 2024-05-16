@@ -54,7 +54,7 @@ class NewsPage extends ConsumerWidget {
       body: PageScaffold(
         body: WithMonkAppbar(
           child: Container(
-            padding: const EdgeInsets.only(top: 36, left: 100),
+            padding: const EdgeInsets.only(top: 36),
             alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -113,7 +113,7 @@ class NewsPage extends ConsumerWidget {
                     const Padding(padding: EdgeInsets.all(8))
                   ],
                 ),
-                const Spacer()
+                SizedBox(width: context.scale(150, 50, 10)),
               ],
             ),
           ),
