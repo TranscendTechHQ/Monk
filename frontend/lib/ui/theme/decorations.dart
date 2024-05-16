@@ -44,12 +44,13 @@ class BoxDecorations {
     );
   }
 
-  static BoxDecoration cardDecoration(BuildContext context) {
+  static BoxDecoration cardDecoration(BuildContext context,
+      {Color? borderColor}) {
     return BoxDecoration(
       color: context.theme.cardColor,
       borderRadius: BorderRadius.circular(8),
       border: Border.all(
-        color: context.customColors.sourceMonkBlue!,
+        color: borderColor ?? context.customColors.sourceMonkBlue!,
         width: 1,
       ),
     );

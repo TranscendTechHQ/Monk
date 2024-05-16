@@ -4,24 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
+import 'package:frontend/ui/theme/color/custom_color.g.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
-class NewsCard extends StatelessWidget {
+class NewsCard extends ConsumerWidget {
   const NewsCard({super.key, required this.metaData});
 
   final ThreadMetaData metaData;
 
-  void launchThread(BuildContext context) {
-    Navigator.push(context,
-        ThreadPage.launchRoute(title: metaData.title, type: metaData.type));
+  void launchThread(BuildContext context, WidgetRef ref) {
+    ref.read(newsFeedProvider.notifier).markAsRead(metaData.id);
+    Navigator.push(
+      context,
+      ThreadPage.launchRoute(
+        title: metaData.title,
+        type: metaData.type,
+      ),
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final title = metaData.title;
     final headline = metaData.headline ?? "";
     final creator = metaData.creator;
@@ -34,7 +41,14 @@ class NewsCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.only(
                   bottom: 22.0, top: 24, left: 24, right: 24),
-              decoration: BoxDecorations.cardDecoration(context),
+              decoration: BoxDecorations.cardDecoration(context).copyWith(
+                border: Border.all(
+                  color: metaData.unread == true
+                      ? monkBlue
+                      : monkBlue700.withOpacity(.5),
+                  width: metaData.unread == true ? 2 : .7,
+                ),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -110,7 +124,7 @@ class NewsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 22),
                     ],
-                  ).onPressed(() => launchThread(context)),
+                  ).onPressed(() => launchThread(context, ref)),
                   NewsBottomActions(metaData: metaData),
                 ],
               ),

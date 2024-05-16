@@ -20,7 +20,8 @@ class NewsPage extends ConsumerWidget {
 
   static Route launchRoute() {
     return MaterialPageRoute<void>(
-        builder: (_) => const NewsPage(title: "News", type: "/news"));
+      builder: (_) => const NewsPage(title: "News", type: "/news"),
+    );
   }
 
   Future<void> onFilterPressed(BuildContext context, WidgetRef ref) async {

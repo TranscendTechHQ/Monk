@@ -68,6 +68,25 @@ class NewsFeed extends _$NewsFeed {
       state = AsyncData(list);
     }
   }
+
+  void markAsRead(String threadId) {
+    final list = state.value?.getAbsoluteOrNull;
+
+    if (list.isNotNullEmpty) {
+      final thread =
+          list!.firstWhereOrNull((element) => element.id == threadId);
+      if (thread != null) {
+        // thread.unread = false;
+        final index = list.indexOf(thread);
+        final map = thread.toJson();
+        map['unread'] = false;
+        final updatedThread = ThreadMetaData.fromJson(map);
+
+        list[index] = updatedThread;
+        state = AsyncData(list);
+      }
+    }
+  }
 }
 
 @riverpod
