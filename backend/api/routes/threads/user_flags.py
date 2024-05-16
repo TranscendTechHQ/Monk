@@ -17,10 +17,10 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
                 user_id=user_id,
                 thread_id=thread_id,
                 tenant_id=tenant_id,
-                unread=unread if unread else True,
-                unfollow=unfollow if unfollow else False,
-                bookmark=bookmark if bookmark else False,
-                upvote=upvote if upvote else False
+                unread=unread if unread else None,
+                unfollow=unfollow if unfollow else None,
+                bookmark=bookmark if bookmark else None,
+                upvote=upvote if upvote else None
             )
             user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
             await create_mongo_document(
@@ -43,7 +43,7 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
         logger.error(e, exc_info=True)
         return None
     
-async def update_flags_other_users(thread_id, user_id, tenant_id):
+async def set_unread_true_other_users(thread_id, user_id, tenant_id):
     try:
         users = await asyncdb.users_collection.find({"tenant_id": tenant_id}).to_list(None)
         for user in users:

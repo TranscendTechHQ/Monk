@@ -22,7 +22,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
               (v) => v == null
                   ? null
                   : BlockModel.fromJson(v as Map<String, dynamic>)),
-          bookmark: $checkedConvert('bookmark', (v) => v as bool? ?? false),
+          bookmark: $checkedConvert('bookmark', (v) => v as bool?),
           content: $checkedConvert(
               'content',
               (v) => (v as List<dynamic>?)
@@ -46,9 +46,9 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
               $checkedConvert('parent_block_id', (v) => v as String?),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
-          unfollow: $checkedConvert('unfollow', (v) => v as bool? ?? false),
-          unread: $checkedConvert('unread', (v) => v as bool? ?? true),
-          upvote: $checkedConvert('upvote', (v) => v as bool? ?? false),
+          unfollow: $checkedConvert('unfollow', (v) => v as bool?),
+          unread: $checkedConvert('unread', (v) => v as bool?),
+          upvote: $checkedConvert('upvote', (v) => v as bool?),
         );
         return val;
       },

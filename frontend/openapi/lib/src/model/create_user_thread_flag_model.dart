@@ -99,11 +99,11 @@ class CreateUserThreadFlagModel {
 
   @override
   int get hashCode =>
-    bookmark.hashCode +
+    (bookmark == null ? 0 : bookmark.hashCode) +
     threadId.hashCode +
-    unfollow.hashCode +
-    unread.hashCode +
-    upvote.hashCode;
+    (unfollow == null ? 0 : unfollow.hashCode) +
+    (unread == null ? 0 : unread.hashCode) +
+    (upvote == null ? 0 : upvote.hashCode);
 
   factory CreateUserThreadFlagModel.fromJson(Map<String, dynamic> json) => _$CreateUserThreadFlagModelFromJson(json);
 

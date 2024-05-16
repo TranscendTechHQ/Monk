@@ -20,17 +20,17 @@ class UserThreadFlagModel {
 
      this.id,
 
-    required  this.bookmark,
+     this.bookmark,
 
     required  this.tenantId,
 
     required  this.threadId,
 
-    required  this.unfollow,
+     this.unfollow,
 
-    required  this.unread,
+     this.unread,
 
-    required  this.upvote,
+     this.upvote,
 
     required  this.userId,
   });
@@ -50,12 +50,12 @@ class UserThreadFlagModel {
   @JsonKey(
     
     name: r'bookmark',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final bool bookmark;
+  final bool? bookmark;
 
 
 
@@ -86,36 +86,36 @@ class UserThreadFlagModel {
   @JsonKey(
     
     name: r'unfollow',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final bool unfollow;
+  final bool? unfollow;
 
 
 
   @JsonKey(
     
     name: r'unread',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final bool unread;
+  final bool? unread;
 
 
 
   @JsonKey(
     
     name: r'upvote',
-    required: true,
+    required: false,
     includeIfNull: false
   )
 
 
-  final bool upvote;
+  final bool? upvote;
 
 
 
@@ -145,12 +145,12 @@ class UserThreadFlagModel {
   @override
   int get hashCode =>
     id.hashCode +
-    bookmark.hashCode +
+    (bookmark == null ? 0 : bookmark.hashCode) +
     tenantId.hashCode +
     threadId.hashCode +
-    unfollow.hashCode +
-    unread.hashCode +
-    upvote.hashCode +
+    (unfollow == null ? 0 : unfollow.hashCode) +
+    (unread == null ? 0 : unread.hashCode) +
+    (upvote == null ? 0 : upvote.hashCode) +
     userId.hashCode;
 
   factory UserThreadFlagModel.fromJson(Map<String, dynamic> json) => _$UserThreadFlagModelFromJson(json);
