@@ -4,7 +4,7 @@ import logging
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
-from routes.threads.user_flags import update_flags_other_users
+from routes.threads.user_flags import update_flags_other_users, update_user_flags
 from utils.db import create_mongo_document, get_block_by_id, get_mongo_document, get_user_name, update_block_child_id, \
     asyncdb
 from utils.headline import generate_single_thread_headline

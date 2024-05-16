@@ -394,7 +394,7 @@ async def get_blocks_count(thread_id):
     return count
 
 
-async def get_thread_from_db(thread_id, tenant_id):
+async def get_thread_from_db(thread_id, user_id, tenant_id):
     try:
         pipeline = [
             {
@@ -589,12 +589,13 @@ async def get_thread_from_db(thread_id, tenant_id):
         thread = await result.to_list(None)
         # print(thread[0]["content"][0])
 
-        # TODO: Since function is intended to return a single thread object,
-        # not sure it should return a empty list here
         if len(thread) == 0:
-            return []
+            return None
         thread_to_return = thread[0]
 
+        # user is now reading the thread so set unread to false
+        await update_user_flags(thread_to_return["_id"], user_id, tenant_id, unread=False)
+            
         # Check if thread contains and empty default block
         # If yes, then remove the key from object
         if thread_to_return['default_block'].keys():
@@ -651,7 +652,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
     # to indicate that the all other users other than the creator have an unread thread:
         await update_flags_other_users(thread_id, user_id, tenant_id)
 
-    #  ret_thread = await get_thread_from_db(thread_id, tenant_id)
+    
         end_time = time.time()
         print(
             f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
@@ -881,7 +882,7 @@ async def child_thread(request: Request,
         user_id=user_id, tenant_id=tenant_id, parentBlock=BlockModel(**parentBlock))
 
     print("\n 6. Child thread created, Fetching child thread from db")
-    ret_thread = await get_thread_from_db(created_child_thread["_id"], tenant_id)
+    ret_thread = await get_thread_from_db(created_child_thread["_id"], user_id, tenant_id)
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
                         content=jsonable_encoder(ret_thread))
@@ -903,7 +904,7 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
         print("\n ------------- Creating thread -------------")
         # Create a new thread in MongoDB using the thread_data
         # Index the thread by userId
-        userId = session.get_user_id()
+        user_id = session.get_user_id()
 
         tenant_id = await get_tenant_id(session)
 
@@ -913,11 +914,11 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
         # if jsonable_encoder(thread_data)["content"] is not None:
         #    content = jsonable_encoder(thread_data)["content"]
 
-        created_thread = await create_new_thread(userId, tenant_id, thread_title, thread_type, parent_block_id=None)
+        created_thread = await create_new_thread(user_id, tenant_id, thread_title, thread_type, parent_block_id=None)
 
         print(f"\n\nCreated thread: {created_thread}\n\n")
         logger.debug("Getting thread from db")
-        ret_thread = await get_thread_from_db(created_thread["_id"], tenant_id)
+        ret_thread = await get_thread_from_db(created_thread["_id"], user_id, tenant_id)
 
         # print(ret_thread[0])
         return JSONResponse(status_code=status.HTTP_201_CREATED,
@@ -934,7 +935,8 @@ async def get_thread_id(request: Request,
                         ):
 
     tenant_id = await get_tenant_id(session)
-    thread = await get_thread_from_db(id, tenant_id)
+    user_id = session.get_user_id()
+    thread = await get_thread_from_db(id, user_id, tenant_id)
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
@@ -973,7 +975,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
 
         print('\n Getting updated thread from DB', updated_thread)
 
-        ret_thread = await get_thread_from_db(updated_thread["_id"], tenant_id)
+        ret_thread = await get_thread_from_db(updated_thread["_id"], user_id, tenant_id)
         thread_id = ret_thread["_id"]
         await update_flags_other_users(thread_id, user_id, tenant_id)
         return JSONResponse(status_code=status.HTTP_200_OK,
