@@ -54,6 +54,11 @@
 	<string>public.app-category.productivity</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Monk App needed library access to pick image/video to add image in post or to updated profile picture. </string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+	  <string>sms</string>
+	  <string>tel</string>
+	</array>
 
 </dict>
 </plist>
