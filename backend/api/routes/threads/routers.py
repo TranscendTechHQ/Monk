@@ -576,6 +576,43 @@ async def get_thread_from_db(thread_id, tenant_id):
         logger.error(e, exc_info=True)
         return None
 
+async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None):
+    try:
+        
+
+        user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
+                                                    asyncdb.user_thread_flags_collection, tenant_id=tenant_id)
+
+        if not user_thread_flag:
+            user_thread_flag_doc = UserThreadFlagModel(
+                user_id=user_id,
+                thread_id=thread_id,
+                tenant_id=tenant_id,
+                unread=unread if unread else True,
+                unfollow=unfollow if unfollow else False,
+                bookmark=bookmark if bookmark else False,
+                upvote=upvote if upvote else False
+            )
+            user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
+            await create_mongo_document(
+                id=user_thread_flag_doc.id,
+                document=user_thread_flag_jsonable,
+                collection=asyncdb.user_thread_flags_collection)
+
+            return user_thread_flag_jsonable
+
+        user_thread_flag["unread"] = unread if unread is not None else user_thread_flag["unread"]
+        user_thread_flag["unfollow"] = unfollow if unfollow is not None else user_thread_flag["unfollow"]
+        user_thread_flag["bookmark"] = bookmark if bookmark is not None else user_thread_flag["bookmark"]
+        user_thread_flag["upvote"] = upvote if upvote is not None else user_thread_flag["upvote"]
+
+        updated_user_thread_flag = await update_mongo_document_fields({"_id": user_thread_flag["_id"]}, user_thread_flag,
+                                           asyncdb.user_thread_flags_collection)
+
+        return updated_user_thread_flag
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return None
 
 @router.post("/blocks", response_model=BlockWithCreator, response_description="Create a new block")
 async def create(request: Request, thread_title: str, block: CreateBlockModel = Body(...),
@@ -611,16 +648,15 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         part_2 = time.time()
         print(
             f"profiling Time elapsed for create_new_block(): {part_2 - part_1:.6f} seconds")
-        user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
-                                                    request.app.mongodb["user_thread_flags"], tenant_id)
-
-    #  TODO:
-        if user_thread_flag:
-            user_thread_flag["unread"] = False
-            updated_user_thread_flags = await update_mongo_document_fields(
-                {"thread_id": thread_id, "user_id": user_id},
-                jsonable_encoder(user_thread_flag),
-                request.app.mongodb["user_thread_flags"])
+        
+    #  as we modify a thread, we need to update the user_thread_flags
+    # to indicate that the all other users other than the creator have an unread thread:
+        users = await asyncdb.users_collection.find({"tenant_id": tenant_id}).to_list(None)
+        for user in users:
+            other_user_id = user["_id"]
+            if other_user_id == user_id:
+                continue
+            await update_user_flags(thread_id, other_user_id, tenant_id, unread=True)
 
     #  ret_thread = await get_thread_from_db(thread_id, tenant_id)
         end_time = time.time()
@@ -962,37 +998,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
     if tenant_id != jsonable_encoder(thread)["tenant_id"]:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
-    user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
-                                                request.app.mongodb["user_thread_flags"], tenant_id)
-    if not user_thread_flag:
-        user_thread_flag_doc = UserThreadFlagModel(
-            user_id=user_id,
-            thread_id=thread_id,
-            tenant_id=tenant_id,
-            unread=unread if unread else False,
-            unfollow=unfollow if unfollow else False,
-            bookmark=bookmark if bookmark else False,
-            upvote=upvote if upvote else False
-        )
-        user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
-        await create_mongo_document(
-            id=user_thread_flag_doc.id,
-            document=user_thread_flag_jsonable,
-            collection=request.app.mongodb["user_thread_flags"])
+    
 
-        return JSONResponse(status_code=status.HTTP_200_OK, content=user_thread_flag_jsonable)
-
-    user_thread_flag["unread"] = unread if unread is not None else user_thread_flag["unread"]
-    user_thread_flag["unfollow"] = unfollow if unfollow is not None else user_thread_flag["unfollow"]
-    user_thread_flag["bookmark"] = bookmark if bookmark is not None else user_thread_flag["bookmark"]
-    user_thread_flag["upvote"] = upvote if upvote is not None else user_thread_flag["upvote"]
-
-    await request.app.mongodb["user_thread_flags"].update_one(
-        {"thread_id": thread_id, "user_id": user_id},
-        {"$set": user_thread_flag}
-    )
-
-    updated_user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
-                                                        request.app.mongodb["user_thread_flags"], tenant_id)
-
+    updated_user_thread_flag
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(updated_user_thread_flag))

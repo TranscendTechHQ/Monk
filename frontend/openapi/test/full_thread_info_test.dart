@@ -72,7 +72,7 @@ void main() {
       // TODO
     });
 
-    // bool unread (default value: false)
+    // bool unread (default value: true)
     test('to test the property `unread`', () async {
       // TODO
     });

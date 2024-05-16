@@ -19,7 +19,7 @@ Name | Type | Description | Notes
 **title** | **String** |  | 
 **type** | **String** |  | 
 **unfollow** | **bool** |  | [optional] [default to false]
-**unread** | **bool** |  | [optional] [default to false]
+**unread** | **bool** |  | [optional] [default to true]
 **upvote** | **bool** |  | [optional] [default to false]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -41,7 +41,7 @@ class ThreadMetaData {
 
      this.unfollow = false,
 
-     this.unread = false,
+     this.unread = true,
 
      this.upvote = false,
   });
@@ -179,7 +179,7 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
+    defaultValue: true,
     name: r'unread',
     required: false,
     includeIfNull: false

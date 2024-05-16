@@ -42,7 +42,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
           unfollow: $checkedConvert('unfollow', (v) => v as bool? ?? false),
-          unread: $checkedConvert('unread', (v) => v as bool? ?? false),
+          unread: $checkedConvert('unread', (v) => v as bool? ?? true),
           upvote: $checkedConvert('upvote', (v) => v as bool? ?? false),
         );
         return val;

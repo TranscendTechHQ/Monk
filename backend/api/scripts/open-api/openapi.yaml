@@ -312,7 +312,7 @@ components:
           title: Unfollow
           type: boolean
         unread:
-          default: false
+          default: true
           title: Unread
           type: boolean
         upvote:
@@ -458,7 +458,7 @@ components:
           title: Unfollow
           type: boolean
         unread:
-          default: false
+          default: true
           title: Unread
           type: boolean
         upvote:
@@ -638,7 +638,6 @@ components:
           title: ' Id'
           type: string
         bookmark:
-          default: false
           title: Bookmark
           type: boolean
         tenant_id:
@@ -648,15 +647,12 @@ components:
           title: Thread Id
           type: string
         unfollow:
-          default: false
           title: Unfollow
           type: boolean
         unread:
-          default: false
           title: Unread
           type: boolean
         upvote:
-          default: false
           title: Upvote
           type: boolean
         user_id:
@@ -666,6 +662,10 @@ components:
       - user_id
       - thread_id
       - tenant_id
+      - unread
+      - unfollow
+      - bookmark
+      - upvote
       title: UserThreadFlagModel
       type: object
     ValidationError:

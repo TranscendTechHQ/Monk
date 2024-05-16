@@ -9,12 +9,12 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
-**bookmark** | **bool** |  | [optional] [default to false]
+**bookmark** | **bool** |  | 
 **tenantId** | **String** |  | 
 **threadId** | **String** |  | 
-**unfollow** | **bool** |  | [optional] [default to false]
-**unread** | **bool** |  | [optional] [default to false]
-**upvote** | **bool** |  | [optional] [default to false]
+**unfollow** | **bool** |  | 
+**unread** | **bool** |  | 
+**upvote** | **bool** |  | 
 **userId** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

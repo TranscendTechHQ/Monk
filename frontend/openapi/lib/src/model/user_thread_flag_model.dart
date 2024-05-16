@@ -20,17 +20,17 @@ class UserThreadFlagModel {
 
      this.id,
 
-     this.bookmark = false,
+    required  this.bookmark,
 
     required  this.tenantId,
 
     required  this.threadId,
 
-     this.unfollow = false,
+    required  this.unfollow,
 
-     this.unread = false,
+    required  this.unread,
 
-     this.upvote = false,
+    required  this.upvote,
 
     required  this.userId,
   });
@@ -48,14 +48,14 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'bookmark',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final bool? bookmark;
+  final bool bookmark;
 
 
 
@@ -84,38 +84,38 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unfollow',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final bool? unfollow;
+  final bool unfollow;
 
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unread',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final bool? unread;
+  final bool unread;
 
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'upvote',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final bool? upvote;
+  final bool upvote;
 
 
 

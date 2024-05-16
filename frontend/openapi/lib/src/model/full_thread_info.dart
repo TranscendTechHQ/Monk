@@ -46,7 +46,7 @@ class FullThreadInfo {
 
      this.unfollow = false,
 
-     this.unread = false,
+     this.unread = true,
 
      this.upvote = false,
   });
@@ -208,7 +208,7 @@ class FullThreadInfo {
 
 
   @JsonKey(
-    defaultValue: false,
+    defaultValue: true,
     name: r'unread',
     required: false,
     includeIfNull: false

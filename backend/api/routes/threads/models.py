@@ -150,10 +150,10 @@ class UserThreadFlagModel(BaseModel):
     user_id: str
     thread_id: str
     tenant_id: str
-    unread: bool = Field(default=False)
-    unfollow: bool = Field(default=False)
-    bookmark: bool = Field(default=False)
-    upvote: bool = Field(default=False)
+    unread: bool 
+    unfollow: bool 
+    bookmark: bool 
+    upvote: bool 
 
 
 class UserThreadFlagsModel(BaseModel):
@@ -191,7 +191,7 @@ class ThreadMetaData(BaseModel):
     parent_block_id: Optional[str] = Field(default=None)
     headline: str = Field(default=None)
     num_blocks: int = Field(default=0)
-    unread: bool = Field(default=False)
+    unread: bool = Field(default=True)
     unfollow: bool = Field(default=False)
     bookmark: bool = Field(default=False)
     upvote: bool = Field(default=False)
