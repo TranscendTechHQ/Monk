@@ -4,6 +4,7 @@ import logging
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 
+from routes.threads.user_flags import update_flags_other_users
 from utils.db import create_mongo_document, get_block_by_id, get_mongo_document, get_user_name, update_block_child_id, \
     asyncdb
 from utils.headline import generate_single_thread_headline
@@ -51,6 +52,8 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
             await generate_single_thread_headline(thread_id=created_thread["_id"], use_ai=False)
             asyncdb.threads_collection.update_one({'_id': created_thread['_id']},
                                                   {'$set': {'headline': 'blank thread'}}, upsert=True)
+            thread_id = created_thread["_id"]
+            await update_flags_other_users(thread_id, user_id, tenant_id)
         else:
             print("\n 5.a.3 Thread already exists")
             created_thread = old_thread
