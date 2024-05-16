@@ -10,6 +10,7 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**uploadFilesUploadFilesPost**](StorageApi.md#uploadfilesuploadfilespost) | **POST** /uploadFiles/ | Upload Files
+[**uploadFilesUploadFilesPost_0**](StorageApi.md#uploadfilesuploadfilespost_0) | **POST** /uploadFiles/ | Upload Files
 
 
 # **uploadFilesUploadFilesPost**
@@ -29,6 +30,47 @@ try {
     print(response);
 } catch on DioException (e) {
     print('Exception when calling StorageApi->uploadFilesUploadFilesPost: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **files** | [**List&lt;MultipartFile&gt;**](MultipartFile.md)|  | 
+
+### Return type
+
+[**FilesResponseModel**](FilesResponseModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: multipart/form-data
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **uploadFilesUploadFilesPost_0**
+> FilesResponseModel uploadFilesUploadFilesPost_0(files)
+
+Upload Files
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getStorageApi();
+final List<MultipartFile> files = /path/to/file.txt; // List<MultipartFile> | 
+
+try {
+    final response = api.uploadFilesUploadFilesPost_0(files);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling StorageApi->uploadFilesUploadFilesPost_0: $e\n');
 }
 ```
 

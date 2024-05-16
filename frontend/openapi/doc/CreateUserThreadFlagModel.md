@@ -9,9 +9,9 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **bookmark** | **bool** |  | [optional] 
-**read** | **bool** |  | [optional] 
 **threadId** | **String** |  | 
 **unfollow** | **bool** |  | [optional] 
+**unread** | **bool** |  | [optional] 
 **upvote** | **bool** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -44,7 +44,7 @@ void main() {
 
     // Filter
     //
-    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool read, bool unfollow, bool upvote }) async
+    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool unread, bool unfollow, bool upvote }) async
     test('test filterNewsfeedGet', () async {
       // TODO
     });

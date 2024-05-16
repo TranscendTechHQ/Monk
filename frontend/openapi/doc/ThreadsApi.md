@@ -230,7 +230,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **filterNewsfeedGet**
-> ThreadsMetaData filterNewsfeedGet(bookmark, read, unfollow, upvote)
+> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote)
 
 Filter
 
@@ -240,12 +240,12 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
 final bool bookmark = true; // bool | 
-final bool read = true; // bool | 
+final bool unread = true; // bool | 
 final bool unfollow = true; // bool | 
 final bool upvote = true; // bool | 
 
 try {
-    final response = api.filterNewsfeedGet(bookmark, read, unfollow, upvote);
+    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->filterNewsfeedGet: $e\n');
@@ -257,7 +257,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **bookmark** | **bool**|  | [optional] [default to false]
- **read** | **bool**|  | [optional] [default to false]
+ **unread** | **bool**|  | [optional] [default to false]
  **unfollow** | **bool**|  | [optional] [default to false]
  **upvote** | **bool**|  | [optional] [default to false]
 

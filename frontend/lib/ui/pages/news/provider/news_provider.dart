@@ -30,7 +30,7 @@ class NewsFeed extends _$NewsFeed {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
       bookmark: bookmark,
-      read: unRead,
+      unread: unRead,
       unfollow: unfollow,
       upvote: upvote,
     );
@@ -49,7 +49,7 @@ class NewsFeed extends _$NewsFeed {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
       bookmark: bookmark,
-      read: unRead,
+      unread: unRead,
       unfollow: unfollow,
       upvote: upvote,
     );
@@ -101,7 +101,7 @@ class NewsCardPod extends _$NewsCardPod {
         createUserThreadFlagModel: CreateUserThreadFlagModel(
           threadId: threadId,
           bookmark: bookmark,
-          read: unRead,
+          unread: unRead,
           unfollow: unfollow,
           upvote: upvote,
         ),

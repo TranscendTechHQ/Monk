@@ -57,11 +57,6 @@ void main() {
       // TODO
     });
 
-    // bool read (default value: false)
-    test('to test the property `read`', () async {
-      // TODO
-    });
-
     // String title
     test('to test the property `title`', () async {
       // TODO
@@ -74,6 +69,11 @@ void main() {
 
     // bool unfollow (default value: false)
     test('to test the property `unfollow`', () async {
+      // TODO
+    });
+
+    // bool unread (default value: true)
+    test('to test the property `unread`', () async {
       // TODO
     });
 

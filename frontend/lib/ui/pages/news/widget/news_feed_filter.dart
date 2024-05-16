@@ -64,7 +64,7 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
                   unRead = val!;
                 });
               },
-              title: const Text('Read')),
+              title: const Text('Unread')),
           CheckboxListTile(
               value: bookmarked,
               onChanged: (val) {

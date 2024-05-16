@@ -14,5 +14,12 @@ void main() {
       // TODO
     });
 
+    // Upload Files
+    //
+    //Future<FilesResponseModel> uploadFilesUploadFilesPost_0(List<MultipartFile> files) async
+    test('test uploadFilesUploadFilesPost_0', () async {
+      // TODO
+    });
+
   });
 }

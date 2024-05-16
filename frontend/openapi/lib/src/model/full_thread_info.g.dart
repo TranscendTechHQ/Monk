@@ -39,10 +39,10 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
               $checkedConvert('num_blocks', (v) => (v as num?)?.toInt() ?? 0),
           parentBlockId:
               $checkedConvert('parent_block_id', (v) => v as String?),
-          read: $checkedConvert('read', (v) => v as bool? ?? false),
           title: $checkedConvert('title', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
           unfollow: $checkedConvert('unfollow', (v) => v as bool? ?? false),
+          unread: $checkedConvert('unread', (v) => v as bool? ?? true),
           upvote: $checkedConvert('upvote', (v) => v as bool? ?? false),
         );
         return val;
@@ -77,10 +77,10 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
   writeNotNull('num_blocks', instance.numBlocks);
   writeNotNull('parent_block_id', instance.parentBlockId);
-  writeNotNull('read', instance.read);
   val['title'] = instance.title;
   val['type'] = instance.type;
   writeNotNull('unfollow', instance.unfollow);
+  writeNotNull('unread', instance.unread);
   writeNotNull('upvote', instance.upvote);
   return val;
 }

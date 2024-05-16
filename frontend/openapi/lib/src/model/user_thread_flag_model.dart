@@ -20,17 +20,17 @@ class UserThreadFlagModel {
 
      this.id,
 
-     this.bookmark = false,
-
-     this.read = false,
+    required  this.bookmark,
 
     required  this.tenantId,
 
     required  this.threadId,
 
-     this.unfollow = false,
+    required  this.unfollow,
 
-     this.upvote = false,
+    required  this.unread,
+
+    required  this.upvote,
 
     required  this.userId,
   });
@@ -48,26 +48,14 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'bookmark',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final bool? bookmark;
-
-
-
-  @JsonKey(
-    defaultValue: false,
-    name: r'read',
-    required: false,
-    includeIfNull: false
-  )
-
-
-  final bool? read;
+  final bool bookmark;
 
 
 
@@ -96,26 +84,38 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unfollow',
-    required: false,
+    required: true,
     includeIfNull: false
   )
 
 
-  final bool? unfollow;
+  final bool unfollow;
 
 
 
   @JsonKey(
-    defaultValue: false,
-    name: r'upvote',
-    required: false,
+    
+    name: r'unread',
+    required: true,
     includeIfNull: false
   )
 
 
-  final bool? upvote;
+  final bool unread;
+
+
+
+  @JsonKey(
+    
+    name: r'upvote',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final bool upvote;
 
 
 
@@ -135,10 +135,10 @@ class UserThreadFlagModel {
   bool operator ==(Object other) => identical(this, other) || other is UserThreadFlagModel &&
      other.id == id &&
      other.bookmark == bookmark &&
-     other.read == read &&
      other.tenantId == tenantId &&
      other.threadId == threadId &&
      other.unfollow == unfollow &&
+     other.unread == unread &&
      other.upvote == upvote &&
      other.userId == userId;
 
@@ -146,10 +146,10 @@ class UserThreadFlagModel {
   int get hashCode =>
     id.hashCode +
     bookmark.hashCode +
-    read.hashCode +
     tenantId.hashCode +
     threadId.hashCode +
     unfollow.hashCode +
+    unread.hashCode +
     upvote.hashCode +
     userId.hashCode;
 
