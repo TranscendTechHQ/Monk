@@ -12,6 +12,11 @@ void main() {
       // TODO
     });
 
+    // BlockModel block
+    test('to test the property `block`', () async {
+      // TODO
+    });
+
     // bool bookmark (default value: false)
     test('to test the property `bookmark`', () async {
       // TODO

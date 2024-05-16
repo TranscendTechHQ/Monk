@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -20,6 +21,8 @@ class ThreadMetaData {
   ThreadMetaData({
 
     required  this.id,
+
+     this.block,
 
      this.bookmark = false,
 
@@ -55,6 +58,18 @@ class ThreadMetaData {
 
 
   final String id;
+
+
+
+  @JsonKey(
+    
+    name: r'block',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final BlockModel? block;
 
 
 
@@ -205,6 +220,7 @@ class ThreadMetaData {
   @override
   bool operator ==(Object other) => identical(this, other) || other is ThreadMetaData &&
      other.id == id &&
+     other.block == block &&
      other.bookmark == bookmark &&
      other.createdAt == createdAt &&
      other.creator == creator &&
@@ -221,6 +237,7 @@ class ThreadMetaData {
   @override
   int get hashCode =>
     id.hashCode +
+    (block == null ? 0 : block.hashCode) +
     bookmark.hashCode +
     createdAt.hashCode +
     creator.hashCode +

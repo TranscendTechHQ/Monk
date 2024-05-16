@@ -17,6 +17,11 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
         );
         final val = FullThreadInfo(
           id: $checkedConvert('_id', (v) => v as String),
+          block: $checkedConvert(
+              'block',
+              (v) => v == null
+                  ? null
+                  : BlockModel.fromJson(v as Map<String, dynamic>)),
           bookmark: $checkedConvert('bookmark', (v) => v as bool? ?? false),
           content: $checkedConvert(
               'content',
@@ -68,6 +73,7 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
     }
   }
 
+  writeNotNull('block', instance.block?.toJson());
   writeNotNull('bookmark', instance.bookmark);
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
   val['created_at'] = instance.createdAt;

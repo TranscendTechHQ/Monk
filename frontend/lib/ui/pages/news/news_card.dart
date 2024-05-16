@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
@@ -8,6 +6,7 @@ import 'package:frontend/ui/theme/color/custom_color.g.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
+import 'package:frontend/ui/widgets/link_meta_card.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -113,15 +112,45 @@ class NewsCard extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        headline,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                          height: 1.5,
-                          color: context.colorScheme.onSurface.withOpacity(.6),
+                      if (metaData.block == null)
+                        Text(
+                          headline,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                            color:
+                                context.colorScheme.onSurface.withOpacity(.6),
+                          ),
+                        )
+                      else ...[
+                        SelectableText(
+                          metaData.block!.content,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 8),
+                        if (metaData.block!.image != null) ...[
+                          const SizedBox(height: 8),
+                          Container(
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.of(context).size.height * .3,
+                              maxWidth: MediaQuery.of(context).size.width,
+                              minWidth: MediaQuery.of(context).size.width,
+                            ),
+                            child: CacheImage(
+                              path: metaData.block!.image!,
+                              fit: BoxFit.fitHeight,
+                              tag: UniqueKey().toString(),
+                            ),
+                          ),
+                        ],
+                        LinkMetaCard(linkMeta: metaData.block!.linkMeta),
+                      ],
                       const SizedBox(height: 22),
                     ],
                   ).onPressed(() => launchThread(context, ref)),

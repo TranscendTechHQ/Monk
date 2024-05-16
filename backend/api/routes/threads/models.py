@@ -150,10 +150,10 @@ class UserThreadFlagModel(BaseModel):
     user_id: str
     thread_id: str
     tenant_id: str
-    unread: bool 
-    unfollow: bool 
-    bookmark: bool 
-    upvote: bool 
+    unread: bool
+    unfollow: bool
+    bookmark: bool
+    upvote: bool
 
 
 class UserThreadFlagsModel(BaseModel):
@@ -195,6 +195,7 @@ class ThreadMetaData(BaseModel):
     unfollow: bool = Field(default=False)
     bookmark: bool = Field(default=False)
     upvote: bool = Field(default=False)
+    block: Optional[BlockModel] = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,

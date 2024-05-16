@@ -17,6 +17,11 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
         );
         final val = ThreadMetaData(
           id: $checkedConvert('_id', (v) => v as String),
+          block: $checkedConvert(
+              'block',
+              (v) => v == null
+                  ? null
+                  : BlockModel.fromJson(v as Map<String, dynamic>)),
           bookmark: $checkedConvert('bookmark', (v) => v as bool? ?? false),
           createdAt: $checkedConvert('created_at', (v) => v as String),
           creator: $checkedConvert(
@@ -56,6 +61,7 @@ Map<String, dynamic> _$ThreadMetaDataToJson(ThreadMetaData instance) {
     }
   }
 
+  writeNotNull('block', instance.block?.toJson());
   writeNotNull('bookmark', instance.bookmark);
   val['created_at'] = instance.createdAt;
   val['creator'] = instance.creator.toJson();

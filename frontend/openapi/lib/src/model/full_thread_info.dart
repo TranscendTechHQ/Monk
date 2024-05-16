@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/block_with_creator.dart';
 import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -21,6 +22,8 @@ class FullThreadInfo {
   FullThreadInfo({
 
     required  this.id,
+
+     this.block,
 
      this.bookmark = false,
 
@@ -60,6 +63,18 @@ class FullThreadInfo {
 
 
   final String id;
+
+
+
+  @JsonKey(
+    
+    name: r'block',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final BlockModel? block;
 
 
 
@@ -234,6 +249,7 @@ class FullThreadInfo {
   @override
   bool operator ==(Object other) => identical(this, other) || other is FullThreadInfo &&
      other.id == id &&
+     other.block == block &&
      other.bookmark == bookmark &&
      other.content == content &&
      other.createdAt == createdAt &&
@@ -252,6 +268,7 @@ class FullThreadInfo {
   @override
   int get hashCode =>
     id.hashCode +
+    (block == null ? 0 : block.hashCode) +
     bookmark.hashCode +
     content.hashCode +
     createdAt.hashCode +

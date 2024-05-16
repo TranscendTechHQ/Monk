@@ -127,76 +127,119 @@ async def ti(request: Request,
 
 
 async def get_unfiltered_newsfeed(tenant_id, user_id):
-    default_flags = {"user_id": user_id, "unread": True, "bookmark": False, "upvote": False, "unfollow": False}
+    default_flags = {"user_id": user_id, "unread": True,
+                     "bookmark": False, "upvote": False, "unfollow": False}
 
     pipeline = [
         {
-            "$match": {"tenant_id": tenant_id}
+            '$match': {
+                'tenant_id': tenant_id
+            }
         },
+        # Get all blocks for the thread
         {
-            "$lookup": {
-                "from": "users",
-                "localField": "creator_id",
-                "foreignField": "_id",
-                "as": "creator"
+            '$lookup': {
+                'from': 'blocks',
+                'localField': '_id',
+                'foreignField': 'main_thread_id',
+                'as': 'blocks'
+            }
+        },
+        # Sort the blocks by created_at
+        {
+            '$set': {
+                'blocks': {
+                    '$sortArray': {
+                        'input': '$blocks',
+                        'sortBy': {
+                            'created_at': 1
+                        }
+                    }
+                }
+            }
+        },
+        # Take the first block as this is the first block of the thread
+        {
+            '$addFields': {
+                'block': {
+                    '$first': '$blocks'
+                }
             }
         },
         {
-            "$unwind": "$creator"
+            '$lookup': {
+                'from': 'users',
+                'localField': 'creator_id',
+                'foreignField': '_id',
+                'as': 'creator'
+            }
         },
         {
-            "$lookup": {
-                "from": "user_thread_flags",
-                "localField": "_id",
-                "foreignField": "thread_id",
-                "as": "user_thread_flags",
-                "pipeline": [
+            '$unwind': '$creator'
+        },
+        {
+            '$lookup': {
+                'from': 'user_thread_flags',
+                'localField': '_id',
+                'foreignField': 'thread_id',
+                'as': 'user_thread_flags',
+                'pipeline': [
                     {
-                        "$match": {"user_id": user_id}  # Filter by user_id here
+                        '$match': {
+                            'user_id': user_id
+                        }
                     }
                 ]
             }
         },
         {
-            "$addFields": {
-                "user_thread_flags": {
-                    "$cond": {
-                        "if": {"$eq": [{"$size": "$user_thread_flags"}, 0]},
-                        "then": default_flags,
-                        "else": {
-                            "$arrayElemAt": ["$user_thread_flags", 0]  # Assuming only one matching flag (optional)
+            '$addFields': {
+                'user_thread_flags': {
+                    '$cond': {
+                        'if': {
+                            '$eq': [
+                                {
+                                    '$size': '$user_thread_flags'
+                                }, 0
+                            ]
+                        },
+                        'then': default_flags,
+                        'else': {
+                            '$arrayElemAt': [
+                                '$user_thread_flags', 0
+                            ]
                         }
                     }
                 }
             }
         },
         {
-            "$project": {
-                "_id": 1,
-                "title": 1,
-                "type": 1,
-                "created_at": 1,
-                "headline": 1,
-                "last_modified": 1,
-                "creator._id": 1,
-                "creator.name": 1,
-                "creator.picture": 1,
-                "unread": "$user_thread_flags.unread",
-                "bookmark": "$user_thread_flags.bookmark",
-                "upvote": "$user_thread_flags.upvote",
-                "unfollow": "$user_thread_flags.unfollow"
+            '$project': {
+                '_id': 1,
+                'title': 1,
+                'type': 1,
+                'created_at': 1,
+                'headline': 1,
+                'last_modified': 1,
+                'block': 1,
+                'creator._id': 1,
+                'creator.name': 1,
+                'creator.picture': 1,
+                'unread': '$user_thread_flags.unread',
+                'bookmark': '$user_thread_flags.bookmark',
+                'upvote': '$user_thread_flags.upvote',
+                'unfollow': '$user_thread_flags.unfollow'
             }
         },
         {
-            "$sort": {
-                "last_modified": -1
+            '$sort': {
+                'last_modified': -1
             }
         }
     ]
 
     result = asyncdb.threads_collection.aggregate(pipeline)
     return result
-
 
 
 async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote):
@@ -217,6 +260,36 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, 
                 "tenant_id": tenant_id,
                 "user_id": user_id,
                 "$and": user_flags
+            }
+        },
+        # Get all blocks for the thread
+        {
+            '$lookup': {
+                'from': 'blocks',
+                'localField': '_id',
+                'foreignField': 'main_thread_id',
+                'as': 'blocks'
+            }
+        },
+        # Sort the blocks by created_at
+        {
+            '$set': {
+                'blocks': {
+                    '$sortArray': {
+                        'input': '$blocks',
+                        'sortBy': {
+                            'created_at': 1
+                        }
+                    }
+                }
+            }
+        },
+        # Take the first block as this is the first block of the thread
+        {
+            '$addFields': {
+                'block': {
+                    '$first': '$blocks'
+                }
             }
         },
         {
@@ -259,6 +332,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, 
                 "type": 1,
                 "created_at": 1,
                 "headline": 1,
+                "block": 1,
                 "last_modified": 1,
                 "creator._id": 1,
                 "creator.name": 1,
@@ -595,7 +669,7 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
 
         # user is now reading the thread so set unread to false
         await update_user_flags(thread_to_return["_id"], user_id, tenant_id, unread=False)
-            
+
         # Check if thread contains and empty default block
         # If yes, then remove the key from object
         if thread_to_return['default_block'].keys():
@@ -647,12 +721,11 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         part_2 = time.time()
         print(
             f"profiling Time elapsed for create_new_block(): {part_2 - part_1:.6f} seconds")
-        
+
     #  as we modify a thread, we need to update the user_thread_flags
     # to indicate that the all other users other than the creator have an unread thread:
         await update_flags_other_users(thread_id, user_id, tenant_id)
 
-    
         end_time = time.time()
         print(
             f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
@@ -672,7 +745,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
                  session: SessionContainer = Depends(verify_session())):
 
     print("\nReceived request to update block")
-    
+
     block_collection = request.app.mongodb["blocks"]
 
     # Logic to store the block in MongoDB backend database
@@ -709,10 +782,10 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     print("\n Updating block in db")
 
     updated_block = await update_mongo_document_fields({"_id": id}, update_block, block_collection)
-    
+
     thread_id = updated_block["main_thread_id"]
     await update_flags_other_users(thread_id, user_id, tenant_id)
-    
+
     logger.debug("\n Block updated in DB")
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(updated_block))
@@ -745,7 +818,7 @@ async def update_block_task_status(request: Request, id: str, task_status: str =
         await update_mongo_document_fields({"_id": id}, {"task_status": task_status, 'last_modified': str(dt.datetime.now())}, block_collection)
 
         updated_block = await get_creator_block_by_id(id, block_collection)
-        
+
         thread_id = updated_block["main_thread_id"]
         tenant_id = get_tenant_id(session)
         await update_flags_other_users(thread_id, user_id, tenant_id)
@@ -775,7 +848,6 @@ async def update_block_position(request: Request, id: str, block_position: Updat
 
         user_id = session.get_user_id()
 
-        
         tenant_id = await get_tenant_id(session)
 
         # TODO: Who is allowed to update the block position? Thread creator or block creator?
@@ -830,9 +902,8 @@ async def update_block_position(request: Request, id: str, block_position: Updat
             print(
                 f"    → Changing block position from {blocks[i]['content']} to {new_block_position}"),
 
-        
         await update_flags_other_users(thread_id, user_id, tenant_id)
-        
+
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(block_to_move))
     except Exception as e:
@@ -1004,6 +1075,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
     if tenant_id != jsonable_encoder(thread)["tenant_id"]:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
-    print(f"🔍 updating thread flag with thread_id {thread_id} user_id {user_id} tenant_id {tenant_id}: unread {unread}, unfollow {unfollow}, bookmark {bookmark}, upvote {upvote}")
+    print(
+        f"🔍 updating thread flag with thread_id {thread_id} user_id {user_id} tenant_id {tenant_id}: unread {unread}, unfollow {unfollow}, bookmark {bookmark}, upvote {upvote}")
     updated_user_thread_flag = await update_user_flags(thread_id, user_id, tenant_id, unread, upvote, bookmark, unfollow)
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(updated_user_thread_flag))
