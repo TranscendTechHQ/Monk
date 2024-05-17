@@ -51,20 +51,17 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
                 ).pH(8),
                 CloseButton(
                   style: ButtonStyle(
-                    maximumSize: MaterialStateProperty.all(
-                      const Size(40, 40),
-                    ),
                     minimumSize: MaterialStateProperty.all(
                       const Size(20, 20),
                     ),
                     padding: MaterialStateProperty.all(
-                      const EdgeInsets.all(0),
+                      const EdgeInsets.all(8),
                     ),
                     iconSize: MaterialStateProperty.all(14.0),
                     backgroundColor: MaterialStateProperty.all(
                         context.customColors.alertContainer),
                   ),
-                )
+                ).p(8)
               ],
             ),
           ),

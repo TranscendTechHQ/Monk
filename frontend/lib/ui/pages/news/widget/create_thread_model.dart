@@ -6,6 +6,8 @@ import 'package:frontend/ui/pages/news/widget/provider/create_thread_provider.da
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 
+import '../../../theme/color/custom_color.g.dart';
+
 class CreateThreadModal extends ConsumerWidget {
   const CreateThreadModal(
       {super.key, this.type = 'chat', required this.titlesList});
@@ -22,7 +24,10 @@ class CreateThreadModal extends ConsumerWidget {
           elevation: 0.0,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
-          backgroundColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: context.colorScheme.secondaryContainer,
           child: CreateThreadModal(titlesList: titlesList, type: type),
         );
       },
@@ -88,24 +93,53 @@ class CreateThreadModal extends ConsumerWidget {
       constraints:
           const BoxConstraints(maxWidth: 400, maxHeight: 400, minHeight: 200),
       decoration: BoxDecoration(
-        color: context.colorScheme.surface,
+        color: context.colorScheme.secondaryContainer.withOpacity(.5),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
+        border: Border.all(
+          color: context.customColors.monkBlue!,
+          width: .3,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'New Thread',
-                style: context.textTheme.bodyLarge,
-              ),
-              const CloseButton()
+              Text(type == "chat" ? 'New Thread' : "New Todo",
+                  style: context.textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w400)),
+              CloseButton(
+                style: ButtonStyle(
+                  maximumSize: MaterialStateProperty.all(
+                    const Size(40, 40),
+                  ),
+                  minimumSize: MaterialStateProperty.all(
+                    const Size(20, 20),
+                  ),
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.all(0),
+                  ),
+                  iconSize: MaterialStateProperty.all(14.0),
+                  backgroundColor: MaterialStateProperty.all(
+                      context.customColors.alertContainer),
+                ),
+              )
             ],
           ),
-          const Divider(),
-          const Padding(padding: EdgeInsets.all(8)),
+          const SizedBox(height: 8),
+          Divider(
+            color: context.customColors.monkBlue!,
+            thickness: .2,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            type == 'chat' ? 'Thread Title' : 'Todo Title',
+            style: context.textTheme.bodySmall?.copyWith(
+              color: monkBlue,
+            ),
+          ),
           TextField(
             maxLength: 120,
             controller: titleController,
@@ -117,14 +151,13 @@ class CreateThreadModal extends ConsumerWidget {
               messageController.text,
             ),
             decoration: InputDecoration(
-                hintText: 'Title',
+                hintText: 'Type in ...',
                 filled: false,
-                hintStyle: context.textTheme.bodyMedium?.copyWith(
+                hintStyle: context.textTheme.bodySmall?.copyWith(
                   color: context.colorScheme.onSurface.withOpacity(.4),
                 ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: context.colorScheme.onSurface.withOpacity(.5)),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: monkBlue),
                 ),
                 focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
@@ -140,48 +173,57 @@ class CreateThreadModal extends ConsumerWidget {
                 )),
           ),
           const Padding(padding: EdgeInsets.all(8)),
+          Text(
+            'First Message',
+            style: context.textTheme.bodySmall?.copyWith(
+              color: monkBlue,
+            ),
+          ),
           TextFormField(
             minLines: 1,
             maxLines: 4,
+            maxLength: 140,
             controller: messageController,
             decoration: InputDecoration(
-              hintText: 'First Message',
+              hintText: 'Type in ...',
               filled: false,
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                    color: context.colorScheme.onSurface.withOpacity(.5)),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: monkBlue),
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
                     color: context.colorScheme.onSurface.withOpacity(.8)),
               ),
-              hintStyle: context.textTheme.bodyMedium?.copyWith(
+              hintStyle: context.textTheme.bodySmall?.copyWith(
                 color: context.colorScheme.onSurface.withOpacity(.4),
               ),
             ),
           ),
           const SizedBox(height: 16),
-          FilledButton.tonal(
-            onPressed: () async => createThread(
-              context,
-              ref,
-              titleController.text,
-              messageController.text,
-            ),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-                context.colorScheme.secondary,
+          Center(
+            child: FilledButton.tonal(
+              onPressed: () async => createThread(
+                context,
+                ref,
+                titleController.text,
+                messageController.text,
               ),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(monkBlue700),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
-            ),
-            child: Text(
-              'Create',
-              style: context.textTheme.bodyMedium?.copyWith(
-                color: context.colorScheme.onSecondary,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Create',
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: context.colorScheme.onPrimary,
+                  ),
+                ),
               ),
             ),
           ),
