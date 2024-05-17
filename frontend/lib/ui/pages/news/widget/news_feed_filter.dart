@@ -49,10 +49,22 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
                     ),
                   ),
                 ).pH(8),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.close),
-                ),
+                CloseButton(
+                  style: ButtonStyle(
+                    maximumSize: MaterialStateProperty.all(
+                      const Size(40, 40),
+                    ),
+                    minimumSize: MaterialStateProperty.all(
+                      const Size(20, 20),
+                    ),
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.all(0),
+                    ),
+                    iconSize: MaterialStateProperty.all(14.0),
+                    backgroundColor: MaterialStateProperty.all(
+                        context.customColors.alertContainer),
+                  ),
+                )
               ],
             ),
           ),

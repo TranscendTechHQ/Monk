@@ -17,7 +17,7 @@ void main() {
       // TODO
     });
 
-    // bool bookmark (default value: false)
+    // bool bookmark
     test('to test the property `bookmark`', () async {
       // TODO
     });
@@ -62,17 +62,17 @@ void main() {
       // TODO
     });
 
-    // bool unfollow (default value: false)
+    // bool unfollow
     test('to test the property `unfollow`', () async {
       // TODO
     });
 
-    // bool unread (default value: true)
+    // bool unread
     test('to test the property `unread`', () async {
       // TODO
     });
 
-    // bool upvote (default value: false)
+    // bool upvote
     test('to test the property `upvote`', () async {
       // TODO
     });

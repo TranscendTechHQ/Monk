@@ -97,7 +97,7 @@ class NewsPage extends ConsumerWidget {
                       OutlineIconButton(
                         wrapped: false,
                         svgPath: 'todo.svg',
-                        label: 'Chat',
+                        label: 'Todo',
                         iconSize: 16,
                         onPressed: () {
                           CreateThreadModal.show(context,

@@ -25,7 +25,7 @@ from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel,
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
-from routes.threads.user_flags import update_flags_other_users, update_user_flags
+from routes.threads.user_flags import set_unread_true_other_users, update_user_flags
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -127,8 +127,8 @@ async def ti(request: Request,
 
 
 async def get_unfiltered_newsfeed(tenant_id, user_id):
-    default_flags = {"user_id": user_id, "unread": True,
-                     "bookmark": False, "upvote": False, "unfollow": False}
+    default_flags = {"user_id": user_id, "unread": None,
+                     "bookmark": None, "upvote": None, "unfollow": None}
 
     pipeline = [
         {
@@ -381,7 +381,7 @@ async def filter(
         aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id, user_id=user_id)
 
     aggregate = await aggregate.to_list(None)
-    print(aggregate.__len__())
+    #print(aggregate)
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
@@ -724,7 +724,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
 
     #  as we modify a thread, we need to update the user_thread_flags
     # to indicate that the all other users other than the creator have an unread thread:
-        await update_flags_other_users(thread_id, user_id, tenant_id)
+        await set_unread_true_other_users(thread_id, user_id, tenant_id)
 
         end_time = time.time()
         print(
@@ -784,7 +784,7 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     updated_block = await update_mongo_document_fields({"_id": id}, update_block, block_collection)
 
     thread_id = updated_block["main_thread_id"]
-    await update_flags_other_users(thread_id, user_id, tenant_id)
+    await set_unread_true_other_users(thread_id, user_id, tenant_id)
 
     logger.debug("\n Block updated in DB")
     return JSONResponse(status_code=status.HTTP_200_OK,
@@ -821,7 +821,7 @@ async def update_block_task_status(request: Request, id: str, task_status: str =
 
         thread_id = updated_block["main_thread_id"]
         tenant_id = get_tenant_id(session)
-        await update_flags_other_users(thread_id, user_id, tenant_id)
+        await set_unread_true_other_users(thread_id, user_id, tenant_id)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(updated_block))
@@ -902,7 +902,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
             print(
                 f"    → Changing block position from {blocks[i]['content']} to {new_block_position}"),
 
-        await update_flags_other_users(thread_id, user_id, tenant_id)
+        await set_unread_true_other_users(thread_id, user_id, tenant_id)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(block_to_move))
@@ -1048,7 +1048,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
 
         ret_thread = await get_thread_from_db(updated_thread["_id"], user_id, tenant_id)
         thread_id = ret_thread["_id"]
-        await update_flags_other_users(thread_id, user_id, tenant_id)
+        await set_unread_true_other_users(thread_id, user_id, tenant_id)
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(ret_thread))
     except Exception as e:

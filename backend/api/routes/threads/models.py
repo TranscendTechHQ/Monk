@@ -150,10 +150,10 @@ class UserThreadFlagModel(BaseModel):
     user_id: str
     thread_id: str
     tenant_id: str
-    unread: bool
-    unfollow: bool
-    bookmark: bool
-    upvote: bool
+    unread: Optional[bool] = Field(default=None, null=True)
+    unfollow: Optional[bool] = Field(default=None, null=True)
+    bookmark: Optional[bool] = Field(default=None, null=True)
+    upvote: Optional[bool] = Field(default=None, null=True)
 
 
 class UserThreadFlagsModel(BaseModel):
@@ -162,10 +162,10 @@ class UserThreadFlagsModel(BaseModel):
 
 class CreateUserThreadFlagModel(BaseModel):
     thread_id: str
-    unread: bool = Field(default=None)
-    unfollow: bool = Field(default=None)
-    bookmark: bool = Field(default=None)
-    upvote: bool = Field(default=None)
+    unread: Optional[bool] = Field(default=None, null=True)
+    unfollow: Optional[bool] = Field(default=None, null=True)
+    bookmark: Optional[bool] = Field(default=None, null=True)
+    upvote: Optional[bool] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -191,10 +191,10 @@ class ThreadMetaData(BaseModel):
     parent_block_id: Optional[str] = Field(default=None)
     headline: str = Field(default=None)
     num_blocks: int = Field(default=0)
-    unread: bool = Field(default=True)
-    unfollow: bool = Field(default=False)
-    bookmark: bool = Field(default=False)
-    upvote: bool = Field(default=False)
+    unread: Optional[bool] = Field(default=None, null=True)
+    unfollow: Optional[bool] = Field(default=None, null=True)
+    bookmark: Optional[bool] = Field(default=None, null=True)
+    upvote: Optional[bool] = Field(default=None, null=True)
     block: Optional[BlockModel] = Field(default=None)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,

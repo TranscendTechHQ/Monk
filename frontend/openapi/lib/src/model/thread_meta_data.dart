@@ -24,7 +24,7 @@ class ThreadMetaData {
 
      this.block,
 
-     this.bookmark = false,
+     this.bookmark,
 
     required  this.createdAt,
 
@@ -42,11 +42,11 @@ class ThreadMetaData {
 
     required  this.type,
 
-     this.unfollow = false,
+     this.unfollow,
 
-     this.unread = true,
+     this.unread,
 
-     this.upvote = false,
+     this.upvote,
   });
 
   @JsonKey(
@@ -74,7 +74,7 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'bookmark',
     required: false,
     includeIfNull: false
@@ -182,7 +182,7 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unfollow',
     required: false,
     includeIfNull: false
@@ -194,7 +194,7 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: true,
+    
     name: r'unread',
     required: false,
     includeIfNull: false
@@ -206,7 +206,7 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'upvote',
     required: false,
     includeIfNull: false
@@ -238,7 +238,7 @@ class ThreadMetaData {
   int get hashCode =>
     id.hashCode +
     (block == null ? 0 : block.hashCode) +
-    bookmark.hashCode +
+    (bookmark == null ? 0 : bookmark.hashCode) +
     createdAt.hashCode +
     creator.hashCode +
     headline.hashCode +
@@ -247,9 +247,9 @@ class ThreadMetaData {
     (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     title.hashCode +
     type.hashCode +
-    unfollow.hashCode +
-    unread.hashCode +
-    upvote.hashCode;
+    (unfollow == null ? 0 : unfollow.hashCode) +
+    (unread == null ? 0 : unread.hashCode) +
+    (upvote == null ? 0 : upvote.hashCode);
 
   factory ThreadMetaData.fromJson(Map<String, dynamic> json) => _$ThreadMetaDataFromJson(json);
 

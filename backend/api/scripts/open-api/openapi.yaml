@@ -236,20 +236,32 @@ components:
     CreateUserThreadFlagModel:
       properties:
         bookmark:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Bookmark
-          type: boolean
         thread_id:
           title: Thread Id
           type: string
         unfollow:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unfollow
-          type: boolean
         unread:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unread
-          type: boolean
         upvote:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Upvote
-          type: boolean
       required:
       - thread_id
       title: CreateUserThreadFlagModel
@@ -273,9 +285,11 @@ components:
           - $ref: '#/components/schemas/BlockModel'
           - type: 'null'
         bookmark:
-          default: false
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Bookmark
-          type: boolean
         content:
           items:
             $ref: '#/components/schemas/BlockWithCreator'
@@ -312,17 +326,23 @@ components:
           title: Type
           type: string
         unfollow:
-          default: false
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unfollow
-          type: boolean
         unread:
-          default: true
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unread
-          type: boolean
         upvote:
-          default: false
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Upvote
-          type: boolean
       required:
       - _id
       - title
@@ -431,9 +451,11 @@ components:
           - $ref: '#/components/schemas/BlockModel'
           - type: 'null'
         bookmark:
-          default: false
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Bookmark
-          type: boolean
         created_at:
           title: Created At
           type: string
@@ -462,17 +484,23 @@ components:
           title: Type
           type: string
         unfollow:
-          default: false
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unfollow
-          type: boolean
         unread:
-          default: true
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unread
-          type: boolean
         upvote:
-          default: false
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Upvote
-          type: boolean
       required:
       - _id
       - title
@@ -646,8 +674,11 @@ components:
           title: ' Id'
           type: string
         bookmark:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Bookmark
-          type: boolean
         tenant_id:
           title: Tenant Id
           type: string
@@ -655,14 +686,23 @@ components:
           title: Thread Id
           type: string
         unfollow:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unfollow
-          type: boolean
         unread:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Unread
-          type: boolean
         upvote:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
           title: Upvote
-          type: boolean
         user_id:
           title: User Id
           type: string
@@ -670,10 +710,6 @@ components:
       - user_id
       - thread_id
       - tenant_id
-      - unread
-      - unfollow
-      - bookmark
-      - upvote
       title: UserThreadFlagModel
       type: object
     ValidationError:

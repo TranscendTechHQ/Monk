@@ -25,7 +25,7 @@ class FullThreadInfo {
 
      this.block,
 
-     this.bookmark = false,
+     this.bookmark,
 
      this.content,
 
@@ -47,11 +47,11 @@ class FullThreadInfo {
 
     required  this.type,
 
-     this.unfollow = false,
+     this.unfollow,
 
-     this.unread = true,
+     this.unread,
 
-     this.upvote = false,
+     this.upvote,
   });
 
   @JsonKey(
@@ -79,7 +79,7 @@ class FullThreadInfo {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'bookmark',
     required: false,
     includeIfNull: false
@@ -211,7 +211,7 @@ class FullThreadInfo {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unfollow',
     required: false,
     includeIfNull: false
@@ -223,7 +223,7 @@ class FullThreadInfo {
 
 
   @JsonKey(
-    defaultValue: true,
+    
     name: r'unread',
     required: false,
     includeIfNull: false
@@ -235,7 +235,7 @@ class FullThreadInfo {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'upvote',
     required: false,
     includeIfNull: false
@@ -269,7 +269,7 @@ class FullThreadInfo {
   int get hashCode =>
     id.hashCode +
     (block == null ? 0 : block.hashCode) +
-    bookmark.hashCode +
+    (bookmark == null ? 0 : bookmark.hashCode) +
     content.hashCode +
     createdAt.hashCode +
     creator.hashCode +
@@ -280,9 +280,9 @@ class FullThreadInfo {
     (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     title.hashCode +
     type.hashCode +
-    unfollow.hashCode +
-    unread.hashCode +
-    upvote.hashCode;
+    (unfollow == null ? 0 : unfollow.hashCode) +
+    (unread == null ? 0 : unread.hashCode) +
+    (upvote == null ? 0 : upvote.hashCode);
 
   factory FullThreadInfo.fromJson(Map<String, dynamic> json) => _$FullThreadInfoFromJson(json);
 
