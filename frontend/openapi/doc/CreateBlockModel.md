@@ -9,6 +9,7 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **content** | **String** |  | 
+**dueDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **image** | **String** |  | [optional] 
 **mainThreadId** | **String** |  | 
 

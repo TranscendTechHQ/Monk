@@ -42,7 +42,8 @@ class CreateThreadPod extends _$CreateThreadPod {
   }
 
   Future<BlockWithCreator?> createBlock(
-      String content, String threadTitle, String mainThreadId) async {
+      String content, String threadTitle, String mainThreadId,
+      {DateTime? dueDate}) async {
     final res = await AsyncRequest.handle<BlockWithCreator>(() async {
       logger.d("creating new Thread title $content");
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
@@ -52,6 +53,7 @@ class CreateThreadPod extends _$CreateThreadPod {
         createBlockModel: CreateBlockModel(
           content: content,
           mainThreadId: mainThreadId,
+          dueDate: dueDate,
         ),
       );
       return newThreadState.data!;

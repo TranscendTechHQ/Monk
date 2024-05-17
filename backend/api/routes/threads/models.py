@@ -56,6 +56,7 @@ class BlockModel(BaseModel):
     image: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.now)
     last_modified: datetime = Field(default_factory=datetime.now)
+    due_date: Optional[dt.datetime] = Field(default=None)
     creator_id: str = Field(default="unknown id")
     main_thread_id: str = Field(default="")
     position: int = Field(default=0)
@@ -68,6 +69,7 @@ class BlockModel(BaseModel):
 
 class CreateBlockModel(BaseModel):
     content: str
+    due_date: Optional[dt.datetime] = Field(default=None)
     image: Optional[str] = Field(default=None)
     main_thread_id: str
     model_config = ConfigDict(extra='ignore',
@@ -95,8 +97,7 @@ ThreadType = Annotated[str, AfterValidator(allowed_thread_types)]
 
 class CreateThreadModel(BaseModel):
     type: ThreadType
-    title: str = Field(..., min_length=1, max_length=100,
-                       pattern="^[a-zA-Z0-9]+$")
+    title: str = Field(..., min_length=1, max_length=60)
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
@@ -115,8 +116,7 @@ class ThreadModel(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     last_modified: str
     type: ThreadType
-    title: str = Field(..., min_length=1, max_length=100,
-                       pattern="^[a-zA-Z0-9]+$")
+    title: str = Field(..., min_length=1, max_length=60)
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     headline: str = Field(default=None)
     tenant_id: str

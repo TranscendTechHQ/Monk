@@ -29,6 +29,8 @@ class BlockModel {
 
      this.creatorId = 'unknown id',
 
+     this.dueDate,
+
      this.image,
 
      this.lastModified,
@@ -101,6 +103,18 @@ class BlockModel {
 
 
   final String? creatorId;
+
+
+
+  @JsonKey(
+    
+    name: r'due_date',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? dueDate;
 
 
 
@@ -195,6 +209,7 @@ class BlockModel {
      other.content == content &&
      other.createdAt == createdAt &&
      other.creatorId == creatorId &&
+     other.dueDate == dueDate &&
      other.image == image &&
      other.lastModified == lastModified &&
      other.linkMeta == linkMeta &&
@@ -210,6 +225,7 @@ class BlockModel {
     content.hashCode +
     createdAt.hashCode +
     creatorId.hashCode +
+    (dueDate == null ? 0 : dueDate.hashCode) +
     (image == null ? 0 : image.hashCode) +
     lastModified.hashCode +
     (linkMeta == null ? 0 : linkMeta.hashCode) +

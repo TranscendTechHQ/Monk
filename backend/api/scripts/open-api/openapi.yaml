@@ -20,6 +20,12 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        due_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Due Date
         image:
           anyOf:
           - type: string
@@ -76,6 +82,12 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        due_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Due Date
         image:
           anyOf:
           - type: string
@@ -170,6 +182,12 @@ components:
         content:
           title: Content
           type: string
+        due_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Due Date
         image:
           anyOf:
           - type: string
@@ -197,9 +215,8 @@ components:
           title: Parentblockid
           type: string
         title:
-          maxLength: 100
+          maxLength: 60
           minLength: 1
-          pattern: ^[a-zA-Z0-9]+$
           title: Title
           type: string
         type:
@@ -220,9 +237,8 @@ components:
           title: Content
           type: array
         title:
-          maxLength: 100
+          maxLength: 60
           minLength: 1
-          pattern: ^[a-zA-Z0-9]+$
           title: Title
           type: string
         type:
@@ -552,9 +568,8 @@ components:
           title: Tenant Id
           type: string
         title:
-          maxLength: 100
+          maxLength: 60
           minLength: 1
-          pattern: ^[a-zA-Z0-9]+$
           title: Title
           type: string
         type:
