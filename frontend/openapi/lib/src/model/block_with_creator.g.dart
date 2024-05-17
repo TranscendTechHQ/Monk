@@ -26,6 +26,8 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
               'creator', (v) => UserModel.fromJson(v as Map<String, dynamic>)),
           creatorId: $checkedConvert(
               'creator_id', (v) => v as String? ?? 'unknown id'),
+          dueDate: $checkedConvert('due_date',
+              (v) => v == null ? null : DateTime.parse(v as String)),
           image: $checkedConvert('image', (v) => v as String?),
           lastModified: $checkedConvert('last_modified',
               (v) => v == null ? null : DateTime.parse(v as String)),
@@ -49,6 +51,7 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
         'childThreadId': 'child_thread_id',
         'createdAt': 'created_at',
         'creatorId': 'creator_id',
+        'dueDate': 'due_date',
         'lastModified': 'last_modified',
         'linkMeta': 'link_meta',
         'mainThreadId': 'main_thread_id',
@@ -72,6 +75,7 @@ Map<String, dynamic> _$BlockWithCreatorToJson(BlockWithCreator instance) {
   writeNotNull('created_at', instance.createdAt?.toIso8601String());
   val['creator'] = instance.creator.toJson();
   writeNotNull('creator_id', instance.creatorId);
+  writeNotNull('due_date', instance.dueDate?.toIso8601String());
   writeNotNull('image', instance.image);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
   writeNotNull('link_meta', instance.linkMeta?.toJson());

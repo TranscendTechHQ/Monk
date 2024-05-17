@@ -17,12 +17,17 @@ CreateBlockModel _$CreateBlockModelFromJson(Map<String, dynamic> json) =>
         );
         final val = CreateBlockModel(
           content: $checkedConvert('content', (v) => v as String),
+          dueDate: $checkedConvert('due_date',
+              (v) => v == null ? null : DateTime.parse(v as String)),
           image: $checkedConvert('image', (v) => v as String?),
           mainThreadId: $checkedConvert('main_thread_id', (v) => v as String),
         );
         return val;
       },
-      fieldKeyMap: const {'mainThreadId': 'main_thread_id'},
+      fieldKeyMap: const {
+        'dueDate': 'due_date',
+        'mainThreadId': 'main_thread_id'
+      },
     );
 
 Map<String, dynamic> _$CreateBlockModelToJson(CreateBlockModel instance) {
@@ -36,6 +41,7 @@ Map<String, dynamic> _$CreateBlockModelToJson(CreateBlockModel instance) {
     }
   }
 
+  writeNotNull('due_date', instance.dueDate?.toIso8601String());
   writeNotNull('image', instance.image);
   val['main_thread_id'] = instance.mainThreadId;
   return val;

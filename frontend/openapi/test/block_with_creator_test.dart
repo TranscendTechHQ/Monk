@@ -37,6 +37,11 @@ void main() {
       // TODO
     });
 
+    // DateTime dueDate
+    test('to test the property `dueDate`', () async {
+      // TODO
+    });
+
     // String image
     test('to test the property `image`', () async {
       // TODO

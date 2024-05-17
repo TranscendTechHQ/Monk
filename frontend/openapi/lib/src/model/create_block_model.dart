@@ -20,6 +20,8 @@ class CreateBlockModel {
 
     required  this.content,
 
+     this.dueDate,
+
      this.image,
 
     required  this.mainThreadId,
@@ -34,6 +36,18 @@ class CreateBlockModel {
 
 
   final String content;
+
+
+
+  @JsonKey(
+    
+    name: r'due_date',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final DateTime? dueDate;
 
 
 
@@ -64,12 +78,14 @@ class CreateBlockModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateBlockModel &&
      other.content == content &&
+     other.dueDate == dueDate &&
      other.image == image &&
      other.mainThreadId == mainThreadId;
 
   @override
   int get hashCode =>
     content.hashCode +
+    (dueDate == null ? 0 : dueDate.hashCode) +
     (image == null ? 0 : image.hashCode) +
     mainThreadId.hashCode;
 

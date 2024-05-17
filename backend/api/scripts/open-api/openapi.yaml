@@ -20,6 +20,12 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        due_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Due Date
         image:
           anyOf:
           - type: string
@@ -76,6 +82,12 @@ components:
           default: unknown id
           title: Creator Id
           type: string
+        due_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Due Date
         image:
           anyOf:
           - type: string
@@ -170,6 +182,12 @@ components:
         content:
           title: Content
           type: string
+        due_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: Due Date
         image:
           anyOf:
           - type: string

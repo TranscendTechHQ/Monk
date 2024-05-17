@@ -56,6 +56,7 @@ class BlockModel(BaseModel):
     image: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.now)
     last_modified: datetime = Field(default_factory=datetime.now)
+    due_date: Optional[dt.datetime] = Field(default=None)
     creator_id: str = Field(default="unknown id")
     main_thread_id: str = Field(default="")
     position: int = Field(default=0)
@@ -68,6 +69,7 @@ class BlockModel(BaseModel):
 
 class CreateBlockModel(BaseModel):
     content: str
+    due_date: Optional[dt.datetime] = Field(default=None)
     image: Optional[str] = Field(default=None)
     main_thread_id: str
     model_config = ConfigDict(extra='ignore',

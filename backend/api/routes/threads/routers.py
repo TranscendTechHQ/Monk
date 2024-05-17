@@ -381,7 +381,7 @@ async def filter(
         aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id, user_id=user_id)
 
     aggregate = await aggregate.to_list(None)
-    #print(aggregate)
+    # print(aggregate)
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 

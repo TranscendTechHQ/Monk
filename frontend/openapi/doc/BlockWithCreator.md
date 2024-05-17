@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **creator** | [**UserModel**](UserModel.md) |  | 
 **creatorId** | **String** |  | [optional] [default to 'unknown id']
+**dueDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **image** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **linkMeta** | [**LinkMetaModel**](LinkMetaModel.md) |  | [optional] 

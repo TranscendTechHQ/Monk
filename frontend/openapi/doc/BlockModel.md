@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **content** | **String** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **creatorId** | **String** |  | [optional] [default to 'unknown id']
+**dueDate** | [**DateTime**](DateTime.md) |  | [optional] 
 **image** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **linkMeta** | [**LinkMetaModel**](LinkMetaModel.md) |  | [optional] 
