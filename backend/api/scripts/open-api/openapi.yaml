@@ -197,9 +197,8 @@ components:
           title: Parentblockid
           type: string
         title:
-          maxLength: 100
+          maxLength: 60
           minLength: 1
-          pattern: ^[a-zA-Z0-9]+$
           title: Title
           type: string
         type:
@@ -220,9 +219,8 @@ components:
           title: Content
           type: array
         title:
-          maxLength: 100
+          maxLength: 60
           minLength: 1
-          pattern: ^[a-zA-Z0-9]+$
           title: Title
           type: string
         type:
@@ -552,9 +550,8 @@ components:
           title: Tenant Id
           type: string
         title:
-          maxLength: 100
+          maxLength: 60
           minLength: 1
-          pattern: ^[a-zA-Z0-9]+$
           title: Title
           type: string
         type:

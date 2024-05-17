@@ -141,7 +141,7 @@ class CreateThreadModal extends ConsumerWidget {
             ),
           ),
           TextField(
-            maxLength: 120,
+            maxLength: 60,
             controller: titleController,
             autofocus: true,
             onSubmitted: (value) => createThread(
