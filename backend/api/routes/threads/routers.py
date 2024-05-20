@@ -820,12 +820,47 @@ async def update_block_task_status(request: Request, id: str, task_status: str =
         updated_block = await get_creator_block_by_id(id, block_collection)
 
         thread_id = updated_block["main_thread_id"]
-        tenant_id = get_tenant_id(session)
+        tenant_id = await get_tenant_id(session)
         await set_unread_true_other_users(thread_id, user_id, tenant_id)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(updated_block))
 
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
+
+# Api to update the due date on todo type block
+
+
+@router.put("/blocks/{id}/dueDate", response_model=BlockWithCreator, response_description="Update a block due date")
+async def update_block_due_date(request: Request, id: str, due_date: str = Body(...),
+                                session: SessionContainer = Depends(verify_session())):
+    try:
+        print('🏁 -------------------- Update Block Due Date -------------------- 🏁')
+        block_collection = request.app.mongodb["blocks"]
+        print('\n👉 Fetching block from db using Id:', id)
+        block_to_update = await get_block_by_id(id, block_collection)
+
+        if not block_to_update:
+            return JSONResponse(status_code=404, content={"message": f"Block with ${id} not found"})
+
+        user_id = session.get_user_id()
+
+        if block_to_update["creator_id"] != user_id:
+            return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
+
+        print('\n👉 Updating block due date in db')
+        await update_mongo_document_fields({"_id": id}, {"due_date": due_date, 'last_modified': str(dt.datetime.now())}, block_collection)
+
+        updated_block = await get_creator_block_by_id(id, block_collection)
+
+        thread_id = updated_block["main_thread_id"]
+        tenant_id = get_tenant_id(session)
+        await set_unread_true_other_users(thread_id, user_id, tenant_id)
+
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder(updated_block))
     except Exception as e:
         logger.error(e, exc_info=True)
         return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
