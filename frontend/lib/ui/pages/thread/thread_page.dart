@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
@@ -84,13 +85,14 @@ class ThreadPage extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '$formatType -: $threadTitle',
+              '$formatType: $threadTitle',
               style: TextStyle(
-                  fontSize: 20, color: Theme.of(context).colorScheme.onSurface),
+                fontSize: 20,
+                color: context.customColors.sourceMonkBlue,
+              ),
             ),
-            const SizedBox(width: 16),
             IconButton(
-              tooltip: 'Edit title',
+              // tooltip: 'Edit title',
               onPressed: () async {
                 showDialog(
                     context: context,
@@ -138,7 +140,10 @@ class ThreadPage extends ConsumerWidget {
                       );
                     });
               },
-              icon: const Icon(Icons.edit, size: 18),
+              icon: SvgPicture.asset(
+                'assets/svg/edit.svg',
+                height: 20,
+              ),
             ),
           ],
         ),

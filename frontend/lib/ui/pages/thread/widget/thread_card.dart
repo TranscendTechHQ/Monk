@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
@@ -103,6 +105,8 @@ class ThreadCard extends ConsumerWidget {
     final isEdit = card.eState == EThreadCardState.edit;
     final isHovered = card.hoverEnabled;
     final taskStatus = card.taskStatus;
+    final dueDate = card.block.dueDate ?? block.dueDate;
+
     final controller = TextEditingController(text: block.content);
     // print(
     //     'ThreadCard: ${block.id}.Block status: ${block.taskStatus}  State Status: $taskStatus');
@@ -113,24 +117,6 @@ class ThreadCard extends ConsumerWidget {
     final provider = currentThreadProvider.call(title: title, type: type);
     // final currentThread = ref.watch(provider);
     final currentThreadNotifier = ref.read(provider.notifier);
-    // TODO: Update block when child thread is created
-    // final replyProvider = ref.watch(provider);
-    // ref.listen(provider, (previous, next) {
-    //   if (next is AsyncData) {
-    //     final data = next.value;
-
-    //     // Add childThreadId in block when child thread is created
-    //     if (data?.thread != null && data!.thread!.id.isNotNullEmpty) {
-    //       ref
-    //           .read(
-    //               currentThreadProvider.call(title: title, type: type).notifier)
-    //           .addChildThreadIdToBlock(
-    //             data.thread!.id,
-    //             block.id!,
-    //           );
-    //     }
-    //   }
-    // });
 
     return MouseRegion(
       onEnter: (event) {
@@ -153,7 +139,7 @@ class ThreadCard extends ConsumerWidget {
                 Row(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(20),
                       child: CacheImage(
                         path: userInfo.picture!.startsWith('https')
                             ? userInfo.picture!
@@ -165,26 +151,37 @@ class ThreadCard extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           userInfo.name!,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onSurface,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color:
+                                context.colorScheme.onSurface.withOpacity(.6),
+                            fontSize: 12,
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 16,
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color:
+                                  context.colorScheme.onSurface.withOpacity(.6),
+                              width: 1,
+                            ),
                           ),
                         ),
                         if (block.createdAt != null)
                           Text(
                             DateFormat('dd MMM yyyy')
                                 .format(block.createdAt!.toLocal()),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(.6),
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color:
+                                  context.colorScheme.onSurface.withOpacity(.6),
+                              fontSize: 12,
                             ),
                           ),
                       ],
@@ -193,48 +190,57 @@ class ThreadCard extends ConsumerWidget {
                 ),
                 const Spacer(),
 
-                if ((DateTime.now()
-                        .difference(block.createdAt ?? DateTime.now())
-                        .inHours) <
-                    24)
-                  CircleAvatar(
-                    backgroundColor: Colors.yellow.shade200,
-                    radius: 4,
-                  ),
                 // TOOLS - Update task status
                 // Display task status icon only `new-task` type thread
                 if (type == 'todo')
                   if (taskStatus == ETaskStatus.loading)
                     const CircularProgressIndicator.adaptive()
                   else
-                    Tooltip(
-                      message: taskStatus.tooltip,
-                      child: InkWell(
-                        onTap: () async {
-                          await ref
-                              .read(cardProvider.notifier)
-                              .setTaskStatus(taskStatus == ETaskStatus.done
-                                  ? ETaskStatus.inProgress
-                                  : taskStatus == ETaskStatus.todo
-                                      ? ETaskStatus.inProgress
-                                      : ETaskStatus.done);
-                        },
-                        child: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
-                            color: taskStatus.bgColor,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            taskStatus.icon,
-                            color: taskStatus.fgColor,
-                            size: 15,
-                          ),
+                    InkWell(
+                      onTap: () async {
+                        await ref
+                            .read(cardProvider.notifier)
+                            .setTaskStatus(taskStatus == ETaskStatus.done
+                                ? ETaskStatus.inProgress
+                                : taskStatus == ETaskStatus.todo
+                                    ? ETaskStatus.inProgress
+                                    : ETaskStatus.done);
+                      },
+                      child: Container(
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              "assets/svg/${taskStatus.svgIcon}",
+                              color: taskStatus.bgColor,
+                              height: 15,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              taskStatus.name,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: taskStatus.bgColor,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
+                if ((DateTime.now()
+                        .difference(block.createdAt ?? DateTime.now())
+                        .inHours) <
+                    24) ...[
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    backgroundColor: Colors.yellow.shade200,
+                    radius: 4,
+                  ),
+                ]
               ],
+            ),
+            Divider(
+              color: context.customColors.monkBlue!.withOpacity(.5),
+              thickness: .6,
             ),
             const SizedBox(height: 8),
             if (isEdit)
@@ -287,20 +293,106 @@ class ThreadCard extends ConsumerWidget {
               ),
             ],
             LinkMetaCard(linkMeta: block.linkMeta),
+
+            if (type == 'todo') ...[
+              Divider(
+                color: context.customColors.monkBlue!.withOpacity(.5),
+                thickness: .2,
+              ),
+              if (card.addingDueDate)
+                const Align(
+                  alignment: Alignment.centerRight,
+                  child: CircularProgressIndicator.adaptive(),
+                )
+              else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(
+                      Icons.calendar_month_outlined,
+                      color: context.customColors.sourceMonkBlue,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    RichText(
+                      text: TextSpan(
+                        text: 'Due Date:',
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.colorScheme.onSurface.withOpacity(.6),
+                        ),
+                        children: [
+                          if (dueDate != null)
+                            TextSpan(
+                              text:
+                                  ' ${DateFormat('dd MMM yyyy').format(dueDate ?? DateTime.now())}',
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: Colors.amber,
+                                fontSize: 12,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime(2025),
+                                  );
+                                  if (date != null) {
+                                    logger.d('Selected Date: $date');
+                                    await ref
+                                        .read(cardProvider.notifier)
+                                        .addDueDate(date);
+                                  }
+                                },
+                            )
+                          else
+                            TextSpan(
+                              text: ' Please add',
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: context.colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final date = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime(2025),
+                                  );
+                                  if (date != null) {
+                                    logger.d('Selected Date: $date');
+                                    await ref
+                                        .read(cardProvider.notifier)
+                                        .addDueDate(date);
+                                  }
+                                },
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+            ],
             // Reply/Replies Button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (threadType == ThreadType.thread) ...[
-                  TextButton(
+                  TextButton.icon(
+                    icon: const Icon(
+                      Icons.reply_rounded,
+                      size: 15,
+                    ),
                     onPressed: () async =>
                         onReplyClick(context, ref, currentThreadNotifier),
-                    child: Text(
+                    label: Text(
                       block.childThreadId.isNotNullEmpty
                           ? "Replies"
                           : 'Reply in Thread',
                       style: context.textTheme.bodySmall?.copyWith(
-                        color: context.customColors.sourceMonkBlue,
+                        color: context.colorScheme.primary,
+                        fontSize: 12,
                       ),
                     ),
                   )

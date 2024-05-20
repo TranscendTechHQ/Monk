@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ThreadCardState {
   BlockWithCreator get block => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
+  bool get addingDueDate => throw _privateConstructorUsedError;
   EThreadCardState get eState => throw _privateConstructorUsedError;
   dynamic get hoverEnabled => throw _privateConstructorUsedError;
   ETaskStatus get taskStatus => throw _privateConstructorUsedError;
@@ -36,6 +37,7 @@ abstract class $ThreadCardStateCopyWith<$Res> {
   $Res call(
       {BlockWithCreator block,
       String type,
+      bool addingDueDate,
       EThreadCardState eState,
       dynamic hoverEnabled,
       ETaskStatus taskStatus});
@@ -56,6 +58,7 @@ class _$ThreadCardStateCopyWithImpl<$Res, $Val extends ThreadCardState>
   $Res call({
     Object? block = null,
     Object? type = null,
+    Object? addingDueDate = null,
     Object? eState = null,
     Object? hoverEnabled = freezed,
     Object? taskStatus = null,
@@ -69,6 +72,10 @@ class _$ThreadCardStateCopyWithImpl<$Res, $Val extends ThreadCardState>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as String,
+      addingDueDate: null == addingDueDate
+          ? _value.addingDueDate
+          : addingDueDate // ignore: cast_nullable_to_non_nullable
+              as bool,
       eState: null == eState
           ? _value.eState
           : eState // ignore: cast_nullable_to_non_nullable
@@ -96,6 +103,7 @@ abstract class _$$ThreadCardStateImplCopyWith<$Res>
   $Res call(
       {BlockWithCreator block,
       String type,
+      bool addingDueDate,
       EThreadCardState eState,
       dynamic hoverEnabled,
       ETaskStatus taskStatus});
@@ -114,6 +122,7 @@ class __$$ThreadCardStateImplCopyWithImpl<$Res>
   $Res call({
     Object? block = null,
     Object? type = null,
+    Object? addingDueDate = null,
     Object? eState = null,
     Object? hoverEnabled = freezed,
     Object? taskStatus = null,
@@ -127,6 +136,10 @@ class __$$ThreadCardStateImplCopyWithImpl<$Res>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as String,
+      addingDueDate: null == addingDueDate
+          ? _value.addingDueDate
+          : addingDueDate // ignore: cast_nullable_to_non_nullable
+              as bool,
       eState: null == eState
           ? _value.eState
           : eState // ignore: cast_nullable_to_non_nullable
@@ -147,6 +160,7 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
   const _$ThreadCardStateImpl(
       {required this.block,
       required this.type,
+      this.addingDueDate = false,
       this.eState = EThreadCardState.idle,
       this.hoverEnabled = false,
       this.taskStatus = ETaskStatus.todo});
@@ -155,6 +169,9 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
   final BlockWithCreator block;
   @override
   final String type;
+  @override
+  @JsonKey()
+  final bool addingDueDate;
   @override
   @JsonKey()
   final EThreadCardState eState;
@@ -167,7 +184,7 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
 
   @override
   String toString() {
-    return 'ThreadCardState(block: $block, type: $type, eState: $eState, hoverEnabled: $hoverEnabled, taskStatus: $taskStatus)';
+    return 'ThreadCardState(block: $block, type: $type, addingDueDate: $addingDueDate, eState: $eState, hoverEnabled: $hoverEnabled, taskStatus: $taskStatus)';
   }
 
   @override
@@ -177,6 +194,8 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
             other is _$ThreadCardStateImpl &&
             (identical(other.block, block) || other.block == block) &&
             (identical(other.type, type) || other.type == type) &&
+            (identical(other.addingDueDate, addingDueDate) ||
+                other.addingDueDate == addingDueDate) &&
             (identical(other.eState, eState) || other.eState == eState) &&
             const DeepCollectionEquality()
                 .equals(other.hoverEnabled, hoverEnabled) &&
@@ -185,8 +204,8 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, block, type, eState,
-      const DeepCollectionEquality().hash(hoverEnabled), taskStatus);
+  int get hashCode => Object.hash(runtimeType, block, type, addingDueDate,
+      eState, const DeepCollectionEquality().hash(hoverEnabled), taskStatus);
 
   @JsonKey(ignore: true)
   @override
@@ -200,6 +219,7 @@ abstract class _ThreadCardState implements ThreadCardState {
   const factory _ThreadCardState(
       {required final BlockWithCreator block,
       required final String type,
+      final bool addingDueDate,
       final EThreadCardState eState,
       final dynamic hoverEnabled,
       final ETaskStatus taskStatus}) = _$ThreadCardStateImpl;
@@ -208,6 +228,8 @@ abstract class _ThreadCardState implements ThreadCardState {
   BlockWithCreator get block;
   @override
   String get type;
+  @override
+  bool get addingDueDate;
   @override
   EThreadCardState get eState;
   @override

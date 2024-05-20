@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'thread_card_provider.freezed.dart';
 part 'thread_card_provider.g.dart';
 
@@ -66,6 +67,32 @@ class ThreadCard extends _$ThreadCard {
       state = state.copyWith(taskStatus: status);
     });
   }
+
+  Future<void> addDueDate(DateTime date) async {
+    state = state.copyWith(addingDueDate: true);
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final blockId = state.block.id;
+    final res = await AsyncRequest.handle<BlockWithCreator>(() async {
+      final res = await threadApi.updateBlockDueDateBlocksIdDueDatePut(
+        id: blockId!,
+        body: date.toIso8601String(),
+      );
+      return res.data!;
+    });
+    state = state.copyWith(addingDueDate: false);
+    res.fold((l) {
+      throw Exception('Failed to update due date');
+    }, (r) {
+      final map = state.block.toJson();
+      if (map.keys.contains('due_date')) {
+        map.update('due_date', (value) => date.toIso8601String());
+      } else {
+        map.putIfAbsent('due_date', () => date.toIso8601String());
+      }
+      map.putIfAbsent('due_date', () => date.toIso8601String());
+      state = state.copyWith(block: BlockWithCreator.fromJson(map));
+    });
+  }
 }
 
 @freezed
@@ -73,6 +100,7 @@ class ThreadCardState with _$ThreadCardState {
   const factory ThreadCardState({
     required BlockWithCreator block,
     required String type,
+    @Default(false) bool addingDueDate,
     @Default(EThreadCardState.idle) EThreadCardState eState,
     @Default(false) hoverEnabled,
     @Default(ETaskStatus.todo) ETaskStatus taskStatus,
@@ -88,21 +116,21 @@ enum ETaskStatus {
   todo(
     'Todo',
     'Mark as In Progress',
-    Icons.playlist_add_rounded,
+    'todo.svg',
     Colors.blue,
     Colors.white,
   ),
   inProgress(
     'In Progress',
     'Mark as In Done',
-    Icons.construction,
+    'in-progress.svg',
     Colors.amber,
     Colors.white,
   ),
   done(
-    'Done',
+    'Completed',
     'Mark as In progress',
-    Icons.check_circle_outline,
+    'check-fill.svg',
     Colors.green,
     Colors.white,
   ),
@@ -110,17 +138,17 @@ enum ETaskStatus {
   loading(
     'Updating',
     'Loading',
-    Icons.check_circle_outline,
+    '',
     Colors.green,
     Colors.white,
   );
 
   final String name;
   final String tooltip;
-  final IconData icon;
+  final String svgIcon;
   final Color bgColor;
   final Color fgColor;
 
   const ETaskStatus(
-      this.name, this.tooltip, this.icon, this.bgColor, this.fgColor);
+      this.name, this.tooltip, this.svgIcon, this.bgColor, this.fgColor);
 }
