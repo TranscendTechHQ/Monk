@@ -85,6 +85,7 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [*ThreadsApi*](doc/ThreadsApi.md) | [**ttThreadTypesGet**](doc/ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
+[*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlockDueDateBlocksIdDueDatePut**](doc/ThreadsApi.md#updateblockduedateblocksidduedateput) | **PUT** /blocks/{id}/dueDate | Update Block Due Date
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlockPositionBlocksIdPositionPut**](doc/ThreadsApi.md#updateblockpositionblocksidpositionput) | **PUT** /blocks/{id}/position | Update Block Position
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlockTaskStatusBlocksIdTaskStatusPut**](doc/ThreadsApi.md#updateblocktaskstatusblocksidtaskstatusput) | **PUT** /blocks/{id}/taskStatus | Update Block Task Status
 [*ThreadsApi*](doc/ThreadsApi.md) | [**updateBlocksIdPut**](doc/ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update

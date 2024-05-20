@@ -846,6 +846,39 @@ paths:
       summary: Update
       tags:
       - threads
+  /blocks/{id}/dueDate:
+    put:
+      operationId: update_block_due_date_blocks__id__dueDate_put
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Due Date
+              type: string
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockWithCreator'
+          description: Update a block due date
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Block Due Date
+      tags:
+      - threads
   /blocks/{id}/position:
     put:
       operationId: update_block_position_blocks__id__position_put

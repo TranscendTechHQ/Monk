@@ -84,6 +84,13 @@ void main() {
       // TODO
     });
 
+    // Update Block Due Date
+    //
+    //Future<BlockWithCreator> updateBlockDueDateBlocksIdDueDatePut(String id, String body) async
+    test('test updateBlockDueDateBlocksIdDueDatePut', () async {
+      // TODO
+    });
+
     // Update Block Position
     //
     //Future<UpdateBlockPositionModel> updateBlockPositionBlocksIdPositionPut(String id, UpdateBlockPositionModel updateBlockPositionModel) async

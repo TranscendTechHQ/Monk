@@ -20,6 +20,7 @@ Method | HTTP request | Description
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
+[**updateBlockDueDateBlocksIdDueDatePut**](ThreadsApi.md#updateblockduedateblocksidduedateput) | **PUT** /blocks/{id}/dueDate | Update Block Due Date
 [**updateBlockPositionBlocksIdPositionPut**](ThreadsApi.md#updateblockpositionblocksidpositionput) | **PUT** /blocks/{id}/position | Update Block Position
 [**updateBlockTaskStatusBlocksIdTaskStatusPut**](ThreadsApi.md#updateblocktaskstatusblocksidtaskstatusput) | **PUT** /blocks/{id}/taskStatus | Update Block Task Status
 [**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
@@ -469,6 +470,49 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateBlockDueDateBlocksIdDueDatePut**
+> BlockWithCreator updateBlockDueDateBlocksIdDueDatePut(id, body)
+
+Update Block Due Date
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+final String body = body_example; // String | 
+
+try {
+    final response = api.updateBlockDueDateBlocksIdDueDatePut(id, body);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateBlockDueDateBlocksIdDueDatePut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **body** | **String**|  | 
+
+### Return type
+
+[**BlockWithCreator**](BlockWithCreator.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
