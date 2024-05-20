@@ -224,44 +224,46 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text('Due Date',
-              style: context.textTheme.bodySmall?.copyWith(color: monkBlue)),
-          Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: dueDate != null
-                      ? Text(
-                          DateFormat('dd MMM yyyy')
-                              .format(dueDate ?? DateTime.now()),
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color:
-                                context.colorScheme.onSurface.withOpacity(.8),
-                          ),
-                        )
-                      : Text(
-                          'dd MMM yyyy',
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: context.disabledColor.withOpacity(.4),
-                          ),
-                        ))
-              .onPressed(() async {
-            final date = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now(),
-              firstDate: DateTime.now(),
-              lastDate: DateTime(2025),
-            );
-            if (date != null) {
-              setState(() {
-                dueDate = date;
-              });
-            }
-          }),
-          Divider(
-            height: 0,
-            color: monkBlue.withOpacity(.7),
-            thickness: 1.4,
-          ),
+          if (type == 'todo') ...[
+            const SizedBox(height: 16),
+            Text('Due Date',
+                style: context.textTheme.bodySmall?.copyWith(color: monkBlue)),
+            Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: dueDate != null
+                        ? Text(
+                            DateFormat('dd MMM yyyy')
+                                .format(dueDate ?? DateTime.now()),
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color:
+                                  context.colorScheme.onSurface.withOpacity(.8),
+                            ),
+                          )
+                        : Text(
+                            'dd MMM yyyy',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: context.disabledColor.withOpacity(.4),
+                            ),
+                          ))
+                .onPressed(() async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now(),
+                lastDate: DateTime(2025),
+              );
+              if (date != null) {
+                setState(() {
+                  dueDate = date;
+                });
+              }
+            }),
+            Divider(
+              height: 0,
+              color: monkBlue.withOpacity(.7),
+              thickness: 1.4,
+            ),
+          ],
           const SizedBox(height: 16),
           Center(
             child: FilledButton.tonal(
