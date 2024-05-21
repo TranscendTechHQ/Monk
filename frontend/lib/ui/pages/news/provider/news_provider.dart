@@ -131,18 +131,35 @@ class NewsCardPod extends _$NewsCardPod {
       }
       return true;
     });
-    state = NewsCardState(
-      threadMetaData: state.threadMetaData,
-      estate: res == true
-          ? upvote == true
-              ? ENewsCardState.upVoted
-              : bookmark == true
-                  ? ENewsCardState.bookmarked
-                  : unRead == true
-                      ? ENewsCardState.markedAsRead
-                      : ENewsCardState.dismissed
-          : ENewsCardState.initial,
-    );
+    final map = state.threadMetaData.toJson();
+    if (upvote == true) {
+      if (map.containsKey('upvote')) {
+        map.update('upvote', (value) => true);
+      } else {
+        map.putIfAbsent('upvote', () => true);
+      }
+    } else if (bookmark == true) {
+      if (map.containsKey('bookmark')) {
+        map.update('bookmark', (value) => true);
+      } else {
+        map.putIfAbsent('bookmark', () => true);
+      }
+    }
+
+    res.fold((l) => null, (isSuccess) {
+      state = NewsCardState(
+        threadMetaData: ThreadMetaData.fromJson(map),
+        estate: isSuccess == true
+            ? upvote == true
+                ? ENewsCardState.upVoted
+                : bookmark == true
+                    ? ENewsCardState.bookmarked
+                    : unRead == true
+                        ? ENewsCardState.markedAsRead
+                        : ENewsCardState.dismissed
+            : ENewsCardState.initial,
+      );
+    });
 
     return res.fold((l) => false, (r) => true);
   }

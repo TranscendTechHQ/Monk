@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/color/custom_color.g.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
+import 'package:frontend/ui/widgets/dismiss_button.dart';
 import 'package:frontend/ui/widgets/link_meta_card.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
@@ -28,6 +30,10 @@ class NewsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final provider = newsCardPodProvider(metaData);
+    final watchProvider = ref.watch(provider);
+    final readProvider = ref.read(provider.notifier);
+
     final title = metaData.title;
     final headline = metaData.headline ?? "";
     final creator = metaData.creator;
@@ -38,8 +44,7 @@ class NewsCard extends ConsumerWidget {
           child: GestureDetector(
             onTap: () {},
             child: Container(
-              padding: const EdgeInsets.only(
-                  bottom: 22.0, top: 24, left: 24, right: 24),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecorations.cardDecoration(context).copyWith(
                 border: Border.all(
                   color: metaData.unread == true
@@ -54,10 +59,12 @@ class NewsCard extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // HEADER
                       Row(
                         children: [
+                          // profile picture
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(25),
                             child: CacheImage(
                               path: creator.picture!.startsWith('https')
                                   ? creator.picture!
@@ -74,9 +81,11 @@ class NewsCard extends ConsumerWidget {
                               Text(
                                 creator.name!,
                                 style: TextStyle(
-                                  fontSize: 14,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
+                                  fontSize: 15,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(.5),
                                 ),
                               ),
                               Text(
@@ -94,22 +103,47 @@ class NewsCard extends ConsumerWidget {
                             ],
                           ),
                           const Spacer(),
-                          Icon(
-                            Icons.open_in_new_rounded,
-                            color:
-                                context.colorScheme.onSurface.withOpacity(.9),
-                            size: 16,
-                          )
+                          if (watchProvider.estate == ENewsCardState.dismissing)
+                            const CircularProgressIndicator.adaptive()
+                          else
+                            DismissButton(
+                              onPressed: () async {
+                                await readProvider.createTfThreadFlagPost(
+                                  metaData.id,
+                                  unfollow: true,
+                                );
+                              },
+                              tooltip: 'Dismiss',
+                            )
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w400,
-                          color: context.colorScheme.onPrimary,
-                        ),
+                      // const SizedBox(height: 16),
+                      Divider(
+                        color: context.customColors.monkBlue!.withOpacity(.5),
+                        thickness: .5,
+                      ),
+
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SvgPicture.asset(
+                            metaData.type == 'todo'
+                                ? 'assets/svg/todo.svg'
+                                : "assets/svg/createthread.svg",
+                            height: metaData.type == 'todo' ? 18 : 24,
+                            color:
+                                context.customColors.monkBlue!.withOpacity(.7),
+                          ).pT(metaData.type == 'todo' ? 10 : 5),
+                          const SizedBox(width: 8),
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w400,
+                              color: context.colorScheme.onPrimary,
+                            ),
+                          ).extended,
+                        ],
                       ),
                       const SizedBox(height: 8),
                       if (metaData.block == null)
@@ -176,11 +210,58 @@ class NewsBottomActions extends ConsumerWidget {
     );
   }
 
+  Widget textIconButton(
+    BuildContext context, {
+    VoidCallback? onPressed,
+    IconData? icon,
+    String? svgPath,
+    bool isHighlighted = false,
+    required String text,
+  }) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: svgPath.isNotNullEmpty
+          ? SvgPicture.asset(
+              'assets/svg/$svgPath',
+              height: 16,
+              color: isHighlighted
+                  ? context.colorScheme.surface
+                  : context.colorScheme.primary.withOpacity(.9),
+            )
+          : Icon(
+              icon,
+              size: 18,
+              color: isHighlighted
+                  ? context.colorScheme.onSurface
+                  : context.colorScheme.primary.withOpacity(.9),
+            ),
+      style: TextButton.styleFrom(
+        foregroundColor: isHighlighted
+            ? context.colorScheme.surface
+            : context.colorScheme.onSurface,
+        // backgroundColor: isHighlighted ? context.colorScheme.surfaceTint : null,
+      ),
+      label: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          color: isHighlighted
+              ? context.colorScheme.onSurface
+              : context.customColors.sourceMonkBlue,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = newsCardPodProvider(metaData);
     final watchProvider = ref.watch(provider);
     final readProvider = ref.read(provider.notifier);
+    final isVoted =
+        watchProvider.threadMetaData.upvote == true || metaData.upvote == true;
+    final isBookmarked = watchProvider.threadMetaData.bookmark == true ||
+        metaData.bookmark == true;
 
     ref.listen(provider, (prev, next) {
       if (next.estate == ENewsCardState.upVoted) {
@@ -195,80 +276,49 @@ class NewsBottomActions extends ConsumerWidget {
     });
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         if (watchProvider.estate == ENewsCardState.upVoting)
           const CircularProgressIndicator.adaptive()
         else
-          TextButton.icon(
+          textIconButton(
+            context,
             onPressed: () async {
               await readProvider.createTfThreadFlagPost(
                 metaData.id,
                 upvote: true,
               );
             },
-            icon: const Icon(
-              Icons.arrow_upward,
-              size: 18,
-            ),
-            style: TextButton.styleFrom(
-              foregroundColor: context.colorScheme.onSurface.withOpacity(.9),
-            ),
-            label: Text(
-              "Upvote",
-              style: TextStyle(
-                fontSize: 14,
-                color: context.colorScheme.onSurface.withOpacity(.9),
-              ),
-            ),
+            icon: Icons.arrow_upward,
+            text: "Upvote",
+            isHighlighted: isVoted,
           ),
-        const SizedBox(width: 16),
         if (watchProvider.estate == ENewsCardState.bookmarking)
           const CircularProgressIndicator.adaptive()
         else
-          TextButton.icon(
+          textIconButton(
+            context,
             onPressed: () async {
               await readProvider.createTfThreadFlagPost(
                 metaData.id,
                 bookmark: true,
               );
             },
-            icon: const Icon(
-              Icons.bookmark_add_outlined,
-              size: 18,
-            ),
-            style: TextButton.styleFrom(
-              foregroundColor: context.colorScheme.onSurface.withOpacity(.9),
-            ),
-            label: Text(
-              "Bookmark",
-              style: TextStyle(
-                fontSize: 14,
-                color: context.colorScheme.onSurface.withOpacity(.9),
-              ),
-            ),
+            isHighlighted: isBookmarked,
+            icon: Icons.bookmark_add_outlined,
+            text: "Bookmark",
           ),
-        const Spacer(),
-        SizedBox(
-          width: 30,
-          child: watchProvider.estate == ENewsCardState.dismissing
-              ? const CircularProgressIndicator.adaptive()
-              : Tooltip(
-                  message: 'Dismiss',
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                        foregroundColor:
-                            context.colorScheme.onSurface.withOpacity(.9),
-                        padding: const EdgeInsets.all(0)),
-                    onPressed: () async {
-                      await readProvider.createTfThreadFlagPost(
-                        metaData.id,
-                        unfollow: true,
-                      );
-                    },
-                    child: const Icon(Icons.clear),
-                  ),
-                ),
-        )
+        textIconButton(
+          context,
+          onPressed: () async {
+            await readProvider.createTfThreadFlagPost(
+              metaData.id,
+              bookmark: true,
+            );
+          },
+          svgPath: 'open_in_new.svg',
+          text: "View Details",
+        ),
       ],
     );
   }
