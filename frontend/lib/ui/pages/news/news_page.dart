@@ -60,6 +60,7 @@ class NewsPage extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // LEFT TOOLBAR
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 130),
                   child: Column(
@@ -88,9 +89,17 @@ class NewsPage extends ConsumerWidget {
                         wrapped: false,
                         svgPath: 'createthread.svg',
                         label: 'Chat',
-                        onPressed: () {
-                          CreateThreadModal.show(context,
-                              titlesList: titlesList, type: 'chat');
+                        onPressed: () async {
+                          final newThread = await CreateThreadModal.show(
+                            context,
+                            titlesList: titlesList,
+                            type: 'chat',
+                          );
+
+                          if (newThread != null) {
+                            print('Refreshing the news feed');
+                            ref.invalidate(newsFeedProvider);
+                          }
                         },
                       ),
                       const SizedBox(height: 10),

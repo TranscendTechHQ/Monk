@@ -6,6 +6,7 @@ import 'package:frontend/ui/pages/news/widget/provider/create_thread_provider.da
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:intl/intl.dart';
+import 'package:openapi/openapi.dart';
 
 import '../../../theme/color/custom_color.g.dart';
 
@@ -15,9 +16,9 @@ class CreateThreadModal extends ConsumerStatefulWidget {
   final String type;
   final List<String> titlesList;
 
-  static Future<void> show(BuildContext context,
+  static Future<FullThreadInfo?> show(BuildContext context,
       {required List<String> titlesList, required String type}) async {
-    await showDialog<void>(
+    return await showDialog<FullThreadInfo?>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -83,7 +84,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
       loader.hideLoader();
       if (thread != null && blockContent.isNullOrEmpty) {
         print('Thread is created. No message available.');
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(thread);
         Navigator.of(context).push(
           ThreadPage.launchRoute(title: title, type: type),
         );
@@ -99,7 +100,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
         if (block != null) {
           print('Block is created');
           // Close current Model
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(thread);
 
           // Open Thread Page
           Navigator.of(context).push(
