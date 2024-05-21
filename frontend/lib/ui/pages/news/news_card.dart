@@ -305,7 +305,7 @@ class NewsBottomActions extends ConsumerWidget {
               );
             },
             isHighlighted: isBookmarked,
-            icon: Icons.bookmark_add_outlined,
+            icon: isBookmarked ? Icons.bookmark : Icons.bookmark_add_outlined,
             text: "Bookmark",
           ),
         textIconButton(
