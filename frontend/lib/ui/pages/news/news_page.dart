@@ -28,11 +28,16 @@ class NewsPage extends ConsumerWidget {
     final map = await showDialog<Map<String, bool>?>(
       context: context,
       builder: (BuildContext context) {
-        return const Dialog(
+        return Dialog(
+          alignment: Alignment.center,
           elevation: 0.0,
-          insetPadding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
-          backgroundColor: Colors.transparent,
-          child: NewsFeedFilter(),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: context.colorScheme.secondaryContainer,
+          child: const NewsFeedFilter(),
         );
       },
     );

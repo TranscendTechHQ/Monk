@@ -12,6 +12,9 @@ class OutlineIconButton extends StatelessWidget {
     this.onPressed,
     this.iconSize = 24,
     this.wrapped = true,
+    this.verticalPadding = 14,
+    this.horizontalPadding = 10,
+    this.isFilled = false,
   });
   final IconData? icon;
   final String label;
@@ -19,6 +22,9 @@ class OutlineIconButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final double iconSize;
   final bool wrapped;
+  final double verticalPadding;
+  final double horizontalPadding;
+  final bool isFilled;
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +32,11 @@ class OutlineIconButton extends StatelessWidget {
       onPressed: onPressed,
       style: ButtonStyle(
         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-          const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+          EdgeInsets.symmetric(
+              horizontal: horizontalPadding, vertical: verticalPadding),
         ),
         backgroundColor: MaterialStateProperty.all<Color>(
-          context.theme.cardColor.withOpacity(.3),
+          isFilled ? monkBlue700 : context.theme.cardColor.withOpacity(.3),
         ),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
@@ -57,7 +64,7 @@ class OutlineIconButton extends StatelessWidget {
           Text(
             label,
             style: context.textTheme.bodyMedium?.copyWith(
-              color: monkBlue700,
+              color: isFilled ? Colors.white : monkBlue700,
             ),
           )
         ],

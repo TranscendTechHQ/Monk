@@ -105,11 +105,11 @@ class NewsCardPod extends _$NewsCardPod {
   }) async {
     state = NewsCardState(
       threadMetaData: state.threadMetaData,
-      estate: upvote == true
+      estate: upvote != null
           ? ENewsCardState.upVoting
-          : bookmark == true
+          : bookmark != null
               ? ENewsCardState.bookmarking
-              : unRead == true
+              : unRead != null
                   ? ENewsCardState.markingAsRead
                   : ENewsCardState.dismissing,
     );
@@ -132,32 +132,30 @@ class NewsCardPod extends _$NewsCardPod {
       return true;
     });
     final map = state.threadMetaData.toJson();
-    if (upvote == true) {
+    if (upvote != null) {
       if (map.containsKey('upvote')) {
-        map.update('upvote', (value) => true);
+        map.update('upvote', (value) => upvote);
       } else {
-        map.putIfAbsent('upvote', () => true);
+        map.putIfAbsent('upvote', () => upvote);
       }
-    } else if (bookmark == true) {
+    } else if (bookmark != null) {
       if (map.containsKey('bookmark')) {
-        map.update('bookmark', (value) => true);
+        map.update('bookmark', (value) => bookmark);
       } else {
-        map.putIfAbsent('bookmark', () => true);
+        map.putIfAbsent('bookmark', () => bookmark);
       }
     }
 
     res.fold((l) => null, (isSuccess) {
       state = NewsCardState(
         threadMetaData: ThreadMetaData.fromJson(map),
-        estate: isSuccess == true
-            ? upvote == true
-                ? ENewsCardState.upVoted
-                : bookmark == true
-                    ? ENewsCardState.bookmarked
-                    : unRead == true
-                        ? ENewsCardState.markedAsRead
-                        : ENewsCardState.dismissed
-            : ENewsCardState.initial,
+        estate: upvote != null
+            ? ENewsCardState.upVoted
+            : bookmark != null
+                ? ENewsCardState.bookmarked
+                : unRead != null
+                    ? ENewsCardState.markedAsRead
+                    : ENewsCardState.dismissed,
       );
     });
 

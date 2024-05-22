@@ -259,15 +259,23 @@ class NewsBottomActions extends ConsumerWidget {
     final watchProvider = ref.watch(provider);
     final readProvider = ref.read(provider.notifier);
     final isVoted =
-        watchProvider.threadMetaData.upvote == true || metaData.upvote == true;
-    final isBookmarked = watchProvider.threadMetaData.bookmark == true ||
-        metaData.bookmark == true;
+        watchProvider.threadMetaData.upvote ?? metaData.upvote == true;
+    final isBookmarked =
+        watchProvider.threadMetaData.bookmark ?? metaData.bookmark == true;
 
     ref.listen(provider, (prev, next) {
       if (next.estate == ENewsCardState.upVoted) {
-        showMessage(context, "Upvoted successfully");
+        showMessage(
+            context,
+            next.threadMetaData.upvote == true
+                ? "Upvoted successfully"
+                : "Upvote removed successfully");
       } else if (next.estate == ENewsCardState.bookmarked) {
-        showMessage(context, "Bookmark added successfully");
+        showMessage(
+            context,
+            next.threadMetaData.bookmark == true
+                ? "Bookmark added successfully"
+                : "Bookmark removed successfully");
       } else if (next.estate == ENewsCardState.dismissed) {
         showMessage(context, "Dismissed successfully");
         final newsFeed = ref.read(newsFeedProvider.notifier);
@@ -286,7 +294,7 @@ class NewsBottomActions extends ConsumerWidget {
             onPressed: () async {
               await readProvider.createTfThreadFlagPost(
                 metaData.id,
-                upvote: true,
+                upvote: !isVoted,
               );
             },
             icon: Icons.arrow_upward,
@@ -301,11 +309,11 @@ class NewsBottomActions extends ConsumerWidget {
             onPressed: () async {
               await readProvider.createTfThreadFlagPost(
                 metaData.id,
-                bookmark: true,
+                bookmark: !isBookmarked,
               );
             },
             isHighlighted: isBookmarked,
-            icon: isBookmarked ? Icons.bookmark : Icons.bookmark_add_outlined,
+            icon: isBookmarked ? Icons.bookmark : Icons.bookmark_outlined,
             text: "Bookmark",
           ),
         textIconButton(
