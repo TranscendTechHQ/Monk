@@ -311,9 +311,13 @@ class NewsBottomActions extends ConsumerWidget {
         textIconButton(
           context,
           onPressed: () async {
-            await readProvider.createTfThreadFlagPost(
-              metaData.id,
-              bookmark: true,
+            ref.read(newsFeedProvider.notifier).markAsRead(metaData.id);
+            Navigator.push(
+              context,
+              ThreadPage.launchRoute(
+                title: metaData.title,
+                type: metaData.type,
+              ),
             );
           },
           svgPath: 'open_in_new.svg',

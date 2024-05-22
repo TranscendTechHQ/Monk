@@ -108,9 +108,15 @@ class NewsPage extends ConsumerWidget {
                         svgPath: 'todo.svg',
                         label: 'Todo',
                         iconSize: 16,
-                        onPressed: () {
-                          CreateThreadModal.show(context,
-                              titlesList: titlesList, type: 'todo');
+                        onPressed: () async {
+                          final newThread = await CreateThreadModal.show(
+                              context,
+                              titlesList: titlesList,
+                              type: 'todo');
+                          if (newThread != null) {
+                            print('Refreshing the news feed');
+                            ref.invalidate(newsFeedProvider);
+                          }
                         },
                       ),
                     ],
