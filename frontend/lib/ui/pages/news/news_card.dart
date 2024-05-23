@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/color/custom_color.g.dart';
@@ -8,7 +9,9 @@ import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
 import 'package:frontend/ui/widgets/dismiss_button.dart';
+import 'package:frontend/ui/widgets/kit/alert.dart';
 import 'package:frontend/ui/widgets/link_meta_card.dart';
+import 'package:frontend/ui/widgets/title_action_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -28,6 +31,19 @@ class NewsCard extends ConsumerWidget {
     );
   }
 
+  Future<void> confirmDelete(BuildContext context, WidgetRef ref) async {
+    Alert.confirm(
+      context,
+      barrierDismissible: true,
+      title: "Delete",
+      onConfirm: () async {
+        final newsFeed = ref.read(newsFeedProvider.notifier);
+        newsFeed.deleteThreadAsync(context, metaData.id);
+      },
+      message: 'Are you sure you want to delete this thread forever?',
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = newsCardPodProvider(metaData);
@@ -37,6 +53,11 @@ class NewsCard extends ConsumerWidget {
     final title = metaData.title;
     final headline = metaData.headline ?? "";
     final creator = metaData.creator;
+
+    final authState = ref.watch(authProvider);
+    final authUserId = authState.value?.session?.userId;
+    final creatorId = creator.id;
+    final isCreator = creatorId == authUserId;
     return Stack(
       children: [
         Padding(
@@ -103,6 +124,7 @@ class NewsCard extends ConsumerWidget {
                             ],
                           ),
                           const Spacer(),
+
                           if (watchProvider.estate == ENewsCardState.dismissing)
                             const CircularProgressIndicator.adaptive()
                           else
@@ -114,7 +136,15 @@ class NewsCard extends ConsumerWidget {
                                 );
                               },
                               tooltip: 'Dismiss',
-                            )
+                            ),
+                          if (isCreator)
+                            SizedBox(
+                              width: 25,
+                              child: TileActionWidget(
+                                onDelete: () async =>
+                                    confirmDelete(context, ref),
+                              ),
+                            ),
                         ],
                       ),
                       // const SizedBox(height: 16),

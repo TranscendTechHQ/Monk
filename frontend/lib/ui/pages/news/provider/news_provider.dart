@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/helper/utils.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -86,6 +89,35 @@ class NewsFeed extends _$NewsFeed {
         state = AsyncData(list);
       }
     }
+  }
+
+  Future<bool> deleteThreadAsync(BuildContext context, threadId) async {
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final res = await AsyncRequest.handle<bool?>(() async {
+      loader.showLoader(context, message: "Deleting thread");
+      final response =
+          await threadApi.deleteThreadThreadsIdDelete(id: threadId);
+      if (response.statusCode != 200) {
+        final res = response.data as Map<String, dynamic>?;
+        throw Exception(res?['message'] ?? "Failed to delete thread");
+      }
+      return true;
+    });
+    loader.hideLoader();
+
+    return res.fold((l) {
+      final res = l.response?.data;
+      if (res != null && res is Map<String, dynamic>) {
+        showMessage(context, res['message'] ?? "Failed to delete thread");
+      } else {
+        showMessage(context, "Failed to delete thread");
+      }
+      return false;
+    }, (r) {
+      showMessage(context, "Thread deleted successfully");
+      remove(threadId);
+      return true;
+    });
   }
 }
 

@@ -198,3 +198,9 @@ extension on dynamic {
   bool get hasValue => this != null;
   bool get isNull => this == null;
 }
+
+extension EnumExtension on Enum {
+  T on<T>() => this as T;
+  K? applyWhen<T, K>(Map<T, K> map, {K? defaultValue}) =>
+      map[this] ?? defaultValue;
+}
