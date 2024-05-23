@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
@@ -42,20 +46,27 @@ class CreateThreadPod extends _$CreateThreadPod {
   }
 
   Future<BlockWithCreator?> createBlock(
-      String content, String threadTitle, String mainThreadId,
-      {DateTime? dueDate}) async {
+      BuildContext context, content, String threadTitle, String mainThreadId,
+      {DateTime? dueDate, File? image}) async {
     final res = await AsyncRequest.handle<BlockWithCreator>(() async {
       logger.d("creating new Thread title $content");
+      if (image != null) {
+        loader.showLoader(context, message: 'Uploading image');
+      }
+      final imageUrl = await uploadFile(image);
+      loader.hideLoader();
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
 
+      loader.showLoader(context, message: 'creating block');
       final newThreadState = await blockApi.createBlocksPost(
         threadTitle: threadTitle,
         createBlockModel: CreateBlockModel(
-          content: content,
-          mainThreadId: mainThreadId,
-          dueDate: dueDate,
-        ),
+            content: content,
+            mainThreadId: mainThreadId,
+            dueDate: dueDate,
+            image: imageUrl),
       );
+      loader.hideLoader();
       return newThreadState.data!;
     });
 
@@ -70,6 +81,32 @@ class CreateThreadPod extends _$CreateThreadPod {
       logger.i("Block created");
       return r;
     });
+  }
+
+  Future<String?> uploadFile(File? file) async {
+    if (file == null) {
+      return null;
+    }
+    final res = await AsyncRequest.handle<FilesResponseModel>(() async {
+      final response = await NetworkManager.instance.client.post(
+        "/uploadFiles/",
+        data: FormData.fromMap(
+          {
+            "files": await MultipartFile.fromFile(file.path,
+                filename: file.path.split("/").last),
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception("Failed to upload image");
+      }
+
+      return FilesResponseModel.fromJson(response.data);
+    });
+    return res.fold((l) {
+      return null;
+    }, (r) => r.urls?.first);
   }
 }
 

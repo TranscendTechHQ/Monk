@@ -470,19 +470,6 @@ class CurrentThread extends _$CurrentThread {
       }
 
       return FilesResponseModel.fromJson(response.data);
-
-      // Commented out because of the issue in generated code.
-      // openApi.getStorageApi();
-      // final data = await MultipartFile.fromFile(file.path, headers: {
-      //   "content-type": [
-      //     "multipart/form-data; boundary=322230792794089950611190"
-      //   ],
-      // });
-      // final response = await storageApi.uploadFilesUploadFilesPost(
-      //   files: [data],
-      //   headers: {"content-type": "multipart/form-data; boundary=something"},
-      // );
-      // return response.data;
     });
     return res.fold((l) {
       //  Exception(l.message);

@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/helper/file_utils.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/pages/news/widget/provider/create_thread_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/dismiss_button.dart';
+import 'package:frontend/ui/widgets/outline_icon_button.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -45,6 +50,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
   String get type => widget.type;
 
   DateTime? dueDate;
+  File? attachment;
   late TextEditingController titleController;
   late TextEditingController messageController;
 
@@ -66,6 +72,9 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
       {String? blockContent, DateTime? dueDate}) async {
     if (title.isNullOrEmpty) {
       showMessage(context, 'Title is required');
+      return;
+    } else if (blockContent.isNullOrEmpty && attachment != null) {
+      showMessage(context, 'Message is required');
       return;
     }
 
@@ -92,11 +101,16 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
       // Create block if blockContent is available and thread is not null
       else if (thread != null) {
         print('Thread is created. Creating first block');
-        loader.showLoader(context, message: 'Creating block');
-        final block = await await ref.read(createThreadNotifier).createBlock(
-            blockContent!, thread.title, thread.id,
-            dueDate: dueDate);
-        loader.hideLoader();
+        // loader.showLoader(context, message: 'Creating block');
+        final block = await ref.read(createThreadNotifier).createBlock(
+              context,
+              blockContent!,
+              thread.title,
+              thread.id,
+              dueDate: dueDate,
+              image: attachment,
+            );
+        // loader.hideLoader();
         if (block != null) {
           print('Block is created');
           // Close current Model
@@ -116,7 +130,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
     return Container(
       padding: const EdgeInsets.all(16),
       constraints:
-          const BoxConstraints(maxWidth: 400, maxHeight: 600, minHeight: 200),
+          const BoxConstraints(maxWidth: 400, maxHeight: 700, minHeight: 200),
       decoration: BoxDecoration(
         color: context.colorScheme.secondaryContainer.withOpacity(.5),
         borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -225,6 +239,59 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
               ),
             ),
           ),
+          if (attachment == null)
+            OutlineIconButton(
+              label: 'Add image',
+              icon: Icons.attach_file,
+              onPressed: () async {
+                final file = await FileUtility.pickImage();
+                file.fold(
+                  (value) {
+                    setState(() {
+                      attachment = value;
+                    });
+                  },
+                  () => null,
+                );
+              },
+            )
+          else
+            Container(
+              height: 220,
+              width: double.infinity,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: context.colorScheme.onSurface.withOpacity(.4),
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: AspectRatio(
+                aspectRatio: 1.6,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.file(
+                      attachment!,
+                      fit: BoxFit.contain,
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: DismissButton(
+                        onPressed: () {
+                          setState(() {
+                            attachment = null;
+                          });
+                        },
+                        tooltip: 'Remove Image',
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
           if (type == 'todo') ...[
             const SizedBox(height: 16),
             Text('Due Date',
