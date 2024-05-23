@@ -1221,6 +1221,32 @@ paths:
       tags:
       - threads
   /threads/{id}:
+    delete:
+      operationId: delete_thread_threads__id__delete
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          title: Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Delete Thread Threads  Id  Delete
+                type: boolean
+          description: Delete a thread by id
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Delete Thread
+      tags:
+      - threads
     get:
       operationId: get_thread_id_threads__id__get
       parameters:

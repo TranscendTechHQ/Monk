@@ -1114,3 +1114,42 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
         f"🔍 updating thread flag with thread_id {thread_id} user_id {user_id} tenant_id {tenant_id}: unread {unread}, unfollow {unfollow}, bookmark {bookmark}, upvote {upvote}")
     updated_user_thread_flag = await update_user_flags(thread_id, user_id, tenant_id, unread, upvote, bookmark, unfollow)
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(updated_user_thread_flag))
+
+# API to delete thread. only the creator of the thread can delete the thread
+
+
+@router.delete("/threads/{id}", response_model=bool, response_description="Delete a thread by id")
+async def delete_thread(request: Request, id: str, session: SessionContainer = Depends(verify_session())):
+
+    try:
+        print('\n🏁 -------------------- Delete Thread -------------------- 🏁')
+        user_id = session.get_user_id()
+        tenant_id = await get_tenant_id(session)
+
+        thread_collection = request.app.mongodb["threads"]
+        block_collection = request.app.mongodb["blocks"]
+
+        print('\n👉 Fetching thread from db using Id:', id)
+        thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
+        if not thread:
+            return JSONResponse(status_code=404, content={"message": "Thread not found"})
+
+        if thread["creator_id"] != user_id:
+            return JSONResponse(status_code=403, content={"message": "You are not authorized to delete this thread"})
+
+        print('\n👉 Deleting all blocks linked to th thread')
+        # delete all the blocks in the thread
+        await block_collection.delete_many({"main_thread_id": id})
+
+        print('\n👉 Deleting thread from db')
+        # delete the thread
+        await thread_collection.delete_one({"_id": id})
+
+        print('\n👉 Unlinking the child blocks from the main thread')
+        # Unlink the child blocks from the main thread
+        await block_collection.update_many({"child_thread_id": id}, {"$set": {"child_thread_id": ""}})
+
+        return JSONResponse(status_code=status.HTTP_200_OK, content=True)
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})

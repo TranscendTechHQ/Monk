@@ -79,6 +79,7 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createBlocksPost**](doc/ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createTfThreadFlagPost**](doc/ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [*ThreadsApi*](doc/ThreadsApi.md) | [**createThThreadsPost**](doc/ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
+[*ThreadsApi*](doc/ThreadsApi.md) | [**deleteThreadThreadsIdDelete**](doc/ThreadsApi.md#deletethreadthreadsiddelete) | **DELETE** /threads/{id} | Delete Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**filterNewsfeedGet**](doc/ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadIdThreadsIdGet**](doc/ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads

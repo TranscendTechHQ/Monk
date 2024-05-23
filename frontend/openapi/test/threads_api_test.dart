@@ -42,6 +42,13 @@ void main() {
       // TODO
     });
 
+    // Delete Thread
+    //
+    //Future<bool> deleteThreadThreadsIdDelete(String id) async
+    test('test deleteThreadThreadsIdDelete', () async {
+      // TODO
+    });
+
     // Filter
     //
     //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool unread, bool unfollow, bool upvote }) async
