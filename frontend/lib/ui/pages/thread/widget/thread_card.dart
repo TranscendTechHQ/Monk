@@ -33,8 +33,10 @@ class ThreadCard extends ConsumerWidget {
   final String? mainThreadId;
   final ThreadType threadType;
 
-  Future<void> onReplyClick(BuildContext context, WidgetRef ref,
-      CurrentThread currentThreadNotifier) async {
+  Future<void> onReplyClick(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     if (block.id.isNullOrEmpty || mainThreadId.isNullOrEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -206,24 +208,22 @@ class ThreadCard extends ConsumerWidget {
                                     ? ETaskStatus.inProgress
                                     : ETaskStatus.done);
                       },
-                      child: Container(
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              "assets/svg/${taskStatus.svgIcon}",
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            "assets/svg/${taskStatus.svgIcon}",
+                            color: taskStatus.bgColor,
+                            height: 15,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            taskStatus.name,
+                            style: context.textTheme.bodySmall?.copyWith(
                               color: taskStatus.bgColor,
-                              height: 15,
+                              fontSize: 12,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              taskStatus.name,
-                              style: context.textTheme.bodySmall?.copyWith(
-                                color: taskStatus.bgColor,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                 if ((DateTime.now()
@@ -235,7 +235,7 @@ class ThreadCard extends ConsumerWidget {
                     backgroundColor: Colors.yellow.shade200,
                     radius: 4,
                   ),
-                ]
+                ],
               ],
             ),
             Divider(
@@ -384,8 +384,7 @@ class ThreadCard extends ConsumerWidget {
                       Icons.reply_rounded,
                       size: 15,
                     ),
-                    onPressed: () async =>
-                        onReplyClick(context, ref, currentThreadNotifier),
+                    onPressed: () async => onReplyClick(context, ref),
                     label: Text(
                       block.childThreadId.isNotNullEmpty
                           ? "Replies"

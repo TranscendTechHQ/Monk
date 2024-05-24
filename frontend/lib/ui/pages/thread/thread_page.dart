@@ -5,13 +5,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/widget/thread_card.dart';
 import 'package:frontend/ui/pages/widgets/commandbox.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
+import 'package:frontend/ui/widgets/kit/alert.dart';
 import 'package:frontend/ui/widgets/outline_icon_button.dart';
+import 'package:frontend/ui/widgets/title_action_widget.dart';
 
 enum ThreadType { thread, reply }
 
@@ -54,6 +57,24 @@ class ThreadPage extends ConsumerWidget {
     return type;
   }
 
+  Future<void> confirmDelete(
+      BuildContext context, CurrentThread provider, WidgetRef ref) async {
+    Alert.confirm(
+      context,
+      barrierDismissible: true,
+      title: "Delete",
+      onConfirm: () async {
+        final isDeleted = await provider.deleteThreadAsync(context);
+        ref.invalidate(newsFeedProvider);
+        ref.read(newsFeedProvider);
+        if (isDeleted) {
+          Navigator.pop(context);
+        }
+      },
+      message: 'Are you sure you want to delete this thread forever?',
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = currentThreadProvider.call(
@@ -61,11 +82,17 @@ class ThreadPage extends ConsumerWidget {
       type: type,
     );
     final currentThread = ref.watch(provider);
+    final currentThreadNotifier = ref.read(provider.notifier);
     final threadTitle = currentThread.maybeWhen(
       data: (state) => state.thread?.title ?? title,
       orElse: () => title,
     );
     final blockInput = CommandBox(title: title, type: type);
+
+    final isThreadCreator = currentThread.maybeWhen(
+      data: (state) => state.thread?.creator == state.thread?.creator.id,
+      orElse: () => false,
+    );
 
     ref.listen(provider, (prev, next) {
       if (next is AsyncError) {
@@ -155,6 +182,14 @@ class ThreadPage extends ConsumerWidget {
               ref.invalidate(currentThreadProvider);
               ref.read(provider);
             },
+          ),
+          // if (!isThreadCreator)
+          SizedBox(
+            width: 25,
+            child: TileActionWidget(
+              onDelete: () async =>
+                  confirmDelete(context, currentThreadNotifier, ref),
+            ),
           ),
         ],
       ),

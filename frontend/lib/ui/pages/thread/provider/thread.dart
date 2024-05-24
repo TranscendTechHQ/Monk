@@ -477,6 +477,37 @@ class CurrentThread extends _$CurrentThread {
       return null;
     }, (r) => r.urls?.first);
   }
+
+  // Delete current thread
+  Future<bool> deleteThreadAsync(
+    BuildContext context,
+  ) async {
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final res = await AsyncRequest.handle<bool?>(() async {
+      loader.showLoader(context, message: "Deleting thread");
+      final response = await threadApi.deleteThreadThreadsIdDelete(
+          id: state.value!.thread!.id);
+      if (response.statusCode != 200) {
+        final res = response.data as Map<String, dynamic>?;
+        throw Exception(res?['message'] ?? "Failed to delete thread");
+      }
+      return true;
+    });
+    loader.hideLoader();
+
+    return res.fold((l) {
+      final res = l.response?.data;
+      if (res != null && res is Map<String, dynamic>) {
+        showMessage(context, res['message'] ?? "Failed to delete thread");
+      } else {
+        showMessage(context, "Failed to delete thread");
+      }
+      return false;
+    }, (r) {
+      showMessage(context, "Thread deleted successfully");
+      return true;
+    });
+  }
 }
 
 @freezed
