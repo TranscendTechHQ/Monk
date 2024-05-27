@@ -67,7 +67,18 @@ dependencies:
   searchfield: ^1.0.1
   flutter_svg: ^2.0.10+1
   url_launcher: ^6.2.6
+  # flutter_quill: "9.3.10"
+  markdown: ^7.2.2
+  flutter_markdown: ^0.6.23
+  # markdown_quill: ^3.1.0
+  # notus: ^1.0.0-rc.2
+  # zefyrka: ^1.6.0
+  zefyr:
+    # git: https://github.com/memspace/zefyr/tree/1.0-dev/packages/zefyr
+    path: zefyr
 
+dependency_overrides:
+  intl: ^0.18.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

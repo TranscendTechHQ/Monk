@@ -8,12 +8,17 @@ import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/file_utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/commandparser.dart';
-import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/news/news_page.dart';
+import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
+import 'package:frontend/ui/pages/widgets/zefyr_editor.dart';
 import 'package:frontend/ui/theme/theme.dart';
+// import 'package:markdown_quill/markdown_quill.dart' as mdq;
+import 'package:notus/convert.dart';
+// import 'package:quill_delta/quill_delta.dart' as qD;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:zefyr/zefyr.dart';
 
 part 'commandbox.g.dart';
 
@@ -63,7 +68,7 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
 }
 
 class CommandBox extends ConsumerWidget {
-  final _blockController = TextEditingController();
+  // final _blockController = TextEditingController();
   final _searchFocusNode = FocusNode();
   final _commandFocusNode = FocusNode();
   final _blockFocusNode = FocusNode();
@@ -92,13 +97,23 @@ class CommandBox extends ConsumerWidget {
     InputBoxType commandVisibility = ref.watch(screenVisibilityProviderVal);
 
     final attachment = ref.watch(blockAttachmentProvider);
+    // final quillController = QuillController.basic();
+    final zefyrController = ZefyrController();
 
-    final threadInput = TextField(
+    // final threadInput = RichEditor(
+    //   controller: quillController,
+    //   focusNode: _blockFocusNode,
+    // );
+    final threadInput = ZefyrRichEditor(
+      controller: zefyrController,
+      focusNode: _blockFocusNode,
+    );
+    final input = TextField(
       autofocus: true,
-      controller: _blockController,
+      // controller: _blockController,
       minLines: 2,
       maxLines: 5,
-      focusNode: _blockFocusNode,
+      // focusNode: _blockFocusNode,
       onTap: () => _blockFocusNode.requestFocus(),
       showCursor: true,
       decoration: InputDecoration(
@@ -142,15 +157,29 @@ class CommandBox extends ConsumerWidget {
         if (allowedInputTypes.contains(InputBoxType.thread))
           const SingleActivator(LogicalKeyboardKey.enter, meta: true):
               () async {
-            String blockText = _blockController.text;
+            print('Converting to markdown');
+
+            // final encoder = NotusMarkdownCodec();
+            // late NotusMarkdownCodec notusMarkdown;
+            // notusMarkdown = const NotusMarkdownCodec();
+
+            // final deltaToMd = mdq.DeltaToMarkdown();
+
+            final delta = zefyrController.document.toDelta();
+            // final encoded = encoder.encode(qD.Delta.fromJson(delta.toJson()));
+            final markdown =
+                notusMarkdown.encode(zefyrController.document.toDelta());
+            // print('Delta: $delta');
+            // final markdown = deltaToMd.convert(delta);
+            // final markdown2 = deltaToMd.convert(delta);
             await threadNotifier.createBlock(
               context,
-              blockText,
+              markdown,
               customTitle: title,
               image: attachment,
             );
             ref.read(blockAttachmentProvider.notifier).clearAttachment();
-            _blockController.clear();
+            // _blockController.clear();
           },
       };
 
@@ -160,6 +189,7 @@ class CommandBox extends ConsumerWidget {
       );
     }
 
+    _blockFocusNode.requestFocus();
     return SizedBox(
       width: containerWidth,
       child: Padding(
@@ -176,10 +206,6 @@ class CommandBox extends ConsumerWidget {
                   _blockFocusNode.requestFocus();
                 }
               }
-              // Handle key down
-            } else if (event is KeyUpEvent) {
-              // Handle key up
-              // just chill
             }
           },
           child: callbackShortcutWrapper(

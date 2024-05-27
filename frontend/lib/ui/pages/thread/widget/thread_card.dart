@@ -13,6 +13,7 @@ import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
 import 'package:frontend/ui/widgets/link_meta_card.dart';
+import 'package:frontend/ui/widgets/markdown/markdown_viewer.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
 
@@ -267,13 +268,19 @@ class ThreadCard extends ConsumerWidget {
                 // cursorHeight: 18,
               )
             else
-              SelectableText(
-                emojiParser.emojify(block.content.toString()).trimRight(),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+              // SelectableText(
+              //   emojiParser.emojify(block.content.toString()).trimRight(),
+              //   style: TextStyle(
+              //     fontSize: 15,
+              //     fontWeight: FontWeight.w400,
+              //     color: Theme.of(context).colorScheme.onSurface,
+              //   ),
+              // ),
+              MarkdownViewer(
+                markdownData: block.content,
+                onTapLink: (String? text, String? href, String? title) {
+                  launch(href);
+                },
               ),
             const SizedBox(height: 8),
 
