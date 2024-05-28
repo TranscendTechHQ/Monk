@@ -12,8 +12,10 @@ import 'package:frontend/ui/pages/news/news_page.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
+import 'package:frontend/ui/pages/widgets/user-mention/users.provider.dart';
 import 'package:frontend/ui/pages/widgets/zefyr_editor.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/cache_image.dart';
 // import 'package:markdown_quill/markdown_quill.dart' as mdq;
 import 'package:notus/convert.dart';
 // import 'package:quill_delta/quill_delta.dart' as qD;
@@ -100,50 +102,17 @@ class CommandBox extends ConsumerWidget {
     // final quillController = QuillController.basic();
     final zefyrController = ZefyrController();
 
+    final filterProvider = filteredUserProvider;
+    final filteredUsersNotifier = ref.read(filterProvider.notifier);
+
     // final threadInput = RichEditor(
     //   controller: quillController,
     //   focusNode: _blockFocusNode,
     // );
     final threadInput = ZefyrRichEditor(
-      controller: zefyrController,
-      focusNode: _blockFocusNode,
-    );
-    final input = TextField(
-      autofocus: true,
-      // controller: _blockController,
-      minLines: 2,
-      maxLines: 5,
-      // focusNode: _blockFocusNode,
-      onTap: () => _blockFocusNode.requestFocus(),
-      showCursor: true,
-      decoration: InputDecoration(
-        hintText: 'Write your text block here. Press Meta+Enter to save.',
-        hintStyle: context.textTheme.bodyMedium,
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        filled: false,
-      ),
-      onChanged: (text) async {
-        /*
-        if (text.isNotEmpty && text.startsWith('/')) {
-          if (!context.mounted) return;
-          // show the popup
-          _blockController.clear();
-          _commandFocusNode.requestFocus();
-          ref
-              .read(screenVisibilityProviderVal.notifier)
-              .setVisibility(InputBoxType.commandBox);
-          // show a popup with the list of commands and allow the user to
-          // select one
-          // or delete the / and treat it as a normal text
-        } else {
-          _blockFocusNode.requestFocus();
-        }
-        */
-        _blockFocusNode.requestFocus();
-      },
-    );
+        controller: zefyrController,
+        focusNode: _blockFocusNode,
+        filteredUsersNotifier: filteredUsersNotifier);
 
     Widget callbackShortcutWrapper({required Widget child}) {
       Map<ShortcutActivator, VoidCallback> bindings = {
@@ -215,31 +184,43 @@ class CommandBox extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (attachment != null)
-                        Stack(
-                          children: [
+                      Stack(
+                        children: [
+                          if (attachment != null)
                             Image.file(
                               attachment,
                               height: 300,
                               // width: containerWidth,
                             ).p(20),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: IconButton(
-                                onPressed: () {
-                                  ref
-                                      .read(blockAttachmentProvider.notifier)
-                                      .clearAttachment();
-                                },
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: Colors.red,
-                                ),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              onPressed: () {
+                                ref
+                                    .read(blockAttachmentProvider.notifier)
+                                    .clearAttachment();
+                              },
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.red,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          FilteredUsersList(
+                            onUserSelect: (value) {
+                              final value =
+                                  zefyrController.document.toPlainText();
+                              List<String> words = value.split(' ');
+                              final name = words.last.split('@')[1].trim();
+                              zefyrController.replaceText(
+                                  value.length - name.length,
+                                  value.length,
+                                  value);
+                            },
+                          )
+                        ],
+                      ),
                       Container(
                         decoration: BoxDecoration(
                           color: context.colorScheme.surface,
@@ -295,22 +276,87 @@ class CommandBox extends ConsumerWidget {
                   //   child: threadInput,
                   // ),
                   ),
-              // COMMAND BOX
-              Visibility(
-                visible: (commandVisibility == InputBoxType.commandBox),
-                maintainState: true,
-                child: CommandTypeAhead(commandFocusNode: _commandFocusNode),
-              ),
-              // SEARCH BOX
-              Visibility(
-                visible: (commandVisibility == InputBoxType.searchBox),
-                child: SearchModal(focusNode: _searchFocusNode),
-              ),
             ]),
           ),
         ),
       ),
     );
+  }
+}
+
+class FilteredUsersList extends ConsumerWidget {
+  const FilteredUsersList({super.key, required this.onUserSelect});
+  final ValueChanged<String> onUserSelect;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    var allUsers = ref.watch(usersProvider);
+    var filteredUsers = ref.watch(filteredUserProvider);
+
+    return filteredUsers.maybeWhen(
+        orElse: () => const SizedBox(),
+        data: (list) {
+          if (list.isEmpty) {
+            return const SizedBox();
+          }
+          return Positioned(
+            child: AnimatedContainer(
+              height: min(400, list.length * 55),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: context.colorScheme.secondaryContainer.withOpacity(.99),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                border: Border.all(
+                  color: context.customColors.monkBlue!,
+                  width: .3,
+                ),
+              ),
+              duration: const Duration(milliseconds: 300),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  final User = list[index];
+                  final name = User.name ?? '';
+                  return ListTile(
+                    title: Text(
+                      name,
+                    ),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: CacheImage(
+                        path: User.picture!.startsWith('https')
+                            ? User.picture!
+                            : "https://api.dicebear.com/7.x/identicon/png?seed=${User.name ?? "UN"}",
+                        width: 35,
+                        height: 35,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    onTap: () {
+                      onUserSelect(name);
+                      // we have to provide this username to the text field;
+                      // insertUsernameMention(username);
+                      // // clear the filtered users
+                      // ref
+                      //     .read(filteredUsersNotifierProvider.notifier)
+                      //     .clear();
+                    },
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider(
+                    color: context.colorScheme.onSurface,
+                    height: 8,
+                    thickness: .2,
+                    endIndent: 16,
+                    indent: 16,
+                  );
+                },
+              ),
+            ),
+          );
+        });
   }
 }
 
