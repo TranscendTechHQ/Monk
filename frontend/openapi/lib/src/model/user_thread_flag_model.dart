@@ -22,6 +22,8 @@ class UserThreadFlagModel {
 
      this.bookmark,
 
+     this.mention,
+
     required  this.tenantId,
 
     required  this.threadId,
@@ -56,6 +58,18 @@ class UserThreadFlagModel {
 
 
   final bool? bookmark;
+
+
+
+  @JsonKey(
+    
+    name: r'mention',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? mention;
 
 
 
@@ -135,6 +149,7 @@ class UserThreadFlagModel {
   bool operator ==(Object other) => identical(this, other) || other is UserThreadFlagModel &&
      other.id == id &&
      other.bookmark == bookmark &&
+     other.mention == mention &&
      other.tenantId == tenantId &&
      other.threadId == threadId &&
      other.unfollow == unfollow &&
@@ -146,6 +161,7 @@ class UserThreadFlagModel {
   int get hashCode =>
     id.hashCode +
     (bookmark == null ? 0 : bookmark.hashCode) +
+    (mention == null ? 0 : mention.hashCode) +
     tenantId.hashCode +
     threadId.hashCode +
     (unfollow == null ? 0 : unfollow.hashCode) +

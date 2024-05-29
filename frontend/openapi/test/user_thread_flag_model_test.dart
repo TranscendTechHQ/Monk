@@ -17,6 +17,11 @@ void main() {
       // TODO
     });
 
+    // bool mention
+    test('to test the property `mention`', () async {
+      // TODO
+    });
+
     // String tenantId
     test('to test the property `tenantId`', () async {
       // TODO

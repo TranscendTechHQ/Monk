@@ -18,6 +18,7 @@ import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
 // import 'package:markdown_quill/markdown_quill.dart' as mdq;
 import 'package:notus/convert.dart';
+import 'package:openapi/openapi.dart';
 // import 'package:quill_delta/quill_delta.dart' as qD;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:zefyr/zefyr.dart';
@@ -208,15 +209,34 @@ class CommandBox extends ConsumerWidget {
                             ),
                           ),
                           FilteredUsersList(
-                            onUserSelect: (value) {
-                              final value =
+                            onUserSelect: (user) {
+                              final description =
                                   zefyrController.document.toPlainText();
-                              List<String> words = value.split(' ');
+                              List<String> words = description.split(' ');
                               final name = words.last.split('@')[1].trim();
+
                               zefyrController.replaceText(
-                                  value.length - name.length,
-                                  value.length,
-                                  value);
+                                description.length - name.length - 1,
+                                name.length,
+                                user.name!,
+                              );
+
+                              zefyrController.formatText(
+                                description.length - name.length - 2,
+                                user.name!.length + 1,
+                                NotusAttribute.link
+                                    .fromString('@mention?user=${user.id}'),
+                              );
+
+                              zefyrController.updateSelection(
+                                TextSelection.collapsed(
+                                  offset: description.length -
+                                      name.length -
+                                      2 +
+                                      user.name!.length +
+                                      1,
+                                ),
+                              );
                             },
                           )
                         ],
@@ -286,7 +306,7 @@ class CommandBox extends ConsumerWidget {
 
 class FilteredUsersList extends ConsumerWidget {
   const FilteredUsersList({super.key, required this.onUserSelect});
-  final ValueChanged<String> onUserSelect;
+  final ValueChanged<UserModel> onUserSelect;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -334,7 +354,7 @@ class FilteredUsersList extends ConsumerWidget {
                       ),
                     ),
                     onTap: () {
-                      onUserSelect(name);
+                      onUserSelect(User);
                       // we have to provide this username to the text field;
                       // insertUsernameMention(username);
                       // // clear the filtered users

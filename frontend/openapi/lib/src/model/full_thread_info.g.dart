@@ -40,6 +40,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
           headline: $checkedConvert('headline', (v) => v as String?),
           lastModified: $checkedConvert('last_modified',
               (v) => v == null ? null : DateTime.parse(v as String)),
+          mention: $checkedConvert('mention', (v) => v as bool?),
           numBlocks:
               $checkedConvert('num_blocks', (v) => (v as num?)?.toInt() ?? 0),
           parentBlockId:
@@ -81,6 +82,7 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
   writeNotNull('default_block', instance.defaultBlock?.toJson());
   writeNotNull('headline', instance.headline);
   writeNotNull('last_modified', instance.lastModified?.toIso8601String());
+  writeNotNull('mention', instance.mention);
   writeNotNull('num_blocks', instance.numBlocks);
   writeNotNull('parent_block_id', instance.parentBlockId);
   val['title'] = instance.title;

@@ -6,7 +6,7 @@ from utils.db import create_mongo_document, get_mongo_document, asyncdb, update_
 logger = logging.getLogger(__name__)
 
 
-async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None):
+async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
     try:
 
         user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
@@ -20,7 +20,8 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
                 unread=unread if unread else None,
                 unfollow=unfollow if unfollow else None,
                 bookmark=bookmark if bookmark else None,
-                upvote=upvote if upvote else None
+                upvote=upvote if upvote else None,
+                mention=mention if mention else None
             )
             user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
             await create_mongo_document(
@@ -34,6 +35,7 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
         user_thread_flag["unfollow"] = unfollow if unfollow is not None else user_thread_flag["unfollow"]
         user_thread_flag["bookmark"] = bookmark if bookmark is not None else user_thread_flag["bookmark"]
         user_thread_flag["upvote"] = upvote if upvote is not None else user_thread_flag["upvote"]
+        user_thread_flag["mention"] = mention if mention is not None else user_thread_flag["mention"]
 
         updated_user_thread_flag = await update_mongo_document_fields({"_id": user_thread_flag["_id"]}, user_thread_flag,
                                                                       asyncdb.user_thread_flags_collection)
@@ -44,7 +46,8 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
         return None
 
 
-async def set_unread_true_other_users(thread_id, user_id, tenant_id):
+# Set flags true for all other users in the thread except the user_id
+async def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
     try:
         if thread_id is None or user_id is None or tenant_id is None:
             print("\n ❌ [ERROR]: thread_id, user_id or tenant_id is None",
@@ -56,7 +59,7 @@ async def set_unread_true_other_users(thread_id, user_id, tenant_id):
             other_user_id = user["_id"]
             if other_user_id == user_id:
                 continue
-            await update_user_flags(thread_id, other_user_id, tenant_id, unread=True)
+            await update_user_flags(thread_id, other_user_id, tenant_id, unread=unread, upvote=upvote, bookmark=bookmark, unfollow=unfollow, mention=mention)
     except Exception as e:
         logger.error(e, exc_info=True)
         return None

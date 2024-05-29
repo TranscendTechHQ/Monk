@@ -34,6 +34,8 @@ class ThreadMetaData {
 
      this.lastModified,
 
+     this.mention,
+
      this.numBlocks = 0,
 
      this.parentBlockId,
@@ -134,6 +136,18 @@ class ThreadMetaData {
 
 
   @JsonKey(
+    
+    name: r'mention',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? mention;
+
+
+
+  @JsonKey(
     defaultValue: 0,
     name: r'num_blocks',
     required: false,
@@ -226,6 +240,7 @@ class ThreadMetaData {
      other.creator == creator &&
      other.headline == headline &&
      other.lastModified == lastModified &&
+     other.mention == mention &&
      other.numBlocks == numBlocks &&
      other.parentBlockId == parentBlockId &&
      other.title == title &&
@@ -243,6 +258,7 @@ class ThreadMetaData {
     creator.hashCode +
     headline.hashCode +
     lastModified.hashCode +
+    (mention == null ? 0 : mention.hashCode) +
     numBlocks.hashCode +
     (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     title.hashCode +
