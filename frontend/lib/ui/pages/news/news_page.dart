@@ -60,6 +60,17 @@ class NewsPage extends ConsumerWidget {
     return Scaffold(
       body: PageScaffold(
         body: WithMonkAppbar(
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+              onPressed: () {
+                ref.invalidate(newsFeedProvider);
+                // ref.read(newsFeedProvider.future);
+                ref.read(newsFeedProvider.notifier).getFilteredFeed();
+              },
+            ),
+          ],
           child: Container(
             padding: const EdgeInsets.only(top: 36),
             alignment: Alignment.center,
@@ -157,9 +168,17 @@ class ChatListView extends ConsumerWidget {
     final newsFeed = ref.watch(newsFeedProvider);
 
     return newsFeed.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Container(
+        width: 500.00.scale(
+          800.00,
+          600,
+          200,
+        ),
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
+      ).extended,
       error: (error, stack) => Center(child: Text('Error: $error')),
-      data: (tuple) {
+      data: (touple) {
         final threadHeadlineList = newsFeed.asData!.value;
         return RefreshIndicator(
           onRefresh: () => Future.wait([
