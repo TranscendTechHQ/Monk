@@ -47,6 +47,7 @@ class NewsPage extends ConsumerWidget {
             unRead: map['unRead'],
             unfollow: map['dismissed'],
             upvote: map['upvoted'],
+            mention: map['mention'],
           );
     }
   }

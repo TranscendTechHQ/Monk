@@ -257,6 +257,12 @@ components:
           - type: 'null'
           'null': true
           title: Bookmark
+        mention:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
+          title: Mention
         thread_id:
           title: Thread Id
           type: string
@@ -326,6 +332,12 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        mention:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
+          title: Mention
         num_blocks:
           default: 0
           title: Num Blocks
@@ -484,6 +496,12 @@ components:
           format: date-time
           title: Last Modified
           type: string
+        mention:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
+          title: Mention
         num_blocks:
           default: 0
           title: Num Blocks
@@ -694,6 +712,12 @@ components:
           - type: 'null'
           'null': true
           title: Bookmark
+        mention:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          'null': true
+          title: Mention
         tenant_id:
           title: Tenant Id
           type: string
@@ -1021,6 +1045,13 @@ paths:
         schema:
           default: false
           title: Upvote
+          type: boolean
+      - in: query
+        name: mention
+        required: false
+        schema:
+          default: false
+          title: Mention
           type: boolean
       responses:
         '200':

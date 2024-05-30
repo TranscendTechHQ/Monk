@@ -14,7 +14,11 @@ class NewsFeedFilter extends ConsumerStatefulWidget {
 }
 
 class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
-  bool unRead = false, bookmarked = false, upvoted = false, dismissed = false;
+  bool unRead = false,
+      bookmarked = false,
+      upvoted = false,
+      dismissed = false,
+      mention = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,6 +92,15 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
               },
               title: const Text('Upvoted')),
           CheckboxListTile(
+              value: mention,
+              side: const BorderSide(color: monkBlue700, width: 2),
+              onChanged: (val) {
+                setState(() {
+                  mention = val!;
+                });
+              },
+              title: const Text('Mentioned')),
+          CheckboxListTile(
               value: dismissed,
               side: const BorderSide(color: monkBlue700, width: 2),
               onChanged: (val) {
@@ -121,6 +134,7 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
                     'bookmarked': bookmarked,
                     'Upvoted': upvoted,
                     'dismissed': dismissed,
+                    'mention': mention
                   });
                 },
                 horizontalPadding: 36,
