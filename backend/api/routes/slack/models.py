@@ -1,3 +1,4 @@
+from typing import Any, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -25,3 +26,37 @@ class CompositeChannelList(PublicChannelList, SubscribedChannelList):
 
 class SubscribeChannelRequest(BaseModel):
     channel_ids: list[str]
+
+
+class SlackEventVerificationRequestModel(BaseModel):
+    token: str
+    challenge: str
+    type: str
+
+
+class Event(BaseModel):
+    user: Optional[str] = None
+    type: Optional[str] = None
+    ts: Optional[str] = None
+    client_msg_id: Optional[str] = None
+    text: Optional[str] = None
+    team: Optional[str] = None
+    blocks: Any = None
+    channel: Optional[str] = None
+    event_ts: Optional[str] = None
+    subtype: Optional[str] = None
+    channel_type: Optional[str] = None
+    parent_user_id: Optional[str] = None
+
+
+class SlackEventModel(BaseModel):
+    token: str = None
+    team_id: str = None
+    context_team_id: Optional[str] = None
+    api_app_id: Optional[str] = None
+    event: Optional[Event] = None
+    type: Optional[str] = None
+    event_id: Optional[str] = None
+    event_time: Optional[int] = None
+    is_ext_shared_channel: Optional[bool] = None
+    event_context: Optional[str] = None
