@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 from fastapi import APIRouter, Body, Depends
 from fastapi import status, Request
@@ -7,11 +8,12 @@ from slack_sdk import WebClient
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
+from routes.threads.user_flags import set_flags_true_other_users
 from routes.threads.child_thread import create_new_thread
 from routes.threads.models import CreateBlockModel
 from routes.threads.routers import create_new_block
 from routes.slack.models import ChannelModel, CompositeChannelList, PublicChannelList, SlackEventModel, SlackEventVerificationRequestModel, SubscribeChannelRequest, SubscribedChannelList
-from utils.db import asyncdb
+from utils.db import asyncdb, get_block_by_id, update_mongo_document_fields
 from utils.slack.slack_channel_messages import convert_unix_timestamp_to_iso_string, get_channel_list, update_third_party_user_info
 
 router = APIRouter()
@@ -78,36 +80,34 @@ async def subscribe_channel(request: Request,
                         content=jsonable_encoder(new_item))
     # content=new_item.model_dump_json()) #this returns id instead of _id in json
 
-# Slack event webhook
-
-# slack webhook verification
-
-
-@router.post("/webhook_event-test",)
-async def webhook_event(request: Request):
-    json = await request.json()
-    model = SlackEventVerificationRequestModel(**json)
-    print("\n 👉 Received verification")
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder({'challenge': model.challenge}))
-
 
 # Slack event webhook
 @router.post("/webhook_event",)
 async def webhook_event(request: Request):
     try:
         json = await request.json()
-        model = SlackEventModel(**json)
-        print("\n [WEBHOOK] 👉 Received verification")
-        print("\n")
-        print(model.model_dump())
-        print("\n")
 
-        if model.event.type != 'message' or model.event.subtype == 'message_deleted' or model.event.subtype == 'message_changed':
+        # check if the request is a verification request
+        if (json.get('challenge')):
+            model = SlackEventVerificationRequestModel(**json)
+            print("\n [WEBHOOK] 👉 Received verification")
+            return JSONResponse(status_code=status.HTTP_200_OK,
+                                content=jsonable_encoder({'challenge': json.get('challenge')}))
+
+        model = SlackEventModel(**json)
+        print("\n [WEBHOOK] 👉 Received event")
+        print("\n")
+        print(
+            f'\n [WEBHOOK] 👉 Event: {model.event.subtype}, Content: {model.event.text}')
+        print("\n")
+        print(json)
+
+        if model.event.type != 'message' or model.event.subtype == 'message_deleted':
             print(
                 f"\n  [WEBHOOK] 👉 Event Type: ${model.event.type} Subtype: ${model.event.subtype}")
             return JSONResponse(status_code=status.HTTP_200_OK,
                                 content=jsonable_encoder({'Received': True}))
+        threadReply = model.event.message
 
         tenants_collection = asyncdb.tenants_collection
         threads_collection = asyncdb.threads_collection
@@ -121,9 +121,6 @@ async def webhook_event(request: Request):
                 f"\n [WEBHOOK] ❌ Tenant not found for team_id: {model.team_id}")
             return JSONResponse(status_code=status.HTTP_200_OK,
                                 content=jsonable_encoder({'Received': True}))
-
-        tenant_id = model.team_id
-        print("\n 👉 Tenant found in Db successfully.")
         SLACK_USER_TOKEN = tenant["user_token"]
         SLACK_BOT_TOKEN = tenant["bot_token"]
 
@@ -132,6 +129,11 @@ async def webhook_event(request: Request):
         slack_client = WebClient(token=SLACK_USER_TOKEN)
         slack_client_for_user_info = WebClient(token=SLACK_BOT_TOKEN)
         print("👉 Slack client created successfully.")
+        if threadReply and model.event.subtype == 'message_changed':
+            return await update_child_thread(model, slack_client_for_user_info)
+
+        tenant_id = model.team_id
+        print("\n 👉 Tenant found in Db successfully.")
 
         # Get the channel info
         print("\n [WEBHOOK] 👉 Getting channel info...")
@@ -187,6 +189,60 @@ async def webhook_event(request: Request):
         print("\n [WEBHOOK] 👉 Block created successfully")
         # print("\n 👉 Block ID: ", created_block["_id"])
 
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder({'Received': True}))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=200, content=jsonable_encoder({'Received': True}))
+
+# function to update the child thread
+
+
+async def update_child_thread(model: SlackEventModel, slack_client_for_user_info: WebClient):
+    print(
+        f"\n [WEBHOOK] 👉 Initiate Update block")
+    try:
+        tenant_id = model.team_id
+        threadReply = model.event.message
+        newText = threadReply.text
+        print("\n [WEBHOOK] 👉 New text: ", newText)
+        block_id = model.event.message.client_msg_id
+        updatedAt = convert_unix_timestamp_to_iso_string(model.event.ts)
+
+        block_collection = asyncdb.blocks_collection
+        # get the block from the db
+        block_in_db = await get_block_by_id(block_id, block_collection)
+
+        if not block_in_db:
+            print(
+                f"\n [WEBHOOK] ❌ Block not found for block_id: {block_id}")
+            return JSONResponse(status_code=status.HTTP_200_OK,
+                                content=jsonable_encoder({'Received': True}))
+
+        # Get the user info
+        print("\n [WEBHOOK] 👉 Fetching user from db")
+        # get or create user with slack user ID who created the channel
+        user = await update_third_party_user_info(model.event.user, tenant_id, slack_client_for_user_info)
+
+        # create threads for each public channel
+        user_id = user["_id"]
+
+        update_block = block_in_db
+        update_block["content"] = newText
+
+        print("\n [WEBHOOK] 👉 Updating block content")
+        update_block["content"] = newText
+
+        update_block["last_modified"] = updatedAt
+
+        print("\n [WEBHOOK] 👉 Updating block in db")
+
+        updated_block = await update_mongo_document_fields({"_id": block_id}, update_block, block_collection)
+        print("\n [WEBHOOK] 👉 Block updated in DB")
+        thread_id = updated_block["main_thread_id"]
+        await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+
+        logger.debug("\n [WEBHOOK] ✅ Block updated in DB")
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder({'Received': True}))
     except Exception as e:

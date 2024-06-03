@@ -34,6 +34,18 @@ class SlackEventVerificationRequestModel(BaseModel):
     type: str
 
 
+# Slack model for Reply message
+class Message(BaseModel):
+    user: Optional[str] = None
+    type: Optional[str] = None
+    ts: Optional[str] = None
+    client_msg_id: Optional[str] = None
+    text: Optional[str] = None
+    team: Optional[str] = None
+    channel: Optional[str] = None
+    ts: Optional[str] = None
+
+
 class Event(BaseModel):
     user: Optional[str] = None
     type: Optional[str] = None
@@ -41,12 +53,12 @@ class Event(BaseModel):
     client_msg_id: Optional[str] = None
     text: Optional[str] = None
     team: Optional[str] = None
-    blocks: Any = None
     channel: Optional[str] = None
     event_ts: Optional[str] = None
     subtype: Optional[str] = None
     channel_type: Optional[str] = None
     parent_user_id: Optional[str] = None
+    message: Optional[Message] = None
 
 
 class SlackEventModel(BaseModel):
