@@ -59,6 +59,7 @@ class Event(BaseModel):
     channel_type: Optional[str] = None
     parent_user_id: Optional[str] = None
     message: Optional[Message] = None
+    previous_message: Optional[Message] = None
 
 
 class SlackEventModel(BaseModel):

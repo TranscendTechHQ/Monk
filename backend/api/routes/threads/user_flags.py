@@ -35,7 +35,8 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
         user_thread_flag["unfollow"] = unfollow if unfollow is not None else user_thread_flag["unfollow"]
         user_thread_flag["bookmark"] = bookmark if bookmark is not None else user_thread_flag["bookmark"]
         user_thread_flag["upvote"] = upvote if upvote is not None else user_thread_flag["upvote"]
-        user_thread_flag["mention"] = mention if mention is not None else user_thread_flag["mention"]
+        if mention is not None:
+            user_thread_flag["mention"] = mention
 
         updated_user_thread_flag = await update_mongo_document_fields({"_id": user_thread_flag["_id"]}, user_thread_flag,
                                                                       asyncdb.user_thread_flags_collection)

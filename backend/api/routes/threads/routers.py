@@ -13,6 +13,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
+from routes.threads.block import updateBlock
 from utils.scrapper import getLinkMeta
 from utils.db import get_creator_block_by_id, get_mongo_document, get_mongo_documents, get_tenant_id, update_mongo_document_fields, asyncdb, \
     create_mongo_document, delete_mongo_document
@@ -778,38 +779,19 @@ async def update(request: Request, id: str, thread_title: str, block: UpdateBloc
     bloc_position = input_block["position"]
 
     print("\n Fetching block from db using Id:", id)
-    block_in_db = await get_block_by_id(id, block_collection)
-
-    if not block_in_db:
-        return JSONResponse(status_code=404, content={"message": "Block with ${id} not found"})
-
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
+    block_in_db = await get_block_by_id(id, block_collection)
+    if not block_in_db:
+        return JSONResponse(status_code=404, content={"message": "Block with ${id} not found"})
 
     if block_in_db["creator_id"] != user_id:
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
-    update_block = block_in_db
-    update_block["content"] = input_block["content"]
+    updated_block = await updateBlock(block_in_db, user_id, tenant_id, block_content, bloc_position)
+    if not updated_block:
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
-    if (block_content is not None):
-        print("\n Updating block content")
-        update_block["content"] = block_content
-
-    if (bloc_position is not None):
-        print("\n Updating block position")
-        update_block["position"] = bloc_position
-
-    update_block["last_modified"] = str(dt.datetime.now())
-
-    print("\n Updating block in db")
-
-    updated_block = await update_mongo_document_fields({"_id": id}, update_block, block_collection)
-
-    thread_id = updated_block["main_thread_id"]
-    await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
-
-    logger.debug("\n Block updated in DB")
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(updated_block))
 
