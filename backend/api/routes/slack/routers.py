@@ -1,5 +1,6 @@
 import datetime as dt
 import logging
+import re
 from fastapi import APIRouter, Body, Depends
 from fastapi import status, Request
 from fastapi.encoders import jsonable_encoder
@@ -179,14 +180,13 @@ async def webhook_event(request: Request):
         print("\n [WEBHOOK] 👉 Thread ID: ", new_thread["_id"])
         main_thread_id = new_thread["_id"]
 
-        current_slack_thread_id = ""
-        current_thread_id = {}
+        # Check if there is a slack user mentioned in the content
+        content = await replaceSlackUSerIdsToMonkMentionLink(model.event.text, tenant_id)
 
         print("\n [WEBHOOK] 👉 Creating block instance")
         new_block = CreateBlockModel(
-            content=model.event.text, main_thread_id=main_thread_id)
+            content=content, main_thread_id=main_thread_id)
 
-        print("\n 👉 Creating block")
         created_block = await create_new_block(block=new_block,
                                                user_id=user_id,
                                                tenant_id=tenant_id,
@@ -210,7 +210,9 @@ async def update_child_thread(model: SlackEventModel, slack_client_for_user_info
     try:
         tenant_id = model.team_id
         threadReply = model.event.message
-        newText = threadReply.text
+
+        # Check foe the slack user mention
+        newText = await replaceSlackUSerIdsToMonkMentionLink(threadReply.text, tenant_id)
         print("\n [WEBHOOK] 👉 New text: ", newText)
         block_id = model.event.message.client_msg_id
         # updatedAt = convert_unix_timestamp_to_iso_string(model.event.ts)
@@ -264,3 +266,37 @@ async def delete_block(model: SlackEventModel):
     except Exception as e:
         logger.error(e, exc_info=True)
         return JSONResponse(status_code=200, content=jsonable_encoder({'Received': True}))
+
+
+# Detect the slack user mention in the content if available in <@user_id> format
+# Extract all the slack user ids mentioned in the content and fetch the user info from the slack and create a user in the db if not exists
+# if user exists then change the mentioned user format to Monk user link format [user_name](@mention?user=user_id)
+# and update the content with the new format
+# This is done to make the user mention clickable in the frontend
+async def replaceSlackUSerIdsToMonkMentionLink(content: str, tenant_id: str):
+    try:
+        slackUserIds = re.findall(r'<@([A-Z0-9a-z]+)>', content)
+        if (not slackUserIds or len(slackUserIds) == 0):
+            return content
+
+        tenants = await asyncdb.tenants_collection.find({
+            'tenant_id': tenant_id
+        }).to_list(length=None)
+        tenant = tenants[0] if tenants else None
+
+        SLACK_BOT_TOKEN = tenant["bot_token"]
+        slack_client_for_user_info = WebClient(token=SLACK_BOT_TOKEN)
+
+        if slackUserIds:
+            print("\n [WEBHOOK] 👉 Found Slack User IDs: ", slackUserIds)
+            # get or create user with slack user ID who created the channel
+            for slackUserId in slackUserIds:
+                user = await update_third_party_user_info(
+                    slackUserId, 'tenant_id', slack_client_for_user_info)
+                if user:
+                    content = content.replace(
+                        f'<@{slackUserId}>', f'[{user["name"]}](mention?user={user["_id"]})')
+        return content
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return content
