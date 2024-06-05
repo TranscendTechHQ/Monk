@@ -26,7 +26,7 @@ class NewsPage extends ConsumerWidget {
   }
 
   Future<void> onFilterPressed(BuildContext context, WidgetRef ref) async {
-    final map = await showDialog<Map<String, bool>?>(
+    final map = await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -50,6 +50,8 @@ class NewsPage extends ConsumerWidget {
             upvote: map['upvoted'],
             mention: map['mention'],
           );
+      final state = ref.read(newsFeedFilterProvider.notifier);
+      state.updateFilter(semanticQuery: map['searchQuery']);
     }
   }
 
