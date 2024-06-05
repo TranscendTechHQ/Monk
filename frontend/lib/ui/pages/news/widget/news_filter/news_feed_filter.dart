@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/ui/pages/news/widget/news_filter/provider/news_feed_filter_provider.dart';
 import 'package:frontend/ui/theme/color/custom_color.g.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/dismiss_button.dart';
 import 'package:frontend/ui/widgets/outline_icon_button.dart';
 
-class NewsFeedFilter extends ConsumerStatefulWidget {
-  const NewsFeedFilter({super.key});
+class NewsFeedFilterView extends ConsumerWidget {
+  const NewsFeedFilterView({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _NewsFeedFilterState createState() => _NewsFeedFilterState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final watchState = ref.watch(newsFeedFilterProvider);
 
-class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
-  bool unRead = false,
-      bookmarked = false,
-      upvoted = false,
-      dismissed = false,
-      mention = false;
-  @override
-  Widget build(BuildContext context) {
+    final readState = ref.read(newsFeedFilterProvider.notifier);
     return Container(
       padding: const EdgeInsets.all(16),
       constraints: BoxConstraints(
@@ -65,48 +58,38 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
           ),
           const Padding(padding: EdgeInsets.all(8)),
           CheckboxListTile(
-              value: unRead,
+              value: watchState.unRead,
               side: const BorderSide(color: monkBlue700, width: 2),
               onChanged: (val) {
-                setState(() {
-                  unRead = val!;
-                });
+                readState.updateFilter(unRead: val);
               },
               title: const Text('Unread')),
           CheckboxListTile(
-              value: bookmarked,
+              value: watchState.bookmarked,
               side: const BorderSide(color: monkBlue700, width: 2),
               onChanged: (val) {
-                setState(() {
-                  bookmarked = val!;
-                });
+                readState.updateFilter(bookmarked: val);
               },
               title: const Text('Bookmarked')),
           CheckboxListTile(
-              value: upvoted,
+              value: watchState.upvoted,
               side: const BorderSide(color: monkBlue700, width: 2),
               onChanged: (val) {
-                setState(() {
-                  upvoted = val!;
-                });
+                readState.updateFilter(upvoted: val);
               },
               title: const Text('Upvoted')),
           CheckboxListTile(
-              value: mention,
+              value: watchState.mentioned,
               side: const BorderSide(color: monkBlue700, width: 2),
               onChanged: (val) {
-                setState(() {
-                  mention = val!;
-                });
+                readState.updateFilter(mentioned: val);
               },
               title: const Text('Mentioned')),
           CheckboxListTile(
-              value: dismissed,
+              value: watchState.dismissed,
               side: const BorderSide(color: monkBlue700, width: 2),
               onChanged: (val) {
-                setState(() {
-                  dismissed = val!;
-                });
+                readState.updateFilter(dismissed: val);
               },
               title: const Text('Dismissed')),
           const Padding(padding: EdgeInsets.all(8)),
@@ -116,12 +99,14 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
               OutlineIconButton(
                 label: 'Reset',
                 onPressed: () {
-                  setState(() {
-                    unRead = false;
-                    bookmarked = false;
-                    upvoted = false;
-                    dismissed = false;
-                  });
+                  readState.updateFilter(
+                    unRead: false,
+                    bookmarked: false,
+                    upvoted: false,
+                    dismissed: false,
+                    mentioned: false,
+                    semanticQuery: '',
+                  );
                 },
                 horizontalPadding: 36,
                 verticalPadding: 16,
@@ -129,12 +114,20 @@ class _NewsFeedFilterState extends ConsumerState<NewsFeedFilter> {
               OutlineIconButton(
                 label: 'Apply',
                 onPressed: () {
+                  // final state = ref.read(newsFeedFilterProvider.notifier);
+                  // state.updateFilter(
+                  //   bookmarked: bookmarked,
+                  //   unRead: unRead,
+                  //   upvoted: upvoted,
+                  //   mentioned: mention,
+                  //   dismissed: dismissed,
+                  // );
                   Navigator.pop(context, {
-                    'unRead': unRead,
-                    'bookmarked': bookmarked,
-                    'Upvoted': upvoted,
-                    'dismissed': dismissed,
-                    'mention': mention
+                    'unRead': watchState.unRead,
+                    'bookmarked': watchState.bookmarked,
+                    'Upvoted': watchState.upvoted,
+                    'dismissed': watchState.dismissed,
+                    'mention': watchState.mentioned
                   });
                 },
                 horizontalPadding: 36,

@@ -21,7 +21,7 @@ final usersProvider =
 );
 
 typedef _$Users = AutoDisposeAsyncNotifier<List<UserModel>>;
-String _$filteredUserHash() => r'329cec5c2fa4d1985609d892d6a7cb37195803d9';
+String _$filteredUserHash() => r'49a872ce672da071d925d0ce5c6f8a79fce26e20';
 
 /// See also [FilteredUser].
 @ProviderFor(FilteredUser)

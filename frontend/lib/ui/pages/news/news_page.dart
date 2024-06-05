@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/ui/pages/news/news_card.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
-import 'package:frontend/ui/pages/news/widget/news_feed_filter.dart';
+import 'package:frontend/ui/pages/news/widget/news_filter/news_feed_filter.dart';
+import 'package:frontend/ui/pages/news/widget/news_filter/provider/news_feed_filter_provider.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -37,7 +38,7 @@ class NewsPage extends ConsumerWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           backgroundColor: context.colorScheme.secondaryContainer,
-          child: const NewsFeedFilter(),
+          child: const NewsFeedFilterView(),
         );
       },
     );
@@ -55,6 +56,7 @@ class NewsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final threadList = ref.watch(fetchThreadsInfoProvider);
+    ref.watch(newsFeedFilterProvider);
     final List<String> titlesList = threadList.value?.keys.toList() ?? [];
 
     return Scaffold(
