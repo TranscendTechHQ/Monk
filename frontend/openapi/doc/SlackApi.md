@@ -11,6 +11,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**chChannelListGet**](SlackApi.md#chchannellistget) | **GET** /channel_list | Ch
 [**subscribeChannelSubscribeChannelPost**](SlackApi.md#subscribechannelsubscribechannelpost) | **POST** /subscribe_channel | Subscribe Channel
+[**webhookEventWebhookEventPost**](SlackApi.md#webhookeventwebhookeventpost) | **POST** /webhook_event | Webhook Event
 
 
 # **chChannelListGet**
@@ -87,6 +88,43 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **webhookEventWebhookEventPost**
+> Object webhookEventWebhookEventPost()
+
+Webhook Event
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getSlackApi();
+
+try {
+    final response = api.webhookEventWebhookEventPost();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling SlackApi->webhookEventWebhookEventPost: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+**Object**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

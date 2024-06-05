@@ -72,6 +72,7 @@ Class | Method | HTTP request | Description
 [*SessionApi*](doc/SessionApi.md) | [**secureApiSessioninfoGet**](doc/SessionApi.md#secureapisessioninfoget) | **GET** /sessioninfo | Secure Api
 [*SlackApi*](doc/SlackApi.md) | [**chChannelListGet**](doc/SlackApi.md#chchannellistget) | **GET** /channel_list | Ch
 [*SlackApi*](doc/SlackApi.md) | [**subscribeChannelSubscribeChannelPost**](doc/SlackApi.md#subscribechannelsubscribechannelpost) | **POST** /subscribe_channel | Subscribe Channel
+[*SlackApi*](doc/SlackApi.md) | [**webhookEventWebhookEventPost**](doc/SlackApi.md#webhookeventwebhookeventpost) | **POST** /webhook_event | Webhook Event
 [*StorageApi*](doc/StorageApi.md) | [**uploadFilesUploadFilesPost**](doc/StorageApi.md#uploadfilesuploadfilespost) | **POST** /uploadFiles/ | Upload Files
 [*StorageApi*](doc/StorageApi.md) | [**uploadFilesUploadFilesPost_0**](doc/StorageApi.md#uploadfilesuploadfilespost_0) | **POST** /uploadFiles/ | Upload Files
 [*ThreadsApi*](doc/ThreadsApi.md) | [**allUsersUserGet**](doc/ThreadsApi.md#allusersuserget) | **GET** /user | All Users

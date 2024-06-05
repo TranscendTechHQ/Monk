@@ -29,15 +29,18 @@ class NewsFeed extends _$NewsFeed {
     bool? unfollow = false,
     bool? upvote = false,
     bool? mention = false,
+    String? searchQuery,
   }) async {
     state = const AsyncLoading();
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
-        bookmark: bookmark,
-        unread: unRead,
-        unfollow: unfollow,
-        upvote: upvote,
-        mention: mention);
+      bookmark: bookmark,
+      unread: unRead,
+      unfollow: unfollow,
+      upvote: upvote,
+      mention: mention,
+      searchQuery: searchQuery,
+    );
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
     }

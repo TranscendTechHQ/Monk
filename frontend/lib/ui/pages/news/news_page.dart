@@ -49,6 +49,7 @@ class NewsPage extends ConsumerWidget {
             unfollow: map['dismissed'],
             upvote: map['upvoted'],
             mention: map['mention'],
+            searchQuery: map['searchQuery'],
           );
       final state = ref.read(newsFeedFilterProvider.notifier);
       state.updateFilter(semanticQuery: map['searchQuery']);

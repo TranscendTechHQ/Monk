@@ -244,9 +244,15 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
     return result
 
 
-async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention):
+async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
     print("🔍 Filtering newsfeed"
-          f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}, mention {mention}")
+          f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}, mention {mention}, searchQuery: {searchQuery}")
+
+    # If searchQuery is present then search the threads by query
+    # Right now the algo to search on basis of semantic search is not ready to we are using bookmark flag to search the threads
+    if searchQuery is not None:
+        bookmark = True
+    print(f"🔍 Filtering newsfeed ${bookmark}")
     user_flags = []
     if bookmark:
         user_flags.append({"bookmark": True})
@@ -371,12 +377,13 @@ async def filter(
         unfollow: bool = False,
         upvote: bool = False,
         mention: bool = False,
+        searchQuery: str = None,
         session: SessionContainer = Depends(verify_session())
 ):
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
 
-    if bookmark or unfollow or unread or upvote or mention:
+    if bookmark or unfollow or unread or upvote or mention or searchQuery:
         aggregate = await get_filtered_newsfeed(
             user_id=user_id,
             tenant_id=tenant_id,
@@ -384,7 +391,8 @@ async def filter(
             unread=unread,
             unfollow=unfollow,
             upvote=upvote,
-            mention=mention
+            mention=mention,
+            searchQuery=searchQuery
         )
 
     else:
