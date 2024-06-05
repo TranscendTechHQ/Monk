@@ -52,6 +52,11 @@ void main() {
       // TODO
     });
 
+    // bool mention
+    test('to test the property `mention`', () async {
+      // TODO
+    });
+
     // int numBlocks (default value: 0)
     test('to test the property `numBlocks`', () async {
       // TODO

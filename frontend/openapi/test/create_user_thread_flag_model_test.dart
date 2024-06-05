@@ -12,6 +12,11 @@ void main() {
       // TODO
     });
 
+    // bool mention
+    test('to test the property `mention`', () async {
+      // TODO
+    });
+
     // String threadId
     test('to test the property `threadId`', () async {
       // TODO

@@ -18,6 +18,7 @@ UserThreadFlagModel _$UserThreadFlagModelFromJson(Map<String, dynamic> json) =>
         final val = UserThreadFlagModel(
           id: $checkedConvert('_id', (v) => v as String?),
           bookmark: $checkedConvert('bookmark', (v) => v as bool?),
+          mention: $checkedConvert('mention', (v) => v as bool?),
           tenantId: $checkedConvert('tenant_id', (v) => v as String),
           threadId: $checkedConvert('thread_id', (v) => v as String),
           unfollow: $checkedConvert('unfollow', (v) => v as bool?),
@@ -46,6 +47,7 @@ Map<String, dynamic> _$UserThreadFlagModelToJson(UserThreadFlagModel instance) {
 
   writeNotNull('_id', instance.id);
   writeNotNull('bookmark', instance.bookmark);
+  writeNotNull('mention', instance.mention);
   val['tenant_id'] = instance.tenantId;
   val['thread_id'] = instance.threadId;
   writeNotNull('unfollow', instance.unfollow);

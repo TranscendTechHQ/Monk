@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **defaultBlock** | [**BlockWithCreator**](BlockWithCreator.md) |  | [optional] 
 **headline** | **String** |  | [optional] 
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
+**mention** | **bool** |  | [optional] 
 **numBlocks** | **int** |  | [optional] [default to 0]
 **parentBlockId** | **String** |  | [optional] 
 **title** | **String** |  | 

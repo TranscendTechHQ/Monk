@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/ui/pages/news/news_card.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
-import 'package:frontend/ui/pages/news/widget/news_feed_filter.dart';
+import 'package:frontend/ui/pages/news/widget/news_filter/news_feed_filter.dart';
+import 'package:frontend/ui/pages/news/widget/news_filter/provider/news_feed_filter_provider.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -25,7 +26,7 @@ class NewsPage extends ConsumerWidget {
   }
 
   Future<void> onFilterPressed(BuildContext context, WidgetRef ref) async {
-    final map = await showDialog<Map<String, bool>?>(
+    final map = await showDialog<Map<String, dynamic>?>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -37,7 +38,7 @@ class NewsPage extends ConsumerWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           backgroundColor: context.colorScheme.secondaryContainer,
-          child: const NewsFeedFilter(),
+          child: const NewsFeedFilterView(),
         );
       },
     );
@@ -47,18 +48,34 @@ class NewsPage extends ConsumerWidget {
             unRead: map['unRead'],
             unfollow: map['dismissed'],
             upvote: map['upvoted'],
+            mention: map['mention'],
+            searchQuery: map['searchQuery'],
           );
+      final state = ref.read(newsFeedFilterProvider.notifier);
+      state.updateFilter(semanticQuery: map['searchQuery']);
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final threadList = ref.watch(fetchThreadsInfoProvider);
+    ref.watch(newsFeedFilterProvider);
     final List<String> titlesList = threadList.value?.keys.toList() ?? [];
 
     return Scaffold(
       body: PageScaffold(
         body: WithMonkAppbar(
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+              onPressed: () {
+                ref.invalidate(newsFeedProvider);
+                // ref.read(newsFeedProvider.future);
+                ref.read(newsFeedProvider.notifier).getFilteredFeed();
+              },
+            ),
+          ],
           child: Container(
             padding: const EdgeInsets.only(top: 36),
             alignment: Alignment.center,
@@ -156,9 +173,17 @@ class ChatListView extends ConsumerWidget {
     final newsFeed = ref.watch(newsFeedProvider);
 
     return newsFeed.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Container(
+        width: 500.00.scale(
+          800.00,
+          600,
+          200,
+        ),
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
+      ).extended,
       error: (error, stack) => Center(child: Text('Error: $error')),
-      data: (tuple) {
+      data: (touple) {
         final threadHeadlineList = newsFeed.asData!.value;
         return RefreshIndicator(
           onRefresh: () => Future.wait([

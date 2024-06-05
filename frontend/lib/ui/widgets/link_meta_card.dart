@@ -11,7 +11,10 @@ class LinkMetaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (linkMeta == null || linkMeta!.url.isNullOrEmpty) {
+    if (linkMeta == null ||
+        linkMeta!.url.isNullOrEmpty ||
+        (linkMeta!.description.isNullOrEmpty &&
+            linkMeta!.image.isNullOrEmpty)) {
       return const SizedBox();
     }
     return InkWell(
@@ -19,7 +22,7 @@ class LinkMetaCard extends StatelessWidget {
         launch(linkMeta!.url);
       },
       child: Container(
-        constraints: const BoxConstraints(maxHeight: 300, minHeight: 100),
+        constraints: const BoxConstraints(maxHeight: 300),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.colorScheme.surface,
@@ -29,6 +32,7 @@ class LinkMetaCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (linkMeta!.title != null)
               Text(

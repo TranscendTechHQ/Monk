@@ -544,6 +544,8 @@ _responseData = rawData == null ? null : deserialize<bool, bool>(rawData, 'bool'
   /// * [unread] 
   /// * [unfollow] 
   /// * [upvote] 
+  /// * [mention] 
+  /// * [searchQuery] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -558,6 +560,8 @@ _responseData = rawData == null ? null : deserialize<bool, bool>(rawData, 'bool'
     bool? unread = false,
     bool? unfollow = false,
     bool? upvote = false,
+    bool? mention = false,
+    String? searchQuery,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -583,6 +587,8 @@ _responseData = rawData == null ? null : deserialize<bool, bool>(rawData, 'bool'
       if (unread != null) r'unread': unread,
       if (unfollow != null) r'unfollow': unfollow,
       if (upvote != null) r'upvote': upvote,
+      if (mention != null) r'mention': mention,
+      if (searchQuery != null) r'searchQuery': searchQuery,
     };
 
     final _response = await _dio.request<Object>(

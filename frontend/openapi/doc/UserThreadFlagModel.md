@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
 **bookmark** | **bool** |  | [optional] 
+**mention** | **bool** |  | [optional] 
 **tenantId** | **String** |  | 
 **threadId** | **String** |  | 
 **unfollow** | **bool** |  | [optional] 

@@ -20,6 +20,8 @@ class CreateUserThreadFlagModel {
 
      this.bookmark,
 
+     this.mention,
+
     required  this.threadId,
 
      this.unfollow,
@@ -38,6 +40,18 @@ class CreateUserThreadFlagModel {
 
 
   final bool? bookmark;
+
+
+
+  @JsonKey(
+    
+    name: r'mention',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? mention;
 
 
 
@@ -92,6 +106,7 @@ class CreateUserThreadFlagModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateUserThreadFlagModel &&
      other.bookmark == bookmark &&
+     other.mention == mention &&
      other.threadId == threadId &&
      other.unfollow == unfollow &&
      other.unread == unread &&
@@ -100,6 +115,7 @@ class CreateUserThreadFlagModel {
   @override
   int get hashCode =>
     (bookmark == null ? 0 : bookmark.hashCode) +
+    (mention == null ? 0 : mention.hashCode) +
     threadId.hashCode +
     (unfollow == null ? 0 : unfollow.hashCode) +
     (unread == null ? 0 : unread.hashCode) +

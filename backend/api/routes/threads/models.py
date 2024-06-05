@@ -154,6 +154,7 @@ class UserThreadFlagModel(BaseModel):
     unfollow: Optional[bool] = Field(default=None, null=True)
     bookmark: Optional[bool] = Field(default=None, null=True)
     upvote: Optional[bool] = Field(default=None, null=True)
+    mention: Optional[bool] = Field(default=None, null=True)
 
 
 class UserThreadFlagsModel(BaseModel):
@@ -165,6 +166,7 @@ class CreateUserThreadFlagModel(BaseModel):
     unread: Optional[bool] = Field(default=None, null=True)
     unfollow: Optional[bool] = Field(default=None, null=True)
     bookmark: Optional[bool] = Field(default=None, null=True)
+    mention: Optional[bool] = Field(default=None, null=True)
     upvote: Optional[bool] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
@@ -194,6 +196,7 @@ class ThreadMetaData(BaseModel):
     unread: Optional[bool] = Field(default=None, null=True)
     unfollow: Optional[bool] = Field(default=None, null=True)
     bookmark: Optional[bool] = Field(default=None, null=True)
+    mention: Optional[bool] = Field(default=None, null=True)
     upvote: Optional[bool] = Field(default=None, null=True)
     block: Optional[BlockModel] = Field(default=None)
     model_config = ConfigDict(extra='ignore',
