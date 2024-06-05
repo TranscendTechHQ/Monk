@@ -124,6 +124,7 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
             onChanged: (val) {
               readState.updateFilter(semanticQuery: val);
             },
+            maxLines: null,
             decoration: InputDecoration(
               hintText: 'Use comma to separate queries',
               hintStyle: context.textTheme.bodyMedium?.copyWith(
@@ -131,7 +132,7 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
               ),
               constraints: const BoxConstraints(
                 minHeight: 40,
-                maxHeight: 40,
+                maxHeight: 150,
               ),
               enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: monkBlue700),
