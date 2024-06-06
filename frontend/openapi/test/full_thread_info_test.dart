@@ -12,7 +12,12 @@ void main() {
       // TODO
     });
 
-    // bool bookmark (default value: false)
+    // BlockModel block
+    test('to test the property `block`', () async {
+      // TODO
+    });
+
+    // bool bookmark
     test('to test the property `bookmark`', () async {
       // TODO
     });
@@ -22,8 +27,8 @@ void main() {
       // TODO
     });
 
-    // String createdDate
-    test('to test the property `createdDate`', () async {
+    // String createdAt
+    test('to test the property `createdAt`', () async {
       // TODO
     });
 
@@ -32,13 +37,33 @@ void main() {
       // TODO
     });
 
+    // BlockWithCreator defaultBlock
+    test('to test the property `defaultBlock`', () async {
+      // TODO
+    });
+
     // String headline
     test('to test the property `headline`', () async {
       // TODO
     });
 
-    // bool read (default value: false)
-    test('to test the property `read`', () async {
+    // DateTime lastModified
+    test('to test the property `lastModified`', () async {
+      // TODO
+    });
+
+    // bool mention
+    test('to test the property `mention`', () async {
+      // TODO
+    });
+
+    // int numBlocks (default value: 0)
+    test('to test the property `numBlocks`', () async {
+      // TODO
+    });
+
+    // String parentBlockId
+    test('to test the property `parentBlockId`', () async {
       // TODO
     });
 
@@ -52,12 +77,17 @@ void main() {
       // TODO
     });
 
-    // bool unfollow (default value: false)
+    // bool unfollow
     test('to test the property `unfollow`', () async {
       // TODO
     });
 
-    // bool upvote (default value: false)
+    // bool unread
+    test('to test the property `unread`', () async {
+      // TODO
+    });
+
+    // bool upvote
     test('to test the property `upvote`', () async {
       // TODO
     });

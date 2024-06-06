@@ -26,7 +26,7 @@ class ThreadDetail extends _$ThreadDetail {
   }
 
   Future<ThreadDetailState> fetchThreadFromIdAsync(String id) async {
-    return MonkException.handle(() async {
+    var res = await AsyncRequest.handle<FullThreadInfo>(() async {
       logger.d("Fetching child thread. id: $id");
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final response = await threadApi.getThreadIdThreadsIdGet(id: id);
@@ -38,11 +38,16 @@ class ThreadDetail extends _$ThreadDetail {
       logger.d("Child thread. fetched success fully: $id");
       return ThreadDetailState.result(thread: response.data!);
     });
+
+    return res.fold(
+      (l) => ThreadDetailState.error("Failed to fetch thread"),
+      (r) => ThreadDetailState.result(thread: r),
+    );
   }
 
   Future<ThreadDetailState> createChildThread(
       CreateChildThreadModel createChildThreadModel) async {
-    return MonkException.handle(() async {
+    var res = await AsyncRequest.handle<FullThreadInfo>(() async {
       state = const AsyncLoading();
       logger.d("Creating child thread");
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
@@ -65,6 +70,11 @@ class ThreadDetail extends _$ThreadDetail {
           error: response.data ?? response.statusCode);
       return ThreadDetailState.error("Failed to create thread");
     });
+
+    return res.fold(
+      (l) => ThreadDetailState.error("Failed to create thread"),
+      (r) => ThreadDetailState.result(thread: r),
+    );
   }
 }
 

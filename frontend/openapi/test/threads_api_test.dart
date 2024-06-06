@@ -23,7 +23,7 @@ void main() {
 
     // Create
     //
-    //Future<FullThreadInfo> createBlocksPost(String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<BlockWithCreator> createBlocksPost(String threadTitle, CreateBlockModel createBlockModel) async
     test('test createBlocksPost', () async {
       // TODO
     });
@@ -42,9 +42,16 @@ void main() {
       // TODO
     });
 
+    // Delete Thread
+    //
+    //Future<bool> deleteThreadThreadsIdDelete(String id) async
+    test('test deleteThreadThreadsIdDelete', () async {
+      // TODO
+    });
+
     // Filter
     //
-    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool read, bool unfollow, bool upvote }) async
+    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool unread, bool unfollow, bool upvote, bool mention, String searchQuery }) async
     test('test filterNewsfeedGet', () async {
       // TODO
     });
@@ -84,9 +91,30 @@ void main() {
       // TODO
     });
 
+    // Update Block Due Date
+    //
+    //Future<BlockWithCreator> updateBlockDueDateBlocksIdDueDatePut(String id, String body) async
+    test('test updateBlockDueDateBlocksIdDueDatePut', () async {
+      // TODO
+    });
+
+    // Update Block Position
+    //
+    //Future<UpdateBlockPositionModel> updateBlockPositionBlocksIdPositionPut(String id, UpdateBlockPositionModel updateBlockPositionModel) async
+    test('test updateBlockPositionBlocksIdPositionPut', () async {
+      // TODO
+    });
+
+    // Update Block Task Status
+    //
+    //Future<BlockWithCreator> updateBlockTaskStatusBlocksIdTaskStatusPut(String id, String body) async
+    test('test updateBlockTaskStatusBlocksIdTaskStatusPut', () async {
+      // TODO
+    });
+
     // Update
     //
-    //Future<FullThreadInfo> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
+    //Future<BlockModel> updateBlocksIdPut(String id, String threadTitle, UpdateBlockModel updateBlockModel) async
     test('test updateBlocksIdPut', () async {
       // TODO
     });

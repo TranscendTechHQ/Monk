@@ -17,10 +17,13 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 from supertokens_python.recipe.thirdparty.types import User
 
+
 from config import settings
 from routes.threads.routers import router as threads_router
 from routes.slack.routers import router as slack_router
-from utils.db import startup_async_db_client, shutdown_async_db_client
+from routes.storage import routers as storage_router
+from utils.db import shutdown_sync_db_client, startup_async_db_client, shutdown_async_db_client, startup_sync_db_client
+from utils.scrapper import getLinkMeta
 
 # Set your Slack client ID and client secret
 SLACK_CLIENT_ID = settings.SLACK_CLIENT_ID
@@ -32,10 +35,12 @@ async def lifespan(app: FastAPI):
     # Code to be executed before the application starts up
     await startup_db_client()
     await startup_async_db_client()
+    startup_sync_db_client()
     yield
     # Code to be executed after the application shuts down
     await shutdown_db_client()
     await shutdown_async_db_client()
+    shutdown_sync_db_client()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -106,10 +111,10 @@ app.add_middleware(
 def get_slack_access_token(code):
     """
     Exchanges an OAuth authorization code for an access token.
-    
+
     Args:
         code (str): The authorization code received from the Slack OAuth flow.
-    
+
     Returns:
         dict: The response from the Slack `oauth.v2.access` API, containing the access token and other details.
     """
@@ -135,6 +140,19 @@ class TenantModel(BaseModel):
 @app.get("/healthcheck")
 async def healthcheck():
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "API is running"})
+
+
+@app.get("/linkmeta")
+async def get_link_meta(url: str):
+    try:
+        if url is None:
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "URL is required"})
+
+        meta = getLinkMeta(url)
+        print(meta)
+        return JSONResponse(status_code=status.HTTP_200_OK, content=meta)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": str(e)})
 
 
 @app.post("/slack_user_token")
@@ -193,6 +211,7 @@ async def shutdown_db_client():
 
 app.include_router(threads_router, tags=["threads"])
 app.include_router(slack_router, tags=["slack"])
+app.include_router(storage_router.router, tags=["storage"])
 
 if __name__ == "__main__":
     uvicorn.run(

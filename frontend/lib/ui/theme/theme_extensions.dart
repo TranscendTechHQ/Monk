@@ -181,6 +181,9 @@ extension ListHelper<T> on Iterable<T>? {
   /// Both above examples will return the same result.
   List<T>? get getAbsoluteOrNull => this == null ? null : List<T>.from(this!);
   // value.fold(() => null, (a) => List<T>.from(a));
+
+  // Return the copy of the list or empty list.
+  List<T> get getOrEmpty => this == null ? [] : List<T>.from(this!);
 }
 
 extension on String? {
@@ -189,4 +192,15 @@ extension on String? {
     if (this!.length <= m) return this;
     return this!.substring(0, m);
   }
+}
+
+extension on dynamic {
+  bool get hasValue => this != null;
+  bool get isNull => this == null;
+}
+
+extension EnumExtension on Enum {
+  T on<T>() => this as T;
+  K? applyWhen<T, K>(Map<T, K> map, {K? defaultValue}) =>
+      map[this] ?? defaultValue;
 }

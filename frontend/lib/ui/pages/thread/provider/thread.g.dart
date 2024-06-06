@@ -8,7 +8,9 @@ part of 'thread.dart';
 
 String _$fetchThreadsInfoHash() => r'1e4b8b4b6d6b7cee77c1fc8b6a15c7b9873f6230';
 
-/// See also [fetchThreadsInfo].
+/// This is a provider that maintains the list of all threads title
+///
+/// Copied from [fetchThreadsInfo].
 @ProviderFor(fetchThreadsInfo)
 final fetchThreadsInfoProvider =
     AutoDisposeFutureProvider<Map<String, String>>.internal(
@@ -38,7 +40,7 @@ final fetchThreadTypesProvider =
 );
 
 typedef FetchThreadTypesRef = AutoDisposeFutureProviderRef<List<String>>;
-String _$currentThreadHash() => r'6faded4e844ba7fb9a764d1329ec0b6e2d1e10e2';
+String _$currentThreadHash() => r'cda1319c3dc9e6a142cecb7a54abaec18e64895f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -62,17 +64,17 @@ class _SystemHash {
 }
 
 abstract class _$CurrentThread
-    extends BuildlessAutoDisposeAsyncNotifier<FullThreadInfo?> {
+    extends BuildlessAutoDisposeAsyncNotifier<CurrentTreadState> {
   late final String title;
   late final String type;
-  late final ThreadType threadType;
   late final String? threadChildId;
+  late final String? mainThreadId;
 
-  FutureOr<FullThreadInfo?> build({
+  FutureOr<CurrentTreadState> build({
     required String title,
     required String type,
-    ThreadType threadType = ThreadType.thread,
     String? threadChildId,
+    String? mainThreadId,
   });
 }
 
@@ -81,7 +83,7 @@ abstract class _$CurrentThread
 const currentThreadProvider = CurrentThreadFamily();
 
 /// See also [CurrentThread].
-class CurrentThreadFamily extends Family<AsyncValue<FullThreadInfo?>> {
+class CurrentThreadFamily extends Family<AsyncValue<CurrentTreadState>> {
   /// See also [CurrentThread].
   const CurrentThreadFamily();
 
@@ -89,14 +91,14 @@ class CurrentThreadFamily extends Family<AsyncValue<FullThreadInfo?>> {
   CurrentThreadProvider call({
     required String title,
     required String type,
-    ThreadType threadType = ThreadType.thread,
     String? threadChildId,
+    String? mainThreadId,
   }) {
     return CurrentThreadProvider(
       title: title,
       type: type,
-      threadType: threadType,
       threadChildId: threadChildId,
+      mainThreadId: mainThreadId,
     );
   }
 
@@ -107,8 +109,8 @@ class CurrentThreadFamily extends Family<AsyncValue<FullThreadInfo?>> {
     return call(
       title: provider.title,
       type: provider.type,
-      threadType: provider.threadType,
       threadChildId: provider.threadChildId,
+      mainThreadId: provider.mainThreadId,
     );
   }
 
@@ -129,19 +131,19 @@ class CurrentThreadFamily extends Family<AsyncValue<FullThreadInfo?>> {
 
 /// See also [CurrentThread].
 class CurrentThreadProvider extends AutoDisposeAsyncNotifierProviderImpl<
-    CurrentThread, FullThreadInfo?> {
+    CurrentThread, CurrentTreadState> {
   /// See also [CurrentThread].
   CurrentThreadProvider({
     required String title,
     required String type,
-    ThreadType threadType = ThreadType.thread,
     String? threadChildId,
+    String? mainThreadId,
   }) : this._internal(
           () => CurrentThread()
             ..title = title
             ..type = type
-            ..threadType = threadType
-            ..threadChildId = threadChildId,
+            ..threadChildId = threadChildId
+            ..mainThreadId = mainThreadId,
           from: currentThreadProvider,
           name: r'currentThreadProvider',
           debugGetCreateSourceHash:
@@ -153,8 +155,8 @@ class CurrentThreadProvider extends AutoDisposeAsyncNotifierProviderImpl<
               CurrentThreadFamily._allTransitiveDependencies,
           title: title,
           type: type,
-          threadType: threadType,
           threadChildId: threadChildId,
+          mainThreadId: mainThreadId,
         );
 
   CurrentThreadProvider._internal(
@@ -166,24 +168,24 @@ class CurrentThreadProvider extends AutoDisposeAsyncNotifierProviderImpl<
     required super.from,
     required this.title,
     required this.type,
-    required this.threadType,
     required this.threadChildId,
+    required this.mainThreadId,
   }) : super.internal();
 
   final String title;
   final String type;
-  final ThreadType threadType;
   final String? threadChildId;
+  final String? mainThreadId;
 
   @override
-  FutureOr<FullThreadInfo?> runNotifierBuild(
+  FutureOr<CurrentTreadState> runNotifierBuild(
     covariant CurrentThread notifier,
   ) {
     return notifier.build(
       title: title,
       type: type,
-      threadType: threadType,
       threadChildId: threadChildId,
+      mainThreadId: mainThreadId,
     );
   }
 
@@ -195,8 +197,8 @@ class CurrentThreadProvider extends AutoDisposeAsyncNotifierProviderImpl<
         () => create()
           ..title = title
           ..type = type
-          ..threadType = threadType
-          ..threadChildId = threadChildId,
+          ..threadChildId = threadChildId
+          ..mainThreadId = mainThreadId,
         from: from,
         name: null,
         dependencies: null,
@@ -204,14 +206,14 @@ class CurrentThreadProvider extends AutoDisposeAsyncNotifierProviderImpl<
         debugGetCreateSourceHash: null,
         title: title,
         type: type,
-        threadType: threadType,
         threadChildId: threadChildId,
+        mainThreadId: mainThreadId,
       ),
     );
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<CurrentThread, FullThreadInfo?>
+  AutoDisposeAsyncNotifierProviderElement<CurrentThread, CurrentTreadState>
       createElement() {
     return _CurrentThreadProviderElement(this);
   }
@@ -221,8 +223,8 @@ class CurrentThreadProvider extends AutoDisposeAsyncNotifierProviderImpl<
     return other is CurrentThreadProvider &&
         other.title == title &&
         other.type == type &&
-        other.threadType == threadType &&
-        other.threadChildId == threadChildId;
+        other.threadChildId == threadChildId &&
+        other.mainThreadId == mainThreadId;
   }
 
   @override
@@ -230,30 +232,31 @@ class CurrentThreadProvider extends AutoDisposeAsyncNotifierProviderImpl<
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, title.hashCode);
     hash = _SystemHash.combine(hash, type.hashCode);
-    hash = _SystemHash.combine(hash, threadType.hashCode);
     hash = _SystemHash.combine(hash, threadChildId.hashCode);
+    hash = _SystemHash.combine(hash, mainThreadId.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-mixin CurrentThreadRef on AutoDisposeAsyncNotifierProviderRef<FullThreadInfo?> {
+mixin CurrentThreadRef
+    on AutoDisposeAsyncNotifierProviderRef<CurrentTreadState> {
   /// The parameter `title` of this provider.
   String get title;
 
   /// The parameter `type` of this provider.
   String get type;
 
-  /// The parameter `threadType` of this provider.
-  ThreadType get threadType;
-
   /// The parameter `threadChildId` of this provider.
   String? get threadChildId;
+
+  /// The parameter `mainThreadId` of this provider.
+  String? get mainThreadId;
 }
 
 class _CurrentThreadProviderElement
     extends AutoDisposeAsyncNotifierProviderElement<CurrentThread,
-        FullThreadInfo?> with CurrentThreadRef {
+        CurrentTreadState> with CurrentThreadRef {
   _CurrentThreadProviderElement(super.provider);
 
   @override
@@ -261,9 +264,9 @@ class _CurrentThreadProviderElement
   @override
   String get type => (origin as CurrentThreadProvider).type;
   @override
-  ThreadType get threadType => (origin as CurrentThreadProvider).threadType;
-  @override
   String? get threadChildId => (origin as CurrentThreadProvider).threadChildId;
+  @override
+  String? get mainThreadId => (origin as CurrentThreadProvider).mainThreadId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

@@ -23,11 +23,19 @@ class ThreadModel {
 
      this.content,
 
-     this.createdDate,
+     this.createdAt,
 
     required  this.creatorId,
 
      this.headline,
+
+    required  this.lastModified,
+
+     this.numBlocks = 0,
+
+     this.parentBlockId,
+
+     this.slackThreadTs,
 
     required  this.tenantId,
 
@@ -62,13 +70,13 @@ class ThreadModel {
 
   @JsonKey(
     
-    name: r'created_date',
+    name: r'created_at',
     required: false,
     includeIfNull: false
   )
 
 
-  final DateTime? createdDate;
+  final DateTime? createdAt;
 
 
 
@@ -93,6 +101,54 @@ class ThreadModel {
 
 
   final String? headline;
+
+
+
+  @JsonKey(
+    
+    name: r'last_modified',
+    required: true,
+    includeIfNull: false
+  )
+
+
+  final String lastModified;
+
+
+
+  @JsonKey(
+    defaultValue: 0,
+    name: r'num_blocks',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? numBlocks;
+
+
+
+  @JsonKey(
+    
+    name: r'parent_block_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? parentBlockId;
+
+
+
+  @JsonKey(
+    
+    name: r'slack_thread_ts',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final num? slackThreadTs;
 
 
 
@@ -136,9 +192,13 @@ class ThreadModel {
   bool operator ==(Object other) => identical(this, other) || other is ThreadModel &&
      other.id == id &&
      other.content == content &&
-     other.createdDate == createdDate &&
+     other.createdAt == createdAt &&
      other.creatorId == creatorId &&
      other.headline == headline &&
+     other.lastModified == lastModified &&
+     other.numBlocks == numBlocks &&
+     other.parentBlockId == parentBlockId &&
+     other.slackThreadTs == slackThreadTs &&
      other.tenantId == tenantId &&
      other.title == title &&
      other.type == type;
@@ -147,9 +207,13 @@ class ThreadModel {
   int get hashCode =>
     id.hashCode +
     content.hashCode +
-    createdDate.hashCode +
+    createdAt.hashCode +
     creatorId.hashCode +
     headline.hashCode +
+    lastModified.hashCode +
+    numBlocks.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
+    (slackThreadTs == null ? 0 : slackThreadTs.hashCode) +
     tenantId.hashCode +
     title.hashCode +
     type.hashCode;

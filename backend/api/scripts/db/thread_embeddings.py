@@ -43,7 +43,7 @@ def generate_single_thread_embedding(thread_doc):
     text = "This is the content of the thread with title " + title + ". "
     threadType = thread_doc['type']
     text += "The type of the thread is " + threadType + ". "
-    createdAt = thread_doc['created_date']
+    createdAt = thread_doc['created_at']
     text += "The thread was created on " + createdAt + ". "
     creator_id = thread_doc['creator_id']
     

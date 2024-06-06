@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as prefix;
-import 'package:flutter_appauth/flutter_appauth.dart';
+//import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/main.dart';
@@ -15,7 +15,7 @@ import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 //import 'package:flutter/services.dart';
 
-import 'package:google_sign_in/google_sign_in.dart';
+//import 'package:google_sign_in/google_sign_in.dart';
 
 /*import 'package:sign_in_with_apple/sign_in_with_apple.dart'
     hide AuthorizationRequest;*/
@@ -31,14 +31,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late FlutterAppAuth appAuth;
+  //late FlutterAppAuth appAuth;
   late Auth0 auth0;
   late Auth0Web auth0Web;
 
   @override
   void initState() {
     super.initState();
-    appAuth = const FlutterAppAuth();
+    //appAuth = const FlutterAppAuth();
     auth0 = Auth0(Constants.auth0Domain, Constants.auth0ClientId);
     auth0Web = Auth0Web(Constants.auth0Domain, Constants.auth0ClientId);
     if (kIsWeb) {
@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+/*
   Future<void> loginWithGoogle() async {
     GoogleSignIn googleSignIn;
 
@@ -115,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
       loader.hideLoader();
     }
   }
-
+*/
   Future<void> loginWithOauth() async {
     loader.showLoader(context, message: "processing.");
     // await logout();
@@ -145,6 +146,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+/*
   // Login with Google using `FlutterAppAuth`
   Future<void> loginWithGoogleV2() async {
     loader.showLoader(context, message: "processing.");
@@ -219,14 +221,14 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
-
+*/
   Future<void> verifyCredentials(String? accessToken, String? idToken) async {
     if (idToken.isNullOrEmpty || accessToken.isNullOrEmpty) {
       logger.e('Access token or idToken is null. Can not proceed');
       return;
     }
     await NetworkManager.instance.client.get("/healthcheck");
-    var result = await MonkException.handle<Response<dynamic>>(
+    var result = await AsyncRequest.handle<Response<dynamic>>(
         () => NetworkManager.instance.client.post(
               "/auth/signinup",
               data: {
@@ -237,11 +239,15 @@ class _LoginPageState extends State<LoginPage> {
                 },
               },
             ));
-    final map = result.data as Map<String, dynamic>?;
-    final userId = map?['user']?['thirdParty']?['userId'];
+    result.fold((l) {
+      logger.e('Failed to verify credentials', error: l.response?.data);
+      throw Exception(l.message);
+    }, (r) {
+      final map = r.data as Map<String, dynamic>?;
+      final userId = map?['user']?['thirdParty']?['userId'];
 
-    // print(JsonEncoder.withIndent(' ').convert(map?['user']));
-    if (result.statusCode == 200) {
+      // print(JsonEncoder.withIndent(' ').convert(map?['user']));
+
       // For slack authentication we don't need to verify the organization
       if (userId is String && userId.startsWith("oauth2|sign-in-with-slack")) {
         prefix.Navigator.of(context).pushReplacementNamed(HomePage.route);
@@ -268,9 +274,7 @@ class _LoginPageState extends State<LoginPage> {
               '❌ Verification failed. Perhaps user is not affiliated with the client workspace.');
         }));
       }
-    } else {
-      logger.e('Failed to verify credentials', error: result.data);
-    }
+    });
   }
 
   Widget wrapper(

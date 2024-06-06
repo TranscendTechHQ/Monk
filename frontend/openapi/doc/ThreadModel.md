@@ -10,9 +10,13 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
-**createdDate** | [**DateTime**](DateTime.md) |  | [optional] 
+**createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **creatorId** | **String** |  | 
 **headline** | **String** |  | [optional] 
+**lastModified** | **String** |  | 
+**numBlocks** | **int** |  | [optional] [default to 0]
+**parentBlockId** | **String** |  | [optional] 
+**slackThreadTs** | **num** |  | [optional] 
 **tenantId** | **String** |  | 
 **title** | **String** |  | 
 **type** | **String** |  | 

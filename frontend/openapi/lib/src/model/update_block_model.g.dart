@@ -13,6 +13,7 @@ UpdateBlockModel _$UpdateBlockModelFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         final val = UpdateBlockModel(
           content: $checkedConvert('content', (v) => v as String?),
+          position: $checkedConvert('position', (v) => (v as num?)?.toInt()),
         );
         return val;
       },
@@ -28,5 +29,6 @@ Map<String, dynamic> _$UpdateBlockModelToJson(UpdateBlockModel instance) {
   }
 
   writeNotNull('content', instance.content);
+  writeNotNull('position', instance.position);
   return val;
 }

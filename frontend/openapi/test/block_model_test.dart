@@ -12,8 +12,8 @@ void main() {
       // TODO
     });
 
-    // String childId (default value: '')
-    test('to test the property `childId`', () async {
+    // String childThreadId (default value: '')
+    test('to test the property `childThreadId`', () async {
       // TODO
     });
 
@@ -29,6 +29,46 @@ void main() {
 
     // String creatorId (default value: 'unknown id')
     test('to test the property `creatorId`', () async {
+      // TODO
+    });
+
+    // DateTime dueDate
+    test('to test the property `dueDate`', () async {
+      // TODO
+    });
+
+    // String image
+    test('to test the property `image`', () async {
+      // TODO
+    });
+
+    // DateTime lastModified
+    test('to test the property `lastModified`', () async {
+      // TODO
+    });
+
+    // LinkMetaModel linkMeta
+    test('to test the property `linkMeta`', () async {
+      // TODO
+    });
+
+    // String mainThreadId (default value: '')
+    test('to test the property `mainThreadId`', () async {
+      // TODO
+    });
+
+    // int position (default value: 0)
+    test('to test the property `position`', () async {
+      // TODO
+    });
+
+    // String taskStatus (default value: 'todo')
+    test('to test the property `taskStatus`', () async {
+      // TODO
+    });
+
+    // String tenantId (default value: '')
+    test('to test the property `tenantId`', () async {
       // TODO
     });
 

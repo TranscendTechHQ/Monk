@@ -12,8 +12,8 @@ void main() {
       // TODO
     });
 
-    // bool read
-    test('to test the property `read`', () async {
+    // bool mention
+    test('to test the property `mention`', () async {
       // TODO
     });
 
@@ -24,6 +24,11 @@ void main() {
 
     // bool unfollow
     test('to test the property `unfollow`', () async {
+      // TODO
+    });
+
+    // bool unread
+    test('to test the property `unread`', () async {
       // TODO
     });
 

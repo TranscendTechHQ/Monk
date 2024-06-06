@@ -14,12 +14,16 @@ Method | HTTP request | Description
 [**createBlocksPost**](ThreadsApi.md#createblockspost) | **POST** /blocks | Create
 [**createTfThreadFlagPost**](ThreadsApi.md#createtfthreadflagpost) | **POST** /thread/flag | Create Tf
 [**createThThreadsPost**](ThreadsApi.md#createththreadspost) | **POST** /threads | Create Th
+[**deleteThreadThreadsIdDelete**](ThreadsApi.md#deletethreadthreadsiddelete) | **DELETE** /threads/{id} | Delete Thread
 [**filterNewsfeedGet**](ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
 [**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
 [**ttThreadTypesGet**](ThreadsApi.md#ttthreadtypesget) | **GET** /threadTypes | Tt
+[**updateBlockDueDateBlocksIdDueDatePut**](ThreadsApi.md#updateblockduedateblocksidduedateput) | **PUT** /blocks/{id}/dueDate | Update Block Due Date
+[**updateBlockPositionBlocksIdPositionPut**](ThreadsApi.md#updateblockpositionblocksidpositionput) | **PUT** /blocks/{id}/position | Update Block Position
+[**updateBlockTaskStatusBlocksIdTaskStatusPut**](ThreadsApi.md#updateblocktaskstatusblocksidtaskstatusput) | **PUT** /blocks/{id}/taskStatus | Update Block Task Status
 [**updateBlocksIdPut**](ThreadsApi.md#updateblocksidput) | **PUT** /blocks/{id} | Update
 [**updateThThreadsIdPut**](ThreadsApi.md#updateththreadsidput) | **PUT** /threads/{id} | Update Th
 
@@ -103,7 +107,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createBlocksPost**
-> FullThreadInfo createBlocksPost(threadTitle, updateBlockModel)
+> BlockWithCreator createBlocksPost(threadTitle, createBlockModel)
 
 Create
 
@@ -113,10 +117,10 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
 final String threadTitle = threadTitle_example; // String | 
-final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
+final CreateBlockModel createBlockModel = ; // CreateBlockModel | 
 
 try {
-    final response = api.createBlocksPost(threadTitle, updateBlockModel);
+    final response = api.createBlocksPost(threadTitle, createBlockModel);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->createBlocksPost: $e\n');
@@ -128,11 +132,11 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **threadTitle** | **String**|  | 
- **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
+ **createBlockModel** | [**CreateBlockModel**](CreateBlockModel.md)|  | 
 
 ### Return type
 
-[**FullThreadInfo**](FullThreadInfo.md)
+[**BlockWithCreator**](BlockWithCreator.md)
 
 ### Authorization
 
@@ -227,8 +231,49 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **deleteThreadThreadsIdDelete**
+> bool deleteThreadThreadsIdDelete(id)
+
+Delete Thread
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+
+try {
+    final response = api.deleteThreadThreadsIdDelete(id);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->deleteThreadThreadsIdDelete: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+
+### Return type
+
+**bool**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **filterNewsfeedGet**
-> ThreadsMetaData filterNewsfeedGet(bookmark, read, unfollow, upvote)
+> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery)
 
 Filter
 
@@ -238,12 +283,14 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
 final bool bookmark = true; // bool | 
-final bool read = true; // bool | 
+final bool unread = true; // bool | 
 final bool unfollow = true; // bool | 
 final bool upvote = true; // bool | 
+final bool mention = true; // bool | 
+final String searchQuery = searchQuery_example; // String | 
 
 try {
-    final response = api.filterNewsfeedGet(bookmark, read, unfollow, upvote);
+    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->filterNewsfeedGet: $e\n');
@@ -255,9 +302,11 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **bookmark** | **bool**|  | [optional] [default to false]
- **read** | **bool**|  | [optional] [default to false]
+ **unread** | **bool**|  | [optional] [default to false]
  **unfollow** | **bool**|  | [optional] [default to false]
  **upvote** | **bool**|  | [optional] [default to false]
+ **mention** | **bool**|  | [optional] [default to false]
+ **searchQuery** | **String**|  | [optional] 
 
 ### Return type
 
@@ -471,8 +520,137 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **updateBlockDueDateBlocksIdDueDatePut**
+> BlockWithCreator updateBlockDueDateBlocksIdDueDatePut(id, body)
+
+Update Block Due Date
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+final String body = body_example; // String | 
+
+try {
+    final response = api.updateBlockDueDateBlocksIdDueDatePut(id, body);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateBlockDueDateBlocksIdDueDatePut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **body** | **String**|  | 
+
+### Return type
+
+[**BlockWithCreator**](BlockWithCreator.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateBlockPositionBlocksIdPositionPut**
+> UpdateBlockPositionModel updateBlockPositionBlocksIdPositionPut(id, updateBlockPositionModel)
+
+Update Block Position
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+final UpdateBlockPositionModel updateBlockPositionModel = ; // UpdateBlockPositionModel | 
+
+try {
+    final response = api.updateBlockPositionBlocksIdPositionPut(id, updateBlockPositionModel);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateBlockPositionBlocksIdPositionPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **updateBlockPositionModel** | [**UpdateBlockPositionModel**](UpdateBlockPositionModel.md)|  | 
+
+### Return type
+
+[**UpdateBlockPositionModel**](UpdateBlockPositionModel.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateBlockTaskStatusBlocksIdTaskStatusPut**
+> BlockWithCreator updateBlockTaskStatusBlocksIdTaskStatusPut(id, body)
+
+Update Block Task Status
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+final String id = id_example; // String | 
+final String body = body_example; // String | 
+
+try {
+    final response = api.updateBlockTaskStatusBlocksIdTaskStatusPut(id, body);
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->updateBlockTaskStatusBlocksIdTaskStatusPut: $e\n');
+}
+```
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **String**|  | 
+ **body** | **String**|  | 
+
+### Return type
+
+[**BlockWithCreator**](BlockWithCreator.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **updateBlocksIdPut**
-> FullThreadInfo updateBlocksIdPut(id, threadTitle, updateBlockModel)
+> BlockModel updateBlocksIdPut(id, threadTitle, updateBlockModel)
 
 Update
 
@@ -503,7 +681,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**FullThreadInfo**](FullThreadInfo.md)
+[**BlockModel**](BlockModel.md)
 
 ### Authorization
 

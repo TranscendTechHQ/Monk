@@ -20,17 +20,19 @@ class UserThreadFlagModel {
 
      this.id,
 
-     this.bookmark = false,
+     this.bookmark,
 
-     this.read = false,
+     this.mention,
 
     required  this.tenantId,
 
     required  this.threadId,
 
-     this.unfollow = false,
+     this.unfollow,
 
-     this.upvote = false,
+     this.unread,
+
+     this.upvote,
 
     required  this.userId,
   });
@@ -48,7 +50,7 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'bookmark',
     required: false,
     includeIfNull: false
@@ -60,14 +62,14 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
-    name: r'read',
+    
+    name: r'mention',
     required: false,
     includeIfNull: false
   )
 
 
-  final bool? read;
+  final bool? mention;
 
 
 
@@ -96,7 +98,7 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unfollow',
     required: false,
     includeIfNull: false
@@ -108,7 +110,19 @@ class UserThreadFlagModel {
 
 
   @JsonKey(
-    defaultValue: false,
+    
+    name: r'unread',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? unread;
+
+
+
+  @JsonKey(
+    
     name: r'upvote',
     required: false,
     includeIfNull: false
@@ -135,22 +149,24 @@ class UserThreadFlagModel {
   bool operator ==(Object other) => identical(this, other) || other is UserThreadFlagModel &&
      other.id == id &&
      other.bookmark == bookmark &&
-     other.read == read &&
+     other.mention == mention &&
      other.tenantId == tenantId &&
      other.threadId == threadId &&
      other.unfollow == unfollow &&
+     other.unread == unread &&
      other.upvote == upvote &&
      other.userId == userId;
 
   @override
   int get hashCode =>
     id.hashCode +
-    bookmark.hashCode +
-    read.hashCode +
+    (bookmark == null ? 0 : bookmark.hashCode) +
+    (mention == null ? 0 : mention.hashCode) +
     tenantId.hashCode +
     threadId.hashCode +
-    unfollow.hashCode +
-    upvote.hashCode +
+    (unfollow == null ? 0 : unfollow.hashCode) +
+    (unread == null ? 0 : unread.hashCode) +
+    (upvote == null ? 0 : upvote.hashCode) +
     userId.hashCode;
 
   factory UserThreadFlagModel.fromJson(Map<String, dynamic> json) => _$UserThreadFlagModelFromJson(json);

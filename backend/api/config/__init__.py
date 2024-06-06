@@ -28,57 +28,68 @@ while not HCP_ACCESS_TOKEN:
 
 HCP_SECRET_RESPONSE = get_secret(HCP_ACCESS_TOKEN)
 
+def get_env_variable(var_name:str, secret:bool, default = None):
+    if secret:
+        return HCP_SECRET_RESPONSE[var_name]
+    return os.getenv(var_name, default=default)
 
 class SuperTokensSettings(BaseSettings):
-    SUPERTOKENS_CORE_CONNECTION_URI: str = HCP_SECRET_RESPONSE["SUPERTOKENS_CORE_CONNECTION_URI"]
-    SUPERTOKENS_CORE_API_KEY: str = HCP_SECRET_RESPONSE["SUPERTOKENS_CORE_API_KEY"]
+    SUPERTOKENS_CORE_CONNECTION_URI: str = get_env_variable(var_name="SUPERTOKENS_CORE_CONNECTION_URI", secret=True)
+    SUPERTOKENS_CORE_API_KEY: str = get_env_variable(var_name="SUPERTOKENS_CORE_API_KEY", secret=True)
 
 
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
-    DEBUG_MODE: bool = os.getenv("DEBUG_MODE") == "True"
+    DEBUG_MODE: bool = get_env_variable(var_name="DEBUG_MODE", secret=False, default=True)
 
 
 class ServerSettings(BaseSettings):
     HOST: str = "0.0.0.0"
-    PORT: int = os.getenv("FASTAPI_PORT", 8000)
-    API_DOMAIN: str = os.getenv("API_DOMAIN", "http://localhost:8000")
-    WEBSITE_DOMAIN: str = os.getenv("WEBSITE_DOMAIN", "http://localhost:3000")
-    INSTALL_DOMAIN: str = os.getenv("INSTALL_DOMAIN", "http://localhost:3000")
+    PORT: int = get_env_variable(var_name="FASTAPI_PORT", secret=False, default=8001)
+    API_DOMAIN: str = get_env_variable(var_name="API_DOMAIN", secret=False, default="http://localhost:8001")
+    WEBSITE_DOMAIN: str = get_env_variable(var_name="WEBSITE_DOMAIN", secret=False, default="http://localhost:3000")
+    INSTALL_DOMAIN: str = get_env_variable(var_name="INSTALL_DOMAIN", secret=False, default="http://localhost:3000")
 
 
 class DatabaseSettings(BaseSettings):
-    DB_URL: str = HCP_SECRET_RESPONSE['DB_URL']
-    DB_NAME: str = HCP_SECRET_RESPONSE['DB_NAME']
+    DB_URL: str = get_env_variable(var_name='DB_URL', secret=True)
+    DB_NAME: str = get_env_variable(var_name='DB_NAME', secret=True)
 
 
 class OpenAISettings(BaseSettings):
-    AZURE_OPENAI_KEY: str = HCP_SECRET_RESPONSE['AZURE_OPENAI_KEY']
-    AZURE_OPENAI_ENDPOINT: str = HCP_SECRET_RESPONSE['AZURE_OPENAI_ENDPOINT']
-    AZURE_OPENAI_EMB_DEPLOYMENT: str = HCP_SECRET_RESPONSE["AZURE_OPENAI_EMB_DEPLOYMENT"]
-    API_VERSION: str = HCP_SECRET_RESPONSE["AZURE_OPENAPI_API_VERSION"]
-    AZURE_OPENAI_GPT_DEPLOYEMENT: str = HCP_SECRET_RESPONSE["AZURE_OPENAI_GPT_DEPLOYEMENT"]
-    OPENAI_API_KEY: str = HCP_SECRET_RESPONSE["OPENAI_API_KEY"]
-    OPENAI_API_VERSION: str = HCP_SECRET_RESPONSE["OPENAI_API_VERSION"]
-    OPENAI_API_ENDPOINT: str = HCP_SECRET_RESPONSE["OPENAI_API_ENDPOINT"]
-    OPEN_API_GPT_MODEL: str = HCP_SECRET_RESPONSE["OPEN_API_GPT_MODEL"]
+    AZURE_OPENAI_KEY: str = get_env_variable(var_name='AZURE_OPENAI_KEY', secret=True)
+    AZURE_OPENAI_ENDPOINT: str = get_env_variable(var_name='AZURE_OPENAI_ENDPOINT', secret=True)
+    AZURE_OPENAI_EMB_DEPLOYMENT: str = get_env_variable(var_name="AZURE_OPENAI_EMB_DEPLOYMENT", secret=False)
+    API_VERSION: str = get_env_variable(var_name="AZURE_OPENAPI_API_VERSION", secret=False)
+    AZURE_OPENAI_GPT_DEPLOYEMENT: str = get_env_variable(var_name="AZURE_OPENAI_GPT_DEPLOYEMENT", secret=False)
+    OPENAI_API_KEY: str = get_env_variable(var_name="OPENAI_API_KEY", secret=True)
+    OPENAI_API_VERSION: str = get_env_variable(var_name="OPENAI_API_VERSION", secret=False)
+    OPENAI_API_ENDPOINT: str = get_env_variable(var_name="OPENAI_API_ENDPOINT", secret=False)
+    OPEN_API_GPT_MODEL: str = get_env_variable(var_name="OPEN_API_GPT_MODEL", secret=False)
 
 
 class ClientSettings(BaseSettings):
-    GOOGLE_CLIENT_ID: str = HCP_SECRET_RESPONSE["GOOGLE_CLIENT_ID"]
-    GOOGLE_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["GOOGLE_CLIENT_SECRET"]
-    SLACK_CLIENT_ID: str = HCP_SECRET_RESPONSE["SLACK_CLIENT_ID"]
-    SLACK_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["SLACK_CLIENT_SECRET"]
-    AUTH0_CLIENT_ID: str = HCP_SECRET_RESPONSE["AUTH0_CLIENT_ID"]
-    AUTH0_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["AUTH0_CLIENT_SECRET"]
-    FRONTEND_CLIENT_ID: str = HCP_SECRET_RESPONSE["FRONTEND_CLIENT_ID"]
-    BACKEND_CLIENT_ID: str = HCP_SECRET_RESPONSE["BACKEND_CLIENT_ID"]
-    BACKEND_CLIENT_SECRET: str = HCP_SECRET_RESPONSE["BACKEND_CLIENT_SECRET"]
-    SLACK_BOT_TOKEN: str = HCP_SECRET_RESPONSE["SLACK_BOT_TOKEN"]
-    SLACK_USER_TOKEN: str = HCP_SECRET_RESPONSE["SLACK_USER_TOKEN"]
+    GOOGLE_CLIENT_ID: str = get_env_variable(var_name="GOOGLE_CLIENT_ID", secret=False)
+    GOOGLE_CLIENT_SECRET: str = get_env_variable(var_name="GOOGLE_CLIENT_SECRET", secret=True)
+    SLACK_CLIENT_ID: str = get_env_variable(var_name="SLACK_CLIENT_ID", secret=False)
+    SLACK_CLIENT_SECRET: str = get_env_variable(var_name="SLACK_CLIENT_SECRET", secret=True)
+    AUTH0_CLIENT_ID: str = get_env_variable(var_name="AUTH0_CLIENT_ID", secret=True)
+    AUTH0_CLIENT_SECRET: str = get_env_variable(var_name="AUTH0_CLIENT_SECRET", secret=True)
+    FRONTEND_CLIENT_ID: str = get_env_variable(var_name="FRONTEND_CLIENT_ID", secret=False)
+    BACKEND_CLIENT_ID: str = get_env_variable(var_name="BACKEND_CLIENT_ID", secret=False)
+    BACKEND_CLIENT_SECRET: str = get_env_variable(var_name="BACKEND_CLIENT_SECRET", secret=True)
+    SLACK_BOT_TOKEN: str = get_env_variable(var_name="SLACK_BOT_TOKEN", secret=True)
+    SLACK_USER_TOKEN: str = get_env_variable(var_name="SLACK_USER_TOKEN", secret=True)
 
 
-class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings):
+class StorageSettings(BaseSettings):
+    STORAGE_ACCESS_KEY_ID: str = get_env_variable(var_name="STORAGE_ACCESS_KEY_ID", secret=True)
+    STORAGE_SECRET_ACCESS_KEY: str = get_env_variable(var_name="STORAGE_SECRET_ACCESS_KEY", secret=True)
+    STORAGE_ENDPOINT: str = get_env_variable(var_name="STORAGE_ENDPOINT", secret=False)
+    STORAGE_DOMAIN: str = get_env_variable(var_name="STORAGE_DOMAIN", secret=False)
+
+
+class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings, StorageSettings):
     pass
 
 
@@ -193,7 +204,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                         update_result = await mongodb_users.update_one({"super_token_id": super_token_id},
                                                                        {"$set":
                                                                            {
-                                                                               "_id": uuid.uuid4(),
+                                                                               "_id": super_token_id,
                                                                                "name": name,
                                                                                "picture": picture,
                                                                                "email": email,
@@ -222,7 +233,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 # await update_user_metadata(user_id=user_id, metadata_update={
                 #   "name": name
                 # })
-            # This gives the user's info from the returned ID token 
+            # This gives the user's info from the returned ID token
             # if the provider gave us an ID token
             # if result.raw_user_info_from_provider.from_id_token_payload is not None:
             #   print(result.raw_user_info_from_provider.from_id_token_payload["name"])
@@ -256,8 +267,8 @@ init(
             ),
             sign_in_and_up_feature=thirdparty.SignInAndUpFeature(providers=[
 
-                # When frontend sends auth code using signinup API, 
-                # use BACKEND_CLIENT_ID and BACKEND_CLIENT_SECRET 
+                # When frontend sends auth code using signinup API,
+                # use BACKEND_CLIENT_ID and BACKEND_CLIENT_SECRET
                 # to exchange the auth code for access token
                 # When frontend sends access token using signinup API,
                 # use FRONTEND_CLIENT_ID to validate the access token

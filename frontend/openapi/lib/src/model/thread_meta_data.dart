@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:openapi/src/model/block_model.dart';
 import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -21,23 +22,33 @@ class ThreadMetaData {
 
     required  this.id,
 
-     this.bookmark = false,
+     this.block,
 
-    required  this.createdDate,
+     this.bookmark,
+
+    required  this.createdAt,
 
     required  this.creator,
 
      this.headline,
 
-     this.read = false,
+     this.lastModified,
+
+     this.mention,
+
+     this.numBlocks = 0,
+
+     this.parentBlockId,
 
     required  this.title,
 
     required  this.type,
 
-     this.unfollow = false,
+     this.unfollow,
 
-     this.upvote = false,
+     this.unread,
+
+     this.upvote,
   });
 
   @JsonKey(
@@ -53,7 +64,19 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
+    
+    name: r'block',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final BlockModel? block;
+
+
+
+  @JsonKey(
+    
     name: r'bookmark',
     required: false,
     includeIfNull: false
@@ -66,13 +89,13 @@ class ThreadMetaData {
 
   @JsonKey(
     
-    name: r'created_date',
+    name: r'created_at',
     required: true,
     includeIfNull: false
   )
 
 
-  final String createdDate;
+  final String createdAt;
 
 
 
@@ -101,14 +124,50 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
-    name: r'read',
+    
+    name: r'last_modified',
     required: false,
     includeIfNull: false
   )
 
 
-  final bool? read;
+  final DateTime? lastModified;
+
+
+
+  @JsonKey(
+    
+    name: r'mention',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? mention;
+
+
+
+  @JsonKey(
+    defaultValue: 0,
+    name: r'num_blocks',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? numBlocks;
+
+
+
+  @JsonKey(
+    
+    name: r'parent_block_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? parentBlockId;
 
 
 
@@ -137,7 +196,7 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
+    
     name: r'unfollow',
     required: false,
     includeIfNull: false
@@ -149,7 +208,19 @@ class ThreadMetaData {
 
 
   @JsonKey(
-    defaultValue: false,
+    
+    name: r'unread',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? unread;
+
+
+
+  @JsonKey(
+    
     name: r'upvote',
     required: false,
     includeIfNull: false
@@ -163,28 +234,38 @@ class ThreadMetaData {
   @override
   bool operator ==(Object other) => identical(this, other) || other is ThreadMetaData &&
      other.id == id &&
+     other.block == block &&
      other.bookmark == bookmark &&
-     other.createdDate == createdDate &&
+     other.createdAt == createdAt &&
      other.creator == creator &&
      other.headline == headline &&
-     other.read == read &&
+     other.lastModified == lastModified &&
+     other.mention == mention &&
+     other.numBlocks == numBlocks &&
+     other.parentBlockId == parentBlockId &&
      other.title == title &&
      other.type == type &&
      other.unfollow == unfollow &&
+     other.unread == unread &&
      other.upvote == upvote;
 
   @override
   int get hashCode =>
     id.hashCode +
-    bookmark.hashCode +
-    createdDate.hashCode +
+    (block == null ? 0 : block.hashCode) +
+    (bookmark == null ? 0 : bookmark.hashCode) +
+    createdAt.hashCode +
     creator.hashCode +
     headline.hashCode +
-    read.hashCode +
+    lastModified.hashCode +
+    (mention == null ? 0 : mention.hashCode) +
+    numBlocks.hashCode +
+    (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     title.hashCode +
     type.hashCode +
-    unfollow.hashCode +
-    upvote.hashCode;
+    (unfollow == null ? 0 : unfollow.hashCode) +
+    (unread == null ? 0 : unread.hashCode) +
+    (upvote == null ? 0 : upvote.hashCode);
 
   factory ThreadMetaData.fromJson(Map<String, dynamic> json) => _$ThreadMetaDataFromJson(json);
 

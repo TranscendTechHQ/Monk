@@ -4,6 +4,7 @@ const alert = Color(0xFFFF3333);
 const warning = Color(0xFFFFB906);
 const success = Color(0xFF07C932);
 const monkBlue = Color(0xFF6892F5);
+const monkBlue700 = Color(0xFF2377DA);
 
 CustomColors lightCustomColors = const CustomColors(
   sourceAlert: Color(0xFFFF3333),

@@ -10,3 +10,4 @@ backend/api/clustered_messages.txt
 backend/api/messages.json
 backend/api/assistant_text.json
 .idea
+backend/api/utils/slack/messages.json

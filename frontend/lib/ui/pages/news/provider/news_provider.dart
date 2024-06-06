@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/helper/shared_preference.dart';
+import 'package:frontend/helper/utils.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,7 +17,16 @@ class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    final response = await threadApi.filterNewsfeedGet();
+    final filterData = await SharedPreferenceHelper().getFilterPreference();
+    final semanticSearch = await SharedPreferenceHelper().getFilterSemantic();
+    final response = await threadApi.filterNewsfeedGet(
+      bookmark: filterData?['bookmarked'],
+      unread: filterData?['unRead'],
+      unfollow: filterData?['dismissed'],
+      upvote: filterData?['upvoted'],
+      mention: filterData?['mention'],
+      searchQuery: semanticSearch,
+    );
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
     }
@@ -25,14 +38,18 @@ class NewsFeed extends _$NewsFeed {
     bool? unRead = false,
     bool? unfollow = false,
     bool? upvote = false,
+    bool? mention = false,
+    String? searchQuery,
   }) async {
     state = const AsyncLoading();
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
       bookmark: bookmark,
-      read: unRead,
+      unread: unRead,
       unfollow: unfollow,
       upvote: upvote,
+      mention: mention,
+      searchQuery: searchQuery,
     );
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
@@ -49,7 +66,7 @@ class NewsFeed extends _$NewsFeed {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
       bookmark: bookmark,
-      read: unRead,
+      unread: unRead,
       unfollow: unfollow,
       upvote: upvote,
     );
@@ -67,6 +84,54 @@ class NewsFeed extends _$NewsFeed {
       list!.removeWhere((element) => element.id == threadId);
       state = AsyncData(list);
     }
+  }
+
+  void markAsRead(String threadId) {
+    final list = state.value?.getAbsoluteOrNull;
+
+    if (list.isNotNullEmpty) {
+      final thread =
+          list!.firstWhereOrNull((element) => element.id == threadId);
+      if (thread != null) {
+        // thread.unread = false;
+        final index = list.indexOf(thread);
+        final map = thread.toJson();
+        map['unread'] = false;
+        final updatedThread = ThreadMetaData.fromJson(map);
+
+        list[index] = updatedThread;
+        state = AsyncData(list);
+      }
+    }
+  }
+
+  Future<bool> deleteThreadAsync(BuildContext context, threadId) async {
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final res = await AsyncRequest.handle<bool?>(() async {
+      loader.showLoader(context, message: "Deleting thread");
+      final response =
+          await threadApi.deleteThreadThreadsIdDelete(id: threadId);
+      if (response.statusCode != 200) {
+        final res = response.data as Map<String, dynamic>?;
+        throw Exception(res?['message'] ?? "Failed to delete thread");
+      }
+      return true;
+    });
+    loader.hideLoader();
+
+    return res.fold((l) {
+      final res = l.response?.data;
+      if (res != null && res is Map<String, dynamic>) {
+        showMessage(context, res['message'] ?? "Failed to delete thread");
+      } else {
+        showMessage(context, "Failed to delete thread");
+      }
+      return false;
+    }, (r) {
+      showMessage(context, "Thread deleted successfully");
+      remove(threadId);
+      return true;
+    });
   }
 }
 
@@ -86,22 +151,22 @@ class NewsCardPod extends _$NewsCardPod {
   }) async {
     state = NewsCardState(
       threadMetaData: state.threadMetaData,
-      estate: upvote == true
+      estate: upvote != null
           ? ENewsCardState.upVoting
-          : bookmark == true
+          : bookmark != null
               ? ENewsCardState.bookmarking
-              : unRead == true
+              : unRead != null
                   ? ENewsCardState.markingAsRead
                   : ENewsCardState.dismissing,
     );
 
-    final res = await MonkException.handle<bool?>(() async {
+    var res = await AsyncRequest.handle<bool?>(() async {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final response = await threadApi.createTfThreadFlagPost(
         createUserThreadFlagModel: CreateUserThreadFlagModel(
           threadId: threadId,
           bookmark: bookmark,
-          read: unRead,
+          unread: unRead,
           unfollow: unfollow,
           upvote: upvote,
         ),
@@ -112,20 +177,35 @@ class NewsCardPod extends _$NewsCardPod {
       }
       return true;
     });
-    state = NewsCardState(
-      threadMetaData: state.threadMetaData,
-      estate: res == true
-          ? upvote == true
-              ? ENewsCardState.upVoted
-              : bookmark == true
-                  ? ENewsCardState.bookmarked
-                  : unRead == true
-                      ? ENewsCardState.markedAsRead
-                      : ENewsCardState.dismissed
-          : ENewsCardState.initial,
-    );
+    final map = state.threadMetaData.toJson();
+    if (upvote != null) {
+      if (map.containsKey('upvote')) {
+        map.update('upvote', (value) => upvote);
+      } else {
+        map.putIfAbsent('upvote', () => upvote);
+      }
+    } else if (bookmark != null) {
+      if (map.containsKey('bookmark')) {
+        map.update('bookmark', (value) => bookmark);
+      } else {
+        map.putIfAbsent('bookmark', () => bookmark);
+      }
+    }
 
-    return res ?? false;
+    res.fold((l) => null, (isSuccess) {
+      state = NewsCardState(
+        threadMetaData: ThreadMetaData.fromJson(map),
+        estate: upvote != null
+            ? ENewsCardState.upVoted
+            : bookmark != null
+                ? ENewsCardState.bookmarked
+                : unRead != null
+                    ? ENewsCardState.markedAsRead
+                    : ENewsCardState.dismissed,
+      );
+    });
+
+    return res.fold((l) => false, (r) => true);
   }
 }
 

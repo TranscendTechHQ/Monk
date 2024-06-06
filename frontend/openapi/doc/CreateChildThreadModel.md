@@ -9,8 +9,8 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
+**mainThreadId** | **String** |  | 
 **parentBlockId** | **String** |  | 
-**parentThreadId** | **String** |  | 
 **title** | **String** |  | 
 **type** | **String** |  | 
 

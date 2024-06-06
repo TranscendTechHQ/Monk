@@ -17,8 +17,8 @@ void main() {
       // TODO
     });
 
-    // DateTime createdDate
-    test('to test the property `createdDate`', () async {
+    // DateTime createdAt
+    test('to test the property `createdAt`', () async {
       // TODO
     });
 
@@ -29,6 +29,26 @@ void main() {
 
     // String headline
     test('to test the property `headline`', () async {
+      // TODO
+    });
+
+    // String lastModified
+    test('to test the property `lastModified`', () async {
+      // TODO
+    });
+
+    // int numBlocks (default value: 0)
+    test('to test the property `numBlocks`', () async {
+      // TODO
+    });
+
+    // String parentBlockId
+    test('to test the property `parentBlockId`', () async {
+      // TODO
+    });
+
+    // num slackThreadTs
+    test('to test the property `slackThreadTs`', () async {
       // TODO
     });
 

@@ -7,7 +7,7 @@ part of 'search.dart';
 // **************************************************************************
 
 String _$queryMatchingThreadsHash() =>
-    r'dbb1a0ee4b44ad0894ed99b469ebd7ac5585265d';
+    r'29d643c473f6168d0eeac8217a3aabd330e6bc39';
 
 /// Copied from Dart SDK
 class _SystemHash {

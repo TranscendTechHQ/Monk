@@ -1,17 +1,27 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
+import 'package:frontend/helper/file_utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/repo/commandparser.dart';
-import 'package:frontend/repo/thread.dart';
 import 'package:frontend/ui/pages/news/news_page.dart';
+import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/widgets/search.dart';
+import 'package:frontend/ui/pages/widgets/user-mention/users.provider.dart';
+import 'package:frontend/ui/pages/widgets/zefyr_editor.dart';
 import 'package:frontend/ui/theme/theme.dart';
+import 'package:frontend/ui/widgets/cache_image.dart';
+// import 'package:markdown_quill/markdown_quill.dart' as mdq;
+import 'package:notus/convert.dart';
+import 'package:openapi/openapi.dart';
+// import 'package:quill_delta/quill_delta.dart' as qD;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:zefyr/zefyr.dart';
 
 part 'commandbox.g.dart';
 
@@ -33,19 +43,35 @@ class ScreenVisibility extends _$ScreenVisibility {
   InputBoxType get() => state;
 }
 
+@riverpod
+class BlockAttachment extends _$BlockAttachment {
+  @override
+  File? build() {
+    return null;
+  }
+
+  void setAttachment(File file) {
+    state = file;
+  }
+
+  void clearAttachment() {
+    state = null;
+  }
+}
+
 void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
     String newThreadType) {
   final screenVisibility = ref.read(screenVisibilityProvider().notifier);
   screenVisibility.setVisibility(InputBoxType.thread);
   // logger.v('Switching to thread $newThreadTitle of type $newThreadType');
-  Navigator.pushReplacement(
+  Navigator.push(
     context,
     ThreadPage.launchRoute(title: newThreadTitle, type: newThreadType),
   );
 }
 
 class CommandBox extends ConsumerWidget {
-  final _blockController = TextEditingController();
+  // final _blockController = TextEditingController();
   final _searchFocusNode = FocusNode();
   final _commandFocusNode = FocusNode();
   final _blockFocusNode = FocusNode();
@@ -73,35 +99,21 @@ class CommandBox extends ConsumerWidget {
         screenVisibilityProvider(visibility: allowedInputTypes.first);
     InputBoxType commandVisibility = ref.watch(screenVisibilityProviderVal);
 
-    final threadInput = TextField(
-      autofocus: true,
-      controller: _blockController,
-      minLines: 2,
-      maxLines: 5,
-      focusNode: _blockFocusNode,
-      onTap: () => _blockFocusNode.requestFocus(),
-      showCursor: true,
-      decoration: InputDecoration(
-          hintText:
-              'Write your text block here. Press Meta+Enter to save. Press "/" for commands',
-          hintStyle: context.textTheme.bodyMedium),
-      onChanged: (text) async {
-        if (text.isNotEmpty && text.startsWith('/')) {
-          if (!context.mounted) return;
-          // show the popup
-          _blockController.clear();
-          _commandFocusNode.requestFocus();
-          ref
-              .read(screenVisibilityProviderVal.notifier)
-              .setVisibility(InputBoxType.commandBox);
-          // show a popup with the list of commands and allow the user to
-          // select one
-          // or delete the / and treat it as a normal text
-        } else {
-          _blockFocusNode.requestFocus();
-        }
-      },
-    );
+    final attachment = ref.watch(blockAttachmentProvider);
+    // final quillController = QuillController.basic();
+    final zefyrController = ZefyrController();
+
+    final filterProvider = filteredUserProvider;
+    final filteredUsersNotifier = ref.read(filterProvider.notifier);
+
+    // final threadInput = RichEditor(
+    //   controller: quillController,
+    //   focusNode: _blockFocusNode,
+    // );
+    final threadInput = ZefyrRichEditor(
+        controller: zefyrController,
+        focusNode: _blockFocusNode,
+        filteredUsersNotifier: filteredUsersNotifier);
 
     Widget callbackShortcutWrapper({required Widget child}) {
       Map<ShortcutActivator, VoidCallback> bindings = {
@@ -113,10 +125,31 @@ class CommandBox extends ConsumerWidget {
             _searchFocusNode.requestFocus();
           },
         if (allowedInputTypes.contains(InputBoxType.thread))
-          const SingleActivator(LogicalKeyboardKey.enter, meta: true): () {
-            String blockText = _blockController.text;
-            threadNotifier.createBlock(blockText, customTitle: title);
-            _blockController.clear();
+          const SingleActivator(LogicalKeyboardKey.enter, meta: true):
+              () async {
+            print('Converting to markdown');
+
+            // final encoder = NotusMarkdownCodec();
+            // late NotusMarkdownCodec notusMarkdown;
+            // notusMarkdown = const NotusMarkdownCodec();
+
+            // final deltaToMd = mdq.DeltaToMarkdown();
+
+            final delta = zefyrController.document.toDelta();
+            // final encoded = encoder.encode(qD.Delta.fromJson(delta.toJson()));
+            final markdown =
+                notusMarkdown.encode(zefyrController.document.toDelta());
+            // print('Delta: $delta');
+            // final markdown = deltaToMd.convert(delta);
+            // final markdown2 = deltaToMd.convert(delta);
+            await threadNotifier.createBlock(
+              context,
+              markdown,
+              customTitle: title,
+              image: attachment,
+            );
+            ref.read(blockAttachmentProvider.notifier).clearAttachment();
+            // _blockController.clear();
           },
       };
 
@@ -126,6 +159,7 @@ class CommandBox extends ConsumerWidget {
       );
     }
 
+    _blockFocusNode.requestFocus();
     return SizedBox(
       width: containerWidth,
       child: Padding(
@@ -142,54 +176,207 @@ class CommandBox extends ConsumerWidget {
                   _blockFocusNode.requestFocus();
                 }
               }
-              // Handle key down
-            } else if (event is KeyUpEvent) {
-              // Handle key up
-              // just chill
             }
           },
           child: callbackShortcutWrapper(
             child: Stack(children: [
               Visibility(
-                visible: (commandVisibility == InputBoxType.thread),
-                child: threadInput,
-                //  CallbackShortcuts(
-                //   bindings: {
-                //     const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
-                //         () {
-                //       ref
-                //           .read(screenVisibilityProvider().notifier)
-                //           .setVisibility(InputBoxType.searchBox);
-                //       _searchFocusNode.requestFocus();
-                //     },
-                //     const SingleActivator(LogicalKeyboardKey.enter, shift: true):
-                //         () {
-                //       String blockText = _blockController.text;
-                //       // Submit the text
+                  visible: (commandVisibility == InputBoxType.thread),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          if (attachment != null)
+                            Image.file(
+                              attachment,
+                              height: 300,
+                              // width: containerWidth,
+                            ).p(20),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              onPressed: () {
+                                ref
+                                    .read(blockAttachmentProvider.notifier)
+                                    .clearAttachment();
+                              },
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                          FilteredUsersList(
+                            onUserSelect: (user) {
+                              final description =
+                                  zefyrController.document.toPlainText();
+                              List<String> words = description.split(' ');
+                              final name = words.last.split('@')[1].trim();
 
-                //       threadNotifier.createBlock(blockText);
-                //       _blockController.clear();
-                //     },
-                //   },
-                //   child: threadInput,
-                // ),
-              ),
-              // COMMAND BOX
-              Visibility(
-                visible: (commandVisibility == InputBoxType.commandBox),
-                maintainState: true,
-                child: CommandTypeAhead(commandFocusNode: _commandFocusNode),
-              ),
-              // SEARCH BOX
-              Visibility(
-                visible: (commandVisibility == InputBoxType.searchBox),
-                child: SearchModal(focusNode: _searchFocusNode),
-              ),
+                              zefyrController.replaceText(
+                                description.length - name.length - 1,
+                                name.length,
+                                user.name!,
+                              );
+
+                              zefyrController.formatText(
+                                description.length - name.length - 2,
+                                user.name!.length + 1,
+                                NotusAttribute.link
+                                    .fromString('@mention?user=${user.id}'),
+                              );
+
+                              zefyrController.updateSelection(
+                                TextSelection.collapsed(
+                                  offset: description.length -
+                                      name.length -
+                                      2 +
+                                      user.name!.length +
+                                      1,
+                                ),
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color:
+                                context.colorScheme.onSurface.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              onPressed: () async {
+                                final attachmentProvider =
+                                    ref.read(blockAttachmentProvider.notifier);
+                                attachmentProvider.clearAttachment();
+
+                                final file = await FileUtility.pickImage();
+                                file.fold(
+                                  (value) {
+                                    attachmentProvider.setAttachment(value);
+                                  },
+                                  () => null,
+                                );
+                              },
+                              icon: const Icon(Icons.image_outlined),
+                            ),
+                            threadInput.extended,
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                  //  CallbackShortcuts(
+                  //   bindings: {
+                  //     const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
+                  //         () {
+                  //       ref
+                  //           .read(screenVisibilityProvider().notifier)
+                  //           .setVisibility(InputBoxType.searchBox);
+                  //       _searchFocusNode.requestFocus();
+                  //     },
+                  //     const SingleActivator(LogicalKeyboardKey.enter, shift: true):
+                  //         () {
+                  //       String blockText = _blockController.text;
+                  //       // Submit the text
+
+                  //       threadNotifier.createBlock(blockText);
+                  //       _blockController.clear();
+                  //     },
+                  //   },
+                  //   child: threadInput,
+                  // ),
+                  ),
             ]),
           ),
         ),
       ),
     );
+  }
+}
+
+class FilteredUsersList extends ConsumerWidget {
+  const FilteredUsersList({super.key, required this.onUserSelect});
+  final ValueChanged<UserModel> onUserSelect;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    var allUsers = ref.watch(usersProvider);
+    var filteredUsers = ref.watch(filteredUserProvider);
+
+    return filteredUsers.maybeWhen(
+        orElse: () => const SizedBox(),
+        data: (list) {
+          if (list.isEmpty) {
+            return const SizedBox();
+          }
+          return Positioned(
+            child: AnimatedContainer(
+              height: min(400, list.length * 55),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: context.colorScheme.secondaryContainer.withOpacity(.99),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                border: Border.all(
+                  color: context.customColors.monkBlue!,
+                  width: .3,
+                ),
+              ),
+              duration: const Duration(milliseconds: 300),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  final User = list[index];
+                  final name = User.name ?? '';
+                  return ListTile(
+                    title: Text(
+                      name,
+                    ),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: CacheImage(
+                        path: User.picture!.startsWith('https')
+                            ? User.picture!
+                            : "https://api.dicebear.com/7.x/identicon/png?seed=${User.name ?? "UN"}",
+                        width: 35,
+                        height: 35,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    onTap: () {
+                      onUserSelect(User);
+                      // we have to provide this username to the text field;
+                      // insertUsernameMention(username);
+                      // // clear the filtered users
+                      // ref
+                      //     .read(filteredUsersNotifierProvider.notifier)
+                      //     .clear();
+                    },
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider(
+                    color: context.colorScheme.onSurface,
+                    height: 8,
+                    thickness: .2,
+                    endIndent: 16,
+                    indent: 16,
+                  );
+                },
+              ),
+            ),
+          );
+        });
   }
 }
 
@@ -517,7 +704,7 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
     filtered = [];
   }
 
-  Widget Wrapper({required Widget child}) {
+  Widget listenerWrapper({required Widget child}) {
     return (KeyboardListener(
         focusNode: keyboardFocusNode,
         autofocus: true,
@@ -646,6 +833,12 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
           widget.controller.text = '/';
           return;
         }
+        if (widget.controller.text == '/news') {
+          // Navigator.pushAndRemoveUntil(
+          //     context, NewsPage.launchRoute(), (route) => false);
+          Navigator.pushReplacement(context, NewsPage.launchRoute());
+          return;
+        }
         if (!widget.controller.text.contains('#') && filtered.isNotEmpty) {
           widget.controller.text = '${widget.controller.text} #';
           setState(() {
@@ -655,6 +848,11 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
           return;
         } else if (widget.controller.text.contains((' #'))) {
           widget.onSubmit!(widget.controller.text);
+          setState(() {
+            filtered = [];
+            selectedIndex = null;
+          });
+          widget.controller.clear();
           print('Submitted ${widget.controller.text}');
         }
       },
@@ -691,6 +889,7 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
                 });
                 return;
               }
+
               List<String> parts = pattern.split(' ');
               if (parts.length == 1) {
                 // we are displaying a list of commands now

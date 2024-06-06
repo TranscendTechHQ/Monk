@@ -18,9 +18,10 @@ CreateUserThreadFlagModel _$CreateUserThreadFlagModelFromJson(
         );
         final val = CreateUserThreadFlagModel(
           bookmark: $checkedConvert('bookmark', (v) => v as bool?),
-          read: $checkedConvert('read', (v) => v as bool?),
+          mention: $checkedConvert('mention', (v) => v as bool?),
           threadId: $checkedConvert('thread_id', (v) => v as String),
           unfollow: $checkedConvert('unfollow', (v) => v as bool?),
+          unread: $checkedConvert('unread', (v) => v as bool?),
           upvote: $checkedConvert('upvote', (v) => v as bool?),
         );
         return val;
@@ -39,9 +40,10 @@ Map<String, dynamic> _$CreateUserThreadFlagModelToJson(
   }
 
   writeNotNull('bookmark', instance.bookmark);
-  writeNotNull('read', instance.read);
+  writeNotNull('mention', instance.mention);
   val['thread_id'] = instance.threadId;
   writeNotNull('unfollow', instance.unfollow);
+  writeNotNull('unread', instance.unread);
   writeNotNull('upvote', instance.upvote);
   return val;
 }

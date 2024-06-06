@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/helper/shared_preference.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news/news_page.dart';
@@ -22,8 +23,6 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   String userId = "";
-  // String email = "";
-  // String fullName = "";
 
   @override
   void initState() {
@@ -32,10 +31,6 @@ class _HomePageState extends ConsumerState<HomePage> {
       setState(() {
         userId = value;
       });
-    });
-
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      ref.read(authProvider.notifier).getSession();
     });
   }
 
@@ -53,9 +48,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     
     CreateChildThreadModel createChildThreadModel = CreateChildThreadModel(
       title: "myownchildthread",
-      type: "/new-plan",
+      type: "chat",
       parentBlockId: "a73a294e-367a-437d-b71e-e53f7058b49f",
-      parentThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
+      mainThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
     );
     await threadApi.childThreadBlocksChildPost(
         createChildThreadModel: createChildThreadModel);
@@ -79,11 +74,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             threadId: "7ffefd35-2286-4377-ae4d-02bcfe9b121a",
             upvote: null,
             bookmark: null,
-            read: true));
+            unread: true));
   }
 
   Future<void> signOut() async {
     await SuperTokens.signOut();
+    await SharedPreferenceHelper().clearFilterPreference();
     Future.delayed(Duration.zero, () {
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -148,10 +144,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: context.scale(240, 200, 160),
               ),
               const SizedBox(width: 100),
-              if (authState.state == EState.loading) ...[
+              if (authState.value is AsyncLoading) ...[
                 const SizedBox(height: 100),
                 const CircularProgressIndicator.adaptive()
-              ] else if (authState.session != null)
+              ] else if (authState.value?.session != null)
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -178,7 +174,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      "Welcome ${authState?.session?.fullName}.",
+                      "Welcome ${authState.value?.session?.fullName}.",
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),
