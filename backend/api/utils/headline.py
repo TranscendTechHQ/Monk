@@ -5,8 +5,8 @@ from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 # Define prompt
 from langchain_openai import ChatOpenAI
-from utils.db import asyncdb
-from utils.db import shutdown_async_db_client, startup_async_db_client
+from utils.db import  shutdown_sync_db_client, startup_sync_db_client, syncdb
+
 
 from config import settings
 
@@ -42,18 +42,18 @@ def generate_headline(text: str) -> str:
     # print(summary)
     return headline
 
-async def update_single_headline_in_db(thread_doc, headline):
+def update_single_headline_in_db(thread_doc, headline):
     #print(f"Updating headline for thread {thread_doc['_id']} to {headline}")
     
-    threads_collection = asyncdb.threads_collection
-    result = await threads_collection.update_one({'_id': thread_doc['_id']},
+    threads_collection = syncdb.threads_collection
+    result = threads_collection.update_one({'_id': thread_doc['_id']},
                                       {'$set': {'headline': headline}}, upsert=True)
     #print(result.raw_result)
     
-async def generate_single_thread_headline(thread_id, use_ai=False):
+def generate_single_thread_headline(thread_id, use_ai=False):
     #blocks = thread_doc['content']
-    threads_collection = asyncdb.threads_collection
-    thread_doc = await threads_collection.find_one({'_id': thread_id})
+    threads_collection = syncdb.threads_collection
+    thread_doc =  threads_collection.find_one({'_id': thread_id})
     if not thread_doc:
         raise ValueError("Thread with id {thread_id} not found")
     
@@ -61,11 +61,11 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
     
     headline = "blank thread"
     if num_blocks == 0:
-        await update_single_headline_in_db(thread_doc, headline)
+        update_single_headline_in_db(thread_doc, headline)
         return
     
-    blocks_collection = asyncdb.blocks_collection
-    default_block = await blocks_collection.find_one({'child_thread_id': thread_id})
+    blocks_collection = syncdb.blocks_collection
+    default_block = blocks_collection.find_one({'child_thread_id': thread_id})
     
     blocks = []
     
@@ -74,13 +74,13 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
             
             headline = default_block['content']
             
-            await update_single_headline_in_db(thread_doc, headline)
+            update_single_headline_in_db(thread_doc, headline)
             return
         else:
             blocks.append(default_block)
         
-    more_blocks = await blocks_collection.find(
-        {'main_thread_id': thread_id}).sort('position', 1).to_list(length=None)
+    more_blocks =  list(blocks_collection.find(
+        {'main_thread_id': thread_id}).sort('position', 1))
     blocks.extend(more_blocks)
         
     if use_ai:
@@ -98,25 +98,25 @@ async def generate_single_thread_headline(thread_id, use_ai=False):
         headline = first_block['content']
         
     print(f"Updating headline for thread {thread_id} to {headline}")
-    await update_single_headline_in_db(thread_doc, headline)
+    update_single_headline_in_db(thread_doc, headline)
     
     
-async def generate_all_thread_headlines(use_ai=False):
-    thread_collection = asyncdb.threads_collection
-    threads = await thread_collection.find({}).to_list(length=None)
+def generate_all_thread_headlines(use_ai=False):
+    thread_collection = syncdb.threads_collection
+    threads = list(thread_collection.find({}))
     # headline_collection = app.mongodb["thread_headlines"]
     for doc in threads:
         print(f"Generating headline for thread {doc['_id']}")
-        await generate_single_thread_headline(thread_id=doc["_id"], use_ai=use_ai)
+        generate_single_thread_headline(thread_id=doc["_id"], use_ai=use_ai)
 
         # pprint.pprint(headline['text'])
         
     
 async def main():
-    await startup_async_db_client()
-    await generate_all_thread_headlines(use_ai=True)
+    startup_sync_db_client()
+    generate_all_thread_headlines(use_ai=True)
     #await generate_single_thread_headline("af6f0744-0679-47d4-8838-db02312cc61e", use_ai=True)
-    await shutdown_async_db_client()
+    shutdown_sync_db_client()
 
 
 if __name__ == "__main__":

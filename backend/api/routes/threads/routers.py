@@ -15,8 +15,8 @@ from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
 from routes.threads.block import updateBlock
 from utils.scrapper import getLinkMeta
-from utils.db import get_creator_block_by_id, get_mongo_document, get_mongo_documents, get_tenant_id, update_mongo_document_fields, asyncdb, \
-    create_mongo_document, delete_mongo_document
+from utils.db import create_mongo_document_sync, get_creator_block_by_id, get_mongo_document, get_mongo_document_sync, get_mongo_documents, get_tenant_id, get_tenant_id_sync, update_mongo_document_fields, asyncdb, syncdb, \
+    create_mongo_document, delete_mongo_document, update_mongo_document_fields_sync
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline
 from .child_thread import create_child_thread
@@ -404,18 +404,18 @@ async def filter(
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
 
-async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
+def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
     try:
         # print("profiling performance 1.1")
         # start_time = time.time()
 
-        user_info = await asyncdb.users_collection.find_one({"_id": user_id})
-        thread_collection = asyncdb.threads_collection
+        user_info = syncdb.users_collection.find_one({"_id": user_id})
+        thread_collection = syncdb.threads_collection
         thread_id = block.main_thread_id
 
-        pos = await get_blocks_count(thread_id)
+        pos = get_blocks_count(thread_id)
 
-        blocks_collection = asyncdb.blocks_collection
+        blocks_collection = syncdb.blocks_collection
         content = block.content
         if user_info is None:
             return None
@@ -447,7 +447,7 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:
                 print(f'\n 👉 User mention detected count: {len(mentions)} ')
                 for user_id in mentions:
                     print(f'\n 👉 User mention detected: {user_id} ')
-                    await update_user_flags(thread_id, user_id,
+                    update_user_flags(thread_id, user_id,
                                             tenant_id, mention=True)
 
         #
@@ -467,21 +467,21 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:
 
         new_block = BlockModel(**block, tenant_id=tenant_id,
                                creator_id=user_id, position=pos, link_meta=linkMeta)
-        await create_mongo_document(id=new_block.id,
+        create_mongo_document_sync(id=new_block.id,
                                     document=jsonable_encoder(new_block),
                                     collection=blocks_collection)
 
         thread_last_modified = str(new_block.created_at)
         # now update the thread block count
-        num_blocks = await get_blocks_count(thread_id)
+        num_blocks = get_blocks_count(thread_id)
 
         # print(f"profiling 1.1 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
         # print("profiling performance 1.2")
         # start_time = time.time()
 
-        await update_mongo_document_fields({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
+        update_mongo_document_fields_sync({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
 
-        await generate_single_thread_headline(thread_id=thread_id, use_ai=False)
+        generate_single_thread_headline(thread_id=thread_id, use_ai=False)
 
         # print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
 
@@ -493,10 +493,10 @@ async def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-async def get_blocks_count(thread_id):
+def get_blocks_count(thread_id):
     count = 0
-    count += await asyncdb.blocks_collection.count_documents({"main_thread_id": thread_id})
-    count += await asyncdb.blocks_collection.count_documents({"child_thread_id": thread_id})
+    count += syncdb.blocks_collection.count_documents({"main_thread_id": thread_id})
+    count += syncdb.blocks_collection.count_documents({"child_thread_id": thread_id})
     return count
 
 
@@ -700,7 +700,7 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
         thread_to_return = thread[0]
 
         # user is now reading the thread so set unread to false
-        await update_user_flags(thread_to_return["_id"], user_id, tenant_id, unread=False)
+        update_user_flags(thread_to_return["_id"], user_id, tenant_id, unread=False)
 
         # Check if thread contains and empty default block
         # If yes, then remove the key from object
@@ -729,14 +729,16 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         # print("profiling performance 0")
         user_id = session.get_user_id()
 
-        tenant_id = await get_tenant_id(session)
-
-        thread = await get_mongo_document(
+        tenant_id = get_tenant_id_sync(session)
+        tenant_time = time.time()
+        print(f"profiling Time elapsed for tenant_id(): {tenant_time - start_time:.6f} seconds")
+        thread = get_mongo_document_sync(
             {"title": thread_title},
-            request.app.mongodb["threads"],
+            syncdb.threads_collection,
             tenant_id=tenant_id
         )
-
+        title_time = time.time()
+        print(f"profiling Time elapsed for get_mongo_document(title_time): {title_time - tenant_time:.6f} seconds")
         if not thread:
             return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
 
@@ -745,7 +747,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         part_1 = time.time()
         print(
             f"profiling Time elapsed for first part(): { part_1 - start_time:.6f} seconds")
-        new_block = await create_new_block(block, user_id, tenant_id)
+        new_block = create_new_block(block, user_id, tenant_id)
 
         if not new_block:
             return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
@@ -756,13 +758,13 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
 
     #  as we modify a thread, we need to update the user_thread_flags
     # to indicate that the all other users other than the creator have an unread thread:
-        await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
 
         end_time = time.time()
         print(
             f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
         print(
-            f"profiling Time elapsed for create block(): {end_time - start_time:.6f} seconds")
+            f"profiling Time elapsed for total create block(): {end_time - start_time:.6f} seconds")
         return JSONResponse(status_code=status.HTTP_201_CREATED,
                             content=jsonable_encoder(new_block)
                             )
@@ -1126,7 +1128,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
     print(
         f"🔍 updating thread flag with thread_id {thread_id} user_id {user_id} tenant_id {tenant_id}: unread {unread}, unfollow {unfollow}, bookmark {bookmark}, upvote {upvote}, mention {mention}")
-    updated_user_thread_flag = await update_user_flags(thread_id, user_id, tenant_id, unread, upvote, bookmark, unfollow, mention)
+    updated_user_thread_flag = update_user_flags(thread_id, user_id, tenant_id, unread, upvote, bookmark, unfollow, mention)
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(updated_user_thread_flag))
 
 # API to delete thread. only the creator of the thread can delete the thread

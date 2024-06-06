@@ -22,7 +22,7 @@ from config import settings
 from routes.threads.routers import router as threads_router
 from routes.slack.routers import router as slack_router
 from routes.storage import routers as storage_router
-from utils.db import startup_async_db_client, shutdown_async_db_client
+from utils.db import shutdown_sync_db_client, startup_async_db_client, shutdown_async_db_client, startup_sync_db_client
 from utils.scrapper import getLinkMeta
 
 # Set your Slack client ID and client secret
@@ -35,10 +35,12 @@ async def lifespan(app: FastAPI):
     # Code to be executed before the application starts up
     await startup_db_client()
     await startup_async_db_client()
+    startup_sync_db_client()
     yield
     # Code to be executed after the application shuts down
     await shutdown_db_client()
     await shutdown_async_db_client()
+    shutdown_sync_db_client()
 
 
 app = FastAPI(lifespan=lifespan)

@@ -187,7 +187,7 @@ async def webhook_event(request: Request):
         new_block = CreateBlockModel(
             content=content, main_thread_id=main_thread_id)
 
-        created_block = await create_new_block(block=new_block,
+        created_block = create_new_block(block=new_block,
                                                user_id=user_id,
                                                tenant_id=tenant_id,
                                                id=block_id,

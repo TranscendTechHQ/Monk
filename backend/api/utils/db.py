@@ -2,9 +2,34 @@ import datetime as dt
 
 import motor.motor_asyncio
 
+import pymongo
+
 from config import settings
 
+class SyncDbClient:
+    pass
 
+syncdb = SyncDbClient()
+
+def startup_sync_db_client():
+    syncdb.mongodb_client = pymongo.MongoClient(
+        settings.DB_URL)
+    # print(app.mongodb_client.list_database_names())
+    syncdb.mongodb = syncdb.mongodb_client[settings.DB_NAME]
+    syncdb.threads_collection = syncdb.mongodb["threads"]
+    syncdb.blocks_collection = syncdb.mongodb["blocks"]
+    syncdb.users_collection = syncdb.mongodb["users"]
+    syncdb.tenants_collection = syncdb.mongodb["tenants"]
+    # syncdb.metadata_collection = syncdb.mongodb["threads_metadata"]
+    # syncdb.headlines_collection = syncdb.mongodb["thread_headlines"]
+    syncdb.subscribed_channels_collection = syncdb.mongodb["subscribed_channels"]
+    syncdb.whitelisted_users_collection = syncdb.mongodb["whitelisted_users"]
+    # syncdb.thread_reads_collection = syncdb.mongodb["thread_reads"]
+    syncdb.user_thread_flags_collection = syncdb.mongodb["user_thread_flags"]
+
+def shutdown_sync_db_client():
+    syncdb.mongodb_client.close()
+    
 class AsyncDbClient:
     pass
 
@@ -29,6 +54,7 @@ async def startup_async_db_client():
     asyncdb.user_thread_flags_collection = asyncdb.mongodb["user_thread_flags"]
 
 
+
 async def shutdown_async_db_client():
     asyncdb.mongodb_client.close()
 
@@ -44,6 +70,10 @@ async def get_tenant_id(session):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     return user_info["tenant_id"]
 
+def get_tenant_id_sync(session):
+    user_id = session.get_user_id()
+    user_info = syncdb.users_collection.find_one({"_id": user_id})
+    return user_info["tenant_id"]
 
 async def get_user_name(user_id, collection) -> str:
     if (doc := await collection.find_one({"_id": user_id})) is not None:
@@ -76,6 +106,11 @@ async def get_mongo_document(query: dict, collection, tenant_id):
         return doc
     return None
 
+def get_mongo_document_sync(query: dict, collection, tenant_id):
+    query["tenant_id"] = tenant_id
+    if (doc := collection.find_one(query)) is not None:
+        return doc
+    return None
 
 async def get_mongo_documents(collection, tenant_id, filter: dict = {}, projection: dict = {}):
 
@@ -112,7 +147,28 @@ async def delete_mongo_document(query: dict, collection):
     if (doc := await collection.find_one(query)) is not None:
         await collection.delete_one(query)
         return doc
+    
+def create_mongo_document_sync(id: str, document: dict, collection):
+    # print(document)
+    # print(collection)
 
+    if collection is None:
+        print("collection is none")
+    if document is None:
+        print("document is none")
+
+    result = collection.find_one({"_id": id})
+
+    if result is not None:
+        # if the document already exists, return the existing document
+        return result
+
+    new_document = collection.insert_one(document)
+
+    created_document = collection.find_one(
+        {"_id": new_document.inserted_id})
+
+    return created_document
 
 async def create_mongo_document(id: str, document: dict, collection):
     # print(document)
@@ -229,6 +285,26 @@ async def update_block_child_id(blocks_collection,
     else:
         print("could not update the block with block_id: ", parent_block_id)
 
+def update_mongo_document_fields_sync(query: dict, fields: dict, collection):
+    fields_dict = {k: v for k, v in fields.items() if v is not None}
+
+    if len(fields_dict) >= 1:
+        update_result = collection.update_one(
+            query, {"$set": fields_dict}
+        )
+
+        if update_result.modified_count == 1:
+            if (
+                    updated_doc := collection.find_one(query)
+            ) is not None:
+                return updated_doc
+
+    if (
+            existing_doc := collection.find_one(query)
+    ) is not None:
+        return existing_doc
+
+    return None
 
 async def update_mongo_document_fields(query: dict, fields: dict, collection):
     fields_dict = {k: v for k, v in fields.items() if v is not None}

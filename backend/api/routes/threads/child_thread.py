@@ -49,11 +49,11 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
 
             print("\n 5.a.2 Created thread\n", created_thread)
 
-            await generate_single_thread_headline(thread_id=created_thread["_id"], use_ai=False)
+            generate_single_thread_headline(thread_id=created_thread["_id"], use_ai=False)
             asyncdb.threads_collection.update_one({'_id': created_thread['_id']},
                                                   {'$set': {'headline': 'blank thread'}}, upsert=True)
             thread_id = created_thread["_id"]
-            await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+            set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
         else:
             print("\n 5.a.3 Thread already exists")
             created_thread = old_thread

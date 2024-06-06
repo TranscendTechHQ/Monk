@@ -335,7 +335,7 @@ async def main():
                 new_block = CreateBlockModel(
                 content=message["text"], main_thread_id=block_thread_id)
                     
-                created_block = await create_new_block(block=new_block, 
+                created_block = create_new_block(block=new_block, 
                                                        user_id=message_user["_id"], 
                                                        tenant_id=tenant_id, 
                                                        id=message['message_id'], 

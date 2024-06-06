@@ -1,16 +1,16 @@
 import logging
 from fastapi.encoders import jsonable_encoder
 from routes.threads.models import UserThreadFlagModel
-from utils.db import create_mongo_document, get_mongo_document, asyncdb, update_mongo_document_fields
+from utils.db import create_mongo_document, create_mongo_document_sync, get_mongo_document, syncdb, get_mongo_document_sync, update_mongo_document_fields, update_mongo_document_fields_sync
 
 logger = logging.getLogger(__name__)
 
 
-async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
+def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
     try:
 
-        user_thread_flag = await get_mongo_document({"thread_id": thread_id, "user_id": user_id},
-                                                    asyncdb.user_thread_flags_collection, tenant_id=tenant_id)
+        user_thread_flag = get_mongo_document_sync({"thread_id": thread_id, "user_id": user_id},
+                                                    syncdb.user_thread_flags_collection, tenant_id=tenant_id)
 
         if not user_thread_flag:
             user_thread_flag_doc = UserThreadFlagModel(
@@ -24,10 +24,10 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
                 mention=mention if mention else None
             )
             user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
-            await create_mongo_document(
+            create_mongo_document_sync(
                 id=user_thread_flag_doc.id,
                 document=user_thread_flag_jsonable,
-                collection=asyncdb.user_thread_flags_collection)
+                collection=syncdb.user_thread_flags_collection)
 
             return user_thread_flag_jsonable
 
@@ -38,8 +38,8 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
         if mention is not None:
             user_thread_flag["mention"] = mention
 
-        updated_user_thread_flag = await update_mongo_document_fields({"_id": user_thread_flag["_id"]}, user_thread_flag,
-                                                                      asyncdb.user_thread_flags_collection)
+        updated_user_thread_flag =  update_mongo_document_fields_sync({"_id": user_thread_flag["_id"]}, user_thread_flag,
+                                                                      syncdb.user_thread_flags_collection)
 
         return updated_user_thread_flag
     except Exception as e:
@@ -48,19 +48,19 @@ async def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=N
 
 
 # Set flags true for all other users in the thread except the user_id
-async def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
+def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
     try:
         if thread_id is None or user_id is None or tenant_id is None:
             print("\n ❌ [ERROR]: thread_id, user_id or tenant_id is None",
                   thread_id, user_id, tenant_id)
 
             return None
-        users = await asyncdb.users_collection.find({"tenant_id": tenant_id}).to_list(None)
+        users =  list(syncdb.users_collection.find({"tenant_id": tenant_id}))
         for user in users:
             other_user_id = user["_id"]
             if other_user_id == user_id:
                 continue
-            await update_user_flags(thread_id, other_user_id, tenant_id, unread=unread, upvote=upvote, bookmark=bookmark, unfollow=unfollow, mention=mention)
+            update_user_flags(thread_id, other_user_id, tenant_id, unread=unread, upvote=upvote, bookmark=bookmark, unfollow=unfollow, mention=mention)
     except Exception as e:
         logger.error(e, exc_info=True)
         return None
