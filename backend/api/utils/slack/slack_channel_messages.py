@@ -132,10 +132,10 @@ def get_channel_messages(slack_client, channel_id, write_to_json=False, limit=10
                 # choose the columns you want to write to the file
                 current_df = df[['message_id','created_at', 'creator_id', 'text']]
                 current_df = current_df.rename(columns={
-                                'message_id': 'message',
-                                'created_at': 'time',
-                                'creator_id': 'user',
-                                'text': 'message.1'
+                                'message_id': '_id',
+                                'created_at': 'created_at',
+                                'creator_id': 'creator',
+                                'text': 'content'
                             })
                 
                 current_df.to_json(file_path)
@@ -236,10 +236,33 @@ async def cleanup_slack_data():
     #await asyncdb.users_collection.delete_many({"thirdparty_provider": "slack"})
     raise ValueError("cleanup slack data")
 
+async def all_slack_users(slack_client):
+    # Call the users.list method to get the list of users
+    response = slack_client.users_list()
+
+    # Check if the API call was successful
+    if response["ok"]:
+        # Iterate through the list of users and print their usernames
+        for user in response["members"]:
+            if "real_name" not in user:
+                continue
+            username = user["real_name"]
+            user_id = user["id"]
+            #print(user.keys())
+            print(f"Username: {username}, User ID: {user_id}")
+    else:
+        # Handle the error
+        error_message = response["error"]
+        print(f"Error: {error_message}") 
+
+        
+
 async def main():
+    
     print("Starting db client...")
     await startup_async_db_client()
     #await cleanup_slack_data()
+    
     
     print("DB client started successfully.")
     # print(db.mongodb_client.list_database_names())
@@ -262,6 +285,7 @@ async def main():
         slack_client = WebClient(token=SLACK_USER_TOKEN)
         slack_client_for_user_info = WebClient(token=SLACK_BOT_TOKEN)
         print("Slack client created successfully.")
+        
         # fetch all public channels
         channel_list = get_channel_list(slack_client)
         #print(channel_list)

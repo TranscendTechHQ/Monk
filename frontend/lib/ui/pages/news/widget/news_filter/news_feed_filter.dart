@@ -114,7 +114,7 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             alignment: Alignment.centerLeft,
             child: const Text(
-              'Semantic search.',
+              'Semantic Filter.',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
@@ -126,7 +126,8 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
             },
             maxLines: null,
             decoration: InputDecoration(
-              hintText: 'Use comma to separate queries',
+              hintText:
+                  'Describe in plain english the kind of threads you want to see in the newsfeed.',
               hintStyle: context.textTheme.bodyMedium?.copyWith(
                 color: context.colorScheme.onSurface.withOpacity(.4),
               ),
