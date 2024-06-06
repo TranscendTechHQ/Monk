@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/helper/shared_preference.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -16,7 +17,16 @@ class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    final response = await threadApi.filterNewsfeedGet();
+    final filterData = await SharedPreferenceHelper().getFilterPreference();
+    final semanticSearch = await SharedPreferenceHelper().getFilterSemantic();
+    final response = await threadApi.filterNewsfeedGet(
+      bookmark: filterData?['bookmarked'],
+      unread: filterData?['unRead'],
+      unfollow: filterData?['dismissed'],
+      upvote: filterData?['upvoted'],
+      mention: filterData?['mention'],
+      searchQuery: semanticSearch,
+    );
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
     }

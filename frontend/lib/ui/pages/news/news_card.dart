@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/helper/utils.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
@@ -11,6 +12,7 @@ import 'package:frontend/ui/widgets/cache_image.dart';
 import 'package:frontend/ui/widgets/dismiss_button.dart';
 import 'package:frontend/ui/widgets/kit/alert.dart';
 import 'package:frontend/ui/widgets/link_meta_card.dart';
+import 'package:frontend/ui/widgets/markdown/markdown_viewer.dart';
 import 'package:frontend/ui/widgets/title_action_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
@@ -188,13 +190,12 @@ class NewsCard extends ConsumerWidget {
                           ),
                         )
                       else ...[
-                        SelectableText(
-                          metaData.block!.content,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                        MarkdownViewer(
+                          markdownData: metaData.block!.content,
+                          onTapLink:
+                              (String? text, String? href, String? title) {
+                            launch(href);
+                          },
                         ),
                         const SizedBox(height: 8),
                         if (metaData.block!.image != null) ...[

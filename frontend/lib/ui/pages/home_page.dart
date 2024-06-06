@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/network.dart';
+import 'package:frontend/helper/shared_preference.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/login_page.dart';
 import 'package:frontend/ui/pages/news/news_page.dart';
@@ -78,6 +79,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future<void> signOut() async {
     await SuperTokens.signOut();
+    await SharedPreferenceHelper().clearFilterPreference();
     Future.delayed(Duration.zero, () {
       Navigator.pushNamedAndRemoveUntil(
         context,

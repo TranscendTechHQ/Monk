@@ -76,6 +76,7 @@ dependencies:
   zefyr:
     # git: https://github.com/memspace/zefyr/tree/1.0-dev/packages/zefyr
     path: zefyr
+  shared_preferences_android: ^2.2.2
 
 dependency_overrides:
   intl: ^0.18.1

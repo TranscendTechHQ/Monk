@@ -52,7 +52,14 @@ class NewsPage extends ConsumerWidget {
             searchQuery: map['searchQuery'],
           );
       final state = ref.read(newsFeedFilterProvider.notifier);
-      state.updateFilter(semanticQuery: map['searchQuery']);
+      await state.updateSemanticQuery(
+        bookmarked: map['bookmarked'],
+        dismissed: map['dismissed'],
+        unRead: map['unRead'] as bool,
+        upvoted: map['upvoted'],
+        mentioned: map['mention'] as bool,
+        semanticQuery: map['searchQuery'],
+      );
     }
   }
 
@@ -181,7 +188,7 @@ class ChatListView extends ConsumerWidget {
         ),
         alignment: Alignment.center,
         child: const CircularProgressIndicator(),
-      ).extended,
+      ),
       error: (error, stack) => Center(child: Text('Error: $error')),
       data: (touple) {
         final threadHeadlineList = newsFeed.asData!.value;
