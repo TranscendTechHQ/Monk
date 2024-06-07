@@ -147,7 +147,23 @@ async def delete_mongo_document(query: dict, collection):
     if (doc := await collection.find_one(query)) is not None:
         await collection.delete_one(query)
         return doc
-    
+
+def create_mongo_doc_simple(document: dict, collection):
+    return collection.insert_one(document)
+
+def create_or_replace_mongo_doc(id: str, document: dict, collection):
+    # print(document)
+    # print(collection)
+
+    if collection is None:
+        print("collection is none")
+        return None
+    if document is None:
+        print("document is none")
+        return None
+    collection.replace_one({"_id": id}, document, upsert=True)
+        
+
 def create_mongo_document_sync(id: str, document: dict, collection):
     # print(document)
     # print(collection)
@@ -284,6 +300,9 @@ async def update_block_child_id(blocks_collection,
         print("\n 5.c.2 Child thread id updated in block")
     else:
         print("could not update the block with block_id: ", parent_block_id)
+
+def update_fields_mongo_simple(query: dict, fields: dict, collection):
+    collection.update_one(query, {"$set": fields}, upsert=True)
 
 def update_mongo_document_fields_sync(query: dict, fields: dict, collection):
     fields_dict = {k: v for k, v in fields.items() if v is not None}

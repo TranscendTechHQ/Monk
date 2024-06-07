@@ -15,10 +15,10 @@ from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
 from routes.threads.block import updateBlock
 from utils.scrapper import getLinkMeta
-from utils.db import create_mongo_document_sync, get_creator_block_by_id, get_mongo_document, get_mongo_document_sync, get_mongo_documents, get_tenant_id, get_tenant_id_sync, update_mongo_document_fields, asyncdb, syncdb, \
+from utils.db import create_mongo_doc_simple, create_mongo_document_sync, create_or_replace_mongo_doc, get_creator_block_by_id, get_mongo_document, get_mongo_document_sync, get_mongo_documents, get_tenant_id, get_tenant_id_sync, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb, \
     create_mongo_document, delete_mongo_document, update_mongo_document_fields_sync
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
-from utils.headline import generate_single_thread_headline
+from utils.headline import generate_single_thread_headline, set_first_block_as_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
 from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, UpdateBlockModel, UpdateBlockPositionModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
@@ -407,9 +407,11 @@ async def filter(
 def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
     try:
         # print("profiling performance 1.1")
-        # start_time = time.time()
+        start_time = time.time()
 
         user_info = syncdb.users_collection.find_one({"_id": user_id})
+        user_time = time.time()
+        print(f"profiling Time elapsed for user_info(): {user_time - start_time:.6f} seconds")
         thread_collection = syncdb.threads_collection
         thread_id = block.main_thread_id
 
@@ -467,10 +469,12 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
 
         new_block = BlockModel(**block, tenant_id=tenant_id,
                                creator_id=user_id, position=pos, link_meta=linkMeta)
-        create_mongo_document_sync(id=new_block.id,
+        create_or_replace_mongo_doc(id=new_block.id,
                                     document=jsonable_encoder(new_block),
                                     collection=blocks_collection)
-
+        
+        create_block_time = time.time()
+        print(f"profiling Time elapsed for create_mongo_document(new_block): {create_block_time - user_time:.6f} seconds")
         thread_last_modified = str(new_block.created_at)
         # now update the thread block count
         num_blocks = get_blocks_count(thread_id)
@@ -479,10 +483,13 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
         # print("profiling performance 1.2")
         # start_time = time.time()
 
-        update_mongo_document_fields_sync({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
-
-        generate_single_thread_headline(thread_id=thread_id, use_ai=False)
-
+        update_fields_mongo_simple({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
+        num_blocks_time = time.time()
+        print(f"profiling Time elapsed for update_mongo_document_fields(num_block): {num_blocks_time - create_block_time:.6f} seconds")
+        #generate_single_thread_headline(thread_id=thread_id, use_ai=False)
+        set_first_block_as_headline(thread_id, num_blocks, content)
+        headline_time = time.time()
+        print(f"profiling Time elapsed for generate_single_thread_headline(): {headline_time - num_blocks_time:.6f} seconds")
         # print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
 
         return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
@@ -745,16 +752,15 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         thread_id = thread["_id"]
         # print("profiling performance 1")
         part_1 = time.time()
-        print(
-            f"profiling Time elapsed for first part(): { part_1 - start_time:.6f} seconds")
+        
         new_block = create_new_block(block, user_id, tenant_id)
 
         if not new_block:
             return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
         # print("profiling performance 2")
         part_2 = time.time()
-        print(
-            f"profiling Time elapsed for create_new_block(): {part_2 - part_1:.6f} seconds")
+        #print(
+        #    f"profiling Time elapsed for create_new_block(): {part_2 - part_1:.6f} seconds")
 
     #  as we modify a thread, we need to update the user_thread_flags
     # to indicate that the all other users other than the creator have an unread thread:
