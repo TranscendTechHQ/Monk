@@ -26,7 +26,7 @@ from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel,
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
-from routes.threads.user_flags import set_flags_true_other_users, update_user_flags
+from routes.threads.user_flags import set_flags_true_other_users, set_unread_other_users, update_user_flags
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -758,8 +758,9 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
 
     #  as we modify a thread, we need to update the user_thread_flags
     # to indicate that the all other users other than the creator have an unread thread:
-        set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
-
+        #set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        set_unread_other_users(thread_id, user_id, tenant_id)
+        
         end_time = time.time()
         print(
             f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
