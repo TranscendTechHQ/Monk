@@ -49,6 +49,14 @@ def update_single_headline_in_db(thread_doc, headline):
     result = threads_collection.update_one({'_id': thread_doc['_id']},
                                       {'$set': {'headline': headline}}, upsert=True)
     #print(result.raw_result)
+
+def set_first_block_as_headline(thread_id, num_blocks, block_content):
+    if num_blocks == 1:
+        headline = block_content
+        threads_collection = syncdb.threads_collection
+        threads_collection.update_one({'_id': thread_id},
+                                      {'$set': {'headline': headline}}, upsert=True)
+       
     
 def generate_single_thread_headline(thread_id, use_ai=False):
     #blocks = thread_doc['content']
@@ -97,7 +105,7 @@ def generate_single_thread_headline(thread_id, use_ai=False):
         
         headline = first_block['content']
         
-    print(f"Updating headline for thread {thread_id} to {headline}")
+    #print(f"Updating headline for thread {thread_id} to {headline}")
     update_single_headline_in_db(thread_doc, headline)
     
     

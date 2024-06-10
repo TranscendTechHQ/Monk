@@ -46,7 +46,10 @@ def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, b
         logger.error(e, exc_info=True)
         return None
 
-
+def set_unread_other_users(thread_id, user_id, tenant_id):
+    other_users =  list(syncdb.users_collection.find({"tenant_id": tenant_id, "_id": {"$ne": user_id}}))
+    syncdb.user_thread_flags_collection.update_many({"thread_id": thread_id, "user_id": {"$in": other_users}}, {"$set": {"unread": True}})
+    
 # Set flags true for all other users in the thread except the user_id
 def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
     try:
