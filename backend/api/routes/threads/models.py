@@ -145,6 +145,15 @@ class UpdateThreadTitleModel(BaseModel):
                               )
 
 
+class UserFilterPreferenceModel(BaseModel):
+    unread: Optional[bool] = Field(default=None, null=True)
+    unfollow: Optional[bool] = Field(default=None, null=True)
+    bookmark: Optional[bool] = Field(default=None, null=True)
+    upvote: Optional[bool] = Field(default=None, null=True)
+    mention: Optional[bool] = Field(default=None, null=True)
+    searchQuery: Optional[str] = Field(default=None, null=True)
+
+
 class UserThreadFlagModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     user_id: str

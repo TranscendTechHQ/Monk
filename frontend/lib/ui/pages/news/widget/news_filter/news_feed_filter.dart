@@ -180,7 +180,7 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
                           Navigator.pop(context, {
                             'unRead': state.unRead,
                             'bookmarked': state.bookmarked,
-                            'Upvoted': state.upvoted,
+                            'upvoted': state.upvoted,
                             'dismissed': state.dismissed,
                             'mention': state.mentioned,
                             'searchQuery': textEditorController.text,

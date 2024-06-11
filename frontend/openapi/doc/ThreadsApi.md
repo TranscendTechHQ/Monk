@@ -17,6 +17,7 @@ Method | HTTP request | Description
 [**deleteThreadThreadsIdDelete**](ThreadsApi.md#deletethreadthreadsiddelete) | **DELETE** /threads/{id} | Delete Thread
 [**filterNewsfeedGet**](ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
 [**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
+[**getUserFilterPreferencesUserNewsFilterGet**](ThreadsApi.md#getuserfilterpreferencesusernewsfilterget) | **GET** /user/news-filter | Get User Filter Preferences
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
@@ -273,7 +274,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **filterNewsfeedGet**
-> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery)
+> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled)
 
 Filter
 
@@ -288,9 +289,10 @@ final bool unfollow = true; // bool |
 final bool upvote = true; // bool | 
 final bool mention = true; // bool | 
 final String searchQuery = searchQuery_example; // String | 
+final bool isFilterEnabled = true; // bool | 
 
 try {
-    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery);
+    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->filterNewsfeedGet: $e\n');
@@ -307,6 +309,7 @@ Name | Type | Description  | Notes
  **upvote** | **bool**|  | [optional] [default to false]
  **mention** | **bool**|  | [optional] [default to false]
  **searchQuery** | **String**|  | [optional] 
+ **isFilterEnabled** | **bool**|  | [optional] [default to false]
 
 ### Return type
 
@@ -352,6 +355,43 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**FullThreadInfo**](FullThreadInfo.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserFilterPreferencesUserNewsFilterGet**
+> UserFilterPreferenceModel getUserFilterPreferencesUserNewsFilterGet()
+
+Get User Filter Preferences
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+
+try {
+    final response = api.getUserFilterPreferencesUserNewsFilterGet();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->getUserFilterPreferencesUserNewsFilterGet: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**UserFilterPreferenceModel**](UserFilterPreferenceModel.md)
 
 ### Authorization
 

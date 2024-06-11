@@ -51,7 +51,7 @@ void main() {
 
     // Filter
     //
-    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool unread, bool unfollow, bool upvote, bool mention, String searchQuery }) async
+    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool unread, bool unfollow, bool upvote, bool mention, String searchQuery, bool isFilterEnabled }) async
     test('test filterNewsfeedGet', () async {
       // TODO
     });
@@ -60,6 +60,13 @@ void main() {
     //
     //Future<FullThreadInfo> getThreadIdThreadsIdGet(String id) async
     test('test getThreadIdThreadsIdGet', () async {
+      // TODO
+    });
+
+    // Get User Filter Preferences
+    //
+    //Future<UserFilterPreferenceModel> getUserFilterPreferencesUserNewsFilterGet() async
+    test('test getUserFilterPreferencesUserNewsFilterGet', () async {
       // TODO
     });
 

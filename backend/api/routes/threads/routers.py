@@ -21,12 +21,12 @@ from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline, set_first_block_as_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, UpdateBlockModel, UpdateBlockPositionModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
-from routes.threads.user_flags import set_flags_true_other_users, set_unread_other_users, update_user_flags
+from routes.threads.user_flags import get_user_filter_preferences_from_db, save_user_filter_preferences, set_flags_true_other_users, set_unread_other_users, update_user_flags
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -250,7 +250,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, 
 
     # If searchQuery is present then search the threads by query
     # Right now the algo to search on basis of semantic search is not ready to we are using bookmark flag to search the threads
-    if searchQuery is not None:
+    if searchQuery is not None and searchQuery != '':
         bookmark = True
     print(f"🔍 Filtering newsfeed ${bookmark}")
     user_flags = []
@@ -378,10 +378,20 @@ async def filter(
         upvote: bool = False,
         mention: bool = False,
         searchQuery: str = None,
+        isFilterEnabled: bool = False,
         session: SessionContainer = Depends(verify_session())
 ):
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
+    if not isFilterEnabled:
+        user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
+        if user_flags:
+            bookmark = user_flags.bookmark
+            unread = user_flags.unread
+            unfollow = user_flags.unfollow
+            upvote = user_flags.upvote
+            mention = user_flags.mention
+            searchQuery = user_flags.searchQuery
 
     if bookmark or unfollow or unread or upvote or mention or searchQuery:
         aggregate = await get_filtered_newsfeed(
@@ -399,7 +409,21 @@ async def filter(
         aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id, user_id=user_id)
 
     aggregate = await aggregate.to_list(None)
-    # print(aggregate)
+
+    # Save user's filter preferences to db if filter is enabled
+    if isFilterEnabled:
+        user_flags = {
+            "user_id": user_id,
+            "bookmark": bookmark,
+            "unread": unread,
+            "unfollow": unfollow,
+            "upvote": upvote,
+            "mention": mention,
+            'searchQuery': searchQuery
+        }
+        save_user_filter_preferences(
+            user_id, tenant_id, UserFilterPreferenceModel(**user_flags))
+
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
@@ -411,7 +435,8 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
 
         user_info = syncdb.users_collection.find_one({"_id": user_id})
         user_time = time.time()
-        print(f"profiling Time elapsed for user_info(): {user_time - start_time:.6f} seconds")
+        print(
+            f"profiling Time elapsed for user_info(): {user_time - start_time:.6f} seconds")
         thread_collection = syncdb.threads_collection
         thread_id = block.main_thread_id
 
@@ -450,7 +475,7 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
                 for user_id in mentions:
                     print(f'\n 👉 User mention detected: {user_id} ')
                     update_user_flags(thread_id, user_id,
-                                            tenant_id, mention=True)
+                                      tenant_id, mention=True)
 
         #
 
@@ -472,9 +497,10 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
         create_or_replace_mongo_doc(id=new_block.id,
                                     document=jsonable_encoder(new_block),
                                     collection=blocks_collection)
-        
+
         create_block_time = time.time()
-        print(f"profiling Time elapsed for create_mongo_document(new_block): {create_block_time - user_time:.6f} seconds")
+        print(
+            f"profiling Time elapsed for create_mongo_document(new_block): {create_block_time - user_time:.6f} seconds")
         thread_last_modified = str(new_block.created_at)
         # now update the thread block count
         num_blocks = get_blocks_count(thread_id)
@@ -483,13 +509,16 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
         # print("profiling performance 1.2")
         # start_time = time.time()
 
-        update_fields_mongo_simple({"_id": thread_id}, {"num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
+        update_fields_mongo_simple({"_id": thread_id}, {
+                                   "num_blocks": num_blocks, "last_modified": thread_last_modified}, thread_collection)
         num_blocks_time = time.time()
-        print(f"profiling Time elapsed for update_mongo_document_fields(num_block): {num_blocks_time - create_block_time:.6f} seconds")
-        #generate_single_thread_headline(thread_id=thread_id, use_ai=False)
+        print(
+            f"profiling Time elapsed for update_mongo_document_fields(num_block): {num_blocks_time - create_block_time:.6f} seconds")
+        # generate_single_thread_headline(thread_id=thread_id, use_ai=False)
         set_first_block_as_headline(thread_id, num_blocks, content)
         headline_time = time.time()
-        print(f"profiling Time elapsed for generate_single_thread_headline(): {headline_time - num_blocks_time:.6f} seconds")
+        print(
+            f"profiling Time elapsed for generate_single_thread_headline(): {headline_time - num_blocks_time:.6f} seconds")
         # print(f"profiling 1.2 Time elapsed for get_blocks_count(): {time.time() - start_time:.6f} seconds")
 
         return BlockWithCreator(**new_block.model_dump(), creator=UserModel(**user_info))
@@ -502,8 +531,10 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
 
 def get_blocks_count(thread_id):
     count = 0
-    count += syncdb.blocks_collection.count_documents({"main_thread_id": thread_id})
-    count += syncdb.blocks_collection.count_documents({"child_thread_id": thread_id})
+    count += syncdb.blocks_collection.count_documents(
+        {"main_thread_id": thread_id})
+    count += syncdb.blocks_collection.count_documents(
+        {"child_thread_id": thread_id})
     return count
 
 
@@ -707,7 +738,8 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
         thread_to_return = thread[0]
 
         # user is now reading the thread so set unread to false
-        update_user_flags(thread_to_return["_id"], user_id, tenant_id, unread=False)
+        update_user_flags(
+            thread_to_return["_id"], user_id, tenant_id, unread=False)
 
         # Check if thread contains and empty default block
         # If yes, then remove the key from object
@@ -738,35 +770,37 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
 
         tenant_id = get_tenant_id_sync(session)
         tenant_time = time.time()
-        print(f"profiling Time elapsed for tenant_id(): {tenant_time - start_time:.6f} seconds")
+        print(
+            f"profiling Time elapsed for tenant_id(): {tenant_time - start_time:.6f} seconds")
         thread = get_mongo_document_sync(
             {"title": thread_title},
             syncdb.threads_collection,
             tenant_id=tenant_id
         )
         title_time = time.time()
-        print(f"profiling Time elapsed for get_mongo_document(title_time): {title_time - tenant_time:.6f} seconds")
+        print(
+            f"profiling Time elapsed for get_mongo_document(title_time): {title_time - tenant_time:.6f} seconds")
         if not thread:
             return JSONResponse(status_code=404, content={"message": "Thread with ${thread_title} not found"})
 
         thread_id = thread["_id"]
         # print("profiling performance 1")
         part_1 = time.time()
-        
+
         new_block = create_new_block(block, user_id, tenant_id)
 
         if not new_block:
             return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
         # print("profiling performance 2")
         part_2 = time.time()
-        #print(
+        # print(
         #    f"profiling Time elapsed for create_new_block(): {part_2 - part_1:.6f} seconds")
 
     #  as we modify a thread, we need to update the user_thread_flags
     # to indicate that the all other users other than the creator have an unread thread:
-        #set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        # set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
         set_unread_other_users(thread_id, user_id, tenant_id)
-        
+
         end_time = time.time()
         print(
             f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
@@ -1135,7 +1169,8 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
         return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
     print(
         f"🔍 updating thread flag with thread_id {thread_id} user_id {user_id} tenant_id {tenant_id}: unread {unread}, unfollow {unfollow}, bookmark {bookmark}, upvote {upvote}, mention {mention}")
-    updated_user_thread_flag = update_user_flags(thread_id, user_id, tenant_id, unread, upvote, bookmark, unfollow, mention)
+    updated_user_thread_flag = update_user_flags(
+        thread_id, user_id, tenant_id, unread, upvote, bookmark, unfollow, mention)
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(updated_user_thread_flag))
 
 # API to delete thread. only the creator of the thread can delete the thread
@@ -1176,3 +1211,16 @@ async def delete_thread(request: Request, id: str, session: SessionContainer = D
     except Exception as e:
         logger.error(e, exc_info=True)
         return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
+
+
+# API to get user filter preferences
+@router.get("/user/news-filter", response_model=UserFilterPreferenceModel, response_description="Get user filter preferences")
+async def get_user_filter_preferences(session: SessionContainer = Depends(verify_session())):
+    user_id = session.get_user_id()
+    tenant_id = await get_tenant_id(session)
+
+    user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
+    if user_flags:
+        return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(user_flags))
+    else:
+        return JSONResponse(status_code=404, content={"message": "User filter preferences not found"})

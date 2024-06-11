@@ -665,6 +665,46 @@ components:
         - title
       title: UpdateThreadTitleModel
       type: object
+    UserFilterPreferenceModel:
+      properties:
+        bookmark:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          "null": true
+          title: Bookmark
+        mention:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          "null": true
+          title: Mention
+        searchQuery:
+          anyOf:
+            - type: string
+            - type: "null"
+          "null": true
+          title: Searchquery
+        unfollow:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          "null": true
+          title: Unfollow
+        unread:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          "null": true
+          title: Unread
+        upvote:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          "null": true
+          title: Upvote
+      title: UserFilterPreferenceModel
+      type: object
     UserMap:
       properties:
         users:
@@ -1059,6 +1099,13 @@ paths:
           schema:
             title: Searchquery
             type: string
+        - in: query
+          name: isFilterEnabled
+          required: false
+          schema:
+            default: false
+            title: Isfilterenabled
+            type: boolean
       responses:
         "200":
           content:
@@ -1390,6 +1437,19 @@ paths:
                 $ref: "#/components/schemas/UserMap"
           description: Get user information
       summary: All Users
+      tags:
+        - threads
+  /user/news-filter:
+    get:
+      operationId: get_user_filter_preferences_user_news_filter_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserFilterPreferenceModel"
+          description: Get user filter preferences
+      summary: Get User Filter Preferences
       tags:
         - threads
   /webhook_event:
