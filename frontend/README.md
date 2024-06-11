@@ -1,16 +1,9 @@
-# frontend
+To create TestFlight
 
-A new Flutter project.
+- Do this once
+  sudo gem uninstall ffi && sudo gem install ffi -- --enable-libffi-alloc
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- On Xcode
+  - open Runner
+  - in the Xcode menu, click product->archive
+  - if needed, run 'cd macos;pod install' 
