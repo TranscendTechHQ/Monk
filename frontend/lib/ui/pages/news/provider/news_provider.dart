@@ -31,6 +31,7 @@ class NewsFeed extends _$NewsFeed {
     bool? upvote = false,
     bool? mention = false,
     String? searchQuery,
+    bool isFilterEnabled = false,
   }) async {
     state = const AsyncLoading();
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
@@ -41,7 +42,7 @@ class NewsFeed extends _$NewsFeed {
       upvote: upvote,
       mention: mention,
       searchQuery: searchQuery,
-      isFilterEnabled: true,
+      isFilterEnabled: isFilterEnabled,
     );
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");

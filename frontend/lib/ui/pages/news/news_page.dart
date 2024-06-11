@@ -51,6 +51,7 @@ class NewsPage extends ConsumerWidget {
             upvote: map['upvoted'],
             mention: map['mention'],
             searchQuery: map['searchQuery'],
+            isFilterEnabled: true,
           );
       final state = ref.read(newsFeedFilterProvider.notifier);
       await state.updateSemanticQuery(
@@ -157,7 +158,9 @@ class NewsPage extends ConsumerWidget {
                         context, 'fetching new threads and applying filters');
                     ref.invalidate(newsFeedProvider);
                     // ref.read(newsFeedProvider.future);
-                    ref.read(newsFeedProvider.notifier).getFilteredFeed();
+                    ref
+                        .read(newsFeedProvider.notifier)
+                        .getFilteredFeed(isFilterEnabled: false);
                   },
                 ),
                 SizedBox(width: context.scale(150, 50, 10)),
