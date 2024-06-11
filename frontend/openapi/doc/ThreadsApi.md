@@ -17,6 +17,7 @@ Method | HTTP request | Description
 [**deleteThreadThreadsIdDelete**](ThreadsApi.md#deletethreadthreadsiddelete) | **DELETE** /threads/{id} | Delete Thread
 [**filterNewsfeedGet**](ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
 [**getThreadIdThreadsIdGet**](ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
+[**getUserFilterPreferencesUserNewsFilterGet**](ThreadsApi.md#getuserfilterpreferencesusernewsfilterget) | **GET** /user/news-filter | Get User Filter Preferences
 [**searchThreadsSearchThreadsGet**](ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [**searchTitlesSearchTitlesGet**](ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [**tiThreadsInfoGet**](ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
@@ -354,6 +355,43 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**FullThreadInfo**](FullThreadInfo.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getUserFilterPreferencesUserNewsFilterGet**
+> UserFilterPreferenceModel getUserFilterPreferencesUserNewsFilterGet()
+
+Get User Filter Preferences
+
+### Example
+```dart
+import 'package:openapi/api.dart';
+
+final api = Openapi().getThreadsApi();
+
+try {
+    final response = api.getUserFilterPreferencesUserNewsFilterGet();
+    print(response);
+} catch on DioException (e) {
+    print('Exception when calling ThreadsApi->getUserFilterPreferencesUserNewsFilterGet: $e\n');
+}
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**UserFilterPreferenceModel**](UserFilterPreferenceModel.md)
 
 ### Authorization
 

@@ -17,16 +17,7 @@ class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    final filterData = await SharedPreferenceHelper().getFilterPreference();
-    final semanticSearch = await SharedPreferenceHelper().getFilterSemantic();
-    final response = await threadApi.filterNewsfeedGet(
-      bookmark: filterData?['bookmarked'],
-      unread: filterData?['unRead'],
-      unfollow: filterData?['dismissed'],
-      upvote: filterData?['upvoted'],
-      mention: filterData?['mention'],
-      searchQuery: semanticSearch,
-    );
+    final response = await threadApi.filterNewsfeedGet();
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
     }

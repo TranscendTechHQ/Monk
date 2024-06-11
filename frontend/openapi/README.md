@@ -83,6 +83,7 @@ Class | Method | HTTP request | Description
 [*ThreadsApi*](doc/ThreadsApi.md) | [**deleteThreadThreadsIdDelete**](doc/ThreadsApi.md#deletethreadthreadsiddelete) | **DELETE** /threads/{id} | Delete Thread
 [*ThreadsApi*](doc/ThreadsApi.md) | [**filterNewsfeedGet**](doc/ThreadsApi.md#filternewsfeedget) | **GET** /newsfeed | Filter
 [*ThreadsApi*](doc/ThreadsApi.md) | [**getThreadIdThreadsIdGet**](doc/ThreadsApi.md#getthreadidthreadsidget) | **GET** /threads/{id} | Get Thread Id
+[*ThreadsApi*](doc/ThreadsApi.md) | [**getUserFilterPreferencesUserNewsFilterGet**](doc/ThreadsApi.md#getuserfilterpreferencesusernewsfilterget) | **GET** /user/news-filter | Get User Filter Preferences
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchThreadsSearchThreadsGet**](doc/ThreadsApi.md#searchthreadssearchthreadsget) | **GET** /searchThreads | Search Threads
 [*ThreadsApi*](doc/ThreadsApi.md) | [**searchTitlesSearchTitlesGet**](doc/ThreadsApi.md#searchtitlessearchtitlesget) | **GET** /searchTitles | Search Titles
 [*ThreadsApi*](doc/ThreadsApi.md) | [**tiThreadsInfoGet**](doc/ThreadsApi.md#tithreadsinfoget) | **GET** /threadsInfo | Ti
@@ -119,6 +120,7 @@ Class | Method | HTTP request | Description
  - [UpdateBlockModel](doc/UpdateBlockModel.md)
  - [UpdateBlockPositionModel](doc/UpdateBlockPositionModel.md)
  - [UpdateThreadTitleModel](doc/UpdateThreadTitleModel.md)
+ - [UserFilterPreferenceModel](doc/UserFilterPreferenceModel.md)
  - [UserMap](doc/UserMap.md)
  - [UserModel](doc/UserModel.md)
  - [UserThreadFlagModel](doc/UserThreadFlagModel.md)

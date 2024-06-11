@@ -31,6 +31,7 @@ doc/ThreadsModel.md
 doc/UpdateBlockModel.md
 doc/UpdateBlockPositionModel.md
 doc/UpdateThreadTitleModel.md
+doc/UserFilterPreferenceModel.md
 doc/UserMap.md
 doc/UserModel.md
 doc/UserThreadFlagModel.md
@@ -71,6 +72,7 @@ lib/src/model/threads_model.dart
 lib/src/model/update_block_model.dart
 lib/src/model/update_block_position_model.dart
 lib/src/model/update_thread_title_model.dart
+lib/src/model/user_filter_preference_model.dart
 lib/src/model/user_map.dart
 lib/src/model/user_model.dart
 lib/src/model/user_thread_flag_model.dart
@@ -104,6 +106,7 @@ test/threads_model_test.dart
 test/update_block_model_test.dart
 test/update_block_position_model_test.dart
 test/update_thread_title_model_test.dart
+test/user_filter_preference_model_test.dart
 test/user_map_test.dart
 test/user_model_test.dart
 test/user_thread_flag_model_test.dart

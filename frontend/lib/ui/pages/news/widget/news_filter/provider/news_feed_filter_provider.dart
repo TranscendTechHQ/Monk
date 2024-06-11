@@ -1,7 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/helper/monk-exception.dart';
+import 'package:frontend/helper/network.dart';
 import 'package:frontend/helper/shared_preference.dart';
-import 'package:frontend/helper/utils.dart';
+import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 part 'news_feed_filter_provider.freezed.dart';
 part 'news_feed_filter_provider.g.dart';
 
@@ -10,25 +13,29 @@ class NewsFeedFilter extends _$NewsFeedFilter {
   @override
   Future<NewsFeedFilterState> build() async {
     // await SharedPreferenceHelper().clearFilterPreference();
-    final filterData = await SharedPreferenceHelper().getFilterPreference();
-    final semanticSearch = await SharedPreferenceHelper().getFilterSemantic();
-    if (filterData == null && semanticSearch == null) {
-      return NewsFeedFilterState.initial();
-    } else {
-      print(
-          '\n--------------------------------------------------------------------------');
-      printPretty(filterData);
-      print(
-          '\n--------------------------------------------------------------------------');
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final res = await AsyncRequest.handle<UserFilterPreferenceModel>(() async {
+      final response =
+          await threadApi.getUserFilterPreferencesUserNewsFilterGet();
+      if (response.statusCode != 200) {
+        throw Exception("Failed to fetch titles");
+      }
+
+      return response.data!;
+    });
+
+    return res.fold((l) {
+      return const NewsFeedFilterState();
+    }, (r) {
       return NewsFeedFilterState(
-        unRead: filterData?["unRead"] ?? false,
-        bookmarked: filterData?["bookmarked"] ?? false,
-        upvoted: filterData?["upvoted"] ?? false,
-        mentioned: filterData?["mentioned"] ?? false,
-        dismissed: filterData?["dismissed"] ?? false,
-        semanticQuery: semanticSearch,
+        bookmarked: r.bookmark ?? false,
+        unRead: r.unread ?? false,
+        upvoted: r.upvote ?? false,
+        mentioned: r.mention ?? false,
+        dismissed: r.unfollow ?? false,
+        semanticQuery: r.searchQuery,
       );
-    }
+    });
   }
 
   Future<void> updateFilter({

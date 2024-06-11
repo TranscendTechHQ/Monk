@@ -26,7 +26,7 @@ from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel,
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
-from routes.threads.user_flags import save_user_filter_preferences, set_flags_true_other_users, set_unread_other_users, update_user_flags
+from routes.threads.user_flags import get_user_filter_preferences_from_db, save_user_filter_preferences, set_flags_true_other_users, set_unread_other_users, update_user_flags
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -414,7 +414,7 @@ async def filter(
         }
         save_user_filter_preferences(
             user_id, tenant_id, UserFilterPreferenceModel(**user_flags))
-    
+
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
@@ -1202,3 +1202,16 @@ async def delete_thread(request: Request, id: str, session: SessionContainer = D
     except Exception as e:
         logger.error(e, exc_info=True)
         return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
+
+
+# API to get user filter preferences
+@router.get("/user/news-filter", response_model=UserFilterPreferenceModel, response_description="Get user filter preferences")
+async def get_user_filter_preferences(session: SessionContainer = Depends(verify_session())):
+    user_id = session.get_user_id()
+    tenant_id = await get_tenant_id(session)
+
+    user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
+    if user_flags:
+        return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(user_flags))
+    else:
+        return JSONResponse(status_code=404, content={"message": "User filter preferences not found"})

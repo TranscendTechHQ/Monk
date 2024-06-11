@@ -63,6 +63,13 @@ void main() {
       // TODO
     });
 
+    // Get User Filter Preferences
+    //
+    //Future<UserFilterPreferenceModel> getUserFilterPreferencesUserNewsFilterGet() async
+    test('test getUserFilterPreferencesUserNewsFilterGet', () async {
+      // TODO
+    });
+
     // Search Threads
     //
     //Future<ThreadsModel> searchThreadsSearchThreadsGet(String query) async

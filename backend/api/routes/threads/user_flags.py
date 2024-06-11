@@ -97,3 +97,18 @@ def save_user_filter_preferences(user_id, tenant_id, filter_preferences: UserFil
     except Exception as e:
         logger.error(e, exc_info=True)
         return None
+
+# Function to retrieve user filter preferences
+
+
+async def get_user_filter_preferences_from_db(user_id, tenant_id):
+    try:
+        user_filter_preferences = await get_mongo_document({"user_id": user_id},
+                                                           asyncdb.user_news_feed_filter_collection, tenant_id=tenant_id)
+        if user_filter_preferences:
+            return UserFilterPreferenceModel(**user_filter_preferences)
+        else:
+            return None
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return None
