@@ -50,6 +50,7 @@ class NewsFeed extends _$NewsFeed {
       upvote: upvote,
       mention: mention,
       searchQuery: searchQuery,
+      isFilterEnabled: true,
     );
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");

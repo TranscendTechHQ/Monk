@@ -273,7 +273,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **filterNewsfeedGet**
-> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery)
+> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled)
 
 Filter
 
@@ -288,9 +288,10 @@ final bool unfollow = true; // bool |
 final bool upvote = true; // bool | 
 final bool mention = true; // bool | 
 final String searchQuery = searchQuery_example; // String | 
+final bool isFilterEnabled = true; // bool | 
 
 try {
-    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery);
+    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->filterNewsfeedGet: $e\n');
@@ -307,6 +308,7 @@ Name | Type | Description  | Notes
  **upvote** | **bool**|  | [optional] [default to false]
  **mention** | **bool**|  | [optional] [default to false]
  **searchQuery** | **String**|  | [optional] 
+ **isFilterEnabled** | **bool**|  | [optional] [default to false]
 
 ### Return type
 

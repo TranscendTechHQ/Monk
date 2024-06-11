@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/helper/utils.dart';
 import 'package:frontend/ui/pages/news/news_card.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
@@ -72,22 +73,12 @@ class NewsPage extends ConsumerWidget {
     return Scaffold(
       body: PageScaffold(
         body: WithMonkAppbar(
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
-              onPressed: () {
-                ref.invalidate(newsFeedProvider);
-                // ref.read(newsFeedProvider.future);
-                ref.read(newsFeedProvider.notifier).getFilteredFeed();
-              },
-            ),
-          ],
           child: Container(
             padding: const EdgeInsets.only(top: 36),
             alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // LEFT TOOLBAR
                 ConstrainedBox(
@@ -157,6 +148,17 @@ class NewsPage extends ConsumerWidget {
                     Expanded(child: ChatListView()),
                     const Padding(padding: EdgeInsets.all(8))
                   ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  tooltip: 'Refresh',
+                  onPressed: () {
+                    showMessage(
+                        context, 'fetching new threads and applying filters');
+                    ref.invalidate(newsFeedProvider);
+                    // ref.read(newsFeedProvider.future);
+                    ref.read(newsFeedProvider.notifier).getFilteredFeed();
+                  },
                 ),
                 SizedBox(width: context.scale(150, 50, 10)),
               ],

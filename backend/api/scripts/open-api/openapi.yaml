@@ -1059,6 +1059,13 @@ paths:
           schema:
             title: Searchquery
             type: string
+        - in: query
+          name: isFilterEnabled
+          required: false
+          schema:
+            default: false
+            title: Isfilterenabled
+            type: boolean
       responses:
         "200":
           content:

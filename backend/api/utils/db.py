@@ -6,10 +6,13 @@ import pymongo
 
 from config import settings
 
+
 class SyncDbClient:
     pass
 
+
 syncdb = SyncDbClient()
+
 
 def startup_sync_db_client():
     syncdb.mongodb_client = pymongo.MongoClient(
@@ -26,10 +29,13 @@ def startup_sync_db_client():
     syncdb.whitelisted_users_collection = syncdb.mongodb["whitelisted_users"]
     # syncdb.thread_reads_collection = syncdb.mongodb["thread_reads"]
     syncdb.user_thread_flags_collection = syncdb.mongodb["user_thread_flags"]
+    syncdb.user_news_feed_filter_collection = syncdb.mongodb["user_news_feed_filter"]
+
 
 def shutdown_sync_db_client():
     syncdb.mongodb_client.close()
-    
+
+
 class AsyncDbClient:
     pass
 
@@ -52,7 +58,7 @@ async def startup_async_db_client():
     asyncdb.whitelisted_users_collection = asyncdb.mongodb["whitelisted_users"]
     # asyncdb.thread_reads_collection = asyncdb.mongodb["thread_reads"]
     asyncdb.user_thread_flags_collection = asyncdb.mongodb["user_thread_flags"]
-
+    asyncdb.user_news_feed_filter_collection = asyncdb.mongodb["user_news_feed_filter"]
 
 
 async def shutdown_async_db_client():
@@ -70,10 +76,12 @@ async def get_tenant_id(session):
     user_info = await asyncdb.users_collection.find_one({"_id": user_id})
     return user_info["tenant_id"]
 
+
 def get_tenant_id_sync(session):
     user_id = session.get_user_id()
     user_info = syncdb.users_collection.find_one({"_id": user_id})
     return user_info["tenant_id"]
+
 
 async def get_user_name(user_id, collection) -> str:
     if (doc := await collection.find_one({"_id": user_id})) is not None:
@@ -106,11 +114,13 @@ async def get_mongo_document(query: dict, collection, tenant_id):
         return doc
     return None
 
+
 def get_mongo_document_sync(query: dict, collection, tenant_id):
     query["tenant_id"] = tenant_id
     if (doc := collection.find_one(query)) is not None:
         return doc
     return None
+
 
 async def get_mongo_documents(collection, tenant_id, filter: dict = {}, projection: dict = {}):
 
@@ -148,8 +158,10 @@ async def delete_mongo_document(query: dict, collection):
         await collection.delete_one(query)
         return doc
 
+
 def create_mongo_doc_simple(document: dict, collection):
     return collection.insert_one(document)
+
 
 def create_or_replace_mongo_doc(id: str, document: dict, collection):
     # print(document)
@@ -162,7 +174,7 @@ def create_or_replace_mongo_doc(id: str, document: dict, collection):
         print("document is none")
         return None
     collection.replace_one({"_id": id}, document, upsert=True)
-        
+
 
 def create_mongo_document_sync(id: str, document: dict, collection):
     # print(document)
@@ -185,6 +197,7 @@ def create_mongo_document_sync(id: str, document: dict, collection):
         {"_id": new_document.inserted_id})
 
     return created_document
+
 
 async def create_mongo_document(id: str, document: dict, collection):
     # print(document)
@@ -301,8 +314,10 @@ async def update_block_child_id(blocks_collection,
     else:
         print("could not update the block with block_id: ", parent_block_id)
 
+
 def update_fields_mongo_simple(query: dict, fields: dict, collection):
     collection.update_one(query, {"$set": fields}, upsert=True)
+
 
 def update_mongo_document_fields_sync(query: dict, fields: dict, collection):
     fields_dict = {k: v for k, v in fields.items() if v is not None}
@@ -324,6 +339,7 @@ def update_mongo_document_fields_sync(query: dict, fields: dict, collection):
         return existing_doc
 
     return None
+
 
 async def update_mongo_document_fields(query: dict, fields: dict, collection):
     fields_dict = {k: v for k, v in fields.items() if v is not None}
