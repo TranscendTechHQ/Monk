@@ -40,7 +40,7 @@ class ThreadMetaData {
 
      this.parentBlockId,
 
-    required  this.title,
+    required  this.topic,
 
     required  this.type,
 
@@ -173,13 +173,13 @@ class ThreadMetaData {
 
   @JsonKey(
     
-    name: r'title',
+    name: r'topic',
     required: true,
     includeIfNull: false
   )
 
 
-  final String title;
+  final String topic;
 
 
 
@@ -243,7 +243,7 @@ class ThreadMetaData {
      other.mention == mention &&
      other.numBlocks == numBlocks &&
      other.parentBlockId == parentBlockId &&
-     other.title == title &&
+     other.topic == topic &&
      other.type == type &&
      other.unfollow == unfollow &&
      other.unread == unread &&
@@ -261,7 +261,7 @@ class ThreadMetaData {
     (mention == null ? 0 : mention.hashCode) +
     numBlocks.hashCode +
     (parentBlockId == null ? 0 : parentBlockId.hashCode) +
-    title.hashCode +
+    topic.hashCode +
     type.hashCode +
     (unfollow == null ? 0 : unfollow.hashCode) +
     (unread == null ? 0 : unread.hashCode) +

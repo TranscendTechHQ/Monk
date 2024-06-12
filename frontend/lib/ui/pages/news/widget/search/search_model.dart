@@ -89,11 +89,11 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
     });
   }
 
-  void launchThread(BuildContext context, String title, String type) {
+  void launchThread(BuildContext context, String topic, String type) {
     Navigator.pop(context);
     Navigator.push(
       context,
-      ThreadPage.launchRoute(title: title, type: type),
+      ThreadPage.launchRoute(topic: topic, type: type),
     );
   }
 
@@ -162,15 +162,15 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
         });
       },
       const SingleActivator(LogicalKeyboardKey.enter, meta: false): () {
-        final title = titleController.text;
+        final topic = titleController.text;
 
-        if (title.isNotEmpty) {
-          if (widget.threadsMap.values.contains(title)) {
+        if (topic.isNotEmpty) {
+          if (widget.threadsMap.values.contains(topic)) {
             launchThread(
                 context,
-                title,
+                topic,
                 widget.threadsMap.keys.firstWhere(
-                    (element) => widget.threadsMap[element] == title));
+                    (element) => widget.threadsMap[element] == topic));
           }
         }
       },
@@ -347,8 +347,8 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                         selectedIndex = index;
                       });
                     },
-                    onSelectedTitle: (title) {
-                      launchThread(context, title, widget.threadsMap[title]!);
+                    onSelectedTitle: (topic) {
+                      launchThread(context, topic, widget.threadsMap[topic]!);
                     },
                     scrollController: scrollController,
                     threadsMap: widget.threadsMap,
@@ -585,7 +585,7 @@ class ThreadTitleList extends StatelessWidget {
   final Function(int) onSelectedIndex;
   final Function(String) onSelectedTitle;
 
-  Widget title(
+  Widget topic(
     BuildContext context,
     String e,
     bool selected,
@@ -630,7 +630,7 @@ class ThreadTitleList extends StatelessWidget {
                   final e = filtered[index];
                   final selected = false;
                   //selectedIndex == index;
-                  return title(context, e, selected);
+                  return topic(context, e, selected);
                 },
               ),
             )
@@ -655,7 +655,7 @@ class ThreadTitleList extends StatelessWidget {
                         children: threadsMap.keys
                             .take(5)
                             .map(
-                              (e) => title(context, e, false),
+                              (e) => topic(context, e, false),
                             )
                             .toList(),
                       ).extended,

@@ -25,7 +25,7 @@ class CreateChildThreadModel {
 
     required  this.parentBlockId,
 
-    required  this.title,
+    required  this.topic,
 
     required  this.type,
   });
@@ -68,13 +68,13 @@ class CreateChildThreadModel {
 
   @JsonKey(
     
-    name: r'title',
+    name: r'topic',
     required: true,
     includeIfNull: false
   )
 
 
-  final String title;
+  final String topic;
 
 
 
@@ -95,7 +95,7 @@ class CreateChildThreadModel {
      other.content == content &&
      other.mainThreadId == mainThreadId &&
      other.parentBlockId == parentBlockId &&
-     other.title == title &&
+     other.topic == topic &&
      other.type == type;
 
   @override
@@ -103,7 +103,7 @@ class CreateChildThreadModel {
     content.hashCode +
     mainThreadId.hashCode +
     parentBlockId.hashCode +
-    title.hashCode +
+    topic.hashCode +
     type.hashCode;
 
   factory CreateChildThreadModel.fromJson(Map<String, dynamic> json) => _$CreateChildThreadModelFromJson(json);

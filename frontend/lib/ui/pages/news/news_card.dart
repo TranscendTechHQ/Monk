@@ -27,7 +27,7 @@ class NewsCard extends ConsumerWidget {
     Navigator.push(
       context,
       ThreadPage.launchRoute(
-        title: metaData.title,
+        topic: metaData.topic,
         type: metaData.type,
       ),
     );
@@ -37,7 +37,7 @@ class NewsCard extends ConsumerWidget {
     Alert.confirm(
       context,
       barrierDismissible: true,
-      title: "Delete",
+      topic: "Delete",
       onConfirm: () async {
         final newsFeed = ref.read(newsFeedProvider.notifier);
         newsFeed.deleteThreadAsync(context, metaData.id);
@@ -52,7 +52,7 @@ class NewsCard extends ConsumerWidget {
     final watchProvider = ref.watch(provider);
     final readProvider = ref.read(provider.notifier);
 
-    final title = metaData.title;
+    final topic = metaData.topic;
     final headline = metaData.headline ?? "";
     final creator = metaData.creator;
 
@@ -168,7 +168,7 @@ class NewsCard extends ConsumerWidget {
                           ).pT(metaData.type == 'todo' ? 10 : 5),
                           const SizedBox(width: 8),
                           Text(
-                            title,
+                            topic,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w400,
@@ -193,7 +193,7 @@ class NewsCard extends ConsumerWidget {
                         MarkdownViewer(
                           markdownData: metaData.block!.content,
                           onTapLink:
-                              (String? text, String? href, String? title) {
+                              (String? text, String? href, String? topic) {
                             launch(href);
                           },
                         ),
@@ -354,7 +354,7 @@ class NewsBottomActions extends ConsumerWidget {
             Navigator.push(
               context,
               ThreadPage.launchRoute(
-                title: metaData.title,
+                topic: metaData.topic,
                 type: metaData.type,
               ),
             );

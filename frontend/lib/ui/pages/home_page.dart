@@ -47,7 +47,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     print(results);
     
     CreateChildThreadModel createChildThreadModel = CreateChildThreadModel(
-      title: "myownchildthread",
+      topic: "myownchildthread",
       type: "chat",
       parentBlockId: "a73a294e-367a-437d-b71e-e53f7058b49f",
       mainThreadId: "b110eabb-62e6-4f7d-bafa-fe4ce5cb4f54",
@@ -67,7 +67,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     await threadApi.updateThThreadsIdPut(
         id: "56007383-3f47-4d82-9fc1-0da3510b2da8",
-        updateThreadTitleModel: UpdateThreadTitleModel(title: "dong"));
+        updateThreadTitleModel: UpdateThreadTitleModel(topic: "dong"));
 */
     await threadApi.createTfThreadFlagPost(
         createUserThreadFlagModel: CreateUserThreadFlagModel(

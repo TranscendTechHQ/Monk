@@ -173,7 +173,7 @@ async def webhook_event(request: Request):
 
         print("\n [WEBHOOK] 👉 Creating new thread")
         # create a new thread
-        new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, title=thread_title,
+        new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, topic=thread_title,
                                              thread_type=thread_type, created_at=channel.created_at)
 
         print("\n [WEBHOOK] 👉 Thread created successfully")

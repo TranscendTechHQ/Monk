@@ -56,19 +56,19 @@ class AppTextStyles extends ThemeExtension<AppTextStyles> {
   /// short, high-emphasis text on smaller screens.
   final TextStyle? headlineSmall;
 
-  /// Largest of the title styles.
+  /// Largest of the topic styles.
   ///
   /// Titles are smaller than headline styles and should be used for shorter,
   /// medium-emphasis text.
   final TextStyle? titleLarge;
 
-  /// Middle size of the title styles.
+  /// Middle size of the topic styles.
   ///
   /// Titles are smaller than headline styles and should be used for shorter,
   /// medium-emphasis text.
   final TextStyle? titleMedium;
 
-  /// Smallest of the title styles.
+  /// Smallest of the topic styles.
   ///
   /// Titles are smaller than headline styles and should be used for shorter,
   /// medium-emphasis text.

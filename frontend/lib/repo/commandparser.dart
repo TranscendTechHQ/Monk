@@ -54,19 +54,19 @@ class CommandParser {
       throw ArgumentError('Command should have at least one argument');
     }
 
-    var title = parts.length > 1 ? parts[1] : '';
+    var topic = parts.length > 1 ? parts[1] : '';
 
-    if (!title.startsWith('#')) {
+    if (!topic.startsWith('#')) {
       throw ArgumentError('Title should start with "#"');
     }
 
-    title = title.substring(1);
+    topic = topic.substring(1);
 
-    if (!isAlphanumeric(title)) {
+    if (!isAlphanumeric(topic)) {
       throw ArgumentError('Title should be alphanumeric');
     }
 
-    return title;
+    return topic;
   }
 
   List<String> patternMatchingCommands(String pattern) {
@@ -90,9 +90,9 @@ class CommandParser {
     String titlePattern = parts[1];
 
     if (titlePattern.startsWith('#')) {
-      String title = titlePattern.substring(1);
+      String topic = titlePattern.substring(1);
       matchedPatterns = titleList.where((String option) {
-        return option.toLowerCase().contains(title.toLowerCase());
+        return option.toLowerCase().contains(topic.toLowerCase());
       }).toList();
     }
 
@@ -103,23 +103,23 @@ class CommandParser {
       String commandString, titlesList, commandHintTextNotifier) {
     try {
       String command = parseCommand(commandString);
-      String title = parseTitle(commandString, titlesList);
+      String topic = parseTitle(commandString, titlesList);
 
       if (command.startsWith('/new-')) {
-        if (!isUnique(title, titlesList)) {
+        if (!isUnique(topic, titlesList)) {
           throw ArgumentError('Title must be unique for creating new threads');
         } else {
           final threadType = command.substring(5);
-          commandHintTextNotifier.set('New $threadType $title added');
+          commandHintTextNotifier.set('New $threadType $topic added');
         }
       } else if (command == '/go') {
-        if (!titlesList.contains(title)) {
+        if (!titlesList.contains(topic)) {
           throw ArgumentError(
-              'Thread $title does not exist. Please create it first usng "/new-*" commands');
+              'Thread $topic does not exist. Please create it first usng "/new-*" commands');
         }
-        commandHintTextNotifier.set('Go to $title');
+        commandHintTextNotifier.set('Go to $topic');
       }
-      return {'type': command, 'title': title};
+      return {'type': command, 'topic': topic};
     } on ArgumentError {
       rethrow;
     }

@@ -19,13 +19,13 @@ import 'package:frontend/ui/widgets/title_action_widget.dart';
 enum ThreadType { thread, reply }
 
 class ThreadPage extends ConsumerWidget {
-  final String title;
+  final String topic;
   final String type;
   final String? threadChildId;
   final ThreadType threadType;
   const ThreadPage({
     super.key,
-    required this.title,
+    required this.topic,
     required this.type,
     this.threadChildId,
     this.threadType = ThreadType.thread,
@@ -33,14 +33,14 @@ class ThreadPage extends ConsumerWidget {
 
   static String route = "/journal";
   static Route launchRoute({
-    required String title,
+    required String topic,
     required String type,
     String? threadChildId,
     ThreadType threadType = ThreadType.thread,
   }) {
     return MaterialPageRoute<void>(
       builder: (_) => ThreadPage(
-        title: title,
+        topic: topic,
         type: type,
         threadType: threadType,
         threadChildId: threadChildId,
@@ -62,7 +62,7 @@ class ThreadPage extends ConsumerWidget {
     Alert.confirm(
       context,
       barrierDismissible: true,
-      title: "Delete",
+      topic: "Delete",
       onConfirm: () async {
         final isDeleted = await provider.deleteThreadAsync(context);
         ref.invalidate(newsFeedProvider);
@@ -78,16 +78,16 @@ class ThreadPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = currentThreadProvider.call(
-      title: title,
+      topic: topic,
       type: type,
     );
     final currentThread = ref.watch(provider);
     final currentThreadNotifier = ref.read(provider.notifier);
     final threadTitle = currentThread.maybeWhen(
-      data: (state) => state.thread?.title ?? title,
-      orElse: () => title,
+      data: (state) => state.thread?.topic ?? topic,
+      orElse: () => topic,
     );
-    final blockInput = CommandBox(title: title, type: type);
+    final blockInput = CommandBox(topic: topic, type: type);
 
     final isThreadCreator = currentThread.maybeWhen(
       data: (state) => state.thread?.creator == state.thread?.creator.id,
@@ -119,20 +119,20 @@ class ThreadPage extends ConsumerWidget {
               ),
             ),
             IconButton(
-              // tooltip: 'Edit title',
+              // tooltip: 'Edit topic',
               onPressed: () async {
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      final controller = TextEditingController(text: title);
+                      final controller = TextEditingController(text: topic);
                       return AlertDialog(
                         // context: context,
-                        title: const Text('Edit title'),
+                        title: const Text('Edit topic'),
                         content: TextField(
                           controller: controller,
                           maxLength: 60,
                           decoration: const InputDecoration(
-                            hintText: 'Enter title',
+                            hintText: 'Enter topic',
                           ),
                         ),
                         actions: [
@@ -150,12 +150,12 @@ class ThreadPage extends ConsumerWidget {
                           TextButton(
                             onPressed: () async {
                               loader.showLoader(context,
-                                  message: 'Updating title');
+                                  message: 'Updating topic');
                               await ref
                                   .read(provider.notifier)
                                   .updateThreadTitle(controller.text);
                               ref.refresh(currentThreadProvider.call(
-                                title: controller.text,
+                                topic: controller.text,
                                 type: type,
                               ));
                               loader.hideLoader();
@@ -216,7 +216,7 @@ class ThreadPage extends ConsumerWidget {
                   children: [
                     ChatListView(
                       currentThread: currentThread,
-                      title: title,
+                      topic: topic,
                       type: type,
                       threadType: threadType,
                     ).extended,
@@ -245,13 +245,13 @@ class ChatListView extends ConsumerWidget {
   ChatListView({
     super.key,
     required this.currentThread,
-    required this.title,
+    required this.topic,
     required this.type,
     required this.threadType,
   });
   final AsyncValue<CurrentTreadState?> currentThread;
   final String type;
-  final String title;
+  final String topic;
   final ThreadType threadType;
 
   final scrollController = ScrollController();
@@ -278,7 +278,7 @@ class ChatListView extends ConsumerWidget {
                           key: ValueKey(defaultBlock.id),
                           block: defaultBlock,
                           emojiParser: emojiParser,
-                          title: title,
+                          topic: topic,
                           type: type,
                           mainThreadId: mainThreadId,
                           threadType: threadType,
@@ -290,7 +290,7 @@ class ChatListView extends ConsumerWidget {
                     await ref
                         .read(currentThreadProvider
                             .call(
-                              title: title,
+                              topic: topic,
                               type: type,
                             )
                             .notifier)
@@ -305,7 +305,7 @@ class ChatListView extends ConsumerWidget {
                             key: UniqueKey(),
                             block: block,
                             emojiParser: emojiParser,
-                            title: title,
+                            topic: topic,
                             type: type,
                             mainThreadId: mainThreadId,
                             threadType: threadType,
@@ -328,7 +328,7 @@ class ChatListView extends ConsumerWidget {
                             key: ValueKey(block.id),
                             block: block,
                             emojiParser: emojiParser,
-                            title: title,
+                            topic: topic,
                             type: type,
                             mainThreadId: mainThreadId,
                             threadType: threadType,
@@ -342,7 +342,7 @@ class ChatListView extends ConsumerWidget {
                         key: ValueKey(defaultBlock.id),
                         block: defaultBlock,
                         emojiParser: emojiParser,
-                        title: title,
+                        topic: topic,
                         type: type,
                         mainThreadId: mainThreadId,
                         threadType: threadType,

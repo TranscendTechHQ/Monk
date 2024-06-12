@@ -16,10 +16,10 @@ class ThreadDetailPage extends ConsumerWidget {
   final String parentBlockId;
   final String type;
   final String mainThreadId;
-  final String title;
+  final String topic;
   const ThreadDetailPage({
     super.key,
-    required this.title,
+    required this.topic,
     required this.type,
     this.block,
     required this.parentBlockId,
@@ -28,14 +28,14 @@ class ThreadDetailPage extends ConsumerWidget {
 
   static String route = "/thread-detail";
   static Route launchRoute(
-      {required String title,
+      {required String topic,
       required String type,
       required String parentBlockId,
       required String mainThreadId,
       BlockWithCreator? block}) {
     return MaterialPageRoute<void>(
       builder: (_) => ThreadDetailPage(
-        title: title,
+        topic: topic,
         type: type,
         parentBlockId: parentBlockId,
         block: block,
@@ -56,7 +56,7 @@ class ThreadDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     CreateChildThreadModel(
-      title: title,
+      topic: topic,
       type: type,
       parentBlockId: parentBlockId,
       mainThreadId: mainThreadId,
@@ -67,11 +67,11 @@ class ThreadDetailPage extends ConsumerWidget {
     // ref.read(provider.notifier).createOrFetchReplyThread({});
     final currentThread = ref.watch(provider);
 
-    final blockInput = CommandBox(title: title, type: type);
+    final blockInput = CommandBox(topic: topic, type: type);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$formatType -: $title',
+        title: Text('$formatType -: $topic',
             style: TextStyle(
                 fontSize: 20, color: Theme.of(context).colorScheme.onSurface)),
       ),

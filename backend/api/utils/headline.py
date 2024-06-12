@@ -100,7 +100,7 @@ def generate_single_thread_headline(thread_id, use_ai=False):
         headline = generate_headline(text)
 
     else:
-        # print(thread_doc['title'])
+        # print(thread_doc['topic'])
         first_block = blocks[0]
         
         headline = first_block['content']

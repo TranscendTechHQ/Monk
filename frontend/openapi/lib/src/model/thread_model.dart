@@ -39,7 +39,7 @@ class ThreadModel {
 
     required  this.tenantId,
 
-    required  this.title,
+    required  this.topic,
 
     required  this.type,
   });
@@ -166,13 +166,13 @@ class ThreadModel {
 
   @JsonKey(
     
-    name: r'title',
+    name: r'topic',
     required: true,
     includeIfNull: false
   )
 
 
-  final String title;
+  final String topic;
 
 
 
@@ -200,7 +200,7 @@ class ThreadModel {
      other.parentBlockId == parentBlockId &&
      other.slackThreadTs == slackThreadTs &&
      other.tenantId == tenantId &&
-     other.title == title &&
+     other.topic == topic &&
      other.type == type;
 
   @override
@@ -215,7 +215,7 @@ class ThreadModel {
     (parentBlockId == null ? 0 : parentBlockId.hashCode) +
     (slackThreadTs == null ? 0 : slackThreadTs.hashCode) +
     tenantId.hashCode +
-    title.hashCode +
+    topic.hashCode +
     type.hashCode;
 
   factory ThreadModel.fromJson(Map<String, dynamic> json) => _$ThreadModelFromJson(json);

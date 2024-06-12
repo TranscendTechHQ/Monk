@@ -73,11 +73,11 @@ async def all_users(request: Request,
 
 
 @router.get("/searchTitles", response_model=list[str],
-            response_description="Search threads by query and get title")
+            response_description="Search threads by query and get topic")
 async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
         (list)[str]:
     result = await thread_semantic_search(query)
-    titles = [doc["title"] for doc in result]
+    titles = [doc["topic"] for doc in result]
     return JSONResponse(status_code=status.HTTP_200_OK, content=titles)
 
 
@@ -92,7 +92,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 
     filtered_threads = []
     for doc in result:
-        filtered_threads.append(await get_mongo_document({"title": doc["title"]},
+        filtered_threads.append(await get_mongo_document({"topic": doc["topic"]},
                                                          threads_collection,
                                                          tenant_id=tenant_id))
     return_threads = jsonable_encoder(ThreadsModel(threads=filtered_threads))
@@ -121,7 +121,7 @@ async def ti(request: Request,
 
     info: dict[str, ThreadType] = {}
     for thread in threads:
-        info[thread["title"]] = thread["type"]
+        info[thread["topic"]] = thread["type"]
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=jsonable_encoder(ThreadsInfo(info=info)))
@@ -217,7 +217,7 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
         {
             '$project': {
                 '_id': 1,
-                'title': 1,
+                'topic': 1,
                 'type': 1,
                 'created_at': 1,
                 'headline': 1,
@@ -340,7 +340,7 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, 
         {
             "$project": {
                 "_id": 1,
-                "title": 1,
+                "topic": 1,
                 "type": 1,
                 "created_at": 1,
                 "headline": 1,
@@ -673,8 +673,8 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                     'type': {
                         '$first': '$type'
                     },
-                    'title': {
-                        '$first': '$title'
+                    'topic': {
+                        '$first': '$topic'
                     },
                     'headline': {
                         '$first': '$headline'
@@ -713,7 +713,7 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
             }, {
                 '$project': {
                     '_id': 1,
-                    'title': 1,
+                    'topic': 1,
                     'type': 1,
                     'task_status': 1,
                     'default_block': 1,
@@ -773,7 +773,7 @@ async def create(request: Request, thread_title: str, block: CreateBlockModel = 
         print(
             f"profiling Time elapsed for tenant_id(): {tenant_time - start_time:.6f} seconds")
         thread = get_mongo_document_sync(
-            {"title": thread_title},
+            {"topic": thread_title},
             syncdb.threads_collection,
             tenant_id=tenant_id
         )
@@ -1027,7 +1027,7 @@ async def child_thread(request: Request,
 
     print("\n 3. Parent block found")
     # create a new child thread
-    thread_title = jsonable_encoder(child_thread)["title"]
+    thread_title = jsonable_encoder(child_thread)["topic"]
     thread_type = jsonable_encoder(child_thread)["type"]
     user_id = session.get_user_id()
 
@@ -1070,7 +1070,7 @@ async def create_th(request: Request, thread_data: CreateThreadModel = Body(...)
 
         tenant_id = await get_tenant_id(session)
 
-        thread_title = jsonable_encoder(thread_data)["title"]
+        thread_title = jsonable_encoder(thread_data)["topic"]
         thread_type = jsonable_encoder(thread_data)["type"]
         # content = []
         # if jsonable_encoder(thread_data)["content"] is not None:
@@ -1126,13 +1126,13 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
         if old_thread["creator_id"] != user_id:
             return JSONResponse(status_code=403, content={"message": "You are not authorized to update this thread"})
 
-        thread_title = jsonable_encoder(thread_data)["title"]
+        thread_title = jsonable_encoder(thread_data)["topic"]
         # content = jsonable_encoder(thread_data)["content"]
 
         print("\n Updating the thread in DB")
-        await thread_collection.update_one({'_id': id}, {"$set": {"title": thread_title, 'last_modified': str(dt.datetime.now())}})
+        await thread_collection.update_one({'_id': id}, {"$set": {"topic": thread_title, 'last_modified': str(dt.datetime.now())}})
 
-        print('\n Thread title is updated i DB')
+        print('\n Thread topic is updated i DB')
         updated_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
 
         print('\n Getting updated thread from DB', updated_thread)

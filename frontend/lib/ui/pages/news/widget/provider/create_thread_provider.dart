@@ -20,14 +20,14 @@ class CreateThreadPod extends _$CreateThreadPod {
   }
 
   Future<FullThreadInfo?> createThread(
-      {required String title, required String type}) async {
+      {required String topic, required String type}) async {
     state = state.copyWith(eState: ECreateThreadState.creatingThread);
 
     final res = await AsyncRequest.handle<FullThreadInfo>(() async {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
 
       final response = await threadApi.createThThreadsPost(
-          createThreadModel: CreateThreadModel(title: title, type: type));
+          createThreadModel: CreateThreadModel(topic: topic, type: type));
 
       return response.data!;
     });
@@ -49,7 +49,7 @@ class CreateThreadPod extends _$CreateThreadPod {
       BuildContext context, content, String threadTitle, String mainThreadId,
       {DateTime? dueDate, File? image}) async {
     final res = await AsyncRequest.handle<BlockWithCreator>(() async {
-      logger.d("creating new Thread title $content");
+      logger.d("creating new Thread topic $content");
       if (image != null) {
         loader.showLoader(context, message: 'Uploading image');
       }

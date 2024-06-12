@@ -36,7 +36,7 @@ async def thread_semantic_search(query):
         }},
 
         {'$project': {
-            'title': 1,
+            'topic': 1,
             'score': {
                 '$meta': 'vectorSearchScore'
             }

@@ -14,10 +14,10 @@ UpdateThreadTitleModel _$UpdateThreadTitleModelFromJson(
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['title'],
+          requiredKeys: const ['topic'],
         );
         final val = UpdateThreadTitleModel(
-          title: $checkedConvert('title', (v) => v as String),
+          topic: $checkedConvert('topic', (v) => v as String),
         );
         return val;
       },
@@ -26,5 +26,5 @@ UpdateThreadTitleModel _$UpdateThreadTitleModelFromJson(
 Map<String, dynamic> _$UpdateThreadTitleModelToJson(
         UpdateThreadTitleModel instance) =>
     <String, dynamic>{
-      'title': instance.title,
+      'topic': instance.topic,
     };

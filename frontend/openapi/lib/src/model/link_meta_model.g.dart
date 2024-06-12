@@ -18,7 +18,7 @@ LinkMetaModel _$LinkMetaModelFromJson(Map<String, dynamic> json) =>
         final val = LinkMetaModel(
           description: $checkedConvert('description', (v) => v as String?),
           image: $checkedConvert('image', (v) => v as String?),
-          title: $checkedConvert('title', (v) => v as String?),
+          topic: $checkedConvert('topic', (v) => v as String?),
           url: $checkedConvert('url', (v) => v as String),
         );
         return val;
@@ -36,7 +36,7 @@ Map<String, dynamic> _$LinkMetaModelToJson(LinkMetaModel instance) {
 
   writeNotNull('description', instance.description);
   writeNotNull('image', instance.image);
-  writeNotNull('title', instance.title);
+  writeNotNull('topic', instance.topic);
   val['url'] = instance.url;
   return val;
 }

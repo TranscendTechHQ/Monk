@@ -9,15 +9,15 @@ def getLinkMeta(url: str):
     soup = BeautifulSoup(r.content, "html.parser",
                          from_encoding="utf-8", )
 
-    # Get title string from soup if is is not None
-    title = soup.title.string if soup.title is not None else ''
-    print('TITLE IS :', title)
+    # Get topic string from soup if is is not None
+    topic = soup.topic.string if soup.topic is not None else ''
+    print('TITLE IS :', topic)
 
     meta = soup.find_all('meta')
     print('TOTAL META TAGS :', len(meta))
     results = {
         'url': url,
-        'title': title,
+        'topic': topic,
     }
     tags = tagList()
     for tag in meta:
@@ -51,14 +51,14 @@ def tagList():
         'url',
         'content-type',
         # FACEBOOK
-        'og:title',
+        'og:topic',
         'og:description',
         'og:image',
         'og:url',
         # TWITTER
         'twitter:card',
         'twitter:site',
-        'twitter:title',
+        'twitter:topic',
         'twitter:description',
         'twitter:image',
         # BASIC

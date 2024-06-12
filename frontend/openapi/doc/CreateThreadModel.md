@@ -9,7 +9,7 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
-**title** | **String** |  | 
+**topic** | **String** |  | 
 **type** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

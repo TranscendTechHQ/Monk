@@ -41,7 +41,7 @@ class UpdateBlockPositionModel(BaseModel):
 
 class LinkMetaModel(BaseModel):
     url: str
-    title: Optional[str] = Field(default=None)
+    topic: Optional[str] = Field(default=None)
     description: Optional[str] = Field(default=None)
     image: Optional[str] = Field(default=None)
     model_config = ConfigDict(extra='ignore',
@@ -97,7 +97,7 @@ ThreadType = Annotated[str, AfterValidator(allowed_thread_types)]
 
 class CreateThreadModel(BaseModel):
     type: ThreadType
-    title: str = Field(..., min_length=1, max_length=60)
+    topic: str = Field(..., min_length=1, max_length=60)
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
@@ -116,7 +116,7 @@ class ThreadModel(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     last_modified: str
     type: ThreadType
-    title: str = Field(..., min_length=1, max_length=60)
+    topic: str = Field(..., min_length=1, max_length=60)
     content: Union[List[BlockModel], SkipJsonSchema[None]] = None
     headline: str = Field(default=None)
     tenant_id: str
@@ -138,7 +138,7 @@ class UpdateThreadModel(BaseModel):
 
 
 class UpdateThreadTitleModel(BaseModel):
-    title: str
+    topic: str
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -194,7 +194,7 @@ class ThreadsModel(BaseModel):
 
 class ThreadMetaData(BaseModel):
     id: str = Field(..., alias="_id")
-    title: str
+    topic: str
     type: str
     created_at: str
     last_modified: datetime = Field(default_factory=datetime.now)

@@ -310,7 +310,7 @@ async def main():
             thread_type = "slack"
             user_id = user["_id"]
 
-            new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, title=thread_title,
+            new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, topic=thread_title,
                                                  thread_type=thread_type, created_at=channel.created_at)
             main_thread_id = new_thread["_id"]
             

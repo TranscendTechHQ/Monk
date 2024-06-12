@@ -13,7 +13,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
       ($checkedConvert) {
         $checkKeys(
           json,
-          requiredKeys: const ['_id', 'created_at', 'creator', 'title', 'type'],
+          requiredKeys: const ['_id', 'created_at', 'creator', 'topic', 'type'],
         );
         final val = FullThreadInfo(
           id: $checkedConvert('_id', (v) => v as String),
@@ -45,7 +45,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
               $checkedConvert('num_blocks', (v) => (v as num?)?.toInt() ?? 0),
           parentBlockId:
               $checkedConvert('parent_block_id', (v) => v as String?),
-          title: $checkedConvert('title', (v) => v as String),
+          topic: $checkedConvert('topic', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
           unfollow: $checkedConvert('unfollow', (v) => v as bool?),
           unread: $checkedConvert('unread', (v) => v as bool?),
@@ -85,7 +85,7 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
   writeNotNull('mention', instance.mention);
   writeNotNull('num_blocks', instance.numBlocks);
   writeNotNull('parent_block_id', instance.parentBlockId);
-  val['title'] = instance.title;
+  val['topic'] = instance.topic;
   val['type'] = instance.type;
   writeNotNull('unfollow', instance.unfollow);
   writeNotNull('unread', instance.unread);

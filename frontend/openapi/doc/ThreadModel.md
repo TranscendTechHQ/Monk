@@ -18,7 +18,7 @@ Name | Type | Description | Notes
 **parentBlockId** | **String** |  | [optional] 
 **slackThreadTs** | **num** |  | [optional] 
 **tenantId** | **String** |  | 
-**title** | **String** |  | 
+**topic** | **String** |  | 
 **type** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

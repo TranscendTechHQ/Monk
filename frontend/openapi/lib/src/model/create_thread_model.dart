@@ -21,7 +21,7 @@ class CreateThreadModel {
 
      this.content,
 
-    required  this.title,
+    required  this.topic,
 
     required  this.type,
   });
@@ -40,13 +40,13 @@ class CreateThreadModel {
 
   @JsonKey(
     
-    name: r'title',
+    name: r'topic',
     required: true,
     includeIfNull: false
   )
 
 
-  final String title;
+  final String topic;
 
 
 
@@ -65,13 +65,13 @@ class CreateThreadModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateThreadModel &&
      other.content == content &&
-     other.title == title &&
+     other.topic == topic &&
      other.type == type;
 
   @override
   int get hashCode =>
     content.hashCode +
-    title.hashCode +
+    topic.hashCode +
     type.hashCode;
 
   factory CreateThreadModel.fromJson(Map<String, dynamic> json) => _$CreateThreadModelFromJson(json);

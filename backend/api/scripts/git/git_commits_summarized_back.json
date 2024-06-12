@@ -93,7 +93,7 @@
     "commit_id": "393066202513bbf21092f954973c21a946a7fddc",
     "commit_timestamp": 1707981248,
     "code_diff": "",
-    "code_summary": "This code diff makes changes to multiple files in the frontend/lib directory. It starts by changing line 11 of frontend/lib/repo/search.dart, which throws an exception if the results cannot be fetched, to print the results instead. This is then followed by a change to a hash value in frontend/lib/repo/search.g.dart.\n\nThe next change is in frontend/lib/screens/commandbox.dart, where the switchThread method is added. This method takes in the new thread title and thread type, sets the screen visibility to the thread, and navigates to the ThreadScreen page with the new thread information.\n\nNext, in the CommandTypeAhead class, the try-catch block is replaced with a call to the switchThread method, passing in the new thread"
+    "code_summary": "This code diff makes changes to multiple files in the frontend/lib directory. It starts by changing line 11 of frontend/lib/repo/search.dart, which throws an exception if the results cannot be fetched, to print the results instead. This is then followed by a change to a hash value in frontend/lib/repo/search.g.dart.\n\nThe next change is in frontend/lib/screens/commandbox.dart, where the switchThread method is added. This method takes in the new thread topic and thread type, sets the screen visibility to the thread, and navigates to the ThreadScreen page with the new thread information.\n\nNext, in the CommandTypeAhead class, the try-catch block is replaced with a call to the switchThread method, passing in the new thread"
   },
   {
     "commit_message": "AutoFocus on search bar\n",
@@ -381,7 +381,7 @@
     "commit_id": "21335cef2378475505c59b5b1818876c345c5d13",
     "commit_timestamp": 1707028139,
     "code_diff": "",
-    "code_summary": "The following code diff performs the following changes:\n- Renames the key in the returned map in `return {'command': command, 'title': title}` from `command` to `type`.\n- If `newThread[\"title\"]` is present in the `threadList.value`, it uses `threadList.value![newThread[\"type\"]!]` instead of `threadList.value![newThread[\"title\"]]!`."
+    "code_summary": "The following code diff performs the following changes:\n- Renames the key in the returned map in `return {'command': command, 'topic': topic}` from `command` to `type`.\n- If `newThread[\"topic\"]` is present in the `threadList.value`, it uses `threadList.value![newThread[\"type\"]!]` instead of `threadList.value![newThread[\"topic\"]]!`."
   },
   {
     "commit_message": "Removed hardcoding of command type\n",
@@ -408,7 +408,7 @@
     "code_summary": "The code diff removes the forward slash (/) from the commandPattern variable if it starts with a slash, and then checks for matches in the list of commands starting after the first character. This allows for more accurate matching of commands, as some commands may be listed with a slash in front while others may not."
   },
   {
-    "commit_message": "Display proper thread type and title in the screen by\nfetching it from the backend.\n",
+    "commit_message": "Display proper thread type and topic in the screen by\nfetching it from the backend.\n",
     "committer_name": "yksoni-transcendtech",
     "commit_id": "45057b05b58139753c1ede78fbb46f21d8ad1060",
     "commit_timestamp": 1707021755,
@@ -416,15 +416,15 @@
     "code_summary": "json\n-//{\n-//  \"requestId\" : null,\n-//  \"responseMeta\" : {\n-//    \"statusCode\" : \"200\"\n-//  },\n-//  \"errorMeta\" : null,\n-//  \"data\" : \"{\\n  \\\"titles\\\" : [ \\\"TitleThis\\\", \\\"TitleThat\\\" ]\\n}\"\n-//}\n-// *```\n-\n-String _$fetchTitlesHash() => r'17f5b5b75d30c2ef0b9925605df2407b0af8eb85';\n-\n-@ProviderFor(fetchTitles)\n-final fetchTitlesProvider =\n-    AutoDisposeFutureProvider<List<String>>.internal(fetchTitles, defaultValue: null"
   },
   {
-    "commit_message": "Fixed bug where null value was being used.\nonSelected works better now for title suggestions\n",
+    "commit_message": "Fixed bug where null value was being used.\nonSelected works better now for topic suggestions\n",
     "committer_name": "yksoni-transcendtech",
     "commit_id": "7f7b52a768f1004872ea5ab9ed53a80afe728e64",
     "commit_timestamp": 1707014949,
     "code_diff": "",
-    "code_summary": "This code diff changes the way the 'Titles' are suggested in the app. Previously, the entire command with the title was suggested, but now only the title is suggested. Additionally, it removes the variable 'selectedCommand' and instead uses the previously defined variable 'parser' to get the command name."
+    "code_summary": "This code diff changes the way the 'Titles' are suggested in the app. Previously, the entire command with the topic was suggested, but now only the topic is suggested. Additionally, it removes the variable 'selectedCommand' and instead uses the previously defined variable 'parser' to get the command name."
   },
   {
-    "commit_message": "make the title search case-insensitive. Sometimes\nthe title selection is not working.\n",
+    "commit_message": "make the topic search case-insensitive. Sometimes\nthe topic selection is not working.\n",
     "committer_name": "yksoni-transcendtech",
     "commit_id": "650a6d5b08e79a11969ec63663393103c7b1c7ef",
     "commit_timestamp": 1706998315,
@@ -437,7 +437,7 @@
     "commit_id": "7addf5e02de8938c0b6b464461a51d4565c01016",
     "commit_timestamp": 1706997569,
     "code_diff": "",
-    "code_summary": "The code diff removes the validation for unique thread titles in the `parseTitle` method, and instead adds additional checks in the `parseCommand` method. Specifically, for the `/new-*` commands, the code now enforces that the title must be unique for creating new threads. For the `/go` command, the code now verifies that the thread exists before allowing the user to navigate to it."
+    "code_summary": "The code diff removes the validation for unique thread titles in the `parseTitle` method, and instead adds additional checks in the `parseCommand` method. Specifically, for the `/new-*` commands, the code now enforces that the topic must be unique for creating new threads. For the `/go` command, the code now verifies that the thread exists before allowing the user to navigate to it."
   },
   {
     "commit_message": "use pushReplacement, otherwise the Navigsation\nstack will become too large. Also, we don't need\nnavigation history because we will be using\n/go command anyways.\n",
@@ -445,7 +445,7 @@
     "commit_id": "b289ea7fbe2ca4d8f88742147d0bfa1790225186",
     "commit_timestamp": 1706981753,
     "code_diff": "",
-    "code_summary": "This code is replacing the code at line 62 in the file `commandbox.dart` in the `frontend/lib/screens` directory with the code at lines 62 to 64. This will replace the code that was previously responsible for pushing a screen with the new thread's title and command, with code that will first set the visibility of the auto complete feature to false and then push the new thread's title and command on the screen. This change in functionality may be intended to improve the user experience or fix a bug. By using `pushReplacement` instead of `push`, the previous screen will be removed from the stack, so the user will not be able to navigate back to it from the new screen."
+    "code_summary": "This code is replacing the code at line 62 in the file `commandbox.dart` in the `frontend/lib/screens` directory with the code at lines 62 to 64. This will replace the code that was previously responsible for pushing a screen with the new thread's topic and command, with code that will first set the visibility of the auto complete feature to false and then push the new thread's topic and command on the screen. This change in functionality may be intended to improve the user experience or fix a bug. By using `pushReplacement` instead of `push`, the previous screen will be removed from the stack, so the user will not be able to navigate back to it from the new screen."
   },
   {
     "commit_message": "Create new thread screen when command is successful\nImpactful commit with fewest lines of code.\n",
@@ -461,7 +461,7 @@
     "commit_id": "f94a1b826842e78eca87cd8b40515577ed0804f3",
     "commit_timestamp": 1706979913,
     "code_diff": "",
-    "code_summary": "- The diff is setting field values on a class, creating a map of fields to current values and the suppressing expected information that the original modifier didn't support.\n- The diff aims at changing the behavior of the code, specifically on lines 38-39 where it is removing a selected title variable.\n- The diff also includes logic for handling exceptions and displaying them as a snack bar at line 55, adding a new field \"newThread\" on line 64, and setting the thread title and command in lines 71-72.\n- The diff also includes commented out code at lines 78-79 that seems to be setting the current thread provider with data from the newThread variable."
+    "code_summary": "- The diff is setting field values on a class, creating a map of fields to current values and the suppressing expected information that the original modifier didn't support.\n- The diff aims at changing the behavior of the code, specifically on lines 38-39 where it is removing a selected topic variable.\n- The diff also includes logic for handling exceptions and displaying them as a snack bar at line 55, adding a new field \"newThread\" on line 64, and setting the thread topic and command in lines 71-72.\n- The diff also includes commented out code at lines 78-79 that seems to be setting the current thread provider with data from the newThread variable."
   },
   {
     "commit_message": "removed unnecessary notifier. Code getting too complicated.\n",
@@ -469,7 +469,7 @@
     "commit_id": "e0b171eb8010d6e1a02da0ab4e82dc18296e79f7",
     "commit_timestamp": 1706929567,
     "code_diff": "",
-    "code_summary": "This code diff appears to be separating out the `CurrentCommand` provider into a separate file to improve the organization and readability of the code. It also tweaks the `validateCommand` function to no longer rely on `currentCommandNotifier`, instead returning a `Map` with the command and title values. The `CommandTypeAhead` also changes to use the `selectedCommand` instead of fetching from the provider."
+    "code_summary": "This code diff appears to be separating out the `CurrentCommand` provider into a separate file to improve the organization and readability of the code. It also tweaks the `validateCommand` function to no longer rely on `currentCommandNotifier`, instead returning a `Map` with the command and topic values. The `CommandTypeAhead` also changes to use the `selectedCommand` instead of fetching from the provider."
   },
   {
     "commit_message": "Fetch the list of titles from the backend and\ndisplay them in the command box in the frontend.\n",
@@ -493,7 +493,7 @@
     "commit_id": "9c394088b4f5cce75d428de13ce39314612f3312",
     "commit_timestamp": 1706922110,
     "code_diff": "",
-    "code_summary": "Fixes an issue where the app was creating a journal screen instead of a thread screen when navigating to the '/journal' route. The changes also renamed the journal screen to the thread screen and updated relevant imports. The changes also update the title of the app bar to display the current thread type and title instead of just \"Journal\"."
+    "code_summary": "Fixes an issue where the app was creating a journal screen instead of a thread screen when navigating to the '/journal' route. The changes also renamed the journal screen to the thread screen and updated relevant imports. The changes also update the topic of the app bar to display the current thread type and topic instead of just \"Journal\"."
   },
   {
     "commit_message": "Minor cleanup. Don't need the complicated steps before\nserialization.\n",
@@ -605,7 +605,7 @@
     "commit_id": "63ace3f934358d71b263ce1da93f0e8d138f6ee2",
     "commit_timestamp": 1706748290,
     "code_diff": "",
-    "code_summary": "The following code diff adds the following functionality to the code base:\n\n- Line 16 - Includes the `Response_Model` keyword argument as `ThreadModel` in the `create_thread` function.\n- Line 18 - Adds the keyword argument `thread_data` which uses the `CreateThreadModel` class as a parameter.\n- Line 19 - Adds the keyword argument `session` which uses the `SessionContainer` class and `Depends` function with the `verify_session` function as a parameter.\n- Line 32 - Includes the `Response_Model` keyword argument as `ThreadModel` in the `update_thread` function.\n- Line 34 - Adds the keyword argument `title` with type `str` and `thread_data"
+    "code_summary": "The following code diff adds the following functionality to the code base:\n\n- Line 16 - Includes the `Response_Model` keyword argument as `ThreadModel` in the `create_thread` function.\n- Line 18 - Adds the keyword argument `thread_data` which uses the `CreateThreadModel` class as a parameter.\n- Line 19 - Adds the keyword argument `session` which uses the `SessionContainer` class and `Depends` function with the `verify_session` function as a parameter.\n- Line 32 - Includes the `Response_Model` keyword argument as `ThreadModel` in the `update_thread` function.\n- Line 34 - Adds the keyword argument `topic` with type `str` and `thread_data"
   },
   {
     "commit_message": "status quo restored.\n",
@@ -621,7 +621,7 @@
     "commit_id": "e7bb90d552f99f4652387ec74c2ddbaf15bac2f1",
     "commit_timestamp": 1706741047,
     "code_diff": "",
-    "code_summary": "The given code snippet modifies two files:\n\n* Changes `json_util.dumps` to `jsonable_encoder`\n\n  * `dumps` is an [unsafe serializer](https://fastapi.tiangolo.com/advanced/response-directly/#json_util.html), while `jsonable_encoder` is a safe encoder that FastAPI provides.\n\n* Changes `blockId` to `title` and `modelDate` to `date`\n\n  * `blockId` and `modelDate` were not being interpreted in a way that communicates their intended use to the users of the API.\n\n  * The new code uses the more intuitive terms.\n\nIn the first block, `content` is changed from `json_util.dumps(created_block)` to `jsonable_encoder"
+    "code_summary": "The given code snippet modifies two files:\n\n* Changes `json_util.dumps` to `jsonable_encoder`\n\n  * `dumps` is an [unsafe serializer](https://fastapi.tiangolo.com/advanced/response-directly/#json_util.html), while `jsonable_encoder` is a safe encoder that FastAPI provides.\n\n* Changes `blockId` to `topic` and `modelDate` to `date`\n\n  * `blockId` and `modelDate` were not being interpreted in a way that communicates their intended use to the users of the API.\n\n  * The new code uses the more intuitive terms.\n\nIn the first block, `content` is changed from `json_util.dumps(created_block)` to `jsonable_encoder"
   },
   {
     "commit_message": "Created backend code for threads. Still need to add the frontend code.\n",
@@ -640,7 +640,7 @@
     "code_summary": "This code diff adds or subtracts lines of code between two different code states, potentially modifying the state depending on changes to any of the affected lines. In this specific example, the code added or removed within the @@ -56,9 +56,9 @@ section of the diff may modify the visibility of a command based on whether or not it is successfully validated, and the ref.read(autoCompleteVisibilityProvider.notifier) parameter may modify the state of a command based on a specific condition."
   },
   {
-    "commit_message": "Handled selection of title. Also added a default\ntitle so that it is easier to test. Next step is to sync\nwith the backend.\n1. Titles are sent to the backend and read on demand.\n2. New threads are created with a title.\n3. /go command can accept existing titles and changes the thread context.\n",
+    "commit_message": "Handled selection of topic. Also added a default\ntitle so that it is easier to test. Next step is to sync\nwith the backend.\n1. Titles are sent to the backend and read on demand.\n2. New threads are created with a topic.\n3. /go command can accept existing titles and changes the thread context.\n",
     "committer_name": "yksoni-transcendtech",
     "commit_id": "0b1d3ca59de03a8ce564d0b8527e3143ecbac445",
     "commit_timestamp": 1706593600,
@@ -680,7 +680,7 @@
     "code_summary": "The code diff accomplishes the following changes:\n\n1. Removes the code that prints the titles from `frontend/lib/repo/commandparser.dart`. \n2. Removes the `print()` statement that prints the selected command from `frontend/lib/screens/commandbox.dart`.\n3. Removes the `pattern` and `titles` variable and the `print()` statements related to them from `frontend/lib/screens/commandbox.dart`.\n4. Changes the `TypeAheadField` in `frontend/lib/screens/commandbox.dart` to use the `titlesNotifier` instead of `titles` for the `patternMatchingTitles` function."
   },
   {
-    "commit_message": "title suggestions are now shown in the command box\nExtremely buggy. Titles do not persist if I navigate to another scree.\nI have added ref.watch on titlesProvider. Is it needed?\n",
+    "commit_message": "topic suggestions are now shown in the command box\nExtremely buggy. Titles do not persist if I navigate to another scree.\nI have added ref.watch on titlesProvider. Is it needed?\n",
     "committer_name": "yksoni-transcendtech",
     "commit_id": "ac2db53316e1bb06b0d5212a05be4ca4fd639a01",
     "commit_timestamp": 1706555565,
@@ -693,7 +693,7 @@
     "commit_id": "826b87c82c4b7a3fb28bb9f11cf0756f4681ce49",
     "commit_timestamp": 1706484256,
     "code_diff": "",
-    "code_summary": "This diff accomplishes two things:\n (1) in ```main.dart```, the CommandParamScreen route is removed from the ```routes``` map. This means that the CommandParamScreen is no longer accessible within the app.\n (2) in ```commandparser.dart```, a new method ```patternMatchingTitles``` is added which searches for titles that contain the given pattern (which starts with the ```#``` symbol). This method is then used in the ```CommandTypeAhead``` widget to suggest titles when the user types a command with a title in the command box. This provides better functionality for matching titles with commands. Additionally, the method removes the ```AlphaNumericTitle``` class and instead works with strings."
+    "code_summary": "This diff accomplishes two things:\n (1) in ```main.dart```, the CommandParamScreen route is removed from the ```routes``` map. This means that the CommandParamScreen is no longer accessible within the app.\n (2) in ```commandparser.dart```, a new method ```patternMatchingTitles``` is added which searches for titles that contain the given pattern (which starts with the ```#``` symbol). This method is then used in the ```CommandTypeAhead``` widget to suggest titles when the user types a command with a topic in the command box. This provides better functionality for matching titles with commands. Additionally, the method removes the ```AlphaNumericTitle``` class and instead works with strings."
   },
   {
     "commit_message": "Added hint text to command box\n",
@@ -824,7 +824,7 @@
     "code_summary": "I's a diff to add an AutoCompleteVisibility class and use it in the \"CommandBox\" widget. This should make the component more maintainable."
   },
   {
-    "commit_message": "- Added Title provider. Projects, ideas, tasks, etc.\nall will have title. Does not work yet.\n",
+    "commit_message": "- Added Title provider. Projects, ideas, tasks, etc.\nall will have topic. Does not work yet.\n",
     "committer_name": "yksoni-transcendtech",
     "commit_id": "55307b3c57b064997443d8045417afeb21f7d71e",
     "commit_timestamp": 1706237671,
@@ -981,7 +981,7 @@
     "commit_id": "4d6717d65f24fe50aa18bb902866d681a2f8daf9",
     "commit_timestamp": 1705182087,
     "code_diff": "",
-    "code_summary": "populate_by_name = True\n+    )\n+\n+    model_config = ConfigDict(extra='ignore',\n+      ```          arbitrary_types_allowed = True\n+    )\n+    model_config = ConfigDict(extra='ignore',\n+      ```          json_schema_extra = {\n+      ```            \"example\": {\n+      ```                \"name\": \"An informative task title\",\n+      ```                \"goal\": \"Why are we doing it?\",\n+      ```                \"completed\": True,\n+      ```            }\n+      ```        }   \ndiff --git a/backend/fastapi/routes/tasks/routers.py b/backend/fastapi/routes/tasks/routers.py\nindex 87a917a..01a1f8d 100644\n---"
+    "code_summary": "populate_by_name = True\n+    )\n+\n+    model_config = ConfigDict(extra='ignore',\n+      ```          arbitrary_types_allowed = True\n+    )\n+    model_config = ConfigDict(extra='ignore',\n+      ```          json_schema_extra = {\n+      ```            \"example\": {\n+      ```                \"name\": \"An informative task topic\",\n+      ```                \"goal\": \"Why are we doing it?\",\n+      ```                \"completed\": True,\n+      ```            }\n+      ```        }   \ndiff --git a/backend/fastapi/routes/tasks/routers.py b/backend/fastapi/routes/tasks/routers.py\nindex 87a917a..01a1f8d 100644\n---"
   },
   {
     "commit_message": "emoji support - try with :smile: or :rocket:\n",
@@ -1061,7 +1061,7 @@
     "commit_id": "1f860831200ff35a6461eeaa47975761b8c54fed",
     "commit_timestamp": 1704847700,
     "code_diff": "",
-    "code_summary": "The code diff accomplishes the following:\n\n1. In `constants.dart`, it declares an enum class `ColorSeed` which contains a list of color names and their corresponding hexadecimal value.\n2. In `main.dart`, it imports the `flutter_riverpod` package and calls `ProviderScope` on `MyApp` to allow access to state.\n3. In `main.dart`, it modifies the `MaterialApp` by setting the app's title to \"Monk\", removing the debug banner, and setting the app's theme to dark mode.\n4. In `main.dart`, it creates a new `theme` property for the `MaterialApp` and sets its `colorSchemeSeed` to the previously declared `ColorSeed` value"
+    "code_summary": "The code diff accomplishes the following:\n\n1. In `constants.dart`, it declares an enum class `ColorSeed` which contains a list of color names and their corresponding hexadecimal value.\n2. In `main.dart`, it imports the `flutter_riverpod` package and calls `ProviderScope` on `MyApp` to allow access to state.\n3. In `main.dart`, it modifies the `MaterialApp` by setting the app's topic to \"Monk\", removing the debug banner, and setting the app's theme to dark mode.\n4. In `main.dart`, it creates a new `theme` property for the `MaterialApp` and sets its `colorSchemeSeed` to the previously declared `ColorSeed` value"
   },
   {
     "commit_message": "Protect all the backend APIs with the session.\nTested that if the user is logged out, the backend APIs will return 401\n(unauthorized)\n",

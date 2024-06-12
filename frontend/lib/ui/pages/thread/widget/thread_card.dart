@@ -22,14 +22,14 @@ class ThreadCard extends ConsumerWidget {
     super.key,
     required this.block,
     required this.emojiParser,
-    required this.title,
+    required this.topic,
     required this.type,
     required this.mainThreadId,
     required this.threadType,
   });
   final BlockWithCreator block;
   final String type;
-  final String title;
+  final String topic;
   final EmojiParser emojiParser;
   final String? mainThreadId;
   final ThreadType threadType;
@@ -48,12 +48,12 @@ class ThreadCard extends ConsumerWidget {
     }
     try {
       final threadNotifier = ref
-          .read(currentThreadProvider.call(title: title, type: type).notifier);
+          .read(currentThreadProvider.call(topic: topic, type: type).notifier);
       final childThreadName =
-          ("Reply$title${block.id?.substring(0, 4)}").replaceAll('-', '');
+          ("Reply$topic${block.id?.substring(0, 4)}").replaceAll('-', '');
       if (block.childThreadId.isNullOrEmpty) {
         final createChildThreadModel = CreateChildThreadModel(
-          title: childThreadName,
+          topic: childThreadName,
           type: type,
           parentBlockId: block.id!,
           mainThreadId: mainThreadId!,
@@ -68,7 +68,7 @@ class ThreadCard extends ConsumerWidget {
           Navigator.push(
               context,
               ThreadPage.launchRoute(
-                title: childThreadName,
+                topic: childThreadName,
                 type: type,
                 threadType: ThreadType.reply,
               ));
@@ -82,7 +82,7 @@ class ThreadCard extends ConsumerWidget {
         Navigator.push(
           context,
           ThreadPage.launchRoute(
-            title: replyThread!.title,
+            topic: replyThread!.topic,
             type: replyThread.type,
             threadType: ThreadType.reply,
             threadChildId: block.childThreadId,
@@ -117,7 +117,7 @@ class ThreadCard extends ConsumerWidget {
     final userInfo = block.creator;
     //print('userInfo: $userInfo');
     // final replyProvider = threadDetailProvider.call();
-    final provider = currentThreadProvider.call(title: title, type: type);
+    final provider = currentThreadProvider.call(topic: topic, type: type);
     // final currentThread = ref.watch(provider);
     final currentThreadNotifier = ref.read(provider.notifier);
 
@@ -278,7 +278,7 @@ class ThreadCard extends ConsumerWidget {
               // ),
               MarkdownViewer(
                 markdownData: block.content,
-                onTapLink: (String? text, String? href, String? title) {
+                onTapLink: (String? text, String? href, String? topic) {
                   launch(href);
                 },
               ),
@@ -446,7 +446,7 @@ class ThreadCard extends ConsumerWidget {
                               onPressed: () async {
                                 await ref
                                     .read(currentThreadProvider
-                                        .call(title: title, type: type)
+                                        .call(topic: topic, type: type)
                                         .notifier)
                                     .updateBlock(block.id!, controller.text);
                                 ref.read(cardProvider.notifier).toggleEdit();
