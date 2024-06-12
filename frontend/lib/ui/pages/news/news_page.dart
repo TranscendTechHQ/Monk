@@ -14,15 +14,15 @@ import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:frontend/ui/widgets/outline_icon_button.dart';
 
 class NewsPage extends ConsumerWidget {
-  final String title;
+  final String topic;
   final String type;
-  const NewsPage({super.key, required this.title, required this.type});
+  const NewsPage({super.key, required this.topic, required this.type});
 
   static String route = "/news";
 
   static Route launchRoute() {
     return MaterialPageRoute<void>(
-      builder: (_) => const NewsPage(title: "News", type: "/news"),
+      builder: (_) => const NewsPage(topic: "News", type: "/news"),
     );
   }
 

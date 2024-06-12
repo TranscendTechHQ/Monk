@@ -18,28 +18,28 @@ class UpdateThreadTitleModel {
   /// Returns a new [UpdateThreadTitleModel] instance.
   UpdateThreadTitleModel({
 
-    required  this.title,
+    required  this.topic,
   });
 
   @JsonKey(
     
-    name: r'title',
+    name: r'topic',
     required: true,
     includeIfNull: false
   )
 
 
-  final String title;
+  final String topic;
 
 
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is UpdateThreadTitleModel &&
-     other.title == title;
+     other.topic == topic;
 
   @override
   int get hashCode =>
-    title.hashCode;
+    topic.hashCode;
 
   factory UpdateThreadTitleModel.fromJson(Map<String, dynamic> json) => _$UpdateThreadTitleModelFromJson(json);
 

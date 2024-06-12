@@ -25,7 +25,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'thread.freezed.dart';
 part 'thread.g.dart';
 
-/// This is a provider that maintains the list of all threads title
+/// This is a provider that maintains the list of all threads topic
 @riverpod
 Future<Map<String, String>> fetchThreadsInfo(FetchThreadsInfoRef ref) async {
   final threadApi = NetworkManager.instance.openApi.getThreadsApi();
@@ -58,12 +58,12 @@ Future<FullThreadInfo> fetchThreadFromId({required String id}) async {
 }
 
 Future<FullThreadInfo> createOrGetThread(
-    {required String title, required String type}) async {
+    {required String topic, required String type}) async {
   final res = await AsyncRequest.handle<FullThreadInfo>(() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
 
     final response = await threadApi.createThThreadsPost(
-        createThreadModel: CreateThreadModel(title: title, type: type));
+        createThreadModel: CreateThreadModel(topic: topic, type: type));
 
     if (response.statusCode != 201) {
       throw Exception("Failed to create thread");
@@ -83,7 +83,7 @@ Future<FullThreadInfo> createOrGetThread(
 class CurrentThread extends _$CurrentThread {
   @override
   Future<CurrentTreadState> build({
-    required String title,
+    required String topic,
     required String type,
     // ThreadType threadType = ThreadType.thread,
     String? threadChildId,
@@ -93,7 +93,7 @@ class CurrentThread extends _$CurrentThread {
     FullThreadInfo? thread;
     // if (threadType == ThreadType.thread) {
     // }
-    thread = await createOrGetThread(title: title, type: type);
+    thread = await createOrGetThread(topic: topic, type: type);
     // else {
     //   thread = await fetchThreadFromIdAsync(threadChildId!);
     // }
@@ -115,18 +115,18 @@ class CurrentThread extends _$CurrentThread {
       loader.hideLoader();
       loader.showLoader(context, message: 'creating block');
 
-      String? threadTitle = thread.title ?? customTitle;
+      String? threadTitle = thread.topic ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
-        logger.e("Thread title is null");
-        throw Exception("Thread title is null");
+        logger.e("Thread topic is null");
+        throw Exception("Thread topic is null");
       }
-      logger.d("creating new Thread title $threadTitle");
+      logger.d("creating new Thread topic $threadTitle");
 
       final blockApi = NetworkManager.instance.openApi.getThreadsApi();
       final mainThreadId = thread.id;
 
       final newThreadState = await blockApi.createBlocksPost(
-        threadTitle: threadTitle!,
+        threadTopic: threadTitle!,
         createBlockModel: CreateBlockModel(
           content: text,
           mainThreadId: mainThreadId,
@@ -145,7 +145,7 @@ class CurrentThread extends _$CurrentThread {
       list.add(block);
 
       final updatedThreadModel = FullThreadInfo(
-        title: thread.title,
+        topic: thread.topic,
         type: thread.type,
         content: list,
         creator: thread.creator,
@@ -208,7 +208,7 @@ class CurrentThread extends _$CurrentThread {
       return e;
     }).toList();
     final updatedThreadModel = FullThreadInfo(
-      title: thread.title,
+      topic: thread.topic,
       type: thread.type,
       content: updatedBlocks,
       creator: thread.creator,
@@ -242,7 +242,7 @@ class CurrentThread extends _$CurrentThread {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final result = await threadApi.updateBlocksIdPut(
         id: blockId,
-        threadTitle: thread.title,
+        threadTopic: thread.topic,
         updateBlockModel: UpdateBlockModel(
           content: content,
         ),
@@ -264,7 +264,7 @@ class CurrentThread extends _$CurrentThread {
         return e;
       }).toList();
       final updatedThreadModel = FullThreadInfo(
-        title: thread.title,
+        topic: thread.topic,
         type: thread.type,
         content: updatedBlocks!,
         creator: thread.creator,
@@ -279,25 +279,25 @@ class CurrentThread extends _$CurrentThread {
     });
   }
 
-  Future<void> updateThreadTitle(String title) async {
+  Future<void> updateThreadTitle(String topic) async {
     final thread = state.value?.thread;
     if (thread == null) {
-      logger.e("There is no thread to update title");
+      logger.e("There is no thread to update topic");
       return;
     }
     final res = await AsyncRequest.handle<FullThreadInfo>(() async {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final result = await threadApi.updateThThreadsIdPut(
         id: thread.id,
-        updateThreadTitleModel: UpdateThreadTitleModel(title: title),
+        updateThreadTitleModel: UpdateThreadTitleModel(topic: topic),
       );
       return result.data!;
     });
     return res.fold((l) {
-      throw Exception(l.message ?? "Failed to update thread title");
+      throw Exception(l.message ?? "Failed to update thread topic");
     }, (thread) {
       final updatedThreadModel = FullThreadInfo(
-        title: title,
+        topic: topic,
         type: thread.type,
         content: thread.content,
         creator: thread.creator,
@@ -344,7 +344,7 @@ class CurrentThread extends _$CurrentThread {
     updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
 
     final updatedThreadModel = FullThreadInfo(
-      title: thread.title,
+      topic: thread.topic,
       type: thread.type,
       content: updatedBlocks,
       creator: thread.creator,

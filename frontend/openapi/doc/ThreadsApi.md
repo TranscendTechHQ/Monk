@@ -108,7 +108,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createBlocksPost**
-> BlockWithCreator createBlocksPost(threadTitle, createBlockModel)
+> BlockWithCreator createBlocksPost(threadTopic, createBlockModel)
 
 Create
 
@@ -117,11 +117,11 @@ Create
 import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
-final String threadTitle = threadTitle_example; // String | 
+final String threadTopic = threadTopic_example; // String | 
 final CreateBlockModel createBlockModel = ; // CreateBlockModel | 
 
 try {
-    final response = api.createBlocksPost(threadTitle, createBlockModel);
+    final response = api.createBlocksPost(threadTopic, createBlockModel);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->createBlocksPost: $e\n');
@@ -132,7 +132,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **threadTitle** | **String**|  | 
+ **threadTopic** | **String**|  | 
  **createBlockModel** | [**CreateBlockModel**](CreateBlockModel.md)|  | 
 
 ### Return type
@@ -690,7 +690,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **updateBlocksIdPut**
-> BlockModel updateBlocksIdPut(id, threadTitle, updateBlockModel)
+> BlockModel updateBlocksIdPut(id, threadTopic, updateBlockModel)
 
 Update
 
@@ -700,11 +700,11 @@ import 'package:openapi/api.dart';
 
 final api = Openapi().getThreadsApi();
 final String id = id_example; // String | 
-final String threadTitle = threadTitle_example; // String | 
+final String threadTopic = threadTopic_example; // String | 
 final UpdateBlockModel updateBlockModel = ; // UpdateBlockModel | 
 
 try {
-    final response = api.updateBlocksIdPut(id, threadTitle, updateBlockModel);
+    final response = api.updateBlocksIdPut(id, threadTopic, updateBlockModel);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->updateBlocksIdPut: $e\n');
@@ -716,7 +716,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **String**|  | 
- **threadTitle** | **String**|  | 
+ **threadTopic** | **String**|  | 
  **updateBlockModel** | [**UpdateBlockModel**](UpdateBlockModel.md)|  | 
 
 ### Return type

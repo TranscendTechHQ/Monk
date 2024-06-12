@@ -22,7 +22,7 @@ class LinkMetaModel {
 
      this.image,
 
-     this.title,
+     this.topic,
 
     required  this.url,
   });
@@ -53,13 +53,13 @@ class LinkMetaModel {
 
   @JsonKey(
     
-    name: r'title',
+    name: r'topic',
     required: false,
     includeIfNull: false
   )
 
 
-  final String? title;
+  final String? topic;
 
 
 
@@ -79,14 +79,14 @@ class LinkMetaModel {
   bool operator ==(Object other) => identical(this, other) || other is LinkMetaModel &&
      other.description == description &&
      other.image == image &&
-     other.title == title &&
+     other.topic == topic &&
      other.url == url;
 
   @override
   int get hashCode =>
     (description == null ? 0 : description.hashCode) +
     (image == null ? 0 : image.hashCode) +
-    (title == null ? 0 : title.hashCode) +
+    (topic == null ? 0 : topic.hashCode) +
     url.hashCode;
 
   factory LinkMetaModel.fromJson(Map<String, dynamic> json) => _$LinkMetaModelFromJson(json);

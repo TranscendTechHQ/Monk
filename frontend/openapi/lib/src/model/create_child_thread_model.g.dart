@@ -17,7 +17,7 @@ CreateChildThreadModel _$CreateChildThreadModelFromJson(
           requiredKeys: const [
             'mainThreadId',
             'parentBlockId',
-            'title',
+            'topic',
             'type'
           ],
         );
@@ -29,7 +29,7 @@ CreateChildThreadModel _$CreateChildThreadModelFromJson(
                   .toList()),
           mainThreadId: $checkedConvert('mainThreadId', (v) => v as String),
           parentBlockId: $checkedConvert('parentBlockId', (v) => v as String),
-          title: $checkedConvert('title', (v) => v as String),
+          topic: $checkedConvert('topic', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String),
         );
         return val;
@@ -49,7 +49,7 @@ Map<String, dynamic> _$CreateChildThreadModelToJson(
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
   val['mainThreadId'] = instance.mainThreadId;
   val['parentBlockId'] = instance.parentBlockId;
-  val['title'] = instance.title;
+  val['topic'] = instance.topic;
   val['type'] = instance.type;
   return val;
 }

@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 # creates a new thread or returns an existing thread. Content
 # is blank for the new thread
-async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadType,
+async def create_new_thread(user_id, tenant_id, topic: str, thread_type: ThreadType,
                             parent_block_id: str = None,
                             created_at=None, slack_thread_ts: float = None):
     try:
-        old_thread = await get_mongo_document({"title": title}, asyncdb.threads_collection, tenant_id)
+        old_thread = await get_mongo_document({"topic": topic}, asyncdb.threads_collection, tenant_id)
         if not old_thread:
             userinfo = await asyncdb.users_collection.find_one({"_id": user_id})
             if not userinfo:
@@ -36,7 +36,7 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
                   parent_block_id, "\n\n")
             if created_at is None:
                 created_at = datetime.datetime.now()
-            new_thread = ThreadModel(creator_id=creator['id'], title=title, type=thread_type,
+            new_thread = ThreadModel(creator_id=creator['id'], topic=topic, type=thread_type,
                                      tenant_id=userinfo['tenant_id'], parent_block_id=parent_block_id,
                                      created_at=created_at, slack_thread_ts=slack_thread_ts, last_modified=str(created_at))
 
@@ -68,12 +68,12 @@ async def create_new_thread(user_id, tenant_id, title: str, thread_type: ThreadT
 # TODO: cleanup unused code here. thread colleciton not needed. parent_block_id or parentBlock, one of them not needed.
 
 
-async def create_child_thread(parent_block_id, main_thread_id, thread_title, thread_type, user_id,
+async def create_child_thread(parent_block_id, main_thread_id, thread_topic, thread_type, user_id,
                               tenant_id, parentBlock: BlockModel, created_at=None, slack_thread_ts: float = None):
     print("\n 5.a Inside create_child_thread", parentBlock)
 
     # print("Initiating create new thread")
-    created_child_thread = await create_new_thread(user_id, tenant_id, thread_title, thread_type, parent_block_id=parentBlock.id, created_at=created_at, slack_thread_ts=slack_thread_ts)
+    created_child_thread = await create_new_thread(user_id, tenant_id, thread_topic, thread_type, parent_block_id=parentBlock.id, created_at=created_at, slack_thread_ts=slack_thread_ts)
     print("\n 5.b Created child thread")
     child_thread_id = created_child_thread["_id"]
 

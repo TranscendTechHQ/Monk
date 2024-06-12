@@ -68,10 +68,10 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
     super.dispose();
   }
 
-  Future<void> createThread(BuildContext context, WidgetRef ref, String title,
+  Future<void> createThread(BuildContext context, WidgetRef ref, String topic,
       {String? blockContent, DateTime? dueDate}) async {
-    if (title.isNullOrEmpty) {
-      showMessage(context, 'Title is required');
+    if (topic.isNullOrEmpty) {
+      showMessage(context, 'Topic is required');
       return;
     } else if (blockContent.isNullOrEmpty && attachment != null) {
       showMessage(context, 'Message is required');
@@ -81,13 +81,13 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
     // final threadList =  ref.read(fetchThreadsInfoProvider);
     final createThreadNotifier = createThreadPodProvider.notifier;
 
-    if (widget.titlesList.contains(title)) {
-      showMessage(context, 'Thread with title $title already exists');
+    if (widget.titlesList.contains(topic)) {
+      showMessage(context, 'Thread with topic $topic already exists');
       return;
     } else {
       loader.showLoader(context, message: 'Creating Thread');
       final thread = await ref.read(createThreadNotifier).createThread(
-            title: title,
+            topic: topic,
             type: type,
           );
       loader.hideLoader();
@@ -95,7 +95,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
         print('Thread is created. No message available.');
         Navigator.of(context).pop(thread);
         Navigator.of(context).push(
-          ThreadPage.launchRoute(title: title, type: type),
+          ThreadPage.launchRoute(topic: topic, type: type),
         );
       }
       // Create block if blockContent is available and thread is not null
@@ -105,7 +105,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
         final block = await ref.read(createThreadNotifier).createBlock(
               context,
               blockContent!,
-              thread.title,
+              thread.topic,
               thread.id,
               dueDate: dueDate,
               image: attachment,
@@ -118,7 +118,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
 
           // Open Thread Page
           Navigator.of(context).push(
-            ThreadPage.launchRoute(title: title, type: type),
+            ThreadPage.launchRoute(topic: topic, type: type),
           );
         }
       }
@@ -174,7 +174,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
           ),
           const SizedBox(height: 16),
           Text(
-            type == 'chat' ? 'Thread Title' : 'Todo Title',
+            'Topic',
             style: context.textTheme.bodySmall?.copyWith(
               color: monkBlue,
             ),

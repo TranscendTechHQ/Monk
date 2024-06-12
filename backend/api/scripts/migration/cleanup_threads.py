@@ -95,7 +95,7 @@ def delete_thread(thread_id):
                 'child_thread_id': ''
             }})
         threads_collection.delete_one({"_id": thread_id})
-        print(f"Deleted thread {thread_id} named {thread['title']}")
+        print(f"Deleted thread {thread_id} named {thread['topic']}")
     else:
         print(f"Thread {thread_id} not found") 
         
@@ -105,7 +105,7 @@ def delete_threads_with_less_than_3_blocks():
         thread_id = doc['_id']
         num_blocks = doc['num_blocks']
         if num_blocks < 3:
-            #print(f"Thread {doc['title']} has {num_blocks} blocks")
+            #print(f"Thread {doc['topic']} has {num_blocks} blocks")
             delete_thread(thread_id)
         
 async def main():

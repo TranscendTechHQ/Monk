@@ -66,7 +66,7 @@ void switchThread(WidgetRef ref, BuildContext context, String newThreadTitle,
   // logger.v('Switching to thread $newThreadTitle of type $newThreadType');
   Navigator.push(
     context,
-    ThreadPage.launchRoute(title: newThreadTitle, type: newThreadType),
+    ThreadPage.launchRoute(topic: newThreadTitle, type: newThreadType),
   );
 }
 
@@ -75,13 +75,13 @@ class CommandBox extends ConsumerWidget {
   final _searchFocusNode = FocusNode();
   final _commandFocusNode = FocusNode();
   final _blockFocusNode = FocusNode();
-  final String title;
+  final String topic;
   final String type;
   final List<InputBoxType> allowedInputTypes;
 
   CommandBox({
     super.key,
-    required this.title,
+    required this.topic,
     required this.type,
     this.allowedInputTypes = const [
       InputBoxType.thread,
@@ -93,7 +93,7 @@ class CommandBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final threadNotifier =
-        ref.read(currentThreadProvider.call(title: title, type: type).notifier);
+        ref.read(currentThreadProvider.call(topic: topic, type: type).notifier);
 
     final screenVisibilityProviderVal =
         screenVisibilityProvider(visibility: allowedInputTypes.first);
@@ -145,7 +145,7 @@ class CommandBox extends ConsumerWidget {
             await threadNotifier.createBlock(
               context,
               markdown,
-              customTitle: title,
+              customTitle: topic,
               image: attachment,
             );
             ref.read(blockAttachmentProvider.notifier).clearAttachment();
@@ -455,10 +455,10 @@ class CommandTypeAhead extends ConsumerWidget {
         //       // this suggestion contains a command
         //       if (suggestion.contains(' ')) {
         //         final command = suggestion.split(' ')[0];
-        //         final title = suggestion.split(' ')[1];
+        //         final topic = suggestion.split(' ')[1];
         //         _typeAheadController.text = '$suggestion ';
         //         ref.read(mainCommandTextProvider.notifier).set('$command ');
-        //         print('command:[ $command], title:[$title');
+        //         print('command:[ $command], topic:[$topic');
         //         return;
         //       }
         //       // this is a command
@@ -468,8 +468,8 @@ class CommandTypeAhead extends ConsumerWidget {
         //       print('command $suggestion');
         //     } else {
         //       //  _typeAheadController.text.split('#')[0];
-        //       // this is a title
-        //       // set the current title
+        //       // this is a topic
+        //       // set the current topic
         //       _typeAheadController.text = "$firstHalf#$suggestion";
 
         //       print('Sub command ${"$firstHalf#$suggestion"}');
@@ -496,14 +496,14 @@ class CommandTypeAhead extends ConsumerWidget {
         //       final newThread = parser.validateCommand(
         //           value, titlesList, commandHintTextNotifier);
         //       String newThreadType;
-        //       if (threadList.value!.containsKey(newThread["title"])) {
-        //         newThreadType = threadList.value![newThread["title"]]!;
+        //       if (threadList.value!.containsKey(newThread["topic"])) {
+        //         newThreadType = threadList.value![newThread["topic"]]!;
         //       } else {
         //         newThreadType = newThread["type"]!;
         //       }
-        //       // switchThread(ref, context, newThread["title"]!, newThreadType);
+        //       // switchThread(ref, context, newThread["topic"]!, newThreadType);
         //       print(
-        //           'Switching to thread ${newThread["title"]} of type $newThreadType');
+        //           'Switching to thread ${newThread["topic"]} of type $newThreadType');
         //       // only iommand was successfully validated
         //     } catch (e) {
         //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -537,12 +537,12 @@ class CommandTypeAhead extends ConsumerWidget {
         //   final newThread = parser.validateCommand(
         //       value, titlesList, commandHintTextNotifier);
         //   String newThreadType;
-        //   if (threadList.value!.containsKey(newThread["title"])) {
-        //     newThreadType = threadList.value![newThread["title"]]!;
+        //   if (threadList.value!.containsKey(newThread["topic"])) {
+        //     newThreadType = threadList.value![newThread["topic"]]!;
         //   } else {
         //     newThreadType = newThread["type"]!;
         //   }
-        //   switchThread(ref, context, newThread["title"]!, newThreadType);
+        //   switchThread(ref, context, newThread["topic"]!, newThreadType);
         //   // only iommand was successfully validated
         // } catch (e) {
         //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -578,7 +578,7 @@ class CommandTypeAhead extends ConsumerWidget {
         // },
         // itemBuilder: (context, suggestion) {
         //   return ListTile(
-        //     title: Text(suggestion),
+        //     topic: Text(suggestion),
         //   );
         //   },
         //   onSelected: (suggestion) {
@@ -594,8 +594,8 @@ class CommandTypeAhead extends ConsumerWidget {
         // } else {
         //   // SuggestionsController.of(context).refresh();
         //   String firstHalf = _typeAheadController.text.split('#')[0];
-        //   // this is a title
-        //   // set the current title
+        //   // this is a topic
+        //   // set the current topic
         //   String? fullCommand =
         //       ("$firstHalf #$suggestion").replaceAll(RegExp(r"\s+"), ' ');
         //   _typeAheadController.text = fullCommand;
@@ -631,14 +631,14 @@ class CommandTypeAhead extends ConsumerWidget {
               final newThread = parser.validateCommand(
                   value, titlesList, commandHintTextNotifier);
               String newThreadType;
-              if (threadList.value!.containsKey(newThread["title"])) {
-                newThreadType = threadList.value![newThread["title"]]!;
+              if (threadList.value!.containsKey(newThread["topic"])) {
+                newThreadType = threadList.value![newThread["topic"]]!;
               } else {
                 newThreadType = newThread["type"]!;
               }
               logger.e(
-                  'Switching to thread ${newThread["title"]} of type $newThreadType');
-              switchThread(ref, context, newThread["title"]!, newThreadType);
+                  'Switching to thread ${newThread["topic"]} of type $newThreadType');
+              switchThread(ref, context, newThread["topic"]!, newThreadType);
               // only iommand was successfully validated
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -936,14 +936,14 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
                 controller: scrollController,
                 itemCount: filtered.length,
                 itemBuilder: (context, index) {
-                  final title = filtered[index];
+                  final topic = filtered[index];
                   final selected = selectedIndex == index;
                   return Material(
                     color: selected
                         ? context.colorScheme.onSurface.withOpacity(.2)
                         : context.colorScheme.surface,
                     child: ListTile(
-                      title: Text(title),
+                      title: Text(topic),
                       tileColor:
                           selected ? Colors.red : context.colorScheme.surface,
                       selected: selected,
@@ -953,25 +953,25 @@ class _CustomCommandInputState2 extends State<CustomCommandInput2> {
                           const EdgeInsets.symmetric(horizontal: 16),
                       hoverColor: context.colorScheme.primary.withOpacity(0.2),
                       onTap: () {
-                        widget.onSuggestionTap!(title);
+                        widget.onSuggestionTap!(topic);
                         setState(() {
                           filtered = [];
                         });
 
                         print(
                             '---------------------------------------------------------------- START ----------------------------------------------------------------');
-                        print(title);
-                        if (title.startsWith('/')) {
+                        print(topic);
+                        if (topic.startsWith('/')) {
                           // this is a command
-                          widget.controller.text = title;
+                          widget.controller.text = topic;
 
-                          print('command $title');
+                          print('command $topic');
                         } else {
                           String firstHalf =
                               widget.controller.text.split('#')[0];
-                          // this is a title
-                          // set the current title
-                          String? fullCommand = ("$firstHalf #$title")
+                          // this is a topic
+                          // set the current topic
+                          String? fullCommand = ("$firstHalf #$topic")
                               .replaceAll(RegExp(r"\s+"), ' ');
                           widget.controller.text = fullCommand;
 
@@ -1087,28 +1087,28 @@ class CustomCommandInput extends ConsumerWidget {
             child: ListView.separated(
               itemCount: state.filtered.length,
               itemBuilder: (context, index) {
-                final title = state.filtered[index];
+                final topic = state.filtered[index];
                 return ListTile(
                   autofocus: true,
-                  title: Text(title),
+                  title: Text(topic),
                   onTap: () {
-                    onSuggestionTap!(title);
+                    onSuggestionTap!(topic);
                     ref.read(provider.notifier).setList([]);
 
                     print(
                         '---------------------------------------------------------------- START ----------------------------------------------------------------');
-                    print(title);
-                    if (title.startsWith('/')) {
+                    print(topic);
+                    if (topic.startsWith('/')) {
                       // this is a command
-                      controller.text = title;
+                      controller.text = topic;
 
-                      print('command $title');
+                      print('command $topic');
                     } else {
                       // SuggestionsController.of(context).refresh();
                       String firstHalf = controller.text.split('#')[0];
-                      // this is a title
-                      // set the current title
-                      String? fullCommand = ("$firstHalf #$title")
+                      // this is a topic
+                      // set the current topic
+                      String? fullCommand = ("$firstHalf #$topic")
                           .replaceAll(RegExp(r"\s+"), ' ');
                       controller.text = fullCommand;
 

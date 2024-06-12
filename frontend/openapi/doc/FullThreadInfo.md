@@ -20,7 +20,7 @@ Name | Type | Description | Notes
 **mention** | **bool** |  | [optional] 
 **numBlocks** | **int** |  | [optional] [default to 0]
 **parentBlockId** | **String** |  | [optional] 
-**title** | **String** |  | 
+**topic** | **String** |  | 
 **type** | **String** |  | 
 **unfollow** | **bool** |  | [optional] 
 **unread** | **bool** |  | [optional] 

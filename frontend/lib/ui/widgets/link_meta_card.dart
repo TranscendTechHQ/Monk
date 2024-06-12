@@ -34,9 +34,9 @@ class LinkMetaCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (linkMeta!.title != null)
+            if (linkMeta!.topic != null)
               Text(
-                linkMeta!.title!,
+                linkMeta!.topic!,
                 style: context.textTheme.bodyMedium,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

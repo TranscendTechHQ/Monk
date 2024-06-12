@@ -42,7 +42,7 @@ def update_block():
 
 async def fix_block_ids():
     collection = app.mongodb["threads"]
-    # query = {"title":"myidea"}
+    # query = {"topic":"myidea"}
     # Find the document
     # document = await collection.find_one(query)
     async for document in collection.find({}):

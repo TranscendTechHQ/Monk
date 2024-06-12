@@ -167,13 +167,13 @@ async def webhook_event(request: Request):
         # create threads for each public channel
         thread_type = "slack"
         user_id = user["_id"]
-        thread_title = channel.name
+        thread_topic = channel.name
         block_id = model.event.client_msg_id
         createdAt = convert_unix_timestamp_to_iso_string(model.event.ts)
 
         print("\n [WEBHOOK] 👉 Creating new thread")
         # create a new thread
-        new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, title=thread_title,
+        new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, topic=thread_topic,
                                              thread_type=thread_type, created_at=channel.created_at)
 
         print("\n [WEBHOOK] 👉 Thread created successfully")

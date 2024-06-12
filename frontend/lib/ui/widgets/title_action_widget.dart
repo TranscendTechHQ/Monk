@@ -7,7 +7,7 @@ class TileActionWidget extends StatelessWidget {
     this.onDelete,
     this.onCustomIconPressed,
     this.icon,
-    this.list = const [Choice(title: "Delete", icon: Icons.delete)],
+    this.list = const [Choice(topic: "Delete", icon: Icons.delete)],
     this.menuKey,
     this.iconColor,
     this.tooltip,
@@ -35,7 +35,7 @@ class TileActionWidget extends StatelessWidget {
         if (action.onPressed != null) {
           action.onPressed!.call();
         } else {
-          switch (action.title) {
+          switch (action.topic) {
             case "Delete":
               if (onDelete != null) onDelete!.call();
               break;
@@ -66,7 +66,7 @@ class TileActionWidget extends StatelessWidget {
                   color: iconColor ?? context.theme.iconTheme.color,
                 ).pR(8),
                 Text(
-                  choice.title,
+                  choice.topic,
                   // style: choice.style ?? TextStyles.bodyText15(context),
                 ),
               ],
@@ -80,14 +80,14 @@ class TileActionWidget extends StatelessWidget {
 
 class Choice {
   const Choice({
-    required this.title,
+    required this.topic,
     this.icon,
     this.onPressed,
     this.style,
   });
 
   final IconData? icon;
-  final String title;
+  final String topic;
   final TextStyle? style;
   final VoidCallback? onPressed;
 }

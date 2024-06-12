@@ -39,8 +39,8 @@ def generate_single_thread_embedding(thread_doc):
     embeddings_collection = app.mongodb["thread_embeddings"]
     user_collection = app.mongodb["users"]
 
-    title = thread_doc['title']
-    text = "This is the content of the thread with title " + title + ". "
+    topic = thread_doc['topic']
+    text = "This is the content of the thread with topic " + topic + ". "
     threadType = thread_doc['type']
     text += "The type of the thread is " + threadType + ". "
     createdAt = thread_doc['created_at']
@@ -52,7 +52,7 @@ def generate_single_thread_embedding(thread_doc):
     email = userDoc['email']
     text += "The email of the creator is " + email + ". "
     # print(text)
-    embeddings['title'] = title
+    embeddings['topic'] = topic
 
     # return
 
@@ -73,7 +73,7 @@ def generate_all_threads_embedding():
     # Update the collection with the embeddings
     # requests = []
 
-    for thread_doc in thread_collection.find({'title': {"$exists": True}}).limit(500):
+    for thread_doc in thread_collection.find({'topic': {"$exists": True}}).limit(500):
         # print(doc['content'])
         generate_single_thread_embedding(thread_doc)
 
@@ -91,10 +91,10 @@ def move_thread_embedding():
     dest_collection = app.mongodb["thread_embeddings"]
     embeddings = {}
     requests = []
-    for doc in collection.find({'title': {"$exists": True}}).limit(500):
-        title = doc['title']
+    for doc in collection.find({'topic': {"$exists": True}}).limit(500):
+        topic = doc['topic']
         if 'thread_embedding' in doc:
-            embeddings[title] = doc["thread_embedding"]
+            embeddings[topic] = doc["thread_embedding"]
             # dest_collection.insert_one(embeddings)
             collection.update_one({'_id': doc['_id']}, {'$unset': {'thread_embedding': 1}}, upsert=True)
         # requests.append(UpdateOne({'_id': doc['_id']}, {'$set': {'thread_embedding': embeddings}}))

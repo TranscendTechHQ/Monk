@@ -11,7 +11,7 @@ enum AlertType {
 
 class Alert {
   static Future<T?> dialog<T>(BuildContext context,
-      {String title = "Message",
+      {String topic = "Message",
       required Widget child,
       VoidCallback? onPressed,
       Color? titleBackGround,
@@ -59,7 +59,7 @@ class Alert {
                             Container(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(title, style: titleStyle),
+                              child: Text(topic, style: titleStyle),
                             ).vP8.extended,
                             const Spacer(),
                             DismissButton(
@@ -93,7 +93,7 @@ class Alert {
   static void confirm(
     BuildContext context, {
     required String message,
-    String title = "Message",
+    String topic = "Message",
     required VoidCallback onConfirm,
     VoidCallback? onCancel,
     String confirmLabel = "Confirm",
@@ -131,7 +131,7 @@ class Alert {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  title,
+                  topic,
                   style: context.textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
