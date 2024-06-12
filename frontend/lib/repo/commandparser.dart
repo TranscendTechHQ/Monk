@@ -57,13 +57,13 @@ class CommandParser {
     var topic = parts.length > 1 ? parts[1] : '';
 
     if (!topic.startsWith('#')) {
-      throw ArgumentError('Title should start with "#"');
+      throw ArgumentError('Topic should start with "#"');
     }
 
     topic = topic.substring(1);
 
     if (!isAlphanumeric(topic)) {
-      throw ArgumentError('Title should be alphanumeric');
+      throw ArgumentError('Topic should be alphanumeric');
     }
 
     return topic;
@@ -107,7 +107,7 @@ class CommandParser {
 
       if (command.startsWith('/new-')) {
         if (!isUnique(topic, titlesList)) {
-          throw ArgumentError('Title must be unique for creating new threads');
+          throw ArgumentError('Topic must be unique for creating new threads');
         } else {
           final threadType = command.substring(5);
           commandHintTextNotifier.set('New $threadType $topic added');

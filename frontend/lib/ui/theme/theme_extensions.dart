@@ -84,7 +84,7 @@ extension PaddingHelper on Widget {
   Padding get vP4 =>
       Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: this);
 
-  ///Horizontal Padding for Title
+  ///Horizontal Padding for Topic
   Padding get hP30 => Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30.0), child: this);
 

@@ -99,7 +99,7 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
 
   Widget callbackShortcutWrapper(
       {required Widget child, List<String> filtered = const []}) {
-    if (searchType != 'Title' || titleController.text.isEmpty) {
+    if (searchType != 'Topic' || titleController.text.isEmpty) {
       return child;
     }
     Map<ShortcutActivator, VoidCallback> bindings = {
@@ -293,7 +293,7 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                   onOptionSelect: (option) {
                     setState(() {
                       searchType = option;
-                      if (option == 'Title') {
+                      if (option == 'Topic') {
                         titleList = widget.threadsMap.keys.toList();
                         filteredTitleNotifier.value = titleList;
                       } else {
@@ -312,7 +312,7 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                     children: [
                       RichText(
                         text: TextSpan(
-                            text: searchType == 'Title' ? 'Title:' : "Semantic",
+                            text: searchType == 'Topic' ? 'Topic' : "Semantic",
                             style: context.textTheme.bodyMedium!.copyWith(
                               color:
                                   context.colorScheme.onSurface.withOpacity(.9),
@@ -320,9 +320,9 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
                             ),
                             children: [
                               TextSpan(
-                                text: searchType == 'Title'
-                                    ? ' Search by Thread titles'
-                                    : " Search by Thread describing in a sentence",
+                                text: searchType == 'Topic'
+                                    ? ' Search by Thread Topic'
+                                    : " Search by describing the thread in plain english",
                                 style: context.textTheme.bodySmall!.copyWith(
                                   color: context.colorScheme.onSurface
                                       .withOpacity(.5),
@@ -427,7 +427,7 @@ class SearchInput extends StatelessWidget {
         ),
         prefixIcon: searchType.isNotNullEmpty
             ? SizedBox(
-                width: searchType == "Title" ? 60 : 100,
+                width: searchType == "Topic" ? 60 : 100,
                 child: Center(
                   child: Container(
                     padding:
@@ -512,21 +512,21 @@ class SearchOptions extends StatelessWidget {
         ),
         ListTile(
           onTap: () {
-            onOptionSelect('Title');
+            onOptionSelect('Topic');
           },
           dense: true,
           contentPadding: const EdgeInsets.symmetric(horizontal: 4),
           minVerticalPadding: 0,
           title: RichText(
             text: TextSpan(
-                text: 'Title:',
+                text: 'Topic:',
                 style: context.textTheme.bodyMedium!.copyWith(
                   color: context.colorScheme.onSurface.withOpacity(.9),
                   fontSize: 14,
                 ),
                 children: [
                   TextSpan(
-                    text: ' Search by Thread titles',
+                    text: ' Search by Thread Topic',
                     style: context.textTheme.bodySmall!.copyWith(
                       color: context.colorScheme.onSurface.withOpacity(.5),
                       fontSize: 12,
@@ -545,14 +545,14 @@ class SearchOptions extends StatelessWidget {
           dense: true,
           title: RichText(
             text: TextSpan(
-                text: 'Semantics:',
+                text: 'Semantic:',
                 style: context.textTheme.bodyMedium!.copyWith(
                   color: context.colorScheme.onSurface.withOpacity(.9),
                   fontSize: 14,
                 ),
                 children: [
                   TextSpan(
-                    text: ' Search by Thread describing in a sentence',
+                    text: ' Search by describing the thread in plain english',
                     style: context.textTheme.bodySmall!.copyWith(
                       color: context.colorScheme.onSurface.withOpacity(.5),
                       fontSize: 12,

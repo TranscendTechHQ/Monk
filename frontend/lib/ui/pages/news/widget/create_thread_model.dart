@@ -71,7 +71,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
   Future<void> createThread(BuildContext context, WidgetRef ref, String topic,
       {String? blockContent, DateTime? dueDate}) async {
     if (topic.isNullOrEmpty) {
-      showMessage(context, 'Title is required');
+      showMessage(context, 'Topic is required');
       return;
     } else if (blockContent.isNullOrEmpty && attachment != null) {
       showMessage(context, 'Message is required');
@@ -174,7 +174,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
           ),
           const SizedBox(height: 16),
           Text(
-            type == 'chat' ? 'topic' : 'Todo Title',
+            'Topic',
             style: context.textTheme.bodySmall?.copyWith(
               color: monkBlue,
             ),

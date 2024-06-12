@@ -824,7 +824,7 @@
     "code_summary": "I's a diff to add an AutoCompleteVisibility class and use it in the \"CommandBox\" widget. This should make the component more maintainable."
   },
   {
-    "commit_message": "- Added Title provider. Projects, ideas, tasks, etc.\nall will have topic. Does not work yet.\n",
+    "commit_message": "- Added Topic provider. Projects, ideas, tasks, etc.\nall will have topic. Does not work yet.\n",
     "committer_name": "yksoni-transcendtech",
     "commit_id": "55307b3c57b064997443d8045417afeb21f7d71e",
     "commit_timestamp": 1706237671,
