@@ -70,6 +70,7 @@ class NewsPage extends ConsumerWidget {
     final threadList = ref.watch(fetchThreadsInfoProvider);
     ref.watch(newsFeedFilterProvider);
     final List<String> titlesList = threadList.value?.keys.toList() ?? [];
+    final newsFeed = ref.watch(newsFeedProvider);
 
     return Scaffold(
       body: PageScaffold(
@@ -83,7 +84,7 @@ class NewsPage extends ConsumerWidget {
               children: [
                 // LEFT TOOLBAR
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 130),
+                  constraints: const BoxConstraints(maxWidth: 142),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -140,6 +141,55 @@ class NewsPage extends ConsumerWidget {
                           }
                         },
                       ),
+                      const SizedBox(height: 10),
+                      Stack(
+                        children: [
+                          OutlineIconButton(
+                            wrapped: false,
+                            svgPath: 'filter.svg',
+                            label: 'Mentions',
+                            onPressed: () async {
+                              ref
+                                  .read(newsFeedProvider.notifier)
+                                  .displayMentionedThreads();
+                              final state =
+                                  ref.read(newsFeedFilterProvider.notifier);
+                              await state.updateSemanticQuery(
+                                bookmarked: false,
+                                dismissed: false,
+                                unRead: false,
+                                upvoted: false,
+                                mentioned: true,
+                                semanticQuery: '',
+                              );
+                              showMessage(
+                                  context, 'Displaying mentioned threads');
+                            },
+                          ),
+                          newsFeed.maybeWhen(
+                            orElse: () => const SizedBox(),
+                            data: (threads) {
+                              final mentionedThreads = threads
+                                  .where((element) =>
+                                      element.mention == true &&
+                                      element.unread == true)
+                                  .toList(growable: false);
+                              if (mentionedThreads.isEmpty) {
+                                return const SizedBox();
+                              }
+                              return Positioned(
+                                top: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  radius: 3,
+                                  backgroundColor:
+                                      context.customColors.sourceAlert,
+                                ).p(3),
+                              );
+                            },
+                          ),
+                        ],
+                      )
                     ],
                   ).hP8,
                 ),
