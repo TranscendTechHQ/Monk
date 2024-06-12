@@ -18,6 +18,7 @@ import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/helper/utils.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -111,9 +112,22 @@ class CurrentThread extends _$CurrentThread {
     }
     final imageUrl = await uploadFile(image);
     loader.hideLoader();
+    final timeStampAsId = DateTime.now().millisecondsSinceEpoch.toString();
     final res = await AsyncRequest.handle<BlockWithCreator>(() async {
       loader.hideLoader();
-      loader.showLoader(context, message: 'creating block');
+      // loader.showLoader(context, message: 'creating block');
+      final authState = ref.read(authProvider);
+      _addNewBlockInState(BlockWithCreator(
+        content: text,
+        creator: UserModel(
+            id: authState.value?.session?.userId ?? "1",
+            name: authState.value?.session?.fullName ?? "Unknown User",
+            picture: authState.value?.session?.picture ?? ""),
+        id: timeStampAsId,
+        position: 0,
+        createdAt: DateTime.now(),
+        image: imageUrl,
+      ));
 
       String? threadTitle = thread.topic ?? customTitle;
       if (threadTitle.isNullOrEmpty) {
@@ -139,24 +153,52 @@ class CurrentThread extends _$CurrentThread {
     });
 
     return res.fold((l) {
+      _addNewBlockInState(null,
+          blockIdToReplace: timeStampAsId, removeBlock: true);
       throw Exception(l.message ?? "Failed to create block");
     }, (block) {
-      final list = state.value?.blocks.getOrEmpty ?? [];
-      list.add(block);
-
-      final updatedThreadModel = FullThreadInfo(
-        topic: thread.topic,
-        type: thread.type,
-        content: list,
-        creator: thread.creator,
-        id: thread.id,
-        defaultBlock: thread.defaultBlock,
-        createdAt: thread.createdAt,
-      );
-      state = AsyncValue.data(
-          CurrentTreadState.result(blocks: list, thread: updatedThreadModel));
+      _addNewBlockInState(block, blockIdToReplace: timeStampAsId);
       return true;
     });
+  }
+
+  void _addNewBlockInState(BlockWithCreator? block,
+      {String? blockIdToReplace, bool removeBlock = false}) {
+    final list = state.value?.blocks.getOrEmpty ?? [];
+    final thread = state.value?.thread;
+    if (thread == null) {
+      logger.e("There is no thread to add block to");
+      return;
+    }
+
+    if (blockIdToReplace != null && removeBlock) {
+      list.removeWhere((element) => element.id == blockIdToReplace);
+    } else if (block == null) {
+      return;
+    }
+    // Replace existing block
+    else if (blockIdToReplace.isNotNullEmpty) {
+      final index =
+          list.indexWhere((element) => element.id == blockIdToReplace);
+      if (index != -1) {
+        list[index] = block;
+      }
+    }
+    // Add new block
+    else {
+      list.add(block);
+    }
+    final updatedThreadModel = FullThreadInfo(
+      topic: thread.topic,
+      type: thread.type,
+      content: list,
+      creator: thread.creator,
+      id: thread.id,
+      defaultBlock: thread.defaultBlock,
+      createdAt: thread.createdAt,
+    );
+    state = AsyncValue.data(
+        CurrentTreadState.result(blocks: list, thread: updatedThreadModel));
   }
 
   Future<FullThreadInfo?> fetchThreadFromIdAsync(String id) async {
