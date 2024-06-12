@@ -126,7 +126,7 @@ class CurrentThread extends _$CurrentThread {
       final mainThreadId = thread.id;
 
       final newThreadState = await blockApi.createBlocksPost(
-        threadTitle: threadTitle!,
+        threadTopic: threadTitle!,
         createBlockModel: CreateBlockModel(
           content: text,
           mainThreadId: mainThreadId,
@@ -242,7 +242,7 @@ class CurrentThread extends _$CurrentThread {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final result = await threadApi.updateBlocksIdPut(
         id: blockId,
-        threadTitle: thread.topic,
+        threadTopic: thread.topic,
         updateBlockModel: UpdateBlockModel(
           content: content,
         ),

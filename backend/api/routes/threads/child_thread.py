@@ -68,12 +68,12 @@ async def create_new_thread(user_id, tenant_id, topic: str, thread_type: ThreadT
 # TODO: cleanup unused code here. thread colleciton not needed. parent_block_id or parentBlock, one of them not needed.
 
 
-async def create_child_thread(parent_block_id, main_thread_id, thread_title, thread_type, user_id,
+async def create_child_thread(parent_block_id, main_thread_id, thread_topic, thread_type, user_id,
                               tenant_id, parentBlock: BlockModel, created_at=None, slack_thread_ts: float = None):
     print("\n 5.a Inside create_child_thread", parentBlock)
 
     # print("Initiating create new thread")
-    created_child_thread = await create_new_thread(user_id, tenant_id, thread_title, thread_type, parent_block_id=parentBlock.id, created_at=created_at, slack_thread_ts=slack_thread_ts)
+    created_child_thread = await create_new_thread(user_id, tenant_id, thread_topic, thread_type, parent_block_id=parentBlock.id, created_at=created_at, slack_thread_ts=slack_thread_ts)
     print("\n 5.b Created child thread")
     child_thread_id = created_child_thread["_id"]
 

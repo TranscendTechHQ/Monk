@@ -820,10 +820,10 @@ paths:
       operationId: create_blocks_post
       parameters:
       - in: query
-        name: thread_title
+        name: thread_topic
         required: true
         schema:
-          title: Thread Title
+          title: Thread Topic
           type: string
       requestBody:
         content:
@@ -883,10 +883,10 @@ paths:
           title: Id
           type: string
       - in: query
-        name: thread_title
+        name: thread_topic
         required: true
         schema:
-          title: Thread Title
+          title: Thread Topic
           type: string
       requestBody:
         content:

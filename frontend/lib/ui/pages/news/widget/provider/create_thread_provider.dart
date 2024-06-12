@@ -59,7 +59,7 @@ class CreateThreadPod extends _$CreateThreadPod {
 
       loader.showLoader(context, message: 'creating block');
       final newThreadState = await blockApi.createBlocksPost(
-        threadTitle: threadTitle,
+        threadTopic: threadTitle,
         createBlockModel: CreateBlockModel(
             content: content,
             mainThreadId: mainThreadId,

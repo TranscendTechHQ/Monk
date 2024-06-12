@@ -291,7 +291,7 @@ async def main():
         #print(channel_list)
         for channel in channel_list.public_channels:
             overall_list.clear()
-            thread_title = channel.name
+            thread_topic = channel.name
             if channel.name != "ailearning":
                 continue
             channel_id = channel.id
@@ -310,7 +310,7 @@ async def main():
             thread_type = "slack"
             user_id = user["_id"]
 
-            new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, topic=thread_title,
+            new_thread = await create_new_thread(user_id=user_id, tenant_id=tenant_id, topic=thread_topic,
                                                  thread_type=thread_type, created_at=channel.created_at)
             main_thread_id = new_thread["_id"]
             
@@ -346,7 +346,7 @@ async def main():
                     
                     new_parent_block_id = created_block.id
                     current_slack_thread_id=message['parent_message_id']
-                    new_thread_title = f"Reply{thread_title}{new_parent_block_id[0:4].replace('-', '')}"
+                    new_thread_topic = f"Reply{thread_topic}{new_parent_block_id[0:4].replace('-', '')}"
                     #  we need to get the user who created the next message
                     if (i+1) >= len(message_list):
                         raise ValueError("Next message not found, was a reply deleted?")
@@ -358,7 +358,7 @@ async def main():
                     child_thread = await create_child_thread(
                                                 parent_block_id=new_parent_block_id,
                                                 main_thread_id=main_thread_id,
-                                                thread_title=new_thread_title,
+                                                thread_topic=new_thread_topic,
                                                 thread_type=thread_type,
                                                 user_id=new_thread_creator_id,
                                                 tenant_id=tenant_id,

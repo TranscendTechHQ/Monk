@@ -174,7 +174,7 @@ class _CreateThreadModal extends ConsumerState<CreateThreadModal> {
           ),
           const SizedBox(height: 16),
           Text(
-            type == 'chat' ? 'Thread Title' : 'Todo Title',
+            type == 'chat' ? 'topic' : 'Todo Title',
             style: context.textTheme.bodySmall?.copyWith(
               color: monkBlue,
             ),

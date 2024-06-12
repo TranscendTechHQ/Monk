@@ -195,7 +195,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
   /// 
   ///
   /// Parameters:
-  /// * [threadTitle] 
+  /// * [threadTopic] 
   /// * [createBlockModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -207,7 +207,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
   /// Returns a [Future] containing a [Response] with a [BlockWithCreator] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BlockWithCreator>> createBlocksPost({ 
-    required String threadTitle,
+    required String threadTopic,
     required CreateBlockModel createBlockModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -231,7 +231,7 @@ _responseData = rawData == null ? null : deserialize<FullThreadInfo, FullThreadI
     );
 
     final _queryParameters = <String, dynamic>{
-      r'thread_title': threadTitle,
+      r'thread_topic': threadTopic,
     };
 
     dynamic _bodyData;
@@ -1339,7 +1339,7 @@ _responseData = rawData == null ? null : deserialize<BlockWithCreator, BlockWith
   ///
   /// Parameters:
   /// * [id] 
-  /// * [threadTitle] 
+  /// * [threadTopic] 
   /// * [updateBlockModel] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -1352,7 +1352,7 @@ _responseData = rawData == null ? null : deserialize<BlockWithCreator, BlockWith
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BlockModel>> updateBlocksIdPut({ 
     required String id,
-    required String threadTitle,
+    required String threadTopic,
     required UpdateBlockModel updateBlockModel,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1376,7 +1376,7 @@ _responseData = rawData == null ? null : deserialize<BlockWithCreator, BlockWith
     );
 
     final _queryParameters = <String, dynamic>{
-      r'thread_title': threadTitle,
+      r'thread_topic': threadTopic,
     };
 
     dynamic _bodyData;
