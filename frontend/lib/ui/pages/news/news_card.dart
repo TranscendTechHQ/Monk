@@ -71,9 +71,9 @@ class NewsCard extends ConsumerWidget {
               decoration: BoxDecorations.cardDecoration(context).copyWith(
                 border: Border.all(
                   color: metaData.unread == true
-                      ? monkBlue
+                      ? context.customColors.sourceAlert!
                       : monkBlue700.withOpacity(.5),
-                  width: metaData.unread == true ? 2 : .7,
+                  width: metaData.unread == true ? 1 : .7,
                 ),
               ),
               child: Column(
