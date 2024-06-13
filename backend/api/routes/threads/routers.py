@@ -819,7 +819,8 @@ async def create(request: Request, thread_topic: str, block: CreateBlockModel = 
     # to indicate that the all other users other than the creator have an unread thread:
         # set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
         set_unread_other_users(thread_id, user_id, tenant_id)
-
+        #print("I reached here")
+        #print(f"thread_id: {thread_id} user_id: {user_id} tenant_id: {tenant_id}")
         end_time = time.time()
         print(
             f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
