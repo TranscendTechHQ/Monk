@@ -73,18 +73,6 @@ class NewsFeedFilter extends _$NewsFeedFilter {
         upvoted != null ||
         mentioned != null ||
         dismissed != null) {
-      final isFilterSaved = await SharedPreferenceHelper().setFilterPreference({
-        "bookmarked": bookmarked ?? false,
-        "unRead": unRead ?? false,
-        "upvoted": upvoted ?? false,
-        "mentioned": mentioned ?? false,
-        "dismissed": dismissed ?? false,
-      });
-      if (isFilterSaved) {
-        print('Filter Saved');
-      } else {
-        print('Filters not saved');
-      }
       final stateValue = state.value;
       state = AsyncData(
         NewsFeedFilterState(
@@ -96,16 +84,6 @@ class NewsFeedFilter extends _$NewsFeedFilter {
           semanticQuery: semanticQuery,
         ),
       );
-
-      final isSaved =
-          await SharedPreferenceHelper().setFilterSemantic(semanticQuery ?? "");
-      if (isSaved) {
-        print('Query Saved');
-      } else {
-        print('Query not saved');
-      }
-    } else {
-      // await SharedPreferenceHelper().clearFilterSemanticPreference();
     }
   }
 }

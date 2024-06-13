@@ -84,7 +84,7 @@ class NewsPage extends ConsumerWidget {
               children: [
                 // LEFT TOOLBAR
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 142),
+                  constraints: const BoxConstraints(maxWidth: 152),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -154,13 +154,13 @@ class NewsPage extends ConsumerWidget {
                                   .displayMentionedThreads();
                               final state =
                                   ref.read(newsFeedFilterProvider.notifier);
-                              await state.updateSemanticQuery(
+                              await state.updateFilter(
                                 bookmarked: false,
                                 dismissed: false,
                                 unRead: false,
                                 upvoted: false,
                                 mentioned: true,
-                                semanticQuery: '',
+                                semanticQuery: null,
                               );
                               showMessage(
                                   context, 'Displaying mentioned threads');
