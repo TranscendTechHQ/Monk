@@ -153,7 +153,7 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
                     '$sortArray': {
                         'input': '$blocks',
                         'sortBy': {
-                            'created_at': 1
+                            'position': 1
                         }
                     }
                 }
