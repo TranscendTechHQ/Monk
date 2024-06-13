@@ -877,7 +877,7 @@ async def update_block_task_status(request: Request, id: str, task_status: str =
 
         thread_id = updated_block["main_thread_id"]
         tenant_id = await get_tenant_id(session)
-        await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(updated_block))
@@ -913,7 +913,7 @@ async def update_block_due_date(request: Request, id: str, due_date: str = Body(
 
         thread_id = updated_block["main_thread_id"]
         tenant_id = get_tenant_id(session)
-        await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(updated_block))
@@ -993,7 +993,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
             print(
                 f"    → Changing block position from {blocks[i]['content']} to {new_block_position}"),
 
-        await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(block_to_move))
@@ -1139,7 +1139,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
 
         ret_thread = await get_thread_from_db(updated_thread["_id"], user_id, tenant_id)
         thread_id = ret_thread["_id"]
-        await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(ret_thread))
     except Exception as e:

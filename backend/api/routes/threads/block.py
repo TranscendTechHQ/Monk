@@ -32,7 +32,7 @@ async def updateBlock(block_in_db, user_id: str, tenant_id: str, block_content: 
         updated_block = await update_mongo_document_fields({"_id": update_block["_id"]}, update_block, block_collection)
 
         thread_id = updated_block["main_thread_id"]
-        await set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+        set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
 
         return updated_block
     except Exception as e:
