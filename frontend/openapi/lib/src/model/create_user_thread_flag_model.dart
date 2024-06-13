@@ -18,6 +18,8 @@ class CreateUserThreadFlagModel {
   /// Returns a new [CreateUserThreadFlagModel] instance.
   CreateUserThreadFlagModel({
 
+     this.assigned,
+
      this.bookmark,
 
      this.mention,
@@ -30,6 +32,18 @@ class CreateUserThreadFlagModel {
 
      this.upvote,
   });
+
+  @JsonKey(
+    
+    name: r'assigned',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? assigned;
+
+
 
   @JsonKey(
     
@@ -105,6 +119,7 @@ class CreateUserThreadFlagModel {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateUserThreadFlagModel &&
+     other.assigned == assigned &&
      other.bookmark == bookmark &&
      other.mention == mention &&
      other.threadId == threadId &&
@@ -114,6 +129,7 @@ class CreateUserThreadFlagModel {
 
   @override
   int get hashCode =>
+    (assigned == null ? 0 : assigned.hashCode) +
     (bookmark == null ? 0 : bookmark.hashCode) +
     (mention == null ? 0 : mention.hashCode) +
     threadId.hashCode +

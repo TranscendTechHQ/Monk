@@ -6,9 +6,12 @@ from utils.db import create_mongo_document, create_mongo_document_sync, create_o
 logger = logging.getLogger(__name__)
 
 
-def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
+def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None, assigned=None):
     try:
-
+        if thread_id is None or user_id is None or tenant_id is None:
+            print(
+                f"\n ❌ [ERROR]: thread_id:{thread_id}, user_id:{user_id} or tenant_id:{tenant_id} is None",)
+            return None
         user_thread_flag = get_mongo_document_sync({"thread_id": thread_id, "user_id": user_id},
                                                    syncdb.user_thread_flags_collection, tenant_id=tenant_id)
 
@@ -21,7 +24,8 @@ def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, b
                 unfollow=unfollow if unfollow else None,
                 bookmark=bookmark if bookmark else None,
                 upvote=upvote if upvote else None,
-                mention=mention if mention else None
+                mention=mention if mention else None,
+                assigned=assigned if assigned else None
             )
             user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
             create_mongo_document_sync(
@@ -35,6 +39,8 @@ def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, b
         user_thread_flag["unfollow"] = unfollow if unfollow is not None else user_thread_flag["unfollow"]
         user_thread_flag["bookmark"] = bookmark if bookmark is not None else user_thread_flag["bookmark"]
         user_thread_flag["upvote"] = upvote if upvote is not None else user_thread_flag["upvote"]
+        # user_thread_flag["mention"] = mention if mention is not None else user_thread_flag["mention"]
+        user_thread_flag["assigned"] = assigned if assigned is not None else user_thread_flag["assigned"]
         if mention is not None:
             user_thread_flag["mention"] = mention
 
@@ -56,7 +62,7 @@ def set_unread_other_users(thread_id, user_id, tenant_id):
 # Set flags true for all other users in the thread except the user_id
 
 
-def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None):
+def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvote=None, bookmark=None, unfollow=None, mention=None, assigned=None):
     try:
         if thread_id is None or user_id is None or tenant_id is None:
             print("\n ❌ [ERROR]: thread_id, user_id or tenant_id is None",
@@ -69,7 +75,7 @@ def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvot
             if other_user_id == user_id:
                 continue
             update_user_flags(thread_id, other_user_id, tenant_id, unread=unread,
-                              upvote=upvote, bookmark=bookmark, unfollow=unfollow, mention=mention)
+                              upvote=upvote, bookmark=bookmark, unfollow=unfollow, mention=mention, assigned=assigned)
     except Exception as e:
         logger.error(e, exc_info=True)
         return None
@@ -86,7 +92,8 @@ def save_user_filter_preferences(user_id, tenant_id, filter_preferences: UserFil
             'unfollow': filter_preferences.unfollow,
             'unread': filter_preferences.unread,
             'upvote': filter_preferences.upvote,
-            'searchQuery': filter_preferences.searchQuery
+            'searchQuery': filter_preferences.searchQuery,
+            'assigned': filter_preferences.assigned
         }
         # user_filter_preferences_jsonable = jsonable_encoder(user_filter_preferences_doc)
         create_or_replace_mongo_doc(id=user_id,

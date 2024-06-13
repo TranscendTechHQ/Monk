@@ -93,6 +93,37 @@ class ThreadCard extends _$ThreadCard {
       state = state.copyWith(block: BlockWithCreator.fromJson(map));
     });
   }
+
+  Future<void> assignTodoToUser(String assignedUserId) async {
+    state = state.copyWith(assigningTask: true);
+    final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    final blockId = state.block.id;
+    final res = await AsyncRequest.handle<BlockWithCreator>(() async {
+      final res = await threadApi.updateBlockAssignedUserBlocksIdAssignPut(
+        id: blockId!,
+        body: assignedUserId,
+      );
+      return res.data!;
+    });
+    state = state.copyWith(assigningTask: false);
+    res.fold((l) {
+      throw Exception('Failed to update assigned');
+    }, (r) {
+      final map = state.block.toJson();
+      if (map.keys.contains('assigned_to_id')) {
+        map.update('assigned_to_id', (value) => assignedUserId);
+      } else {
+        map.putIfAbsent('assigned_to_id', () => assignedUserId);
+      }
+      if (map.keys.contains('assigned_to')) {
+        map.update('assigned_to_id', (value) => r.assignedTo?.toJson());
+      } else {
+        map.putIfAbsent('assigned_to', () => r.assignedTo?.toJson());
+      }
+      map.putIfAbsent('assigned_to', () => r.assignedTo?.toJson());
+      state = state.copyWith(block: BlockWithCreator.fromJson(map));
+    });
+  }
 }
 
 @freezed
@@ -101,6 +132,7 @@ class ThreadCardState with _$ThreadCardState {
     required BlockWithCreator block,
     required String type,
     @Default(false) bool addingDueDate,
+    @Default(false) bool assigningTask,
     @Default(EThreadCardState.idle) EThreadCardState eState,
     @Default(false) hoverEnabled,
     @Default(ETaskStatus.todo) ETaskStatus taskStatus,

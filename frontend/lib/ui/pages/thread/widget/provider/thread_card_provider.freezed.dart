@@ -19,6 +19,7 @@ mixin _$ThreadCardState {
   BlockWithCreator get block => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
   bool get addingDueDate => throw _privateConstructorUsedError;
+  bool get assigningTask => throw _privateConstructorUsedError;
   EThreadCardState get eState => throw _privateConstructorUsedError;
   dynamic get hoverEnabled => throw _privateConstructorUsedError;
   ETaskStatus get taskStatus => throw _privateConstructorUsedError;
@@ -38,6 +39,7 @@ abstract class $ThreadCardStateCopyWith<$Res> {
       {BlockWithCreator block,
       String type,
       bool addingDueDate,
+      bool assigningTask,
       EThreadCardState eState,
       dynamic hoverEnabled,
       ETaskStatus taskStatus});
@@ -59,6 +61,7 @@ class _$ThreadCardStateCopyWithImpl<$Res, $Val extends ThreadCardState>
     Object? block = null,
     Object? type = null,
     Object? addingDueDate = null,
+    Object? assigningTask = null,
     Object? eState = null,
     Object? hoverEnabled = freezed,
     Object? taskStatus = null,
@@ -75,6 +78,10 @@ class _$ThreadCardStateCopyWithImpl<$Res, $Val extends ThreadCardState>
       addingDueDate: null == addingDueDate
           ? _value.addingDueDate
           : addingDueDate // ignore: cast_nullable_to_non_nullable
+              as bool,
+      assigningTask: null == assigningTask
+          ? _value.assigningTask
+          : assigningTask // ignore: cast_nullable_to_non_nullable
               as bool,
       eState: null == eState
           ? _value.eState
@@ -104,6 +111,7 @@ abstract class _$$ThreadCardStateImplCopyWith<$Res>
       {BlockWithCreator block,
       String type,
       bool addingDueDate,
+      bool assigningTask,
       EThreadCardState eState,
       dynamic hoverEnabled,
       ETaskStatus taskStatus});
@@ -123,6 +131,7 @@ class __$$ThreadCardStateImplCopyWithImpl<$Res>
     Object? block = null,
     Object? type = null,
     Object? addingDueDate = null,
+    Object? assigningTask = null,
     Object? eState = null,
     Object? hoverEnabled = freezed,
     Object? taskStatus = null,
@@ -139,6 +148,10 @@ class __$$ThreadCardStateImplCopyWithImpl<$Res>
       addingDueDate: null == addingDueDate
           ? _value.addingDueDate
           : addingDueDate // ignore: cast_nullable_to_non_nullable
+              as bool,
+      assigningTask: null == assigningTask
+          ? _value.assigningTask
+          : assigningTask // ignore: cast_nullable_to_non_nullable
               as bool,
       eState: null == eState
           ? _value.eState
@@ -161,6 +174,7 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
       {required this.block,
       required this.type,
       this.addingDueDate = false,
+      this.assigningTask = false,
       this.eState = EThreadCardState.idle,
       this.hoverEnabled = false,
       this.taskStatus = ETaskStatus.todo});
@@ -174,6 +188,9 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
   final bool addingDueDate;
   @override
   @JsonKey()
+  final bool assigningTask;
+  @override
+  @JsonKey()
   final EThreadCardState eState;
   @override
   @JsonKey()
@@ -184,7 +201,7 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
 
   @override
   String toString() {
-    return 'ThreadCardState(block: $block, type: $type, addingDueDate: $addingDueDate, eState: $eState, hoverEnabled: $hoverEnabled, taskStatus: $taskStatus)';
+    return 'ThreadCardState(block: $block, type: $type, addingDueDate: $addingDueDate, assigningTask: $assigningTask, eState: $eState, hoverEnabled: $hoverEnabled, taskStatus: $taskStatus)';
   }
 
   @override
@@ -196,6 +213,8 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.addingDueDate, addingDueDate) ||
                 other.addingDueDate == addingDueDate) &&
+            (identical(other.assigningTask, assigningTask) ||
+                other.assigningTask == assigningTask) &&
             (identical(other.eState, eState) || other.eState == eState) &&
             const DeepCollectionEquality()
                 .equals(other.hoverEnabled, hoverEnabled) &&
@@ -204,8 +223,15 @@ class _$ThreadCardStateImpl implements _ThreadCardState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, block, type, addingDueDate,
-      eState, const DeepCollectionEquality().hash(hoverEnabled), taskStatus);
+  int get hashCode => Object.hash(
+      runtimeType,
+      block,
+      type,
+      addingDueDate,
+      assigningTask,
+      eState,
+      const DeepCollectionEquality().hash(hoverEnabled),
+      taskStatus);
 
   @JsonKey(ignore: true)
   @override
@@ -220,6 +246,7 @@ abstract class _ThreadCardState implements ThreadCardState {
       {required final BlockWithCreator block,
       required final String type,
       final bool addingDueDate,
+      final bool assigningTask,
       final EThreadCardState eState,
       final dynamic hoverEnabled,
       final ETaskStatus taskStatus}) = _$ThreadCardStateImpl;
@@ -230,6 +257,8 @@ abstract class _ThreadCardState implements ThreadCardState {
   String get type;
   @override
   bool get addingDueDate;
+  @override
+  bool get assigningTask;
   @override
   EThreadCardState get eState;
   @override

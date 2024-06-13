@@ -664,6 +664,20 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                 '$unwind': {
                     'path': '$content.creator'
                 }
+            },
+            {
+                '$lookup': {
+                    'from': 'users',
+                    'localField': 'content.assigned_to_id',
+                    'foreignField': '_id',
+                    'as': 'content.assigned_to'
+                }
+            },
+            {
+                '$unwind': {
+                    'path': '$content.assigned_to',
+                    'preserveNullAndEmptyArrays': True
+                }
             }, {
                 '$group': {
                     '_id': '$_id',
@@ -699,6 +713,9 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                     },
                     'task_status': {
                         '$first': '$task_status'
+                    },
+                    'assigned_to_id': {
+                        '$first': '$assigned_to_id'
                     }
                 }
             }, {
@@ -716,6 +733,8 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                     'topic': 1,
                     'type': 1,
                     'task_status': 1,
+                    'assigned_to_id': 1,
+                    'assigned_to': 1,
                     'default_block': 1,
                     'created_at': 1,
                     'headline': 1,
@@ -914,6 +933,40 @@ async def update_block_due_date(request: Request, id: str, due_date: str = Body(
         thread_id = updated_block["main_thread_id"]
         tenant_id = get_tenant_id(session)
         set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
+
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder(updated_block))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
+
+
+@router.put("/blocks/{id}/assign", response_model=BlockWithCreator, response_description="Assign the todo block to user")
+async def update_block_assigned_user(request: Request, id: str, assignedUserId: str = Body(...),
+                                     session: SessionContainer = Depends(verify_session())):
+    try:
+        print('🏁 -------------------- Update todo task assign -------------------- 🏁')
+        block_collection = request.app.mongodb["blocks"]
+        print('\n👉 Fetching block from db using Id:', id)
+        block_to_update = await get_block_by_id(id, block_collection)
+        tenant_id = await get_tenant_id(session)
+        thread_id = block_to_update["main_thread_id"]
+
+        if not block_to_update:
+            return JSONResponse(status_code=404, content={"message": f"Block with ${id} not found"})
+
+        if block_to_update["assigned_to_id"] is not None and block_to_update["assigned_to_id"] != assignedUserId:
+            print('\n👉 Removing the assigned flag from the previous user')
+            # If the block is already assigned to someone else then remove the assigned flag from the user
+            update_user_flags(
+                thread_id, block_to_update["assigned_to_id"], tenant_id, assigned=False)
+
+        print('\n👉 Updating block assigned_to_id in db')
+        await update_mongo_document_fields({"_id": id}, {"assigned_to_id": assignedUserId, 'last_modified': str(dt.datetime.now())}, block_collection)
+
+        updated_block = await get_creator_block_by_id(id, block_collection)
+
+        update_user_flags(thread_id, assignedUserId, tenant_id, assigned=True)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(updated_block))

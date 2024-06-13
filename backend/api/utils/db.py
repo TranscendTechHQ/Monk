@@ -268,6 +268,18 @@ async def get_creator_block_by_id(block_id, block_collection):
                     'path': '$creator',
                     'includeArrayIndex': 'string'
                 }
+            }, {
+                '$lookup': {
+                    'from': 'users',
+                    'localField': 'assigned_to_id',
+                    'foreignField': '_id',
+                    'as': 'assigned_to'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$assigned_to',
+                    'preserveNullAndEmptyArrays': True
+                }
             }
         ]
         print("pipeline: ", pipeline)

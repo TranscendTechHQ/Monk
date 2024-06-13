@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:openapi/src/model/link_meta_model.dart';
+import 'package:openapi/src/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'block_model.g.dart';
@@ -20,6 +21,10 @@ class BlockModel {
   BlockModel({
 
      this.id,
+
+     this.assignedTo,
+
+     this.assignedToId,
 
      this.childThreadId = '',
 
@@ -55,6 +60,30 @@ class BlockModel {
 
 
   final String? id;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned_to',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final UserModel? assignedTo;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned_to_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? assignedToId;
 
 
 
@@ -205,6 +234,8 @@ class BlockModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
      other.id == id &&
+     other.assignedTo == assignedTo &&
+     other.assignedToId == assignedToId &&
      other.childThreadId == childThreadId &&
      other.content == content &&
      other.createdAt == createdAt &&
@@ -221,6 +252,8 @@ class BlockModel {
   @override
   int get hashCode =>
     id.hashCode +
+    (assignedTo == null ? 0 : assignedTo.hashCode) +
+    (assignedToId == null ? 0 : assignedToId.hashCode) +
     childThreadId.hashCode +
     content.hashCode +
     createdAt.hashCode +

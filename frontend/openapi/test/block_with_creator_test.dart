@@ -12,6 +12,16 @@ void main() {
       // TODO
     });
 
+    // UserModel assignedTo
+    test('to test the property `assignedTo`', () async {
+      // TODO
+    });
+
+    // String assignedToId
+    test('to test the property `assignedToId`', () async {
+      // TODO
+    });
+
     // String childThreadId (default value: '')
     test('to test the property `childThreadId`', () async {
       // TODO

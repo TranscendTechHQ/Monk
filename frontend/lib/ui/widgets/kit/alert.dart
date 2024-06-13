@@ -10,19 +10,12 @@ enum AlertType {
 }
 
 class Alert {
-  static Future<T?> dialog<T>(BuildContext context,
-      {String topic = "Message",
-      required Widget child,
-      VoidCallback? onPressed,
-      Color? titleBackGround,
-      String? buttonText = "Ok",
-      bool? enableCrossButton = true,
-      bool barrierDismissible = false,
-      TextStyle? titleStyle,
-      EdgeInsets insetPadding =
-          const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
-      EdgeInsets? childParentPadding = const EdgeInsets.only(bottom: 16),
-      Color? crossButtonIconColor}) {
+  static Future<T?> dialog<T>(
+    BuildContext context, {
+    required Widget child,
+    bool barrierDismissible = false,
+    BoxConstraints? constraints,
+  }) {
     return showDialog<T>(
       barrierDismissible: barrierDismissible,
       context: context,
@@ -35,54 +28,25 @@ class Alert {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Wrap(
-            children: [
-              Container(
-                padding: childParentPadding,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color:
-                              titleBackGround ?? context.colorScheme.secondary,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(topic, style: titleStyle),
-                            ).vP8.extended,
-                            const Spacer(),
-                            DismissButton(
-                              onPressed: () {
-                                if (enableCrossButton!) Navigator.pop(context);
-                              },
-                              tooltip: 'Close',
-                            )
-                          ],
-                        )),
-                    child,
-                    if (buttonText != null) ...[
-                      const SizedBox(height: 12),
-                      OutlineIconButton(
-                        label: buttonText,
-                        onPressed: onPressed,
-                        wrapped: false,
-                      )
-                    ]
-                  ],
+          backgroundColor: context.colorScheme.secondaryContainer,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            constraints: constraints ??
+                BoxConstraints(
+                  maxWidth: context.width * .6,
+                  minWidth: 300,
+                  maxHeight: context.width * .7,
+                  minHeight: 200,
                 ),
+            decoration: BoxDecoration(
+              color: context.colorScheme.secondaryContainer.withOpacity(.5),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border: Border.all(
+                color: context.customColors.monkBlue!,
+                width: .3,
               ),
-            ],
+            ),
+            child: child,
           ),
         );
       },

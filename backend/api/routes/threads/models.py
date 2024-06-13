@@ -65,6 +65,8 @@ class BlockModel(BaseModel):
         default="todo", pattern="^(todo|inprogress|done)$")
     tenant_id: str = Field(default="")
     link_meta: Optional[LinkMetaModel] = Field(default=None)
+    assigned_to_id: Optional[str] = Field(default=None)
+    assigned_to: Optional[UserModel] = Field(default=None)
 
 
 class CreateBlockModel(BaseModel):
@@ -152,6 +154,7 @@ class UserFilterPreferenceModel(BaseModel):
     upvote: Optional[bool] = Field(default=None, null=True)
     mention: Optional[bool] = Field(default=None, null=True)
     searchQuery: Optional[str] = Field(default=None, null=True)
+    assigned: Optional[bool] = Field(default=None, null=True)
 
 
 class UserThreadFlagModel(BaseModel):
@@ -164,6 +167,7 @@ class UserThreadFlagModel(BaseModel):
     bookmark: Optional[bool] = Field(default=None, null=True)
     upvote: Optional[bool] = Field(default=None, null=True)
     mention: Optional[bool] = Field(default=None, null=True)
+    assigned: Optional[bool] = Field(default=None, null=False)
 
 
 class UserThreadFlagsModel(BaseModel):
@@ -177,6 +181,7 @@ class CreateUserThreadFlagModel(BaseModel):
     bookmark: Optional[bool] = Field(default=None, null=True)
     mention: Optional[bool] = Field(default=None, null=True)
     upvote: Optional[bool] = Field(default=None, null=True)
+    assigned: Optional[bool] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,
@@ -205,6 +210,7 @@ class ThreadMetaData(BaseModel):
     unread: Optional[bool] = Field(default=None, null=True)
     unfollow: Optional[bool] = Field(default=None, null=True)
     bookmark: Optional[bool] = Field(default=None, null=True)
+    assigned: Optional[bool] = Field(default=None, null=True)
     mention: Optional[bool] = Field(default=None, null=True)
     upvote: Optional[bool] = Field(default=None, null=True)
     block: Optional[BlockModel] = Field(default=None)

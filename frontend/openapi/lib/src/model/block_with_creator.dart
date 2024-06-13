@@ -22,6 +22,10 @@ class BlockWithCreator {
 
      this.id,
 
+     this.assignedTo,
+
+     this.assignedToId,
+
      this.childThreadId = '',
 
     required  this.content,
@@ -58,6 +62,30 @@ class BlockWithCreator {
 
 
   final String? id;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned_to',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final UserModel? assignedTo;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned_to_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? assignedToId;
 
 
 
@@ -220,6 +248,8 @@ class BlockWithCreator {
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockWithCreator &&
      other.id == id &&
+     other.assignedTo == assignedTo &&
+     other.assignedToId == assignedToId &&
      other.childThreadId == childThreadId &&
      other.content == content &&
      other.createdAt == createdAt &&
@@ -237,6 +267,8 @@ class BlockWithCreator {
   @override
   int get hashCode =>
     id.hashCode +
+    (assignedTo == null ? 0 : assignedTo.hashCode) +
+    (assignedToId == null ? 0 : assignedToId.hashCode) +
     childThreadId.hashCode +
     content.hashCode +
     createdAt.hashCode +

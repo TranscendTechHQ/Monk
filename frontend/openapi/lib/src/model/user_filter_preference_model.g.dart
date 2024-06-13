@@ -13,6 +13,7 @@ UserFilterPreferenceModel _$UserFilterPreferenceModelFromJson(
       json,
       ($checkedConvert) {
         final val = UserFilterPreferenceModel(
+          assigned: $checkedConvert('assigned', (v) => v as bool?),
           bookmark: $checkedConvert('bookmark', (v) => v as bool?),
           mention: $checkedConvert('mention', (v) => v as bool?),
           searchQuery: $checkedConvert('searchQuery', (v) => v as String?),
@@ -34,6 +35,7 @@ Map<String, dynamic> _$UserFilterPreferenceModelToJson(
     }
   }
 
+  writeNotNull('assigned', instance.assigned);
   writeNotNull('bookmark', instance.bookmark);
   writeNotNull('mention', instance.mention);
   writeNotNull('searchQuery', instance.searchQuery);

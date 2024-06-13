@@ -9,9 +9,11 @@ import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/pages/thread/widget/provider/thread_card_provider.dart';
+import 'package:frontend/ui/pages/thread/widget/todo-assign-view.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/cache_image.dart';
+import 'package:frontend/ui/widgets/kit/alert.dart';
 import 'package:frontend/ui/widgets/link_meta_card.dart';
 import 'package:frontend/ui/widgets/markdown/markdown_viewer.dart';
 import 'package:intl/intl.dart';
@@ -33,6 +35,32 @@ class ThreadCard extends ConsumerWidget {
   final EmojiParser emojiParser;
   final String? mainThreadId;
   final ThreadType threadType;
+
+  Future<void> assignTodo(BuildContext context, WidgetRef ref,
+      ThreadCardProvider cardProvider) async {
+    final user = await Alert.dialog<UserModel?>(
+      context,
+      barrierDismissible: true,
+      constraints: BoxConstraints(
+        maxWidth: context.width * .5,
+        minWidth: 200,
+        maxHeight: 300,
+        minHeight: 200,
+      ),
+      child: const TodoAssignView(),
+    );
+
+    if (user != null) {
+      final threadNotifier = ref
+          .read(currentThreadProvider.call(topic: topic, type: type).notifier);
+      // final assignTodoModel = AssignTodoModel(
+      //   blockId: block.id!,
+      //   userId: user.id!,
+      // );
+      // await threadNotifier.assignTodoToUser(block.id!, user.id);
+      await ref.read(cardProvider.notifier).assignTodoToUser(user.id);
+    }
+  }
 
   Future<void> onReplyClick(
     BuildContext context,
@@ -109,6 +137,7 @@ class ThreadCard extends ConsumerWidget {
     final isHovered = card.hoverEnabled;
     final taskStatus = card.taskStatus;
     final dueDate = card.block.dueDate ?? block.dueDate;
+    final assignedTo = card.block.assignedTo ?? block.assignedTo;
 
     final controller = TextEditingController(text: block.content);
     // print(
@@ -306,80 +335,143 @@ class ThreadCard extends ConsumerWidget {
                 color: context.customColors.monkBlue!.withOpacity(.5),
                 thickness: .2,
               ),
-              if (card.addingDueDate)
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: CircularProgressIndicator.adaptive(),
-                )
-              else
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Icon(
-                      Icons.calendar_month_outlined,
-                      color: context.customColors.sourceMonkBlue,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8),
-                    RichText(
-                      text: TextSpan(
-                        text: 'Due Date:',
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: context.colorScheme.onSurface.withOpacity(.6),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (card.assigningTask)
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: CircularProgressIndicator.adaptive(),
+                    )
+                  else
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_month_outlined,
+                          color: context.customColors.sourceMonkBlue,
+                          size: 16,
                         ),
-                        children: [
-                          if (dueDate != null)
-                            TextSpan(
-                              text:
-                                  ' ${DateFormat('dd MMM yyyy').format(dueDate ?? DateTime.now())}',
-                              style: context.textTheme.bodySmall?.copyWith(
-                                color: Colors.amber,
-                                fontSize: 12,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  final date = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(2025),
-                                  );
-                                  if (date != null) {
-                                    logger.d('Selected Date: $date');
-                                    await ref
-                                        .read(cardProvider.notifier)
-                                        .addDueDate(date);
-                                  }
-                                },
-                            )
-                          else
-                            TextSpan(
-                              text: ' Please add',
-                              style: context.textTheme.bodySmall?.copyWith(
-                                color: context.colorScheme.onSurface,
-                                fontSize: 12,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  final date = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(2025),
-                                  );
-                                  if (date != null) {
-                                    logger.d('Selected Date: $date');
-                                    await ref
-                                        .read(cardProvider.notifier)
-                                        .addDueDate(date);
-                                  }
-                                },
+                        const SizedBox(width: 8),
+                        Text(
+                          'Assigned to:',
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color:
+                                context.colorScheme.onSurface.withOpacity(.6),
+                          ),
+                        ),
+                        if (assignedTo != null) ...[
+                          const SizedBox(width: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: CacheImage(
+                              path: assignedTo.picture!,
+                              width: 20,
+                              height: 20,
                             ),
-                        ],
-                      ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            assignedTo.name ?? 'N/A',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: context.colorScheme.onSurface,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ] else
+                          TextButton(
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                              ),
+                              onPressed: () =>
+                                  assignTodo(context, ref, cardProvider),
+                              child: Text(
+                                'Please assign',
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  color: context.colorScheme.onSurface,
+                                  fontSize: 12,
+                                ),
+                              ))
+                      ],
                     ),
-                  ],
-                )
+                  if (card.addingDueDate)
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: CircularProgressIndicator.adaptive(),
+                    )
+                  else
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_month_outlined,
+                          color: context.customColors.sourceMonkBlue,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        RichText(
+                          text: TextSpan(
+                            text: 'Due Date:',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color:
+                                  context.colorScheme.onSurface.withOpacity(.6),
+                            ),
+                            children: [
+                              if (dueDate != null)
+                                TextSpan(
+                                  text:
+                                      ' ${DateFormat('dd MMM yyyy').format(dueDate ?? DateTime.now())}',
+                                  style: context.textTheme.bodySmall?.copyWith(
+                                    color: Colors.amber,
+                                    fontSize: 12,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () async {
+                                      final date = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime.now(),
+                                        lastDate: DateTime(2025),
+                                      );
+                                      if (date != null) {
+                                        logger.d('Selected Date: $date');
+                                        await ref
+                                            .read(cardProvider.notifier)
+                                            .addDueDate(date);
+                                      }
+                                    },
+                                )
+                              else
+                                TextSpan(
+                                  text: ' Please add',
+                                  style: context.textTheme.bodySmall?.copyWith(
+                                    color: context.colorScheme.onSurface,
+                                    fontSize: 12,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () async {
+                                      final date = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime.now(),
+                                        lastDate: DateTime(2025),
+                                      );
+                                      if (date != null) {
+                                        logger.d('Selected Date: $date');
+                                        await ref
+                                            .read(cardProvider.notifier)
+                                            .addDueDate(date);
+                                      }
+                                    },
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              )
             ],
             // Reply/Replies Button
             Row(

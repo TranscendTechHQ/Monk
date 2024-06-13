@@ -98,6 +98,13 @@ void main() {
       // TODO
     });
 
+    // Update Block Assigned User
+    //
+    //Future<BlockWithCreator> updateBlockAssignedUserBlocksIdAssignPut(String id, String body) async
+    test('test updateBlockAssignedUserBlocksIdAssignPut', () async {
+      // TODO
+    });
+
     // Update Block Due Date
     //
     //Future<BlockWithCreator> updateBlockDueDateBlocksIdDueDatePut(String id, String body) async

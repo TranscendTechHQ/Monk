@@ -20,6 +20,8 @@ class UserThreadFlagModel {
 
      this.id,
 
+     this.assigned,
+
      this.bookmark,
 
      this.mention,
@@ -46,6 +48,18 @@ class UserThreadFlagModel {
 
 
   final String? id;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? assigned;
 
 
 
@@ -148,6 +162,7 @@ class UserThreadFlagModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is UserThreadFlagModel &&
      other.id == id &&
+     other.assigned == assigned &&
      other.bookmark == bookmark &&
      other.mention == mention &&
      other.tenantId == tenantId &&
@@ -160,6 +175,7 @@ class UserThreadFlagModel {
   @override
   int get hashCode =>
     id.hashCode +
+    (assigned == null ? 0 : assigned.hashCode) +
     (bookmark == null ? 0 : bookmark.hashCode) +
     (mention == null ? 0 : mention.hashCode) +
     tenantId.hashCode +

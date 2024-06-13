@@ -9,6 +9,8 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
+**assignedTo** | [**UserModel**](UserModel.md) |  | [optional] 
+**assignedToId** | **String** |  | [optional] 
 **childThreadId** | **String** |  | [optional] [default to '']
 **content** | **String** |  | 
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 

@@ -23,6 +23,8 @@ class FullThreadInfo {
 
     required  this.id,
 
+     this.assigned,
+
      this.block,
 
      this.bookmark,
@@ -65,6 +67,18 @@ class FullThreadInfo {
 
 
   final String id;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? assigned;
 
 
 
@@ -263,6 +277,7 @@ class FullThreadInfo {
   @override
   bool operator ==(Object other) => identical(this, other) || other is FullThreadInfo &&
      other.id == id &&
+     other.assigned == assigned &&
      other.block == block &&
      other.bookmark == bookmark &&
      other.content == content &&
@@ -283,6 +298,7 @@ class FullThreadInfo {
   @override
   int get hashCode =>
     id.hashCode +
+    (assigned == null ? 0 : assigned.hashCode) +
     (block == null ? 0 : block.hashCode) +
     (bookmark == null ? 0 : bookmark.hashCode) +
     content.hashCode +

@@ -17,6 +17,7 @@ CreateUserThreadFlagModel _$CreateUserThreadFlagModelFromJson(
           requiredKeys: const ['thread_id'],
         );
         final val = CreateUserThreadFlagModel(
+          assigned: $checkedConvert('assigned', (v) => v as bool?),
           bookmark: $checkedConvert('bookmark', (v) => v as bool?),
           mention: $checkedConvert('mention', (v) => v as bool?),
           threadId: $checkedConvert('thread_id', (v) => v as String),
@@ -39,6 +40,7 @@ Map<String, dynamic> _$CreateUserThreadFlagModelToJson(
     }
   }
 
+  writeNotNull('assigned', instance.assigned);
   writeNotNull('bookmark', instance.bookmark);
   writeNotNull('mention', instance.mention);
   val['thread_id'] = instance.threadId;

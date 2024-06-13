@@ -12,6 +12,11 @@ void main() {
       // TODO
     });
 
+    // bool assigned
+    test('to test the property `assigned`', () async {
+      // TODO
+    });
+
     // bool bookmark
     test('to test the property `bookmark`', () async {
       // TODO

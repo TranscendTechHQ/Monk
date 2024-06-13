@@ -9,6 +9,7 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
+**assigned** | **bool** |  | [optional] 
 **bookmark** | **bool** |  | [optional] 
 **mention** | **bool** |  | [optional] 
 **tenantId** | **String** |  | 

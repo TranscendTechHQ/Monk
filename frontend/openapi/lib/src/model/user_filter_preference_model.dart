@@ -18,6 +18,8 @@ class UserFilterPreferenceModel {
   /// Returns a new [UserFilterPreferenceModel] instance.
   UserFilterPreferenceModel({
 
+     this.assigned,
+
      this.bookmark,
 
      this.mention,
@@ -30,6 +32,18 @@ class UserFilterPreferenceModel {
 
      this.upvote,
   });
+
+  @JsonKey(
+    
+    name: r'assigned',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? assigned;
+
+
 
   @JsonKey(
     
@@ -105,6 +119,7 @@ class UserFilterPreferenceModel {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is UserFilterPreferenceModel &&
+     other.assigned == assigned &&
      other.bookmark == bookmark &&
      other.mention == mention &&
      other.searchQuery == searchQuery &&
@@ -114,6 +129,7 @@ class UserFilterPreferenceModel {
 
   @override
   int get hashCode =>
+    (assigned == null ? 0 : assigned.hashCode) +
     (bookmark == null ? 0 : bookmark.hashCode) +
     (mention == null ? 0 : mention.hashCode) +
     (searchQuery == null ? 0 : searchQuery.hashCode) +

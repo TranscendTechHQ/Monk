@@ -12,6 +12,11 @@ void main() {
       // TODO
     });
 
+    // bool assigned
+    test('to test the property `assigned`', () async {
+      // TODO
+    });
+
     // BlockModel block
     test('to test the property `block`', () async {
       // TODO
