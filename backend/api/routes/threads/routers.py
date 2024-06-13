@@ -440,7 +440,7 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
         thread_collection = syncdb.threads_collection
         thread_id = block.main_thread_id
 
-        pos = get_blocks_count(thread_id)
+        pos = get_blocks_count(thread_id) + 1
 
         blocks_collection = syncdb.blocks_collection
         content = block.content
