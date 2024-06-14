@@ -35,7 +35,8 @@ def get_relevance(user_profile: str, thread_ids: List[str]):
 
 def main():
     user_preference = 'yogesh is a product manager. show him mvp related stuff'
-    thread_ids = ['90897c22']
+    #thread_ids = ['90897c22']
+    thread_ids =["add0bae1-ce71-454b-b830-e580a5b7ff7d"]
     get_relevance(user_profile=user_preference, thread_ids=thread_ids)
 
 if __name__ == "__main__":
