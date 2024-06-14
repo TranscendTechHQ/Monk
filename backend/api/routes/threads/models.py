@@ -59,7 +59,7 @@ class BlockModel(BaseModel):
     due_date: Optional[dt.datetime] = Field(default=None)
     creator_id: str = Field(default="unknown id")
     main_thread_id: str = Field(default="")
-    position: int = Field(default=0)
+    position: int = Field(default=1)
     child_thread_id: str = Field(default="")
     task_status: str = Field(
         default="todo", pattern="^(todo|inprogress|done)$")
@@ -67,6 +67,8 @@ class BlockModel(BaseModel):
     link_meta: Optional[LinkMetaModel] = Field(default=None)
     assigned_to_id: Optional[str] = Field(default=None)
     assigned_to: Optional[UserModel] = Field(default=None)
+    assigned_thread_id: Optional[str] = Field(default=None)
+    assigned_pos: int = Field(default=1)
 
 
 class CreateBlockModel(BaseModel):
@@ -110,6 +112,7 @@ class CreateThreadModel(BaseModel):
 class CreateChildThreadModel(CreateThreadModel):
     parent_block_id: str = Field(..., alias="parentBlockId")
     main_thread_id: str = Field(..., alias="mainThreadId")
+    assigned_to_id: Optional[str] = Field(default=None, alias="assignedId")
 
 
 class ThreadModel(BaseModel):
@@ -123,6 +126,7 @@ class ThreadModel(BaseModel):
     headline: str = Field(default=None)
     tenant_id: str
     num_blocks: int = Field(default=0)
+    assigned_to_id: Optional[str] = Field(default=None)
     parent_block_id: Optional[str] = Field(default=None, null=True)
     slack_thread_ts: Optional[float] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
