@@ -17,6 +17,10 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
         );
         final val = BlockWithCreator(
           id: $checkedConvert('_id', (v) => v as String?),
+          assignedPos:
+              $checkedConvert('assigned_pos', (v) => (v as num?)?.toInt() ?? 1),
+          assignedThreadId:
+              $checkedConvert('assigned_thread_id', (v) => v as String?),
           assignedTo: $checkedConvert(
               'assigned_to',
               (v) => v == null
@@ -45,7 +49,7 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
           mainThreadId:
               $checkedConvert('main_thread_id', (v) => v as String? ?? ''),
           position:
-              $checkedConvert('position', (v) => (v as num?)?.toInt() ?? 0),
+              $checkedConvert('position', (v) => (v as num?)?.toInt() ?? 1),
           taskStatus:
               $checkedConvert('task_status', (v) => v as String? ?? 'todo'),
           tenantId: $checkedConvert('tenant_id', (v) => v as String? ?? ''),
@@ -54,6 +58,8 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
       },
       fieldKeyMap: const {
         'id': '_id',
+        'assignedPos': 'assigned_pos',
+        'assignedThreadId': 'assigned_thread_id',
         'assignedTo': 'assigned_to',
         'assignedToId': 'assigned_to_id',
         'childThreadId': 'child_thread_id',
@@ -78,6 +84,8 @@ Map<String, dynamic> _$BlockWithCreatorToJson(BlockWithCreator instance) {
   }
 
   writeNotNull('_id', instance.id);
+  writeNotNull('assigned_pos', instance.assignedPos);
+  writeNotNull('assigned_thread_id', instance.assignedThreadId);
   writeNotNull('assigned_to', instance.assignedTo?.toJson());
   writeNotNull('assigned_to_id', instance.assignedToId);
   writeNotNull('child_thread_id', instance.childThreadId);

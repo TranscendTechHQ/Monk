@@ -22,6 +22,10 @@ class BlockModel {
 
      this.id,
 
+     this.assignedPos = 1,
+
+     this.assignedThreadId,
+
      this.assignedTo,
 
      this.assignedToId,
@@ -44,7 +48,7 @@ class BlockModel {
 
      this.mainThreadId = '',
 
-     this.position = 0,
+     this.position = 1,
 
      this.taskStatus = 'todo',
 
@@ -60,6 +64,30 @@ class BlockModel {
 
 
   final String? id;
+
+
+
+  @JsonKey(
+    defaultValue: 1,
+    name: r'assigned_pos',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final int? assignedPos;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned_thread_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? assignedThreadId;
 
 
 
@@ -196,7 +224,7 @@ class BlockModel {
 
 
   @JsonKey(
-    defaultValue: 0,
+    defaultValue: 1,
     name: r'position',
     required: false,
     includeIfNull: false
@@ -234,6 +262,8 @@ class BlockModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is BlockModel &&
      other.id == id &&
+     other.assignedPos == assignedPos &&
+     other.assignedThreadId == assignedThreadId &&
      other.assignedTo == assignedTo &&
      other.assignedToId == assignedToId &&
      other.childThreadId == childThreadId &&
@@ -252,6 +282,8 @@ class BlockModel {
   @override
   int get hashCode =>
     id.hashCode +
+    assignedPos.hashCode +
+    (assignedThreadId == null ? 0 : assignedThreadId.hashCode) +
     (assignedTo == null ? 0 : assignedTo.hashCode) +
     (assignedToId == null ? 0 : assignedToId.hashCode) +
     childThreadId.hashCode +

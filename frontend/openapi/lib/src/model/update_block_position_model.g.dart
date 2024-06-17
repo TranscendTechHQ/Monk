@@ -16,10 +16,16 @@ UpdateBlockPositionModel _$UpdateBlockPositionModelFromJson(
           blockId: $checkedConvert('block_id', (v) => v as String? ?? ''),
           newPosition:
               $checkedConvert('new_position', (v) => (v as num?)?.toInt() ?? 0),
+          sortByAssignedPos: $checkedConvert(
+              'sort_by_assigned_pos', (v) => v as bool? ?? false),
         );
         return val;
       },
-      fieldKeyMap: const {'blockId': 'block_id', 'newPosition': 'new_position'},
+      fieldKeyMap: const {
+        'blockId': 'block_id',
+        'newPosition': 'new_position',
+        'sortByAssignedPos': 'sort_by_assigned_pos'
+      },
     );
 
 Map<String, dynamic> _$UpdateBlockPositionModelToJson(
@@ -34,5 +40,6 @@ Map<String, dynamic> _$UpdateBlockPositionModelToJson(
 
   writeNotNull('block_id', instance.blockId);
   writeNotNull('new_position', instance.newPosition);
+  writeNotNull('sort_by_assigned_pos', instance.sortByAssignedPos);
   return val;
 }

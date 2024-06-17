@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
 **assigned** | **bool** |  | [optional] 
+**assignedToId** | **String** |  | [optional] 
 **block** | [**BlockModel**](BlockModel.md) |  | [optional] 
 **bookmark** | **bool** |  | [optional] 
 **content** | [**List&lt;BlockWithCreator&gt;**](BlockWithCreator.md) |  | [optional] 

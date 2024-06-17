@@ -24,6 +24,8 @@ class ThreadMetaData {
 
      this.assigned,
 
+     this.assignedToId,
+
      this.block,
 
      this.bookmark,
@@ -74,6 +76,18 @@ class ThreadMetaData {
 
 
   final bool? assigned;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned_to_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? assignedToId;
 
 
 
@@ -249,6 +263,7 @@ class ThreadMetaData {
   bool operator ==(Object other) => identical(this, other) || other is ThreadMetaData &&
      other.id == id &&
      other.assigned == assigned &&
+     other.assignedToId == assignedToId &&
      other.block == block &&
      other.bookmark == bookmark &&
      other.createdAt == createdAt &&
@@ -268,6 +283,7 @@ class ThreadMetaData {
   int get hashCode =>
     id.hashCode +
     (assigned == null ? 0 : assigned.hashCode) +
+    (assignedToId == null ? 0 : assignedToId.hashCode) +
     (block == null ? 0 : block.hashCode) +
     (bookmark == null ? 0 : bookmark.hashCode) +
     createdAt.hashCode +

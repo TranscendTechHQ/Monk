@@ -18,6 +18,7 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
         final val = ThreadMetaData(
           id: $checkedConvert('_id', (v) => v as String),
           assigned: $checkedConvert('assigned', (v) => v as bool?),
+          assignedToId: $checkedConvert('assigned_to_id', (v) => v as String?),
           block: $checkedConvert(
               'block',
               (v) => v == null
@@ -45,6 +46,7 @@ ThreadMetaData _$ThreadMetaDataFromJson(Map<String, dynamic> json) =>
       },
       fieldKeyMap: const {
         'id': '_id',
+        'assignedToId': 'assigned_to_id',
         'createdAt': 'created_at',
         'lastModified': 'last_modified',
         'numBlocks': 'num_blocks',
@@ -64,6 +66,7 @@ Map<String, dynamic> _$ThreadMetaDataToJson(ThreadMetaData instance) {
   }
 
   writeNotNull('assigned', instance.assigned);
+  writeNotNull('assigned_to_id', instance.assignedToId);
   writeNotNull('block', instance.block?.toJson());
   writeNotNull('bookmark', instance.bookmark);
   val['created_at'] = instance.createdAt;

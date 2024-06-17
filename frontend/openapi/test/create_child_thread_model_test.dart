@@ -7,6 +7,11 @@ void main() {
   // TODO add properties to the entity
 
   group(CreateChildThreadModel, () {
+    // String assignedId
+    test('to test the property `assignedId`', () async {
+      // TODO
+    });
+
     // List<BlockModel> content
     test('to test the property `content`', () async {
       // TODO

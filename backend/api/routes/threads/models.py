@@ -34,6 +34,7 @@ class UserMap(BaseModel):
 class UpdateBlockPositionModel(BaseModel):
     block_id: str = Field(default='')
     new_position: int = Field(default=0)
+    sort_by_assigned_pos: bool = Field(default=False)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,)
@@ -59,7 +60,7 @@ class BlockModel(BaseModel):
     due_date: Optional[dt.datetime] = Field(default=None)
     creator_id: str = Field(default="unknown id")
     main_thread_id: str = Field(default="")
-    position: int = Field(default=1)
+    position: int = Field(default=0)
     child_thread_id: str = Field(default="")
     task_status: str = Field(
         default="todo", pattern="^(todo|inprogress|done)$")
@@ -209,6 +210,7 @@ class ThreadMetaData(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.now)
     creator: UserModel
     parent_block_id: Optional[str] = Field(default=None)
+    assigned_to_id: Optional[str] = Field(default=None)
     headline: str = Field(default=None)
     num_blocks: int = Field(default=0)
     unread: Optional[bool] = Field(default=None, null=True)

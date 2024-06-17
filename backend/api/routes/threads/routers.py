@@ -243,116 +243,117 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
     result = asyncdb.threads_collection.aggregate(pipeline)
     return result
 
-stage_lookup_blocks =  {# Get all blocks for the thread
-            '$lookup': {
-                'from': 'blocks',
+stage_lookup_blocks = {  # Get all blocks for the thread
+    '$lookup': {
+        'from': 'blocks',
                 'localField': '_id',
                 'foreignField': 'main_thread_id',
                 'as': 'blocks'
-            }
-        }
+    }
+}
 stage_sort_blocks = {
-            '$set': {
-                'blocks': {
-                    '$sortArray': {
-                        'input': '$blocks',
-                        'sortBy': {
-                            'position': 1
-                        }
-                    }
+    '$set': {
+        'blocks': {
+            '$sortArray': {
+                'input': '$blocks',
+                'sortBy': {
+                    'position': 1
                 }
             }
         }
-stage_get_first_block = { # Take the first block as this is the first block of the thread
-            '$addFields': {
-                'block': {
-                    '$first': '$blocks'
-                }
-            }
+    }
+}
+stage_get_first_block = {  # Take the first block as this is the first block of the thread
+    '$addFields': {
+        'block': {
+            '$first': '$blocks'
         }
+    }
+}
 
 stage_lookup_threads = {
-            '$lookup': {
-                'from': 'threads',
+    '$lookup': {
+        'from': 'threads',
                 'localField': 'thread_id',
                 'foreignField': '_id',
                 'as': 'threads'
-            }
-        }
+    }
+}
 
 stage_unwind_threads = {
-            '$unwind': '$threads'
-        }
+    '$unwind': '$threads'
+}
 
 stage_fetch_thread_creator = {
-            '$lookup': {
-                'from': 'users',
+    '$lookup': {
+        'from': 'users',
                 'localField': 'threads.creator_id',
                 'foreignField': '_id',
                 'as': 'threads.creator'
-            }
-        }
+    }
+}
 stage_unwind_thread_creator = {
-            '$unwind': {
-                'path': '$threads.creator'
-            }
-        }
+    '$unwind': {
+        'path': '$threads.creator'
+    }
+}
 stage_add_filter_flags = {
-            '$addFields': {
-                'threads.bookmark': "$bookmark",
-                'threads.unread': "$unread",
-                'threads.upvote': "$upvote",
-                'threads.unfollow': "$unfollow",
-                'threads.mention': "$mention"
-            }
-        }
+    '$addFields': {
+        'threads.bookmark': "$bookmark",
+        'threads.unread': "$unread",
+        'threads.upvote': "$upvote",
+        'threads.unfollow': "$unfollow",
+        'threads.mention': "$mention"
+    }
+}
 stage_replace_thread_root = {
-            "$replaceRoot": {
-                "newRoot": "$threads"
-            }
-        }
+    "$replaceRoot": {
+        "newRoot": "$threads"
+    }
+}
 stage_project_thread = {
-            "$project": {
-                "_id": 1,
-                "topic": 1,
-                "type": 1,
-                "created_at": 1,
-                "headline": 1,
-                "block": 1,
-                "last_modified": 1,
-                "creator._id": 1,
-                "creator.name": 1,
-                "creator.picture": 1,
-                "creator.email": 1,
-                "creator.last_login": 1,
-                "bookmark": 1,
-                "unfollow": 1,
-                "unread": 1,
-                "upvote": 1,
-                "mention": 1
-            }
-        }
+    "$project": {
+        "_id": 1,
+        "topic": 1,
+        "type": 1,
+        "created_at": 1,
+        "headline": 1,
+        "block": 1,
+        "last_modified": 1,
+        "creator._id": 1,
+        "creator.name": 1,
+        "creator.picture": 1,
+        "creator.email": 1,
+        "creator.last_login": 1,
+        "bookmark": 1,
+        "unfollow": 1,
+        "unread": 1,
+        "upvote": 1,
+        "mention": 1
+    }
+}
 
 stage_sort_threads = {
-            "$sort": {
-                "last_modified": -1
-            }
-        }
+    "$sort": {
+        "last_modified": -1
+    }
+}
+
 
 async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
-    
-    global stage_lookup_blocks,\
-        stage_sort_blocks,\
-        stage_get_first_block,\
-        stage_lookup_threads,\
-        stage_unwind_threads,\
-        stage_fetch_thread_creator,\
-        stage_unwind_thread_creator,\
-        stage_add_filter_flags,\
-        stage_replace_thread_root,\
-        stage_project_thread,\
+
+    global stage_lookup_blocks, \
+        stage_sort_blocks, \
+        stage_get_first_block, \
+        stage_lookup_threads, \
+        stage_unwind_threads, \
+        stage_fetch_thread_creator, \
+        stage_unwind_thread_creator, \
+        stage_add_filter_flags, \
+        stage_replace_thread_root, \
+        stage_project_thread, \
         stage_sort_threads
-        
+
     print("🔍 Filtering newsfeed"
           f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}, mention {mention}, searchQuery: {searchQuery}")
 
@@ -566,6 +567,16 @@ def get_blocks_count(thread_id):
         {"child_thread_id": thread_id})
     return count
 
+# Get blocks count for special user named thread
+
+
+def get_blocks_count_special_thread(thread_id):
+    count = 0
+    count += syncdb.blocks_collection.count_documents(
+        {"assigned_thread_id": thread_id})
+
+    return count
+
 
 # Get thread and its blocks from the database
 async def get_thread_from_db(thread_id, user_id, tenant_id):
@@ -768,6 +779,11 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
         if not 'creator_id' in thread_to_return["content"][0].keys():
             thread_to_return["content"] = None
 
+        # Sort blocks by assigned pos if thread has assigned_to_id
+        if thread_to_return['assigned_to_id']:
+            thread_to_return['content'] = sorted(
+                thread_to_return['content'], key=lambda x: x['assigned_pos'])
+
         return thread_to_return
     except Exception as e:
         logger.error(e, exc_info=True)
@@ -948,7 +964,6 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
         print('\n👉 Fetching block from db using Id:', id)
         block_to_update = await get_block_by_id(id, block_collection)
         tenant_id = await get_tenant_id(session)
-        thread_id = block_to_update["main_thread_id"]
         user_id = session.get_user_id()
 
         if not block_to_update:
@@ -992,18 +1007,21 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
                 assigned_to_id=assignedUserId,
                 created_at=str(dt.datetime.now())
             )
+        assigned_thread_id = old_thread is not None and old_thread['_id'] or new_thread['_id']
+        pos = get_blocks_count_special_thread(assigned_thread_id) + 1
 
         print('\n👉 Updating block assigned_to_id in db')
         dict = {
             "assigned_to_id": assignedUserId,
             'last_modified': str(dt.datetime.now()),
+            'assigned_pos': pos,
             'assigned_thread_id': old_thread is not None and old_thread['_id'] or new_thread['_id']
         }
 
         await update_mongo_document_fields({"_id": id}, dict, block_collection)
 
         updated_block = await get_creator_block_by_id(id, block_collection)
-        
+
         # Todo: Not sure if we need to set the flags for other users
         # update_user_flags(thread_id, assignedUserId, tenant_id, assigned=True)
 
@@ -1024,6 +1042,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print('\n👉 Fetching block from db using having main_thread_id:', id)
         block_id = block_position.block_id
         new_position = block_position.new_position
+        sort_by_assigned_pos = block_position.sort_by_assigned_pos
         block_to_move = await get_block_by_id(block_id, block_collection)
 
         if not block_to_move:
@@ -1037,8 +1056,8 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         if block_to_move["creator_id"] != user_id:
             return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
 
-        # main_thread_id of the block
-        thread_id = block_to_move["main_thread_id"]
+        # thread_id of the block
+        thread_id = block_to_move["main_thread_id"] if not sort_by_assigned_pos else block_to_move["assigned_thread_id"]
 
         if not thread_id:
             logger.error("Found a block without threadId. BlockId:", block_id)
@@ -1046,8 +1065,11 @@ async def update_block_position(request: Request, id: str, block_position: Updat
 
         print('\n👉 Fetching all block from from db having same thread:', thread_id, )
 
-        filter = {'main_thread_id': thread_id}
-        sort = list({'position': 1}.items())
+        filter = {'main_thread_id': thread_id} if not sort_by_assigned_pos else {
+            'assigned_thread_id': thread_id
+        }
+        sort = list({'position': 1}.items()) if not sort_by_assigned_pos else list(
+            {'assigned_pos': 1}.items())
         blocks = await block_collection.find(filter=filter, sort=sort).to_list(None)
 
         if not blocks:
@@ -1056,8 +1078,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print(
             '\n👉 Removing the dragged block from old position. Updated Blocks length:', len(blocks))
         for i in range(len(blocks)):
-            print(
-                f"  → DB blocks positions {blocks[i]['content']}"),
+            print(f"  → DB blocks positions {blocks[i]['content']}"),
 
         # remove the block from the old position
         blocks = [block for block in blocks if block["_id"] != block_id]
@@ -1067,23 +1088,29 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print(
             f'\n👉 Inserting the block at new position {new_position} in the blocks list')
         # insert the block to the new position
-        block_to_move["position"] = new_position
+        if sort_by_assigned_pos:
+            block_to_move["assigned_pos"] = new_position
+        else:
+            block_to_move["position"] = new_position
+
         blocks.insert(new_position, block_to_move)
 
         # for i in range(len(blocks)):
         #     print(
         #         f"  → New Positions block position from {blocks[i]['content']}"),
 
-        print(
-            '\n👉 Block is Inserted at new position in the blocks list: Updated blocks length', len(blocks))
+        print('\n👉 Block is Inserted at new position in the blocks list: Updated blocks length', len(blocks))
 
         # update the positions of the blocks in the thread
         print("\n👉 Updating block position in db")
         for i in range(len(blocks)):
             new_block_position = i + 1
-            await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
+            if sort_by_assigned_pos:
+                await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"assigned_pos": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
+            else:
+                await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
             print(
-                f"    → Changing block position from {blocks[i]['content']} to {new_block_position}"),
+                f"\n → Position from {blocks[i]['content'].strip()} to {new_block_position}"),
 
         set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
 
@@ -1292,6 +1319,12 @@ async def delete_thread(request: Request, id: str, session: SessionContainer = D
         print('\n👉 Deleting all blocks linked to th thread')
         # delete all the blocks in the thread
         await block_collection.delete_many({"main_thread_id": id})
+        print(
+            f"\n👉 Type: {thread['type']}, thread['assigned_to_id']:{thread['assigned_to_id']}")
+        if thread['type'] == 'todo' and thread['assigned_to_id'] is not None:
+            print('\n👉 Removing assigned todo')
+            # Remove the assigned_thread_id from the blocks
+            await block_collection.update_many({"assigned_thread_id": id}, {"$set": {"assigned_thread_id": "", 'assigned_to_id': "", 'assigned_pos': ""}})
 
         print('\n👉 Deleting thread from db')
         # delete the thread
