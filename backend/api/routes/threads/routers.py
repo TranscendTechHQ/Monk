@@ -243,8 +243,116 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
     result = asyncdb.threads_collection.aggregate(pipeline)
     return result
 
+stage_lookup_blocks =  {# Get all blocks for the thread
+            '$lookup': {
+                'from': 'blocks',
+                'localField': '_id',
+                'foreignField': 'main_thread_id',
+                'as': 'blocks'
+            }
+        }
+stage_sort_blocks = {
+            '$set': {
+                'blocks': {
+                    '$sortArray': {
+                        'input': '$blocks',
+                        'sortBy': {
+                            'position': 1
+                        }
+                    }
+                }
+            }
+        }
+stage_get_first_block = { # Take the first block as this is the first block of the thread
+            '$addFields': {
+                'block': {
+                    '$first': '$blocks'
+                }
+            }
+        }
+
+stage_lookup_threads = {
+            '$lookup': {
+                'from': 'threads',
+                'localField': 'thread_id',
+                'foreignField': '_id',
+                'as': 'threads'
+            }
+        }
+
+stage_unwind_threads = {
+            '$unwind': '$threads'
+        }
+
+stage_fetch_thread_creator = {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'threads.creator_id',
+                'foreignField': '_id',
+                'as': 'threads.creator'
+            }
+        }
+stage_unwind_thread_creator = {
+            '$unwind': {
+                'path': '$threads.creator'
+            }
+        }
+stage_add_filter_flags = {
+            '$addFields': {
+                'threads.bookmark': "$bookmark",
+                'threads.unread': "$unread",
+                'threads.upvote': "$upvote",
+                'threads.unfollow': "$unfollow",
+                'threads.mention': "$mention"
+            }
+        }
+stage_replace_thread_root = {
+            "$replaceRoot": {
+                "newRoot": "$threads"
+            }
+        }
+stage_project_thread = {
+            "$project": {
+                "_id": 1,
+                "topic": 1,
+                "type": 1,
+                "created_at": 1,
+                "headline": 1,
+                "block": 1,
+                "last_modified": 1,
+                "creator._id": 1,
+                "creator.name": 1,
+                "creator.picture": 1,
+                "creator.email": 1,
+                "creator.last_login": 1,
+                "bookmark": 1,
+                "unfollow": 1,
+                "unread": 1,
+                "upvote": 1,
+                "mention": 1
+            }
+        }
+
+stage_sort_threads = {
+            "$sort": {
+                "last_modified": -1
+            }
+        }
 
 async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
+    
+    global stage_lookup_blocks,\
+        stage_sort_blocks,\
+        stage_get_first_block,\
+        stage_lookup_threads,\
+        stage_unwind_threads,\
+        stage_fetch_thread_creator,\
+        stage_unwind_thread_creator,\
+        stage_add_filter_flags,\
+        stage_replace_thread_root,\
+        stage_project_thread,\
+        stage_sort_threads
+        
     print("🔍 Filtering newsfeed"
           f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}, mention {mention}, searchQuery: {searchQuery}")
 
@@ -273,96 +381,17 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, 
                 "$and": user_flags
             }
         },
-        # Get all blocks for the thread
-        {
-            '$lookup': {
-                'from': 'blocks',
-                'localField': '_id',
-                'foreignField': 'main_thread_id',
-                'as': 'blocks'
-            }
-        },
-        # Sort the blocks by created_at
-        {
-            '$set': {
-                'blocks': {
-                    '$sortArray': {
-                        'input': '$blocks',
-                        'sortBy': {
-                            'created_at': 1
-                        }
-                    }
-                }
-            }
-        },
-        # Take the first block as this is the first block of the thread
-        {
-            '$addFields': {
-                'block': {
-                    '$first': '$blocks'
-                }
-            }
-        },
-        {
-            "$lookup": {
-                "from": "threads",
-                "localField": "thread_id",
-                "foreignField": "_id",
-                "as": "threads"
-            }
-        },
-        {
-            "$unwind": "$threads"
-        },
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "threads.creator_id",
-                "foreignField": "_id",
-                "as": "threads.creator"
-            }
-        },
-        {
-            "$unwind": {
-                "path": "$threads.creator"
-            }
-        },
-        {
-            "$addFields": {
-                "threads.bookmark": "$bookmark",
-                "threads.unread": "$unread",
-                "threads.upvote": "$upvote",
-                "threads.unfollow": "$unfollow",
-                "threads.mention": "$mention"
-            },
-        },
-        {"$replaceRoot": {"newRoot": "$threads"}},
-        {
-            "$project": {
-                "_id": 1,
-                "topic": 1,
-                "type": 1,
-                "created_at": 1,
-                "headline": 1,
-                "block": 1,
-                "last_modified": 1,
-                "creator._id": 1,
-                "creator.name": 1,
-                "creator.picture": 1,
-                "creator.email": 1,
-                "creator.last_login": 1,
-                "bookmark": 1,
-                "unfollow": 1,
-                "unread": 1,
-                "upvote": 1,
-                "mention": 1
-            }
-        },
-        {
-            "$sort": {
-                "last_modified": -1
-            }
-        }
+        stage_lookup_blocks,
+        stage_sort_blocks,
+        stage_get_first_block,
+        stage_lookup_threads,
+        stage_unwind_threads,
+        stage_fetch_thread_creator,
+        stage_unwind_thread_creator,
+        stage_add_filter_flags,
+        stage_replace_thread_root,
+        stage_project_thread,
+        stage_sort_threads
     ]
     # print(pipeline)
     result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
