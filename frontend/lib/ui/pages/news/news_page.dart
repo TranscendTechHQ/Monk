@@ -70,7 +70,8 @@ class NewsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final threadList = ref.watch(fetchThreadsInfoProvider);
-    ref.watch(newsFeedFilterProvider);
+    final filtersState = ref.watch(newsFeedFilterProvider);
+
     final List<String> titlesList = threadList.value?.keys.toList() ?? [];
     final newsFeed = ref.watch(newsFeedProvider);
 
@@ -104,6 +105,9 @@ class NewsPage extends ConsumerWidget {
                         wrapped: false,
                         svgPath: 'filter.svg',
                         label: 'Filter',
+                        borderColor: anyFilterApplied(filtersState.value)
+                            ? context.colorScheme.onSecondaryContainer
+                            : null,
                         onPressed: () {
                           onFilterPressed(context, ref);
                         },
@@ -150,22 +154,45 @@ class NewsPage extends ConsumerWidget {
                             wrapped: false,
                             svgPath: 'filter.svg',
                             label: 'Mentions',
+                            borderColor:
+                                onlyMentionedFilterApplied(filtersState.value)
+                                    ? context.colorScheme.onSecondaryContainer
+                                    : null,
                             onPressed: () async {
-                              ref
-                                  .read(newsFeedProvider.notifier)
-                                  .displayMentionedThreads();
                               final state =
                                   ref.read(newsFeedFilterProvider.notifier);
-                              await state.updateFilter(
-                                bookmarked: false,
-                                dismissed: false,
-                                unRead: false,
-                                upvoted: false,
-                                mentioned: true,
-                                semanticQuery: null,
-                              );
-                              showMessage(
-                                  context, 'Displaying mentioned threads');
+
+                              if (onlyMentionedFilterApplied(
+                                  filtersState.value!)) {
+                                await state.updateFilter(
+                                  bookmarked: false,
+                                  dismissed: false,
+                                  unRead: false,
+                                  upvoted: false,
+                                  mentioned: false,
+                                  semanticQuery: null,
+                                );
+                                ref.invalidate(newsFeedProvider);
+                                // ref.read(newsFeedProvider.future);
+                                await ref
+                                    .read(newsFeedProvider.notifier)
+                                    .getFilteredFeed(isFilterEnabled: false);
+                                showMessage(context, 'Displaying all threads');
+                              } else {
+                                ref
+                                    .read(newsFeedProvider.notifier)
+                                    .displayMentionedThreads();
+                                await state.updateFilter(
+                                  bookmarked: false,
+                                  dismissed: false,
+                                  unRead: false,
+                                  upvoted: false,
+                                  mentioned: true,
+                                  semanticQuery: null,
+                                );
+                                showMessage(
+                                    context, 'Displaying mentioned threads');
+                              }
                             },
                           ),
                           newsFeed.maybeWhen(

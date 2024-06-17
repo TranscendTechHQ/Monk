@@ -15,6 +15,7 @@ class OutlineIconButton extends StatelessWidget {
     this.verticalPadding = 14,
     this.horizontalPadding = 10,
     this.isFilled = false,
+    this.borderColor = monkBlue700,
   });
   final IconData? icon;
   final String label;
@@ -25,6 +26,7 @@ class OutlineIconButton extends StatelessWidget {
   final double verticalPadding;
   final double horizontalPadding;
   final bool isFilled;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +43,8 @@ class OutlineIconButton extends StatelessWidget {
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
-            side: const BorderSide(
-              color: monkBlue700,
+            side: BorderSide(
+              color: borderColor ?? monkBlue700,
               width: 1,
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
-import 'package:frontend/helper/shared_preference.dart';
+import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -99,4 +99,26 @@ class NewsFeedFilterState with _$NewsFeedFilterState {
     String? semanticQuery,
   }) = _NewsFeedFilterState;
   factory NewsFeedFilterState.initial() => const NewsFeedFilterState();
+}
+
+bool onlyMentionedFilterApplied(NewsFeedFilterState? state) {
+  final isOk = state != null &&
+      state.mentioned &&
+      state.semanticQuery.isNullOrEmpty &&
+      state.unRead == false &&
+      state.bookmarked == false &&
+      state.upvoted == false &&
+      state.dismissed == false;
+  return isOk;
+}
+
+bool anyFilterApplied(NewsFeedFilterState? state) {
+  final isOk = state != null &&
+      (state.mentioned ||
+          state.semanticQuery.isNotNullEmpty ||
+          state.unRead ||
+          state.bookmarked ||
+          state.upvoted ||
+          state.dismissed);
+  return isOk;
 }
