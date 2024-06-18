@@ -273,7 +273,7 @@ class ChatListView extends ConsumerWidget {
               children: [
                 ReorderableListView(
                   reverse: true,
-                  footer: defaultBlock != null
+                  footer: defaultBlock != null && defaultBlock.id != null
                       ? ThreadCard(
                           key: ValueKey(defaultBlock.id),
                           block: defaultBlock,

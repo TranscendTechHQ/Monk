@@ -9,6 +9,7 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
+**assignedToId** | **String** |  | [optional] 
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 **creatorId** | **String** |  | 

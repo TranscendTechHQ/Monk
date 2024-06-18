@@ -22,6 +22,7 @@ CreateChildThreadModel _$CreateChildThreadModelFromJson(
           ],
         );
         final val = CreateChildThreadModel(
+          assignedId: $checkedConvert('assignedId', (v) => v as String?),
           content: $checkedConvert(
               'content',
               (v) => (v as List<dynamic>?)
@@ -46,6 +47,7 @@ Map<String, dynamic> _$CreateChildThreadModelToJson(
     }
   }
 
+  writeNotNull('assignedId', instance.assignedId);
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
   val['mainThreadId'] = instance.mainThreadId;
   val['parentBlockId'] = instance.parentBlockId;

@@ -125,7 +125,7 @@ class CommandBox extends ConsumerWidget {
             _searchFocusNode.requestFocus();
           },
         if (allowedInputTypes.contains(InputBoxType.thread))
-          const SingleActivator(LogicalKeyboardKey.enter, meta: true):
+          const SingleActivator(LogicalKeyboardKey.enter, meta: false):
               () async {
             print('Converting to markdown');
 

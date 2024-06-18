@@ -21,6 +21,8 @@ class ThreadModel {
 
      this.id,
 
+     this.assignedToId,
+
      this.content,
 
      this.createdAt,
@@ -53,6 +55,18 @@ class ThreadModel {
 
 
   final String? id;
+
+
+
+  @JsonKey(
+    
+    name: r'assigned_to_id',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? assignedToId;
 
 
 
@@ -191,6 +205,7 @@ class ThreadModel {
   @override
   bool operator ==(Object other) => identical(this, other) || other is ThreadModel &&
      other.id == id &&
+     other.assignedToId == assignedToId &&
      other.content == content &&
      other.createdAt == createdAt &&
      other.creatorId == creatorId &&
@@ -206,6 +221,7 @@ class ThreadModel {
   @override
   int get hashCode =>
     id.hashCode +
+    (assignedToId == null ? 0 : assignedToId.hashCode) +
     content.hashCode +
     createdAt.hashCode +
     creatorId.hashCode +

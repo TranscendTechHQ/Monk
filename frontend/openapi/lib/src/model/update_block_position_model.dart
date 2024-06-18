@@ -21,6 +21,8 @@ class UpdateBlockPositionModel {
      this.blockId = '',
 
      this.newPosition = 0,
+
+     this.sortByAssignedPos = false,
   });
 
   @JsonKey(
@@ -47,15 +49,29 @@ class UpdateBlockPositionModel {
 
 
 
+  @JsonKey(
+    defaultValue: false,
+    name: r'sort_by_assigned_pos',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final bool? sortByAssignedPos;
+
+
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is UpdateBlockPositionModel &&
      other.blockId == blockId &&
-     other.newPosition == newPosition;
+     other.newPosition == newPosition &&
+     other.sortByAssignedPos == sortByAssignedPos;
 
   @override
   int get hashCode =>
     blockId.hashCode +
-    newPosition.hashCode;
+    newPosition.hashCode +
+    sortByAssignedPos.hashCode;
 
   factory UpdateBlockPositionModel.fromJson(Map<String, dynamic> json) => _$UpdateBlockPositionModelFromJson(json);
 

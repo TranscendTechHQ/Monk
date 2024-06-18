@@ -15,7 +15,7 @@ from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
 from routes.threads.block import updateBlock
 from utils.scrapper import getLinkMeta
-from utils.db import create_mongo_doc_simple, create_mongo_document_sync, create_or_replace_mongo_doc, get_creator_block_by_id, get_mongo_document, get_mongo_document_sync, get_mongo_documents, get_tenant_id, get_tenant_id_sync, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb, \
+from utils.db import create_mongo_doc_simple, create_mongo_document_sync, create_or_replace_mongo_doc, get_creator_block_by_id, get_mongo_document, get_mongo_document_sync, get_mongo_documents, get_tenant_id, get_tenant_id_sync, get_user_info, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb, \
     create_mongo_document, delete_mongo_document, update_mongo_document_fields_sync
 from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
 from utils.headline import generate_single_thread_headline, set_first_block_as_headline
@@ -244,116 +244,117 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
     result = asyncdb.threads_collection.aggregate(pipeline)
     return result
 
-stage_lookup_blocks =  {# Get all blocks for the thread
-            '$lookup': {
-                'from': 'blocks',
+stage_lookup_blocks = {  # Get all blocks for the thread
+    '$lookup': {
+        'from': 'blocks',
                 'localField': '_id',
                 'foreignField': 'main_thread_id',
                 'as': 'blocks'
-            }
-        }
+    }
+}
 stage_sort_blocks = {
-            '$set': {
-                'blocks': {
-                    '$sortArray': {
-                        'input': '$blocks',
-                        'sortBy': {
-                            'position': 1
-                        }
-                    }
+    '$set': {
+        'blocks': {
+            '$sortArray': {
+                'input': '$blocks',
+                'sortBy': {
+                    'position': 1
                 }
             }
         }
-stage_get_first_block = { # Take the first block as this is the first block of the thread
-            '$addFields': {
-                'block': {
-                    '$first': '$blocks'
-                }
-            }
+    }
+}
+stage_get_first_block = {  # Take the first block as this is the first block of the thread
+    '$addFields': {
+        'block': {
+            '$first': '$blocks'
         }
+    }
+}
 
 stage_lookup_threads = {
-            '$lookup': {
-                'from': 'threads',
+    '$lookup': {
+        'from': 'threads',
                 'localField': 'thread_id',
                 'foreignField': '_id',
                 'as': 'threads'
-            }
-        }
+    }
+}
 
 stage_unwind_threads = {
-            '$unwind': '$threads'
-        }
+    '$unwind': '$threads'
+}
 
 stage_fetch_thread_creator = {
-            '$lookup': {
-                'from': 'users',
+    '$lookup': {
+        'from': 'users',
                 'localField': 'threads.creator_id',
                 'foreignField': '_id',
                 'as': 'threads.creator'
-            }
-        }
+    }
+}
 stage_unwind_thread_creator = {
-            '$unwind': {
-                'path': '$threads.creator'
-            }
-        }
+    '$unwind': {
+        'path': '$threads.creator'
+    }
+}
 stage_add_filter_flags = {
-            '$addFields': {
-                'threads.bookmark': "$bookmark",
-                'threads.unread': "$unread",
-                'threads.upvote': "$upvote",
-                'threads.unfollow': "$unfollow",
-                'threads.mention': "$mention"
-            }
-        }
+    '$addFields': {
+        'threads.bookmark': "$bookmark",
+        'threads.unread': "$unread",
+        'threads.upvote': "$upvote",
+        'threads.unfollow': "$unfollow",
+        'threads.mention': "$mention"
+    }
+}
 stage_replace_thread_root = {
-            "$replaceRoot": {
-                "newRoot": "$threads"
-            }
-        }
+    "$replaceRoot": {
+        "newRoot": "$threads"
+    }
+}
 stage_project_thread = {
-            "$project": {
-                "_id": 1,
-                "topic": 1,
-                "type": 1,
-                "created_at": 1,
-                "headline": 1,
-                "block": 1,
-                "last_modified": 1,
-                "creator._id": 1,
-                "creator.name": 1,
-                "creator.picture": 1,
-                "creator.email": 1,
-                "creator.last_login": 1,
-                "bookmark": 1,
-                "unfollow": 1,
-                "unread": 1,
-                "upvote": 1,
-                "mention": 1
-            }
-        }
+    "$project": {
+        "_id": 1,
+        "topic": 1,
+        "type": 1,
+        "created_at": 1,
+        "headline": 1,
+        "block": 1,
+        "last_modified": 1,
+        "creator._id": 1,
+        "creator.name": 1,
+        "creator.picture": 1,
+        "creator.email": 1,
+        "creator.last_login": 1,
+        "bookmark": 1,
+        "unfollow": 1,
+        "unread": 1,
+        "upvote": 1,
+        "mention": 1
+    }
+}
 
 stage_sort_threads = {
-            "$sort": {
-                "last_modified": -1
-            }
-        }
+    "$sort": {
+        "last_modified": -1
+    }
+}
+
 
 async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
-    
-    global stage_lookup_blocks,\
-        stage_sort_blocks,\
-        stage_get_first_block,\
-        stage_lookup_threads,\
-        stage_unwind_threads,\
-        stage_fetch_thread_creator,\
-        stage_unwind_thread_creator,\
-        stage_add_filter_flags,\
-        stage_replace_thread_root,\
-        stage_project_thread,\
+
+    global stage_lookup_blocks, \
+        stage_sort_blocks, \
+        stage_get_first_block, \
+        stage_lookup_threads, \
+        stage_unwind_threads, \
+        stage_fetch_thread_creator, \
+        stage_unwind_thread_creator, \
+        stage_add_filter_flags, \
+        stage_replace_thread_root, \
+        stage_project_thread, \
         stage_sort_threads
-        
+
     print("🔍 Filtering newsfeed"
           f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}, mention {mention}, searchQuery: {searchQuery}")
 
@@ -591,7 +592,18 @@ def get_blocks_count(thread_id):
         {"child_thread_id": thread_id})
     return count
 
+# Get blocks count for special user named thread
 
+
+def get_blocks_count_special_thread(thread_id):
+    count = 0
+    count += syncdb.blocks_collection.count_documents(
+        {"assigned_thread_id": thread_id})
+
+    return count
+
+
+# Get thread and its blocks from the database
 async def get_thread_from_db(thread_id, user_id, tenant_id):
     try:
         pipeline = [
@@ -608,26 +620,9 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                     'as': 'default_block'
                 }
             }, {
-                '$addFields': {
-                    'default_block': {
-                        '$cond': {
-                            'if': {
-                                '$eq': [
-                                    {
-                                        '$size': '$default_block'
-                                    }, 0
-                                ]
-                            },
-                            'then': [
-                                {}
-                            ],
-                            'else': '$default_block'
-                        }
-                    }
-                }
-            }, {
                 '$unwind': {
-                    'path': '$default_block'
+                    'path': '$default_block',
+                    'preserveNullAndEmptyArrays': True
                 }
             }, {
                 '$lookup': {
@@ -656,7 +651,8 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                 }
             }, {
                 '$unwind': {
-                    'path': '$default_block.creator'
+                    'path': '$default_block.creator',
+                    'preserveNullAndEmptyArrays': True
                 }
             }, {
                 '$lookup': {
@@ -666,25 +662,25 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                     'as': 'content'
                 }
             }, {
+                '$lookup': {
+                    'from': 'blocks',
+                    'localField': '_id',
+                    'foreignField': 'assigned_thread_id',
+                    'as': 'content2'
+                }
+            }, {
                 '$addFields': {
                     'content': {
-                        '$cond': {
-                            'if': {
-                                '$eq': [
-                                    {
-                                        '$size': '$content'
-                                    }, 0
-                                ]
-                            },
-                            'then': [
-                                {}
-                            ],
-                            'else': '$content'
-                        }
+                        '$concatArrays': [
+                            '$content2', '$content'
+                        ]
                     }
                 }
             }, {
-                '$unwind': '$content'
+                '$unwind': {
+                    'path': '$content',
+                    'preserveNullAndEmptyArrays': True
+                }
             }, {
                 '$sort': {
                     'content.position': 1
@@ -697,26 +693,9 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                     'as': 'content.creator'
                 }
             }, {
-                '$addFields': {
-                    'content.creator': {
-                        '$cond': {
-                            'if': {
-                                '$eq': [
-                                    {
-                                        '$size': '$content.creator'
-                                    }, 0
-                                ]
-                            },
-                            'then': [
-                                {}
-                            ],
-                            'else': '$content.creator'
-                        }
-                    }
-                }
-            }, {
                 '$unwind': {
-                    'path': '$content.creator'
+                    'path': '$content.creator',
+                    'preserveNullAndEmptyArrays': True
                 }
             },
             {
@@ -825,6 +804,11 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
         if not 'creator_id' in thread_to_return["content"][0].keys():
             thread_to_return["content"] = None
 
+        # Sort blocks by assigned pos if thread has assigned_to_id
+        if thread_to_return['assigned_to_id']:
+            thread_to_return['content'] = sorted(
+                thread_to_return['content'], key=lambda x: x['assigned_pos'])
+
         return thread_to_return
     except Exception as e:
         logger.error(e, exc_info=True)
@@ -873,8 +857,8 @@ async def create(request: Request, thread_topic: str, block: CreateBlockModel = 
     # to indicate that the all other users other than the creator have an unread thread:
         # set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
         set_unread_other_users(thread_id, user_id, tenant_id)
-        #print("I reached here")
-        #print(f"thread_id: {thread_id} user_id: {user_id} tenant_id: {tenant_id}")
+        # print("I reached here")
+        # print(f"thread_id: {thread_id} user_id: {user_id} tenant_id: {tenant_id}")
         end_time = time.time()
         print(
             f"profiling Time elapsed for user_flags(): {end_time - part_2:.6f} seconds")
@@ -1005,23 +989,66 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
         print('\n👉 Fetching block from db using Id:', id)
         block_to_update = await get_block_by_id(id, block_collection)
         tenant_id = await get_tenant_id(session)
-        thread_id = block_to_update["main_thread_id"]
+        user_id = session.get_user_id()
 
         if not block_to_update:
             return JSONResponse(status_code=404, content={"message": f"Block with ${id} not found"})
 
-        if block_to_update["assigned_to_id"] is not None and block_to_update["assigned_to_id"] != assignedUserId:
-            print('\n👉 Removing the assigned flag from the previous user')
-            # If the block is already assigned to someone else then remove the assigned flag from the user
-            update_user_flags(
-                thread_id, block_to_update["assigned_to_id"], tenant_id, assigned=False)
+        # Get user info from the user_id
+        user_info = await get_user_info(session,)
+
+        if user_info is None:
+            return JSONResponse(status_code=404, content={"message": "User with ${assignedUserId} id not found"})
+
+        # prepare topic by using username and 4 characters of user_id
+        topic = user_info['name'].replace(
+            " ", "_").lower() + "_" + assignedUserId[:4]
+
+        old_thread = await get_mongo_document({"topic": topic}, asyncdb.threads_collection, tenant_id)
+
+        # If the thread is already assigned to other user then reassign it to new user
+        if old_thread and (not 'assigned_thread_id' in old_thread.keys() or old_thread['assigned_thread_id'] != assignedUserId):
+            print(
+                f'\n👉 Thread is already assigned to some other user. Assigning to ${assignedUserId}')
+            await asyncdb.threads_collection.update_one(
+                {'_id': id},
+                {"$set":
+                 {
+                     "assigned_to_id": assignedUserId,
+                     'assigned_thread_id': old_thread['_id'],
+                     'last_modified': str(dt.datetime.now())
+                 }
+                 }
+            )
+
+        else:
+            print("\n👉 Thread is not assigned to any user. Creating new thread")
+            new_thread = await create_new_thread(
+                user_id=user_id,
+                # parent_block_id=id,
+                tenant_id=tenant_id,
+                topic=topic,
+                thread_type='todo',
+                assigned_to_id=assignedUserId,
+                created_at=str(dt.datetime.now())
+            )
+        assigned_thread_id = old_thread is not None and old_thread['_id'] or new_thread['_id']
+        pos = get_blocks_count_special_thread(assigned_thread_id) + 1
 
         print('\n👉 Updating block assigned_to_id in db')
-        await update_mongo_document_fields({"_id": id}, {"assigned_to_id": assignedUserId, 'last_modified': str(dt.datetime.now())}, block_collection)
+        dict = {
+            "assigned_to_id": assignedUserId,
+            'last_modified': str(dt.datetime.now()),
+            'assigned_pos': pos,
+            'assigned_thread_id': old_thread is not None and old_thread['_id'] or new_thread['_id']
+        }
+
+        await update_mongo_document_fields({"_id": id}, dict, block_collection)
 
         updated_block = await get_creator_block_by_id(id, block_collection)
 
-        update_user_flags(thread_id, assignedUserId, tenant_id, assigned=True)
+        # Todo: Not sure if we need to set the flags for other users
+        # update_user_flags(thread_id, assignedUserId, tenant_id, assigned=True)
 
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(updated_block))
@@ -1040,6 +1067,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print('\n👉 Fetching block from db using having main_thread_id:', id)
         block_id = block_position.block_id
         new_position = block_position.new_position
+        sort_by_assigned_pos = block_position.sort_by_assigned_pos
         block_to_move = await get_block_by_id(block_id, block_collection)
 
         if not block_to_move:
@@ -1053,8 +1081,8 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         if block_to_move["creator_id"] != user_id:
             return JSONResponse(status_code=403, content={"message": "You are not authorized to update this block"})
 
-        # main_thread_id of the block
-        thread_id = block_to_move["main_thread_id"]
+        # thread_id of the block
+        thread_id = block_to_move["main_thread_id"] if not sort_by_assigned_pos else block_to_move["assigned_thread_id"]
 
         if not thread_id:
             logger.error("Found a block without threadId. BlockId:", block_id)
@@ -1062,8 +1090,11 @@ async def update_block_position(request: Request, id: str, block_position: Updat
 
         print('\n👉 Fetching all block from from db having same thread:', thread_id, )
 
-        filter = {'main_thread_id': thread_id}
-        sort = list({'position': 1}.items())
+        filter = {'main_thread_id': thread_id} if not sort_by_assigned_pos else {
+            'assigned_thread_id': thread_id
+        }
+        sort = list({'position': 1}.items()) if not sort_by_assigned_pos else list(
+            {'assigned_pos': 1}.items())
         blocks = await block_collection.find(filter=filter, sort=sort).to_list(None)
 
         if not blocks:
@@ -1072,8 +1103,7 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print(
             '\n👉 Removing the dragged block from old position. Updated Blocks length:', len(blocks))
         for i in range(len(blocks)):
-            print(
-                f"  → DB blocks positions {blocks[i]['content']}"),
+            print(f"  → DB blocks positions {blocks[i]['content']}"),
 
         # remove the block from the old position
         blocks = [block for block in blocks if block["_id"] != block_id]
@@ -1083,23 +1113,29 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         print(
             f'\n👉 Inserting the block at new position {new_position} in the blocks list')
         # insert the block to the new position
-        block_to_move["position"] = new_position
+        if sort_by_assigned_pos:
+            block_to_move["assigned_pos"] = new_position
+        else:
+            block_to_move["position"] = new_position
+
         blocks.insert(new_position, block_to_move)
 
         # for i in range(len(blocks)):
         #     print(
         #         f"  → New Positions block position from {blocks[i]['content']}"),
 
-        print(
-            '\n👉 Block is Inserted at new position in the blocks list: Updated blocks length', len(blocks))
+        print('\n👉 Block is Inserted at new position in the blocks list: Updated blocks length', len(blocks))
 
         # update the positions of the blocks in the thread
         print("\n👉 Updating block position in db")
         for i in range(len(blocks)):
             new_block_position = i + 1
-            await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
+            if sort_by_assigned_pos:
+                await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"assigned_pos": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
+            else:
+                await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"position": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
             print(
-                f"    → Changing block position from {blocks[i]['content']} to {new_block_position}"),
+                f"\n → Position from {blocks[i]['content'].strip()} to {new_block_position}"),
 
         set_flags_true_other_users(thread_id, user_id, tenant_id, unread=True)
 
@@ -1114,57 +1150,59 @@ async def update_block_position(request: Request, id: str, block_position: Updat
 async def child_thread(request: Request,
                        child_thread_data: CreateChildThreadModel = Body(...),
                        session: SessionContainer = Depends(verify_session())):
-    # try:
-    print("\n 1. Received request to create child thread")
-    thread_collection = request.app.mongodb["threads"]
-    block_collection = request.app.mongodb["blocks"]
-    child_thread = child_thread_data.model_dump()
+    try:
+        print("\n 1. Received request to create child thread")
+        thread_collection = request.app.mongodb["threads"]
+        block_collection = request.app.mongodb["blocks"]
+        child_thread = child_thread_data.model_dump()
 
-    parent_block_id = child_thread["parent_block_id"]
-    main_thread_id = child_thread["main_thread_id"]
+        parent_block_id = child_thread["parent_block_id"]
+        main_thread_id = child_thread["main_thread_id"]
 
-    print("\n 2. Fetching parent block:", parent_block_id)
-    # fetch the parent block
-    parentBlock = await get_block_by_id(parent_block_id, block_collection)
-    if not parentBlock:
-        return JSONResponse(status_code=404, content={"message": "block with id ${parent_block_id} not found"})
+        print("\n 2. Fetching parent block:", parent_block_id)
+        # fetch the parent block
+        parentBlock = await get_block_by_id(parent_block_id, block_collection)
+        if not parentBlock:
+            return JSONResponse(status_code=404, content={"message": "block with id ${parent_block_id} not found"})
 
-    if parentBlock["child_thread_id"] != "":
-        print("\n 2.1 Can't create child thread for this block. Block already has a child thread")
-        return JSONResponse(status_code=400, content={"message": "block already has a child thread"})
+        if parentBlock["child_thread_id"] != "":
+            print(
+                "\n 2.1 Can't create child thread for this block. Block already has a child thread")
+            return JSONResponse(status_code=400, content={"message": "block already has a child thread"})
 
-    print("\n 3. Parent block found")
-    # create a new child thread
-    thread_topic = jsonable_encoder(child_thread)["topic"]
-    thread_type = jsonable_encoder(child_thread)["type"]
-    user_id = session.get_user_id()
+        print("\n 3. Parent block found")
 
-    print("\n 4. Fetching tenant id")
-    tenant_id = await get_tenant_id(session)
+        # create a new child thread
+        thread_topic = jsonable_encoder(child_thread)["topic"]
+        thread_type = jsonable_encoder(child_thread)["type"]
+        user_id = session.get_user_id()
 
-    print("\n 5. Creating new child thread")
+        print("\n 4. Fetching tenant id")
+        tenant_id = await get_tenant_id(session)
 
-    created_child_thread = await create_child_thread(
-        parent_block_id=parent_block_id,
-        main_thread_id=main_thread_id,
-        thread_topic=thread_topic,
-        thread_type=thread_type,
-        user_id=user_id, tenant_id=tenant_id, parentBlock=BlockModel(**parentBlock))
+        print("\n 5. Creating new child thread")
 
-    print("\n 6. Child thread created, Fetching child thread from db")
-    ret_thread = await get_thread_from_db(created_child_thread["_id"], user_id, tenant_id)
+        created_child_thread = await create_child_thread(
+            parent_block_id=parent_block_id,
+            main_thread_id=main_thread_id,
+            thread_topic=thread_topic,
+            thread_type=thread_type,
+            user_id=user_id, tenant_id=tenant_id, parentBlock=BlockModel(**parentBlock))
 
-    return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=jsonable_encoder(ret_thread))
+        print("\n 6. Child thread created, Fetching child thread from db")
+        ret_thread = await get_thread_from_db(created_child_thread["_id"], user_id, tenant_id)
 
-    # except HTTPException as e:
-    #     return JSONResponse(
-    #         status_code=e.status_code,
-    #         content={"message": e.detail}
-    #     )
-    # except Exception as e:
-    #   print(e)
-    #   return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
+        return JSONResponse(status_code=status.HTTP_201_CREATED,
+                            content=jsonable_encoder(ret_thread))
+
+    except HTTPException as e:
+        return JSONResponse(
+            status_code=e.status_code,
+            content={"message": e.detail}
+        )
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 @router.post("/threads", response_model=FullThreadInfo, response_description="Create a new thread")
@@ -1306,6 +1344,12 @@ async def delete_thread(request: Request, id: str, session: SessionContainer = D
         print('\n👉 Deleting all blocks linked to th thread')
         # delete all the blocks in the thread
         await block_collection.delete_many({"main_thread_id": id})
+        print(
+            f"\n👉 Type: {thread['type']}, thread['assigned_to_id']:{thread['assigned_to_id']}")
+        if thread['type'] == 'todo' and thread['assigned_to_id'] is not None:
+            print('\n👉 Removing assigned todo')
+            # Remove the assigned_thread_id from the blocks
+            await block_collection.update_many({"assigned_thread_id": id}, {"$set": {"assigned_thread_id": "", 'assigned_to_id': "", 'assigned_pos': ""}})
 
         print('\n👉 Deleting thread from db')
         # delete the thread

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/utils.dart';
+import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/news/news_card.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
@@ -9,6 +10,7 @@ import 'package:frontend/ui/pages/news/widget/news_filter/news_feed_filter.dart'
 import 'package:frontend/ui/pages/news/widget/news_filter/provider/news_feed_filter_provider.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
+import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:frontend/ui/widgets/outline_icon_button.dart';
@@ -68,7 +70,8 @@ class NewsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final threadList = ref.watch(fetchThreadsInfoProvider);
-    ref.watch(newsFeedFilterProvider);
+    final filtersState = ref.watch(newsFeedFilterProvider);
+
     final List<String> titlesList = threadList.value?.keys.toList() ?? [];
     final newsFeed = ref.watch(newsFeedProvider);
 
@@ -102,6 +105,9 @@ class NewsPage extends ConsumerWidget {
                         wrapped: false,
                         svgPath: 'filter.svg',
                         label: 'Filter',
+                        borderColor: anyFilterApplied(filtersState.value)
+                            ? context.colorScheme.onSecondaryContainer
+                            : null,
                         onPressed: () {
                           onFilterPressed(context, ref);
                         },
@@ -148,22 +154,45 @@ class NewsPage extends ConsumerWidget {
                             wrapped: false,
                             svgPath: 'filter.svg',
                             label: 'Mentions',
+                            borderColor:
+                                onlyMentionedFilterApplied(filtersState.value)
+                                    ? context.colorScheme.onSecondaryContainer
+                                    : null,
                             onPressed: () async {
-                              ref
-                                  .read(newsFeedProvider.notifier)
-                                  .displayMentionedThreads();
                               final state =
                                   ref.read(newsFeedFilterProvider.notifier);
-                              await state.updateFilter(
-                                bookmarked: false,
-                                dismissed: false,
-                                unRead: false,
-                                upvoted: false,
-                                mentioned: true,
-                                semanticQuery: null,
-                              );
-                              showMessage(
-                                  context, 'Displaying mentioned threads');
+
+                              if (onlyMentionedFilterApplied(
+                                  filtersState.value!)) {
+                                await state.updateFilter(
+                                  bookmarked: false,
+                                  dismissed: false,
+                                  unRead: false,
+                                  upvoted: false,
+                                  mentioned: false,
+                                  semanticQuery: null,
+                                );
+                                ref.invalidate(newsFeedProvider);
+                                // ref.read(newsFeedProvider.future);
+                                await ref
+                                    .read(newsFeedProvider.notifier)
+                                    .getFilteredFeed(isFilterEnabled: false);
+                                showMessage(context, 'Displaying all threads');
+                              } else {
+                                ref
+                                    .read(newsFeedProvider.notifier)
+                                    .displayMentionedThreads();
+                                await state.updateFilter(
+                                  bookmarked: false,
+                                  dismissed: false,
+                                  unRead: false,
+                                  upvoted: false,
+                                  mentioned: true,
+                                  semanticQuery: null,
+                                );
+                                showMessage(
+                                    context, 'Displaying mentioned threads');
+                              }
                             },
                           ),
                           newsFeed.maybeWhen(
@@ -189,7 +218,27 @@ class NewsPage extends ConsumerWidget {
                             },
                           ),
                         ],
-                      )
+                      ),
+                      const SizedBox(height: 10),
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'todo.svg',
+                        label: 'My Task',
+                        iconSize: 16,
+                        onPressed: () async {
+                          final authState = ref.read(authProvider);
+                          final session = authState.value!.session;
+                          Navigator.push(
+                            context,
+                            ThreadPage.launchRoute(
+                              topic:
+                                  "${session!.fullName.replaceAll(' ', '_')}_${session.userId.substring(0, 4)}"
+                                      .toLowerCase(),
+                              type: 'todo',
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ).hP8,
                 ),

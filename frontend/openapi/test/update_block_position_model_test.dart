@@ -17,5 +17,10 @@ void main() {
       // TODO
     });
 
+    // bool sortByAssignedPos (default value: false)
+    test('to test the property `sortByAssignedPos`', () async {
+      // TODO
+    });
+
   });
 }

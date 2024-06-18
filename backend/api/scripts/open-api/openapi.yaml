@@ -5,6 +5,15 @@ components:
         _id:
           title: " Id"
           type: string
+        assigned_pos:
+          default: 1
+          title: Assigned Pos
+          type: integer
+        assigned_thread_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Assigned Thread Id
         assigned_to:
           anyOf:
             - $ref: "#/components/schemas/UserModel"
@@ -53,7 +62,7 @@ components:
           title: Main Thread Id
           type: string
         position:
-          default: 0
+          default: 1
           title: Position
           type: integer
         task_status:
@@ -74,6 +83,15 @@ components:
         _id:
           title: " Id"
           type: string
+        assigned_pos:
+          default: 1
+          title: Assigned Pos
+          type: integer
+        assigned_thread_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Assigned Thread Id
         assigned_to:
           anyOf:
             - $ref: "#/components/schemas/UserModel"
@@ -124,7 +142,7 @@ components:
           title: Main Thread Id
           type: string
         position:
-          default: 0
+          default: 1
           title: Position
           type: integer
         task_status:
@@ -221,6 +239,11 @@ components:
       type: object
     CreateChildThreadModel:
       properties:
+        assignedId:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Assignedid
         content:
           items:
             $ref: "#/components/schemas/BlockModel"
@@ -332,6 +355,11 @@ components:
             - type: "null"
           "null": true
           title: Assigned
+        assigned_to_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Assigned To Id
         block:
           anyOf:
             - $ref: "#/components/schemas/BlockModel"
@@ -510,6 +538,11 @@ components:
             - type: "null"
           "null": true
           title: Assigned
+        assigned_to_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Assigned To Id
         block:
           anyOf:
             - $ref: "#/components/schemas/BlockModel"
@@ -584,6 +617,11 @@ components:
         _id:
           title: " Id"
           type: string
+        assigned_to_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Assigned To Id
         content:
           items:
             $ref: "#/components/schemas/BlockModel"
@@ -690,6 +728,10 @@ components:
           default: 0
           title: New Position
           type: integer
+        sort_by_assigned_pos:
+          default: false
+          title: Sort By Assigned Pos
+          type: boolean
       title: UpdateBlockPositionModel
       type: object
     UpdateThreadTitleModel:
@@ -792,7 +834,7 @@ components:
           anyOf:
             - type: boolean
             - type: "null"
-          "null": true
+          "null": false
           title: Assigned
         bookmark:
           anyOf:

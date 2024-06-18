@@ -19,6 +19,8 @@ class CreateChildThreadModel {
   /// Returns a new [CreateChildThreadModel] instance.
   CreateChildThreadModel({
 
+     this.assignedId,
+
      this.content,
 
     required  this.mainThreadId,
@@ -29,6 +31,18 @@ class CreateChildThreadModel {
 
     required  this.type,
   });
+
+  @JsonKey(
+    
+    name: r'assignedId',
+    required: false,
+    includeIfNull: false
+  )
+
+
+  final String? assignedId;
+
+
 
   @JsonKey(
     
@@ -92,6 +106,7 @@ class CreateChildThreadModel {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is CreateChildThreadModel &&
+     other.assignedId == assignedId &&
      other.content == content &&
      other.mainThreadId == mainThreadId &&
      other.parentBlockId == parentBlockId &&
@@ -100,6 +115,7 @@ class CreateChildThreadModel {
 
   @override
   int get hashCode =>
+    (assignedId == null ? 0 : assignedId.hashCode) +
     content.hashCode +
     mainThreadId.hashCode +
     parentBlockId.hashCode +

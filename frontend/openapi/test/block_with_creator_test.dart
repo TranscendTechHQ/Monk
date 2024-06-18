@@ -12,6 +12,16 @@ void main() {
       // TODO
     });
 
+    // int assignedPos (default value: 1)
+    test('to test the property `assignedPos`', () async {
+      // TODO
+    });
+
+    // String assignedThreadId
+    test('to test the property `assignedThreadId`', () async {
+      // TODO
+    });
+
     // UserModel assignedTo
     test('to test the property `assignedTo`', () async {
       // TODO
@@ -72,7 +82,7 @@ void main() {
       // TODO
     });
 
-    // int position (default value: 0)
+    // int position (default value: 1)
     test('to test the property `position`', () async {
       // TODO
     });

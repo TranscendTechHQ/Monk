@@ -34,6 +34,7 @@ class UserMap(BaseModel):
 class UpdateBlockPositionModel(BaseModel):
     block_id: str = Field(default='')
     new_position: int = Field(default=0)
+    sort_by_assigned_pos: bool = Field(default=False)
     model_config = ConfigDict(extra='ignore',
                               populate_by_name=True,
                               arbitrary_types_allowed=True,)
@@ -67,6 +68,8 @@ class BlockModel(BaseModel):
     link_meta: Optional[LinkMetaModel] = Field(default=None)
     assigned_to_id: Optional[str] = Field(default=None)
     assigned_to: Optional[UserModel] = Field(default=None)
+    assigned_thread_id: Optional[str] = Field(default=None)
+    assigned_pos: int = Field(default=1)
 
 
 class CreateBlockModel(BaseModel):
@@ -110,6 +113,7 @@ class CreateThreadModel(BaseModel):
 class CreateChildThreadModel(CreateThreadModel):
     parent_block_id: str = Field(..., alias="parentBlockId")
     main_thread_id: str = Field(..., alias="mainThreadId")
+    assigned_to_id: Optional[str] = Field(default=None, alias="assignedId")
 
 
 class ThreadModel(BaseModel):
@@ -123,6 +127,7 @@ class ThreadModel(BaseModel):
     headline: str = Field(default=None)
     tenant_id: str
     num_blocks: int = Field(default=0)
+    assigned_to_id: Optional[str] = Field(default=None)
     parent_block_id: Optional[str] = Field(default=None, null=True)
     slack_thread_ts: Optional[float] = Field(default=None, null=True)
     model_config = ConfigDict(extra='ignore',
@@ -205,6 +210,7 @@ class ThreadMetaData(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.now)
     creator: UserModel
     parent_block_id: Optional[str] = Field(default=None)
+    assigned_to_id: Optional[str] = Field(default=None)
     headline: str = Field(default=None)
     num_blocks: int = Field(default=0)
     unread: Optional[bool] = Field(default=None, null=True)

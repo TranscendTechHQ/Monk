@@ -17,6 +17,11 @@ void main() {
       // TODO
     });
 
+    // String assignedToId
+    test('to test the property `assignedToId`', () async {
+      // TODO
+    });
+
     // BlockModel block
     test('to test the property `block`', () async {
       // TODO

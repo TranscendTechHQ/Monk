@@ -82,7 +82,7 @@ class ThreadCard extends ConsumerWidget {
       if (block.childThreadId.isNullOrEmpty) {
         final createChildThreadModel = CreateChildThreadModel(
           topic: childThreadName,
-          type: type,
+          type: type == 'todo' ? 'chat' : 'todo',
           parentBlockId: block.id!,
           mainThreadId: mainThreadId!,
         );
@@ -97,7 +97,7 @@ class ThreadCard extends ConsumerWidget {
               context,
               ThreadPage.launchRoute(
                 topic: childThreadName,
-                type: type,
+                type: type == 'todo' ? 'chat' : 'todo',
                 threadType: ThreadType.reply,
               ));
           logger.d('Thread created successfully');

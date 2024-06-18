@@ -9,6 +9,8 @@ import 'package:openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | [optional] 
+**assignedPos** | **int** |  | [optional] [default to 1]
+**assignedThreadId** | **String** |  | [optional] 
 **assignedTo** | [**UserModel**](UserModel.md) |  | [optional] 
 **assignedToId** | **String** |  | [optional] 
 **childThreadId** | **String** |  | [optional] [default to '']
@@ -21,7 +23,7 @@ Name | Type | Description | Notes
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **linkMeta** | [**LinkMetaModel**](LinkMetaModel.md) |  | [optional] 
 **mainThreadId** | **String** |  | [optional] [default to '']
-**position** | **int** |  | [optional] [default to 0]
+**position** | **int** |  | [optional] [default to 1]
 **taskStatus** | **String** |  | [optional] [default to 'todo']
 **tenantId** | **String** |  | [optional] [default to '']
 

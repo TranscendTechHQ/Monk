@@ -8,6 +8,7 @@ import 'package:openapi/api.dart';
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**assignedId** | **String** |  | [optional] 
 **content** | [**List&lt;BlockModel&gt;**](BlockModel.md) |  | [optional] 
 **mainThreadId** | **String** |  | 
 **parentBlockId** | **String** |  | 

@@ -18,6 +18,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
         final val = FullThreadInfo(
           id: $checkedConvert('_id', (v) => v as String),
           assigned: $checkedConvert('assigned', (v) => v as bool?),
+          assignedToId: $checkedConvert('assigned_to_id', (v) => v as String?),
           block: $checkedConvert(
               'block',
               (v) => v == null
@@ -56,6 +57,7 @@ FullThreadInfo _$FullThreadInfoFromJson(Map<String, dynamic> json) =>
       },
       fieldKeyMap: const {
         'id': '_id',
+        'assignedToId': 'assigned_to_id',
         'createdAt': 'created_at',
         'defaultBlock': 'default_block',
         'lastModified': 'last_modified',
@@ -76,6 +78,7 @@ Map<String, dynamic> _$FullThreadInfoToJson(FullThreadInfo instance) {
   }
 
   writeNotNull('assigned', instance.assigned);
+  writeNotNull('assigned_to_id', instance.assignedToId);
   writeNotNull('block', instance.block?.toJson());
   writeNotNull('bookmark', instance.bookmark);
   writeNotNull('content', instance.content?.map((e) => e.toJson()).toList());
