@@ -220,38 +220,38 @@ class ThreadCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-                Container(
-                  width: 1,
-                  height: 16,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: context.colorScheme.onSurface.withOpacity(.6),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Ass Pos: ${block.assignedPos}',
-                  style: context.textTheme.bodySmall,
-                ),
-                Container(
-                  width: 1,
-                  height: 16,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: context.colorScheme.onSurface.withOpacity(.6),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Pos: ${block.position}',
-                  style: context.textTheme.bodySmall,
-                ),
+                // Container(
+                //   width: 1,
+                //   height: 16,
+                //   margin: const EdgeInsets.symmetric(horizontal: 8),
+                //   decoration: BoxDecoration(
+                //     border: Border.all(
+                //       color: context.colorScheme.onSurface.withOpacity(.6),
+                //       width: 1,
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(width: 8),
+                // Text(
+                //   'Ass Pos: ${block.assignedPos}',
+                //   style: context.textTheme.bodySmall,
+                // ),
+                // Container(
+                //   width: 1,
+                //   height: 16,
+                //   margin: const EdgeInsets.symmetric(horizontal: 8),
+                //   decoration: BoxDecoration(
+                //     border: Border.all(
+                //       color: context.colorScheme.onSurface.withOpacity(.6),
+                //       width: 1,
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(width: 8),
+                // Text(
+                //   'Pos: ${block.position}',
+                //   style: context.textTheme.bodySmall,
+                // ),
                 const Spacer(),
 
                 // TOOLS - Update task status
@@ -399,22 +399,29 @@ class ThreadCard extends ConsumerWidget {
                         ),
                         if (assignedTo != null) ...[
                           const SizedBox(width: 8),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: CacheImage(
-                              path: assignedTo.picture!,
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            assignedTo.name ?? 'N/A',
-                            style: context.textTheme.bodySmall?.copyWith(
-                              color: context.colorScheme.onSurface,
-                              fontSize: 12,
-                            ),
-                          ),
+                          Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: CacheImage(
+                                  path: assignedTo.picture!,
+                                  width: 20,
+                                  height: 20,
+                                  onPressed: () =>
+                                      assignTodo(context, ref, cardProvider),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                assignedTo.name ?? 'N/A',
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  color: context.colorScheme.onSurface,
+                                  fontSize: 12,
+                                ),
+                              )
+                            ],
+                          ).onPressed(
+                              () => assignTodo(context, ref, cardProvider)),
                         ] else
                           TextButton(
                               style: TextButton.styleFrom(
@@ -459,7 +466,7 @@ class ThreadCard extends ConsumerWidget {
                               if (dueDate != null)
                                 TextSpan(
                                   text:
-                                      ' ${DateFormat('dd MMM yyyy').format(dueDate ?? DateTime.now())}',
+                                      ' ${DateFormat('dd MMM yyyy').format(dueDate)}',
                                   style: context.textTheme.bodySmall?.copyWith(
                                     color: Colors.amber,
                                     fontSize: 12,

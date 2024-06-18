@@ -399,30 +399,33 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, 
     result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
     return result
 
+
 def semantic_filter_threads(user_id):
     user_collection = syncdb.users_collection
     user = user_collection.find_one({"_id": user_id})
     if user is None:
         return None
     user_name = user["name"]
-    
+
     news_feed_filter_collection = syncdb.user_news_feed_filter_collection
     user_filter = news_feed_filter_collection.find_one({"user_id": user_id})
-    
+
     if user_filter is None:
         return None
-    
+
     user_preference = user_filter["searchQuery"]
-    
+
     threads_collection = syncdb.threads_collection
     cursor = threads_collection.find({}, projection={'_id': 1, '_id': '$_id'})
     thread_ids_dict = list(cursor)
     thread_ids = [thread["_id"] for thread in thread_ids_dict]
     print(f'\n 👉 Thread ids: {thread_ids}')
-    
-    relevant_thread_ids = get_relevant_thread_ids(user_name, user_preference, thread_ids)
-    
+
+    relevant_thread_ids = get_relevant_thread_ids(
+        user_name, user_preference, thread_ids)
+
     return None
+
 
 @router.get("/newsfeed", response_model=ThreadsMetaData,
             response_description="Get news feed as  data for all threads")
@@ -1006,10 +1009,9 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
 
         old_thread = await get_mongo_document({"topic": topic}, asyncdb.threads_collection, tenant_id)
 
-        # If the thread is already assigned to other user then reassign it to new user
         if old_thread and (not 'assigned_thread_id' in old_thread.keys() or old_thread['assigned_thread_id'] != assignedUserId):
             print(
-                f'\n👉 Thread is already assigned to some other user. Assigning to ${assignedUserId}')
+                f'\n👉 Thread is already assigned to some other user. Assigning to ${assignedUserId} ')
             await asyncdb.threads_collection.update_one(
                 {'_id': id},
                 {"$set":
@@ -1025,13 +1027,36 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
             print("\n👉 Thread is not assigned to any user. Creating new thread")
             new_thread = await create_new_thread(
                 user_id=user_id,
-                # parent_block_id=id,
                 tenant_id=tenant_id,
                 topic=topic,
                 thread_type='todo',
                 assigned_to_id=assignedUserId,
                 created_at=str(dt.datetime.now())
             )
+
+        # If the block is already assigned to other user then reassign it to new user
+        if 'assigned_to_id' in block_to_update.keys() and block_to_update['assigned_to_id'] is not None and block_to_update['assigned_to_id'] != assignedUserId:
+            print(
+                '\n👉 Block is already assigned to some other user. Reassigning to new user')
+            # Remove Fetch all the blocks from the block_to_update['assigned_thread_id'] and update the assigned_pos
+            blocks = await block_collection.find({"assigned_thread_id": block_to_update['assigned_thread_id']}).to_list(None)
+            if len(blocks) > 1:
+                print(
+                    '\n👉 Removing the block from old position. Updated Blocks length:', len(blocks))
+                # remove the block from the old position
+                blocks = [block for block in blocks if block["_id"] != id]
+                print(
+                    '\n👉 Block is removed from old position: Rest blocks length', len(blocks))
+                print('\n👉 Sorting the blocks by assigned_pos')
+                # sort the blocks by assigned_pos
+                blocks = sorted(blocks, key=lambda x: x['assigned_pos'])
+                # update the positions of the blocks in the thread
+                for i in range(len(blocks)):
+                    new_block_position = i + 1
+                    await update_mongo_document_fields({"_id": blocks[i]["_id"]}, {"assigned_pos": new_block_position, 'last_modified': str(dt.datetime.now())}, block_collection)
+                    print(
+                        f"\n → Position from {blocks[i]['content'].strip()} to {new_block_position}"),
+
         assigned_thread_id = old_thread is not None and old_thread['_id'] or new_thread['_id']
         pos = get_blocks_count_special_thread(assigned_thread_id) + 1
 

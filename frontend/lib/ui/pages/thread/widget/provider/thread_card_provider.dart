@@ -116,7 +116,7 @@ class ThreadCard extends _$ThreadCard {
         map.putIfAbsent('assigned_to_id', () => assignedUserId);
       }
       if (map.keys.contains('assigned_to')) {
-        map.update('assigned_to_id', (value) => r.assignedTo?.toJson());
+        map.update('assigned_to', (value) => r.assignedTo?.toJson());
       } else {
         map.putIfAbsent('assigned_to', () => r.assignedTo?.toJson());
       }
