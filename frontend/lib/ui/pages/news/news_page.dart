@@ -311,7 +311,8 @@ class ChatListView extends ConsumerWidget {
                   child: ListView.builder(
                     controller: scrollController,
                     itemCount: threadHeadlineList.length,
-                    padding: const EdgeInsets.only(bottom: 30),
+                    padding:
+                        const EdgeInsets.only(bottom: 30, left: 4, right: 4),
                     itemBuilder: (context, index) {
                       final metaData = threadHeadlineList[index];
                       return NewsCard(metaData: metaData);

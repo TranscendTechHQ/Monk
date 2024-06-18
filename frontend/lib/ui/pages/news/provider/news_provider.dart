@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
@@ -17,6 +19,10 @@ class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
+    const oneSec = Duration(seconds: 10);
+    Timer.periodic(
+        oneSec, (Timer t) async => await getFilteredFeed(isRefresh: false));
+
     final response = await threadApi.filterNewsfeedGet();
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
@@ -32,8 +38,11 @@ class NewsFeed extends _$NewsFeed {
     bool? mention = false,
     String? searchQuery,
     bool isFilterEnabled = false,
+    bool isRefresh = true,
   }) async {
-    state = const AsyncLoading();
+    if (isRefresh) {
+      state = const AsyncLoading();
+    }
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
       bookmark: bookmark,
