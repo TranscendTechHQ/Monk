@@ -165,7 +165,7 @@ class ThreadCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
@@ -219,6 +219,38 @@ class ThreadCard extends ConsumerWidget {
                       ],
                     ),
                   ],
+                ),
+                Container(
+                  width: 1,
+                  height: 16,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: context.colorScheme.onSurface.withOpacity(.6),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Ass Pos: ${block.assignedPos}',
+                  style: context.textTheme.bodySmall,
+                ),
+                Container(
+                  width: 1,
+                  height: 16,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: context.colorScheme.onSurface.withOpacity(.6),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Pos: ${block.position}',
+                  style: context.textTheme.bodySmall,
                 ),
                 const Spacer(),
 
@@ -311,6 +343,12 @@ class ThreadCard extends ConsumerWidget {
                   launch(href);
                 },
               ),
+            const SizedBox(height: 8),
+            Text(
+              block.id ?? "",
+              style: TextStyle(
+                  color: context.colorScheme.onSurface.withOpacity(.4)),
+            ),
             const SizedBox(height: 8),
 
             if (block.image != null) ...[

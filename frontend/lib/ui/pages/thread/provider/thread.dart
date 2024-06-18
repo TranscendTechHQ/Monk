@@ -379,20 +379,20 @@ class CurrentThread extends _$CurrentThread {
     blocks.removeAt(oldIndex);
     blocks.insert(newIndex, draggedBlock);
     blocks.asMap().forEach((index, block) {
-      final map = block.toJson();
       if (thread.assignedToId.isNotNullEmpty) {
-        map.putIfAbsent("assigned_pos", () => index);
-        map.update("assigned_pos", (value) => index);
+        blocks[index] = BlockWithCreator.fromJson(block.toJson()
+          ..putIfAbsent("assigned_pos", () => index)
+          ..update("assigned_pos", (value) => index));
       } else {
-        map.putIfAbsent("position", () => index);
-        map.update("position", (value) => index);
+        blocks[index] = BlockWithCreator.fromJson(block.toJson()
+          ..putIfAbsent("position", () => index)
+          ..update("position", (value) => index));
       }
-      blocks[index] = BlockWithCreator.fromJson(block.toJson());
     });
-
     final updatedBlocks = blocks;
 
-    print(updatedBlocks.map((e) => e.position).toList());
+    // print(updatedBlocks.map((e) => e.position).toList());
+    // updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
     if (thread.assignedToId.isNotNullEmpty) {
       updatedBlocks.sort((a, b) => a.assignedPos!.compareTo(b.assignedPos!));
       print('sorted by assigned pos');
@@ -400,7 +400,6 @@ class CurrentThread extends _$CurrentThread {
       updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
       print('sorted by  position');
     }
-    print(updatedBlocks.map((e) => e.position).toList());
 
     final updatedThreadModel = FullThreadInfo(
       topic: thread.topic,
@@ -410,7 +409,6 @@ class CurrentThread extends _$CurrentThread {
       id: thread.id,
       defaultBlock: thread.defaultBlock,
       createdAt: thread.createdAt,
-      assignedToId: thread.assignedToId,
     );
 
     final updatedIndex = updatedBlocks.indexWhere((element) {
@@ -422,9 +420,7 @@ class CurrentThread extends _$CurrentThread {
         thread: updatedThreadModel,
       ),
     );
-    // print('oldIndex: ${{
-    //   updatedBlocks.length - oldIndex
-    // }}, newIndex: ${updatedBlocks.length - updatedIndex - 1}, assignedToId: ${thread.assignedToId}');
+
     final res = await AsyncRequest.handle<UpdateBlockPositionModel>(() async {
       final threadApi = NetworkManager.instance.openApi.getThreadsApi();
       final result = await threadApi.updateBlockPositionBlocksIdPositionPut(
