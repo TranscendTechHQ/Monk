@@ -27,6 +27,7 @@ from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
 from routes.threads.user_flags import get_user_filter_preferences_from_db, save_user_filter_preferences, set_flags_true_other_users, set_unread_other_users, update_user_flags
+from utils.ai.relevance import get_relevant_thread_ids
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -398,6 +399,30 @@ async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, 
     result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
     return result
 
+def semantic_filter_threads(user_id):
+    user_collection = syncdb.users_collection
+    user = user_collection.find_one({"_id": user_id})
+    if user is None:
+        return None
+    user_name = user["name"]
+    
+    news_feed_filter_collection = syncdb.user_news_feed_filter_collection
+    user_filter = news_feed_filter_collection.find_one({"user_id": user_id})
+    
+    if user_filter is None:
+        return None
+    
+    user_preference = user_filter["searchQuery"]
+    
+    threads_collection = syncdb.threads_collection
+    cursor = threads_collection.find({}, projection={'_id': 1, '_id': '$_id'})
+    thread_ids_dict = list(cursor)
+    thread_ids = [thread["_id"] for thread in thread_ids_dict]
+    print(f'\n 👉 Thread ids: {thread_ids}')
+    
+    relevant_thread_ids = get_relevant_thread_ids(user_name, user_preference, thread_ids)
+    
+    return None
 
 @router.get("/newsfeed", response_model=ThreadsMetaData,
             response_description="Get news feed as  data for all threads")

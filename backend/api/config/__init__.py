@@ -41,7 +41,8 @@ class SuperTokensSettings(BaseSettings):
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = get_env_variable(var_name="DEBUG_MODE", secret=False, default=True)
-
+    RELEVANCE_API_KEY: str = get_env_variable(var_name="RELEVANCE_API_KEY", secret=False)
+    RELEVANCE_URL: str = get_env_variable(var_name="RELEVANCE_URL", secret=False)
 
 class ServerSettings(BaseSettings):
     HOST: str = "0.0.0.0"
