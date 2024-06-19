@@ -28,7 +28,7 @@ class NetworkManager {
         requestHeader: false,
         responseHeader: false,
         requestBody: true,
-        responseBody: false,
+        responseBody: true,
       ),
     ];
   }

@@ -51,14 +51,16 @@ class ThreadCard extends ConsumerWidget {
     );
 
     if (user != null) {
-      final threadNotifier = ref
-          .read(currentThreadProvider.call(topic: topic, type: type).notifier);
-      // final assignTodoModel = AssignTodoModel(
-      //   blockId: block.id!,
-      //   userId: user.id!,
-      // );
-      // await threadNotifier.assignTodoToUser(block.id!, user.id);
-      await ref.read(cardProvider.notifier).assignTodoToUser(user.id);
+      final threadProvider =
+          currentThreadProvider.call(topic: topic, type: type);
+      final threadNotifier = ref.read(threadProvider.notifier);
+      final isDone =
+          await ref.read(cardProvider.notifier).assignTodoToUser(user.id);
+      if (isDone &&
+          threadNotifier.state.value?.thread?.assignedToId != user.id) {
+        showMessage(context, 'Task is assigned to ${user.name}');
+        threadNotifier.removeBlock(block.id!);
+      }
     }
   }
 
@@ -344,11 +346,6 @@ class ThreadCard extends ConsumerWidget {
                 },
               ),
             const SizedBox(height: 8),
-            Text(
-              block.id ?? "",
-              style: TextStyle(
-                  color: context.colorScheme.onSurface.withOpacity(.4)),
-            ),
             const SizedBox(height: 8),
 
             if (block.image != null) ...[

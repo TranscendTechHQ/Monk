@@ -265,6 +265,34 @@ class CurrentThread extends _$CurrentThread {
         blocks: updatedBlocks, thread: updatedThreadModel));
   }
 
+  void removeBlock(String blockId) {
+    final thread = state.value?.thread;
+    final blocks = state.value?.blocks.getOrEmpty;
+    if (thread == null) {
+      logger.e("There is no thread to remove block from");
+      return;
+    } else if (blocks.isNullOrEmpty) {
+      logger.e("There is no block to remove");
+      return;
+    }
+
+    final updatedBlocks =
+        blocks!.where((element) => element.id != blockId).toList();
+    final updatedThreadModel = FullThreadInfo(
+      topic: thread.topic,
+      type: thread.type,
+      content: updatedBlocks,
+      creator: thread.creator,
+      id: thread.id,
+      defaultBlock: thread.defaultBlock,
+      createdAt: thread.createdAt,
+      assignedToId: thread.assignedToId,
+    );
+
+    state = AsyncValue.data(CurrentTreadState.result(
+        blocks: updatedBlocks, thread: updatedThreadModel));
+  }
+
   Future<void> updateBlock(String blockId, String content) async {
     final thread = state.value?.thread;
     final blocks = state.value?.blocks.getOrEmpty;

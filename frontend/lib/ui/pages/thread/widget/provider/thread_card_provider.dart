@@ -94,7 +94,7 @@ class ThreadCard extends _$ThreadCard {
     });
   }
 
-  Future<void> assignTodoToUser(String assignedUserId) async {
+  Future<bool> assignTodoToUser(String assignedUserId) async {
     state = state.copyWith(assigningTask: true);
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final blockId = state.block.id;
@@ -106,8 +106,9 @@ class ThreadCard extends _$ThreadCard {
       return res.data!;
     });
     state = state.copyWith(assigningTask: false);
-    res.fold((l) {
-      throw Exception('Failed to update assigned');
+    return res.fold((l) {
+      // throw Exception('Failed to update assigned');
+      return false;
     }, (r) {
       final map = state.block.toJson();
       if (map.keys.contains('assigned_to_id')) {
@@ -122,6 +123,7 @@ class ThreadCard extends _$ThreadCard {
       }
       map.putIfAbsent('assigned_to', () => r.assignedTo?.toJson());
       state = state.copyWith(block: BlockWithCreator.fromJson(map));
+      return true;
     });
   }
 }
