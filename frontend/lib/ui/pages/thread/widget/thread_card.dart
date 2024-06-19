@@ -57,6 +57,7 @@ class ThreadCard extends ConsumerWidget {
       final isDone =
           await ref.read(cardProvider.notifier).assignTodoToUser(user.id);
       if (isDone &&
+          threadNotifier.state.value!.thread!.assignedToId!.isNotNullEmpty &&
           threadNotifier.state.value?.thread?.assignedToId != user.id) {
         showMessage(context, 'Task is assigned to ${user.name}');
         threadNotifier.removeBlock(block.id!);

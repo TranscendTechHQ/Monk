@@ -808,9 +808,10 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
             thread_to_return["content"] = None
 
         # Sort blocks by assigned pos if thread has assigned_to_id
-        if thread_to_return['assigned_to_id']:
-            thread_to_return['content'] = sorted(
-                thread_to_return['content'], key=lambda x: x['assigned_pos'])
+        if thread_to_return['assigned_to_id'] is not None and thread_to_return['assigned_to_id'] != '':
+            if thread_to_return['content'] is not None:
+                thread_to_return['content'] = sorted(
+                    thread_to_return['content'], key=lambda x: x['assigned_pos'])
 
         return thread_to_return
     except Exception as e:
@@ -998,7 +999,7 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
             return JSONResponse(status_code=404, content={"message": f"Block with ${id} not found"})
 
         # Get user info from the user_id
-        user_info = await get_user_info(session,)
+        user_info = syncdb.users_collection.find_one({"_id": assignedUserId})
 
         if user_info is None:
             return JSONResponse(status_code=404, content={"message": "User with ${assignedUserId} id not found"})
