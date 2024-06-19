@@ -239,6 +239,51 @@ class NewsPage extends ConsumerWidget {
                           );
                         },
                       ),
+                      const SizedBox(height: 10),
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'filter.svg',
+                        label: 'Unread',
+                        iconSize: 16,
+                        borderColor: onlyUnReadFilterApplied(filtersState.value)
+                            ? context.colorScheme.onSecondaryContainer
+                            : null,
+                        onPressed: () async {
+                          final state =
+                              ref.read(newsFeedFilterProvider.notifier);
+
+                          if (onlyUnReadFilterApplied(filtersState.value!)) {
+                            await state.updateFilter(
+                              bookmarked: false,
+                              dismissed: false,
+                              unRead: false,
+                              upvoted: false,
+                              mentioned: false,
+                              semanticQuery: null,
+                            );
+                            ref.invalidate(newsFeedProvider);
+                            // ref.read(newsFeedProvider.future);
+                            await ref
+                                .read(newsFeedProvider.notifier)
+                                .getFilteredFeed(isFilterEnabled: false);
+                            showMessage(context, 'Displaying all threads');
+                          } else {
+                            ref
+                                .read(newsFeedProvider.notifier)
+                                .displayUnReadThreads();
+                            await state.updateFilter(
+                              bookmarked: false,
+                              dismissed: false,
+                              unRead: true,
+                              upvoted: false,
+                              mentioned: false,
+                              semanticQuery: null,
+                            );
+                            showMessage(
+                                context, 'Displaying mentioned threads');
+                          }
+                        },
+                      ),
                     ],
                   ).hP8,
                 ),

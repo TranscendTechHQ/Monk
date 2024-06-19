@@ -76,13 +76,13 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
                     thickness: .5,
                   ),
                   const Padding(padding: EdgeInsets.all(8)),
-                  CheckboxListTile(
-                      value: state.unRead,
-                      side: const BorderSide(color: monkBlue700, width: 2),
-                      onChanged: (val) async {
-                        await readState.updateFilter(unRead: val);
-                      },
-                      title: const Text('Unread')),
+                  // CheckboxListTile(
+                  //     value: state.unRead,
+                  //     side: const BorderSide(color: monkBlue700, width: 2),
+                  //     onChanged: (val) async {
+                  //       await readState.updateFilter(unRead: val);
+                  //     },
+                  //     title: const Text('Unread')),
                   CheckboxListTile(
                       value: state.bookmarked,
                       side: const BorderSide(color: monkBlue700, width: 2),

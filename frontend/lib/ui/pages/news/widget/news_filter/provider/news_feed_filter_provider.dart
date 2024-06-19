@@ -29,7 +29,7 @@ class NewsFeedFilter extends _$NewsFeedFilter {
     }, (r) {
       return NewsFeedFilterState(
         bookmarked: r.bookmark ?? false,
-        unRead: r.unread ?? false,
+        // unRead: r.unread ?? false,
         upvoted: r.upvote ?? false,
         mentioned: r.mention ?? false,
         dismissed: r.unfollow ?? false,
@@ -112,11 +112,22 @@ bool onlyMentionedFilterApplied(NewsFeedFilterState? state) {
   return isOk;
 }
 
+bool onlyUnReadFilterApplied(NewsFeedFilterState? state) {
+  final isOk = state != null &&
+      state.mentioned == false &&
+      state.semanticQuery.isNullOrEmpty &&
+      state.unRead == true &&
+      state.bookmarked == false &&
+      state.upvoted == false &&
+      state.dismissed == false;
+  return isOk;
+}
+
 bool anyFilterApplied(NewsFeedFilterState? state) {
   final isOk = state != null &&
       (state.mentioned ||
           state.semanticQuery.isNotNullEmpty ||
-          state.unRead ||
+          // state.unRead ||
           state.bookmarked ||
           state.upvoted ||
           state.dismissed);

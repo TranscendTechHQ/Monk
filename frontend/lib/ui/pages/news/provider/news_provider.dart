@@ -69,6 +69,16 @@ class NewsFeed extends _$NewsFeed {
     }
   }
 
+  Future<void> displayUnReadThreads() async {
+    final allThreads = state.value?.getAbsoluteOrNull;
+    if (allThreads.isNotNullEmpty) {
+      final mentionedThreads = allThreads!
+          .where((element) => element.unread == true)
+          .toList(growable: false);
+      state = AsyncData(mentionedThreads);
+    }
+  }
+
   Future<void> filter({
     bool? bookmark = false,
     bool? unRead = false,
