@@ -440,55 +440,62 @@ async def filter(
         isSemanticFilterEnabled: bool = False,
         session: SessionContainer = Depends(verify_session())
 ):
-    user_id = session.get_user_id()
-    tenant_id = await get_tenant_id(session)
-    if isSemanticFilterEnabled:
-        print(f"🔍 Saving semantic filter: ${searchQuery}")
-        await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
-                                           {"searchQuery": searchQuery},
-                                           asyncdb.user_news_feed_filter_collection)
-    if not isFilterEnabled:
-        user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
-        if user_flags:
-            bookmark = user_flags.bookmark
-            unread = user_flags.unread
-            unfollow = user_flags.unfollow
-            upvote = user_flags.upvote
-            mention = user_flags.mention
-            searchQuery = user_flags.searchQuery
+    try:
+        user_id = session.get_user_id()
+        print(f"🏁 ------------------ Filtering newsfeed ------------------ 🏁")
+        tenant_id = await get_tenant_id(session)
+        if isSemanticFilterEnabled:
+            print(f"🔍 Saving semantic filter: ${searchQuery}")
+            await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
+                                               {"searchQuery": searchQuery},
+                                               asyncdb.user_news_feed_filter_collection)
+        if not isFilterEnabled:
+            user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
+            if user_flags:
+                bookmark = user_flags.bookmark
+                unread = user_flags.unread
+                unfollow = user_flags.unfollow
+                upvote = user_flags.upvote
+                mention = user_flags.mention
+                searchQuery = user_flags.searchQuery
 
-    if bookmark or unfollow or unread or upvote or mention or searchQuery:
-        aggregate = await get_filtered_newsfeed(
-            user_id=user_id,
-            tenant_id=tenant_id,
-            bookmark=bookmark,
-            unread=unread,
-            unfollow=unfollow,
-            upvote=upvote,
-            mention=mention,
-            searchQuery=searchQuery
-        )
+        if bookmark or unfollow or unread or upvote or mention or searchQuery:
+            aggregate = await get_filtered_newsfeed(
+                user_id=user_id,
+                tenant_id=tenant_id,
+                bookmark=bookmark,
+                unread=unread,
+                unfollow=unfollow,
+                upvote=upvote,
+                mention=mention,
+                searchQuery=searchQuery
+            )
 
-    else:
-        aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id, user_id=user_id)
+        else:
+            print(f"👉 Fetching unfiltered newsfeed")
+            aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id, user_id=user_id)
 
-    aggregate = await aggregate.to_list(None)
+        aggregate = await aggregate.to_list(None)
 
-    # Save user's filter preferences to db if filter is enabled
-    if isFilterEnabled:
-        user_flags = {
-            "user_id": user_id,
-            "bookmark": bookmark,
-            "unread": unread,
-            "unfollow": unfollow,
-            "upvote": upvote,
-            "mention": mention,
-        }
-        await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
-                                           user_flags,
-                                           asyncdb.user_news_feed_filter_collection)
+        # Save user's filter preferences to db if filter is enabled
+        if isFilterEnabled:
+            user_flags = {
+                "user_id": user_id,
+                "bookmark": bookmark,
+                "unread": unread,
+                "unfollow": unfollow,
+                "upvote": upvote,
+                "mention": mention,
+            }
+            print(f"👉 Updating filter in db")
+            await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
+                                               user_flags,
+                                               asyncdb.user_news_feed_filter_collection)
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
 
 def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
