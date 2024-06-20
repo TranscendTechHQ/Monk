@@ -104,28 +104,7 @@ class NewsPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      OutlineIconButton(
-                        wrapped: false,
-                        svgPath: 'search.svg',
-                        label: 'Search',
-                        onPressed: () {
-                          SearchModal2.show(context,
-                              threadsMap: threadList.value!);
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      OutlineIconButton(
-                        wrapped: false,
-                        svgPath: 'filter.svg',
-                        label: 'Filter',
-                        borderColor: anyFilterApplied(filtersState.value)
-                            ? context.colorScheme.onSecondaryContainer
-                            : null,
-                        onPressed: () {
-                          onFilterPressed(context, ref);
-                        },
-                      ),
-                      const SizedBox(height: 10),
+                      // CREATE CHAT THREAD
                       OutlineIconButton(
                         wrapped: false,
                         svgPath: 'createthread.svg',
@@ -144,6 +123,7 @@ class NewsPage extends ConsumerWidget {
                         },
                       ),
                       const SizedBox(height: 10),
+                      // CREATE TODO THREAD
                       OutlineIconButton(
                         wrapped: false,
                         svgPath: 'todo.svg',
@@ -160,7 +140,37 @@ class NewsPage extends ConsumerWidget {
                           }
                         },
                       ),
+                      // const SizedBox(height: 10),
+                      Divider(
+                        color: context.colorScheme.onSurface,
+                        height: 30,
+                      ),
+                      // SEARCH
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'search.svg',
+                        label: 'Search',
+                        onPressed: () {
+                          SearchModal2.show(context,
+                              threadsMap: threadList.value!);
+                        },
+                      ),
                       const SizedBox(height: 10),
+                      // FILTER
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'filter.svg',
+                        label: 'Filter',
+                        borderColor: anyFilterApplied(filtersState.value)
+                            ? context.colorScheme.onSecondaryContainer
+                            : null,
+                        onPressed: () {
+                          onFilterPressed(context, ref);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+
+                      // MENTIONS
                       Stack(
                         children: [
                           OutlineIconButton(
@@ -233,6 +243,7 @@ class NewsPage extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
+                      // MY TASK
                       OutlineIconButton(
                         wrapped: false,
                         svgPath: 'todo.svg',
@@ -253,6 +264,7 @@ class NewsPage extends ConsumerWidget {
                         },
                       ),
                       const SizedBox(height: 10),
+                      // UNREAD
                       OutlineIconButton(
                         wrapped: false,
                         svgPath: 'filter.svg',
@@ -297,6 +309,7 @@ class NewsPage extends ConsumerWidget {
                         },
                       ),
                       const SizedBox(height: 10),
+                      // PERSONALIZE
                       OutlineIconButton(
                         wrapped: false,
                         svgPath: 'filter.svg',
