@@ -81,7 +81,7 @@ class NewsFeedFilter extends _$NewsFeedFilter {
           upvoted: upvoted ?? stateValue!.upvoted,
           mentioned: mentioned ?? stateValue!.mentioned,
           dismissed: dismissed ?? stateValue!.dismissed,
-          semanticQuery: semanticQuery,
+          semanticQuery: semanticQuery ?? stateValue?.semanticQuery,
         ),
       );
     }
@@ -123,10 +123,16 @@ bool onlyUnReadFilterApplied(NewsFeedFilterState? state) {
   return isOk;
 }
 
+bool isSemanticSearchFilterApplied(NewsFeedFilterState? state) {
+  final isOk = state != null && state.semanticQuery.isNotNullEmpty;
+
+  return isOk;
+}
+
 bool anyFilterApplied(NewsFeedFilterState? state) {
   final isOk = state != null &&
       (state.mentioned ||
-          state.semanticQuery.isNotNullEmpty ||
+          // state.semanticQuery.isNotNullEmpty ||
           // state.unRead ||
           state.bookmarked ||
           state.upvoted ||

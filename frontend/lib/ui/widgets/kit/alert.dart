@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/ui/theme/theme.dart';
-import 'package:frontend/ui/widgets/dismiss_button.dart';
 import 'package:frontend/ui/widgets/outline_icon_button.dart';
 
 enum AlertType {

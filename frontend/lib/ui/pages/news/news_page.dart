@@ -9,6 +9,7 @@ import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
 import 'package:frontend/ui/pages/news/widget/news_filter/news_feed_filter.dart';
 import 'package:frontend/ui/pages/news/widget/news_filter/provider/news_feed_filter_provider.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
+import 'package:frontend/ui/pages/news/widget/semantic-filter/sematic_filter.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -52,7 +53,6 @@ class NewsPage extends ConsumerWidget {
             unfollow: map['dismissed'],
             upvote: map['upvoted'],
             mention: map['mention'],
-            searchQuery: map['searchQuery'],
             isFilterEnabled: true,
           );
       final state = ref.read(newsFeedFilterProvider.notifier);
@@ -62,6 +62,19 @@ class NewsPage extends ConsumerWidget {
         unRead: map['unRead'] as bool,
         upvoted: map['upvoted'],
         mentioned: map['mention'] as bool,
+      );
+    }
+  }
+
+  Future<void> onPersonalisClicked(BuildContext context, WidgetRef ref) async {
+    final map = await SemanticFilter.show<Map<String, dynamic>?>(context);
+    if (map != null) {
+      ref.read(newsFeedProvider.notifier).getFilteredFeed(
+            searchQuery: map['searchQuery'],
+            isSemanticFilterEnabled: true,
+          );
+      final state = ref.read(newsFeedFilterProvider.notifier);
+      await state.updateSemanticQuery(
         semanticQuery: map['searchQuery'],
       );
     }
@@ -87,7 +100,7 @@ class NewsPage extends ConsumerWidget {
               children: [
                 // LEFT TOOLBAR
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 152),
+                  constraints: const BoxConstraints(maxWidth: 155),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -279,10 +292,22 @@ class NewsPage extends ConsumerWidget {
                               mentioned: false,
                               semanticQuery: null,
                             );
-                            showMessage(
-                                context, 'Displaying mentioned threads');
+                            showMessage(context, 'Displaying unread threads');
                           }
                         },
+                      ),
+                      const SizedBox(height: 10),
+                      OutlineIconButton(
+                        wrapped: false,
+                        svgPath: 'filter.svg',
+                        label: 'Personalize',
+                        borderColor:
+                            isSemanticSearchFilterApplied(filtersState.value)
+                                ? context.colorScheme.onSecondaryContainer
+                                : null,
+                        iconSize: 16,
+                        onPressed: () async =>
+                            onPersonalisClicked(context, ref),
                       ),
                     ],
                   ).hP8,

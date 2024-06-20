@@ -62,7 +62,7 @@ components:
           title: Main Thread Id
           type: string
         position:
-          default: 1
+          default: 0
           title: Position
           type: integer
         task_status:
@@ -142,7 +142,7 @@ components:
           title: Main Thread Id
           type: string
         position:
-          default: 1
+          default: 0
           title: Position
           type: integer
         task_status:
@@ -1228,6 +1228,13 @@ paths:
           schema:
             default: false
             title: Isfilterenabled
+            type: boolean
+        - in: query
+          name: isSemanticFilterEnabled
+          required: false
+          schema:
+            default: false
+            title: Issemanticfilterenabled
             type: boolean
       responses:
         "200":

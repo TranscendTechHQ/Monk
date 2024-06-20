@@ -548,6 +548,7 @@ _responseData = rawData == null ? null : deserialize<bool, bool>(rawData, 'bool'
   /// * [mention] 
   /// * [searchQuery] 
   /// * [isFilterEnabled] 
+  /// * [isSemanticFilterEnabled] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -565,6 +566,7 @@ _responseData = rawData == null ? null : deserialize<bool, bool>(rawData, 'bool'
     bool? mention = false,
     String? searchQuery,
     bool? isFilterEnabled = false,
+    bool? isSemanticFilterEnabled = false,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -593,6 +595,7 @@ _responseData = rawData == null ? null : deserialize<bool, bool>(rawData, 'bool'
       if (mention != null) r'mention': mention,
       if (searchQuery != null) r'searchQuery': searchQuery,
       if (isFilterEnabled != null) r'isFilterEnabled': isFilterEnabled,
+      if (isSemanticFilterEnabled != null) r'isSemanticFilterEnabled': isSemanticFilterEnabled,
     };
 
     final _response = await _dio.request<Object>(

@@ -275,7 +275,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **filterNewsfeedGet**
-> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled)
+> ThreadsMetaData filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled, isSemanticFilterEnabled)
 
 Filter
 
@@ -291,9 +291,10 @@ final bool upvote = true; // bool |
 final bool mention = true; // bool | 
 final String searchQuery = searchQuery_example; // String | 
 final bool isFilterEnabled = true; // bool | 
+final bool isSemanticFilterEnabled = true; // bool | 
 
 try {
-    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled);
+    final response = api.filterNewsfeedGet(bookmark, unread, unfollow, upvote, mention, searchQuery, isFilterEnabled, isSemanticFilterEnabled);
     print(response);
 } catch on DioException (e) {
     print('Exception when calling ThreadsApi->filterNewsfeedGet: $e\n');
@@ -311,6 +312,7 @@ Name | Type | Description  | Notes
  **mention** | **bool**|  | [optional] [default to false]
  **searchQuery** | **String**|  | [optional] 
  **isFilterEnabled** | **bool**|  | [optional] [default to false]
+ **isSemanticFilterEnabled** | **bool**|  | [optional] [default to false]
 
 ### Return type
 

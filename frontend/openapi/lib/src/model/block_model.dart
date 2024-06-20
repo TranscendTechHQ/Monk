@@ -48,7 +48,7 @@ class BlockModel {
 
      this.mainThreadId = '',
 
-     this.position = 1,
+     this.position = 0,
 
      this.taskStatus = 'todo',
 
@@ -224,7 +224,7 @@ class BlockModel {
 
 
   @JsonKey(
-    defaultValue: 1,
+    defaultValue: 0,
     name: r'position',
     required: false,
     includeIfNull: false

@@ -437,10 +437,16 @@ async def filter(
         mention: bool = False,
         searchQuery: str = None,
         isFilterEnabled: bool = False,
+        isSemanticFilterEnabled: bool = False,
         session: SessionContainer = Depends(verify_session())
 ):
     user_id = session.get_user_id()
     tenant_id = await get_tenant_id(session)
+    if isSemanticFilterEnabled:
+        print(f"🔍 Saving semantic filter: ${searchQuery}")
+        await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
+                                           {"searchQuery": searchQuery},
+                                           asyncdb.user_news_feed_filter_collection)
     if not isFilterEnabled:
         user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
         if user_flags:
@@ -477,13 +483,12 @@ async def filter(
             "unfollow": unfollow,
             "upvote": upvote,
             "mention": mention,
-            'searchQuery': searchQuery
         }
-        save_user_filter_preferences(
-            user_id, tenant_id, UserFilterPreferenceModel(**user_flags))
-
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
+        await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
+                                           user_flags,
+                                           asyncdb.user_news_feed_filter_collection)
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
 
 
 def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):

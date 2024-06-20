@@ -50,7 +50,7 @@ class BlockWithCreator {
 
      this.mainThreadId = '',
 
-     this.position = 1,
+     this.position = 0,
 
      this.taskStatus = 'todo',
 
@@ -238,7 +238,7 @@ class BlockWithCreator {
 
 
   @JsonKey(
-    defaultValue: 1,
+    defaultValue: 0,
     name: r'position',
     required: false,
     includeIfNull: false

@@ -111,47 +111,47 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
                         await readState.updateFilter(dismissed: val);
                       },
                       title: const Text('Dismissed')),
-                  const Padding(padding: EdgeInsets.all(8)),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      'Semantic Filter.',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TextFormField(
-                    // initialValue: state.semanticQuery,
-                    controller: textEditorController,
-                    onChanged: (val) async {
-                      // await readState.updateSemanticQuery(val);
-                    },
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText:
-                          'Describe in plain english the kind of threads you want to see in the newsfeed.',
-                      hintStyle: context.textTheme.bodyMedium?.copyWith(
-                        color: context.colorScheme.onSurface.withOpacity(.4),
-                      ),
-                      constraints: const BoxConstraints(
-                        minHeight: 40,
-                        maxHeight: 150,
-                      ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: monkBlue700),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: monkBlue700.withOpacity(.9)),
-                      ),
-                      border: const OutlineInputBorder(
-                        borderSide: BorderSide(color: monkBlue700),
-                      ),
-                      fillColor: context.colorScheme.background,
-                    ),
-                  ).hP16,
+                  // const Padding(padding: EdgeInsets.all(8)),
+                  // Container(
+                  //   padding:
+                  //       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  //   alignment: Alignment.centerLeft,
+                  //   child: const Text(
+                  //     'Semantic Filter.',
+                  //     style:
+                  //         TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  //   ),
+                  // ),
+                  // TextFormField(
+                  //   // initialValue: state.semanticQuery,
+                  //   controller: textEditorController,
+                  //   onChanged: (val) async {
+                  //     // await readState.updateSemanticQuery(val);
+                  //   },
+                  //   maxLines: null,
+                  //   decoration: InputDecoration(
+                  //     hintText:
+                  //         'Describe in plain english the kind of threads you want to see in the newsfeed.',
+                  //     hintStyle: context.textTheme.bodyMedium?.copyWith(
+                  //       color: context.colorScheme.onSurface.withOpacity(.4),
+                  //     ),
+                  //     constraints: const BoxConstraints(
+                  //       minHeight: 40,
+                  //       maxHeight: 150,
+                  //     ),
+                  //     enabledBorder: const OutlineInputBorder(
+                  //       borderSide: BorderSide(color: monkBlue700),
+                  //     ),
+                  //     focusedBorder: OutlineInputBorder(
+                  //       borderSide:
+                  //           BorderSide(color: monkBlue700.withOpacity(.9)),
+                  //     ),
+                  //     border: const OutlineInputBorder(
+                  //       borderSide: BorderSide(color: monkBlue700),
+                  //     ),
+                  //     fillColor: context.colorScheme.background,
+                  //   ),
+                  // ).hP16,
                   const Padding(padding: EdgeInsets.all(8)),
                   ButtonBar(
                     alignment: MainAxisAlignment.center,
@@ -165,7 +165,6 @@ class NewsFeedFilterViewState extends ConsumerState<NewsFeedFilterView> {
                             upvoted: false,
                             dismissed: false,
                             mentioned: false,
-                            semanticQuery: '',
                           );
                           textEditorController.clear();
                         },

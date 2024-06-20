@@ -49,7 +49,7 @@ BlockWithCreator _$BlockWithCreatorFromJson(Map<String, dynamic> json) =>
           mainThreadId:
               $checkedConvert('main_thread_id', (v) => v as String? ?? ''),
           position:
-              $checkedConvert('position', (v) => (v as num?)?.toInt() ?? 1),
+              $checkedConvert('position', (v) => (v as num?)?.toInt() ?? 0),
           taskStatus:
               $checkedConvert('task_status', (v) => v as String? ?? 'todo'),
           tenantId: $checkedConvert('tenant_id', (v) => v as String? ?? ''),

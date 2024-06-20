@@ -22,7 +22,7 @@ Name | Type | Description | Notes
 **lastModified** | [**DateTime**](DateTime.md) |  | [optional] 
 **linkMeta** | [**LinkMetaModel**](LinkMetaModel.md) |  | [optional] 
 **mainThreadId** | **String** |  | [optional] [default to '']
-**position** | **int** |  | [optional] [default to 1]
+**position** | **int** |  | [optional] [default to 0]
 **taskStatus** | **String** |  | [optional] [default to 'todo']
 **tenantId** | **String** |  | [optional] [default to '']
 

@@ -19,7 +19,7 @@ class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    const oneSec = Duration(seconds: 10);
+    const oneSec = Duration(seconds: 30);
     Timer.periodic(
         oneSec, (Timer t) async => await getFilteredFeed(isRefresh: false));
 
@@ -39,20 +39,21 @@ class NewsFeed extends _$NewsFeed {
     String? searchQuery,
     bool isFilterEnabled = false,
     bool isRefresh = true,
+    bool isSemanticFilterEnabled = false,
   }) async {
     if (isRefresh) {
       state = const AsyncLoading();
     }
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
     final response = await threadApi.filterNewsfeedGet(
-      bookmark: bookmark,
-      unread: unRead,
-      unfollow: unfollow,
-      upvote: upvote,
-      mention: mention,
-      searchQuery: searchQuery,
-      isFilterEnabled: isFilterEnabled,
-    );
+        bookmark: bookmark,
+        unread: unRead,
+        unfollow: unfollow,
+        upvote: upvote,
+        mention: mention,
+        searchQuery: searchQuery,
+        isFilterEnabled: isFilterEnabled,
+        isSemanticFilterEnabled: isSemanticFilterEnabled);
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
     }
