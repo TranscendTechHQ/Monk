@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/utils.dart';
-import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/pages/news/news_card.dart';
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/create_thread_model.dart';
@@ -10,8 +9,8 @@ import 'package:frontend/ui/pages/news/widget/news_filter/news_feed_filter.dart'
 import 'package:frontend/ui/pages/news/widget/news_filter/provider/news_feed_filter_provider.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/news/widget/semantic-filter/sematic_filter.dart';
+import 'package:frontend/ui/pages/news/widget/team-task-model/team-task-model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
-import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:frontend/ui/widgets/outline_icon_button.dart';
@@ -248,20 +247,10 @@ class NewsPage extends ConsumerWidget {
                       OutlineIconButton(
                         wrapped: false,
                         svgPath: 'todo.svg',
-                        label: 'My Task',
+                        label: 'Task',
                         iconSize: 16,
                         onPressed: () async {
-                          final authState = ref.read(authProvider);
-                          final session = authState.value!.session;
-                          Navigator.push(
-                            context,
-                            ThreadPage.launchRoute(
-                              topic:
-                                  "${session!.fullName.replaceAll(' ', '_')}_${session.userId.substring(0, 4)}"
-                                      .toLowerCase(),
-                              type: 'todo',
-                            ),
-                          );
+                          TeamTaskModal.show(context);
                         },
                       ),
                       const SizedBox(height: 10),
