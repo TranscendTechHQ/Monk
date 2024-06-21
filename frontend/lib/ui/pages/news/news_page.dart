@@ -100,7 +100,8 @@ class NewsPage extends ConsumerWidget {
               children: [
                 // LEFT TOOLBAR
                 ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 155),
+                  constraints:
+                      BoxConstraints(maxWidth: context.scale(170, 160, 155)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -325,27 +326,29 @@ class NewsPage extends ConsumerWidget {
                     ],
                   ).hP8,
                 ),
-                const SizedBox(width: 20),
+                SizedBox(width: context.scale(20, 10, 5)),
                 Column(
                   children: [
                     Expanded(child: ChatListView()),
                     const Padding(padding: EdgeInsets.all(8))
                   ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  tooltip: 'Refresh',
-                  onPressed: () {
-                    showMessage(
-                        context, 'fetching new threads and applying filters');
-                    ref.invalidate(newsFeedProvider);
-                    // ref.read(newsFeedProvider.future);
-                    ref
-                        .read(newsFeedProvider.notifier)
-                        .getFilteredFeed(isFilterEnabled: false);
-                  },
-                ),
-                SizedBox(width: context.scale(150, 50, 10)),
+                if (!context.isMobile)
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Refresh',
+                    onPressed: () {
+                      showMessage(
+                          context, 'fetching new threads and applying filters');
+                      ref.invalidate(newsFeedProvider);
+                      // ref.read(newsFeedProvider.future);
+                      ref
+                          .read(newsFeedProvider.notifier)
+                          .getFilteredFeed(isFilterEnabled: false);
+                    },
+                  ),
+                if (context.isDesktop)
+                  SizedBox(width: context.scale(150, 50, 10)),
               ],
             ),
           ),
@@ -368,10 +371,10 @@ class ChatListView extends ConsumerWidget {
 
     return newsFeed.when(
       loading: () => Container(
-        width: 500.00.scale(
-          800.00,
-          600,
-          200,
+        width: context.scale(
+          500.00,
+          500,
+          400,
         ),
         alignment: Alignment.center,
         child: const CircularProgressIndicator(),
@@ -385,7 +388,11 @@ class ChatListView extends ConsumerWidget {
           ]),
           color: context.colorScheme.onSurface.withOpacity(.9),
           child: Container(
-            width: 500,
+            width: context.scale(
+              500.00,
+              500,
+              400,
+            ),
             alignment: Alignment.center,
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
