@@ -99,7 +99,7 @@ def save_user_filter_preferences(user_id, tenant_id, filter_preferences: UserFil
         # user_filter_preferences_jsonable = jsonable_encoder(user_filter_preferences_doc)
         create_or_replace_mongo_doc(id=user_id,
                                     document=user_filter_preferences_doc,
-                                    collection=asyncdb.user_news_feed_filter_collection)
+                                    collection=syncdb.user_news_feed_filter_collection)
 
         return user_filter_preferences_doc
     except Exception as e:
