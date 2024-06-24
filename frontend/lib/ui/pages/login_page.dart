@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart' as prefix;
 //import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/monk-exception.dart';
-import 'package:frontend/main.dart';
+
 import 'package:frontend/ui/pages/home_page.dart';
 import 'package:frontend/ui/pages/news/news_page.dart';
 import 'package:frontend/ui/pages/verify-orgnisation/verify_orgnization_page.dart';

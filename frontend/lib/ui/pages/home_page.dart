@@ -10,8 +10,6 @@ import 'package:frontend/ui/widgets/bg_wrapper.dart';
 import 'package:openapi/openapi.dart';
 import 'package:supertokens_flutter/supertokens.dart';
 
-import 'subscribed-channels/channels_page.dart';
-
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 

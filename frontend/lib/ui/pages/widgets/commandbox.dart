@@ -6,12 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/file_utils.dart';
-import 'package:frontend/main.dart';
+
 import 'package:frontend/repo/commandparser.dart';
 import 'package:frontend/ui/pages/news/news_page.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
-import 'package:frontend/ui/pages/widgets/search.dart';
+
 import 'package:frontend/ui/pages/widgets/user-mention/users.provider.dart';
 import 'package:frontend/ui/pages/widgets/zefyr_editor.dart';
 import 'package:frontend/ui/theme/theme.dart';

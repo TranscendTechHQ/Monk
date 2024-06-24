@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/helper/constants.dart';
 import 'package:frontend/helper/utils.dart';
-import 'package:frontend/main.dart';
+
 import 'package:frontend/ui/pages/news/provider/news_provider.dart';
 import 'package:frontend/ui/pages/news/widget/search/search_model.dart';
 import 'package:frontend/ui/pages/thread/provider/thread.dart';

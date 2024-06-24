@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
-import 'package:frontend/helper/shared_preference.dart';
+
 import 'package:frontend/helper/utils.dart';
-import 'package:frontend/main.dart';
+
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/helper/constants.dart';
 part 'news_provider.freezed.dart';
 
 part 'news_provider.g.dart';
@@ -19,7 +20,7 @@ class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    const oneSec = Duration(seconds: 30);
+    const oneSec = Duration(seconds: 300);
     Timer.periodic(
         oneSec, (Timer t) async => await getFilteredFeed(isRefresh: false));
 
@@ -57,6 +58,8 @@ class NewsFeed extends _$NewsFeed {
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
     }
+    logger.d("is filter enabled: $isFilterEnabled");
+    logger.d("is semantic filter enabled: $isSemanticFilterEnabled");
     state = AsyncData(response.data!.metadata);
   }
 

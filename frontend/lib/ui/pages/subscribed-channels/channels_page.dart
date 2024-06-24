@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/constants.dart';
-import 'package:frontend/main.dart';
+
 import 'package:frontend/ui/pages/subscribed-channels/provider/channels_provider.dart';
 import 'package:frontend/ui/theme/decorations.dart';
 import 'package:frontend/ui/theme/theme.dart';

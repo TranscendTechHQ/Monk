@@ -7,14 +7,10 @@ import 'package:frontend/ui/pages/splash_page.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 
 import 'package:frontend/ui/theme/theme_builder_app.dart';
-import 'package:frontend/ui/widgets/kit/overlay_loader.dart';
-import 'package:logger/logger.dart';
+
 import 'package:supertokens_flutter/supertokens.dart';
 
 import 'helper/constants.dart';
-
-final logger = Logger();
-final loader = LoaderService.instance;
 
 void main() async {
   SuperTokens.init(apiDomain: apiDomain);

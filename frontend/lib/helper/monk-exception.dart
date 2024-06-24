@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/core/either.dart';
-import 'package:frontend/main.dart';
+import 'package:frontend/helper/constants.dart';
 
 typedef ResultOrException<T> = Future<Either<DioException, T>>;
 typedef FutureCallback<ResultOrException> = Future<ResultOrException>

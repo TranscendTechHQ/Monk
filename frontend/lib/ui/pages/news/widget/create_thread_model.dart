@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/helper/file_utils.dart';
 import 'package:frontend/helper/utils.dart';
-import 'package:frontend/main.dart';
+
 import 'package:frontend/ui/pages/news/widget/provider/create_thread_provider.dart';
 import 'package:frontend/ui/pages/thread/thread_page.dart';
 import 'package:frontend/ui/theme/theme.dart';
@@ -12,7 +12,7 @@ import 'package:frontend/ui/widgets/dismiss_button.dart';
 import 'package:frontend/ui/widgets/outline_icon_button.dart';
 import 'package:intl/intl.dart';
 import 'package:openapi/openapi.dart';
-
+import 'package:frontend/helper/constants.dart';
 import '../../../theme/color/custom_color.g.dart';
 
 class CreateThreadModal extends ConsumerStatefulWidget {

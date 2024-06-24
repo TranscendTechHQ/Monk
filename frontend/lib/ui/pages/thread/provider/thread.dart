@@ -17,7 +17,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/helper/monk-exception.dart';
 import 'package:frontend/helper/network.dart';
 import 'package:frontend/helper/utils.dart';
-import 'package:frontend/main.dart';
+import 'package:frontend/helper/constants.dart';
 import 'package:frontend/repo/auth/auth_provider.dart';
 import 'package:frontend/ui/theme/theme.dart';
 import 'package:openapi/openapi.dart';
@@ -423,10 +423,10 @@ class CurrentThread extends _$CurrentThread {
     // updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
     if (thread.assignedToId.isNotNullEmpty) {
       updatedBlocks.sort((a, b) => a.assignedPos!.compareTo(b.assignedPos!));
-      print('sorted by assigned pos');
+      logger.i('sorted by assigned pos');
     } else {
       updatedBlocks.sort((a, b) => a.position!.compareTo(b.position!));
-      print('sorted by  position');
+      logger.i('sorted by  position');
     }
 
     final updatedThreadModel = FullThreadInfo(

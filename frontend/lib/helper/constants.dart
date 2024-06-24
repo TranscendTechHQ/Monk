@@ -1,4 +1,9 @@
 //const apiDomain = "https://api.heymonk.app";
+import 'package:frontend/ui/widgets/kit/overlay_loader.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
+final loader = LoaderService.instance;
 
 const apiDomain = "http://0.0.0.0:8001";
 
