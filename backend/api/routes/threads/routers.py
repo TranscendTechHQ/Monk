@@ -247,7 +247,7 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
 stage_lookup_blocks = {  # Get all blocks for the thread
     '$lookup': {
         'from': 'blocks',
-                'localField': '_id',
+                'localField': 'thread_id',
                 'foreignField': 'main_thread_id',
                 'as': 'blocks'
     }
@@ -406,7 +406,7 @@ def semantic_filter_threads(user_id):
     if user is None:
         return None
     user_name = user["name"]
-
+    print(f'\n 👉 User name: {user_name}')
     news_feed_filter_collection = syncdb.user_news_feed_filter_collection
     user_filter = news_feed_filter_collection.find_one({"user_id": user_id})
 
@@ -414,7 +414,7 @@ def semantic_filter_threads(user_id):
         return None
 
     user_preference = user_filter["searchQuery"]
-
+    print(f'\n 👉 User preference: {user_preference}')
     threads_collection = syncdb.threads_collection
     cursor = threads_collection.find({}, projection={'_id': 1, '_id': '$_id'})
     thread_ids_dict = list(cursor)
@@ -424,7 +424,7 @@ def semantic_filter_threads(user_id):
     relevant_thread_ids = get_relevant_thread_ids(
         user_name, user_preference, thread_ids)
 
-    return None
+    return relevant_thread_ids
 
 
 @router.get("/newsfeed", response_model=ThreadsMetaData,
@@ -446,9 +446,28 @@ async def filter(
         tenant_id = await get_tenant_id(session)
         if isSemanticFilterEnabled:
             print(f"🔍 Saving semantic filter: ${searchQuery}")
-            await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
+            update_count = update_fields_mongo_simple({"user_id": user_id, 'tenant_id': tenant_id},
                                                {"searchQuery": searchQuery},
-                                               asyncdb.user_news_feed_filter_collection)
+                                               syncdb.user_news_feed_filter_collection)
+            print(f"🔍 Semantic filter saved, update count {update_count}")
+            #relevant_thread_ids = semantic_filter_threads(user_id)
+            print(f"🔍 Semantic filter applied")
+        
+        # Save user's filter preferences to db if filter is enabled
+        if isFilterEnabled:
+            user_flags = {
+                "user_id": user_id,
+                "bookmark": bookmark,
+                "unread": unread,
+                "unfollow": unfollow,
+                "upvote": upvote,
+                "mention": mention,
+            }
+            print(f"👉 Updating filter in db")
+            update_fields_mongo_simple({"user_id": user_id, 'tenant_id': tenant_id},
+                                               user_flags,
+                                               syncdb.user_news_feed_filter_collection)
+        
         if not isFilterEnabled:
             user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
             if user_flags:
@@ -477,20 +496,7 @@ async def filter(
 
         aggregate = await aggregate.to_list(None)
 
-        # Save user's filter preferences to db if filter is enabled
-        if isFilterEnabled:
-            user_flags = {
-                "user_id": user_id,
-                "bookmark": bookmark,
-                "unread": unread,
-                "unfollow": unfollow,
-                "upvote": upvote,
-                "mention": mention,
-            }
-            print(f"👉 Updating filter in db")
-            await update_mongo_document_fields({"user_id": user_id, 'tenant_id': tenant_id},
-                                               user_flags,
-                                               asyncdb.user_news_feed_filter_collection)
+        
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
     except Exception as e:
