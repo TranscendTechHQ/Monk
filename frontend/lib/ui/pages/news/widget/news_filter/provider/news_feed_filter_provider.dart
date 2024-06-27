@@ -60,28 +60,18 @@ class NewsFeedFilter extends _$NewsFeedFilter {
   }
 
   Future<void> updateSemanticQuery({
-    bool? bookmarked,
-    bool? unRead,
-    bool? upvoted,
-    bool? mentioned,
-    bool? dismissed,
     String? semanticQuery,
   }) async {
-    if (semanticQuery != null ||
-        bookmarked != null ||
-        unRead != null ||
-        upvoted != null ||
-        mentioned != null ||
-        dismissed != null) {
+    if (semanticQuery != null) {
       final stateValue = state.value;
       state = AsyncData(
         NewsFeedFilterState(
-          bookmarked: bookmarked ?? stateValue!.bookmarked,
-          unRead: unRead ?? stateValue!.unRead,
-          upvoted: upvoted ?? stateValue!.upvoted,
-          mentioned: mentioned ?? stateValue!.mentioned,
-          dismissed: dismissed ?? stateValue!.dismissed,
-          semanticQuery: semanticQuery ?? stateValue?.semanticQuery,
+          bookmarked: stateValue!.bookmarked,
+          unRead: stateValue.unRead,
+          upvoted: stateValue.upvoted,
+          mentioned: stateValue.mentioned,
+          dismissed: stateValue.dismissed,
+          semanticQuery: semanticQuery,
         ),
       );
     }
