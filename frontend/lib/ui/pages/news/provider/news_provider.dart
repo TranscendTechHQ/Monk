@@ -20,9 +20,9 @@ class NewsFeed extends _$NewsFeed {
   @override
   Future<List<ThreadMetaData>> build() async {
     final threadApi = NetworkManager.instance.openApi.getThreadsApi();
-    const oneSec = Duration(seconds: 300);
-    Timer.periodic(
-        oneSec, (Timer t) async => await getFilteredFeed(isRefresh: false));
+    const refreshDuration = Duration(seconds: 300);
+    Timer.periodic(refreshDuration,
+        (Timer t) async => await getFilteredFeed(isRefresh: false));
 
     final response = await threadApi.filterNewsfeedGet();
     if (response.statusCode != 200) {
@@ -64,6 +64,8 @@ class NewsFeed extends _$NewsFeed {
   }
 
   Future<void> displayMentionedThreads() async {
+    //await getFilteredFeed(mention: true, isFilterEnabled: true);
+
     final allThreads = state.value?.getAbsoluteOrNull;
     if (allThreads.isNotNullEmpty) {
       final mentionedThreads = allThreads!

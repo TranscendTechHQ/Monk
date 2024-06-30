@@ -55,7 +55,7 @@ class NewsPage extends ConsumerWidget {
             isFilterEnabled: true,
           );
       final state = ref.read(newsFeedFilterProvider.notifier);
-      await state.updateSemanticQuery(
+      await state.updateFilter(
         bookmarked: map['bookmarked'],
         dismissed: map['dismissed'],
         unRead: map['unRead'] as bool,
