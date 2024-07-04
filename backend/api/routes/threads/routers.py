@@ -131,24 +131,18 @@ async def ti(request: Request,
 async def get_unfiltered_newsfeed(tenant_id, user_id):
     default_flags = {"user_id": user_id, "unread": None,
                      "bookmark": None, "upvote": None, "unfollow": None, "mention": None}
-
-    pipeline = [
-        {
-            '$match': {
-                'tenant_id': tenant_id
-            }
-        },
-        # Get all blocks for the thread
-        {
-            '$lookup': {
-                'from': 'blocks',
-                'localField': '_id',
-                'foreignField': 'main_thread_id',
-                'as': 'blocks'
-            }
-        },
-        # Sort the blocks by created_at
-        {
+    
+    match_tenant_id = {"$match": {"tenant_id": tenant_id}}
+    lookup_blocks_matching_thread_id = {
+        '$lookup': {
+            'from': 'blocks',
+            'localField': '_id',
+            'foreignField': 'main_thread_id',
+            'as': 'blocks'
+        }
+    }
+    
+    sort_blocks_by_position = {
             '$set': {
                 'blocks': {
                     '$sortArray': {
@@ -159,27 +153,29 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
                     }
                 }
             }
-        },
-        # Take the first block as this is the first block of the thread
-        {
+        }
+    
+    get_first_block = {
             '$addFields': {
                 'block': {
                     '$first': '$blocks'
                 }
             }
-        },
-        {
+        }
+    
+    get_thread_creator = {
             '$lookup': {
                 'from': 'users',
                 'localField': 'creator_id',
                 'foreignField': '_id',
                 'as': 'creator'
             }
-        },
-        {
+        }
+    
+    unwind_creator = {
             '$unwind': '$creator'
-        },
-        {
+        }
+    get_user_thread_flags = {
             '$lookup': {
                 'from': 'user_thread_flags',
                 'localField': '_id',
@@ -193,8 +189,8 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
                     }
                 ]
             }
-        },
-        {
+        }
+    handle_missing_user_thread_flags = {
             '$addFields': {
                 'user_thread_flags': {
                     '$cond': {
@@ -214,8 +210,8 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
                     }
                 }
             }
-        },
-        {
+        }
+    choose_fields_to_show = {
             '$project': {
                 '_id': 1,
                 'topic': 1,
@@ -234,11 +230,22 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
                 'unfollow': '$user_thread_flags.unfollow'
             }
         },
-        {
+    sort_threads_by_last_modified = {
             '$sort': {
                 'last_modified': -1
             }
         }
+    pipeline = [
+        match_tenant_id,
+        lookup_blocks_matching_thread_id,
+        sort_blocks_by_position,
+        get_first_block,
+        get_thread_creator,
+        unwind_creator,
+        get_user_thread_flags,
+        handle_missing_user_thread_flags,
+        choose_fields_to_show,
+        sort_threads_by_last_modified
     ]
 
     result = asyncdb.threads_collection.aggregate(pipeline)
