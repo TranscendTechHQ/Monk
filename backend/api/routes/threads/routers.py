@@ -152,15 +152,24 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
     # get all threads for this tenant by default
     match_threads = {"$match": {"tenant_id": tenant_id}}
     
-    if user_flags: #filter by user flags
-        pipeline = [
-            match_user_flags
-        ]
-        result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
-        if result is not None:
-            thread_ids = [doc["thread_id"] async for doc in result]
-            #print(f"🔍 Filtered thread ids: {thread_ids}")
-            match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
+    if searchQuery:
+        #thread_ids = await semantic_filter_threads(searchQuery)
+        #hard code for now as above function is too slow
+        thread_ids = ["20627d60-61d9-4007-965e-e492c0617e14", 
+                      "12262259-90fe-44bf-90e2-b17e2871a2df",
+                      "f8ff71be-cbc2-4d7f-80cf-750d7d50db84"
+                      ]
+        match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
+    else:
+        if user_flags: #filter by user flags
+            pipeline = [
+                match_user_flags
+            ]
+            result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
+            if result is not None:
+                thread_ids = [doc["thread_id"] async for doc in result]
+                #print(f"🔍 Filtered thread ids: {thread_ids}")
+                match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
     
     default_flags = {"user_id": user_id, "unread": None,
                      "bookmark": None, "upvote": None, "unfollow": None, "mention": None}
@@ -287,150 +296,6 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
     #    print(doc)
     return result
 
-
-
-async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
-
-    stage_lookup_blocks = {  # Get all blocks for the thread
-    '$lookup': {
-        'from': 'blocks',
-                'localField': 'thread_id',
-                'foreignField': 'main_thread_id',
-                'as': 'blocks'
-    }
-    }
-    stage_sort_blocks = {
-        '$set': {
-            'blocks': {
-                '$sortArray': {
-                    'input': '$blocks',
-                    'sortBy': {
-                        'position': 1
-                    }
-                }
-            }
-        }
-    }
-    stage_get_first_block = {  # Take the first block as this is the first block of the thread
-        '$addFields': {
-            'block': {
-                '$first': '$blocks'
-            }
-        }
-    }
-
-    stage_lookup_threads = {
-        '$lookup': {
-            'from': 'threads',
-                    'localField': 'thread_id',
-                    'foreignField': '_id',
-                    'as': 'threads'
-        }
-    }
-
-    stage_unwind_threads = {
-        '$unwind': '$threads'
-    }
-
-    stage_fetch_thread_creator = {
-        '$lookup': {
-            'from': 'users',
-                    'localField': 'threads.creator_id',
-                    'foreignField': '_id',
-                    'as': 'threads.creator'
-        }
-    }
-    stage_unwind_thread_creator = {
-        '$unwind': {
-            'path': '$threads.creator'
-        }
-    }
-    stage_add_filter_flags = {
-        '$addFields': {
-            'threads.bookmark': "$bookmark",
-            'threads.unread': "$unread",
-            'threads.upvote': "$upvote",
-            'threads.unfollow': "$unfollow",
-            'threads.mention': "$mention"
-        }
-    }
-    stage_replace_thread_root = {
-        "$replaceRoot": {
-            "newRoot": "$threads"
-        }
-    }
-    stage_project_thread = {
-        "$project": {
-            "_id": 1,
-            "topic": 1,
-            "type": 1,
-            "created_at": 1,
-            "headline": 1,
-            "block": 1,
-            "last_modified": 1,
-            "creator._id": 1,
-            "creator.name": 1,
-            "creator.picture": 1,
-            "creator.email": 1,
-            "creator.last_login": 1,
-            "bookmark": 1,
-            "unfollow": 1,
-            "unread": 1,
-            "upvote": 1,
-            "mention": 1
-        }
-    }
-
-    stage_sort_threads = {
-        "$sort": {
-            "last_modified": -1
-        }
-    }
-
-
-    print("🔍 Filtering newsfeed"
-          f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}, mention {mention}, searchQuery: {searchQuery}")
-
-    # If searchQuery is present then search the threads by query
-    # Right now the algo to search on basis of semantic search is not ready to we are using bookmark flag to search the threads
-    if searchQuery is not None and searchQuery != '':
-        bookmark = True
-    print(f"🔍 Filtering newsfeed ${bookmark}")
-    user_flags = []
-    if bookmark:
-        user_flags.append({"bookmark": True})
-    if unread:
-        user_flags.append({"unread": True})
-    if unfollow:
-        user_flags.append({"unfollow": True})
-    if upvote:
-        user_flags.append({"upvote": True})
-    if mention:
-        user_flags.append({"mention": True})
-
-    pipeline = [
-        {
-            "$match": {
-                "tenant_id": tenant_id,
-                "user_id": user_id,
-                "$and": user_flags
-            }
-        },
-        stage_lookup_blocks,
-        stage_sort_blocks,
-        stage_get_first_block,
-        stage_lookup_threads,
-        stage_unwind_threads,
-        stage_fetch_thread_creator,
-        stage_unwind_thread_creator,
-        stage_add_filter_flags,
-        stage_replace_thread_root,
-        stage_project_thread,
-        stage_sort_threads
-    ]
-    # print(pipeline)
-    result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
-    return result
 
 
 def semantic_filter_threads(user_id):
