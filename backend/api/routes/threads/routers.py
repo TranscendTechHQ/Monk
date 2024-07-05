@@ -160,16 +160,17 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
                       "f8ff71be-cbc2-4d7f-80cf-750d7d50db84"
                       ]
         match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
-    else:
-        if user_flags: #filter by user flags
-            pipeline = [
-                match_user_flags
-            ]
-            result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
-            if result is not None:
-                thread_ids = [doc["thread_id"] async for doc in result]
-                #print(f"🔍 Filtered thread ids: {thread_ids}")
-                match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
+    print(f"🔍 what is going on Filter by user flags: {user_flags}")
+    if len(user_flags) != 0: #filter by user flags
+        print(f"🔍 Filter by user flags: {user_flags}")
+        pipeline = [
+            match_user_flags
+        ]
+        result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
+        if result is not None:
+            thread_ids = [doc["thread_id"] async for doc in result]
+            #print(f"🔍 Filtered thread ids: {thread_ids}")
+            match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
     
     default_flags = {"user_id": user_id, "unread": None,
                      "bookmark": None, "upvote": None, "unfollow": None, "mention": None}
@@ -334,15 +335,15 @@ async def filter(
         upvote: bool = False,
         mention: bool = False,
         searchQuery: str = None,
-        isFilterEnabled: bool = False,
-        isSemanticFilterEnabled: bool = False,
+        updateFilter: bool = False,
+        updateSemanticFilter: bool = False,
         session: SessionContainer = Depends(verify_session())
 ):
     try:
         user_id = session.get_user_id()
         print(f"🏁 ------------------ Filtering newsfeed ------------------ 🏁")
         tenant_id = await get_tenant_id(session)
-        if isSemanticFilterEnabled:
+        if updateSemanticFilter:
             print(f"🔍 Saving semantic filter: ${searchQuery}")
             update_count = update_fields_mongo_simple({"user_id": user_id, 'tenant_id': tenant_id},
                                                {"searchQuery": searchQuery},
@@ -352,7 +353,7 @@ async def filter(
             print(f"🔍 Semantic filter applied")
         
         # Save user's filter preferences to db if filter is enabled
-        if isFilterEnabled:
+        if updateFilter:
             user_flags = {
                 "user_id": user_id,
                 "bookmark": bookmark,
@@ -366,15 +367,15 @@ async def filter(
                                                user_flags,
                                                syncdb.user_news_feed_filter_collection)
         
-        if not isFilterEnabled:
-            user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
-            if user_flags:
-                bookmark = user_flags.bookmark
-                unread = user_flags.unread
-                unfollow = user_flags.unfollow
-                upvote = user_flags.upvote
-                mention = user_flags.mention
-                searchQuery = user_flags.searchQuery
+        
+        user_flags = await get_user_filter_preferences_from_db(user_id, tenant_id)
+        if user_flags:
+            bookmark = user_flags.bookmark
+            unread = user_flags.unread
+            unfollow = user_flags.unfollow
+            upvote = user_flags.upvote
+            mention = user_flags.mention
+            searchQuery = user_flags.searchQuery
 
         
         print(f"👉 Fetching newsfeed .. filter bookmark={bookmark}, unread={unread}, unfollow={unfollow}, upvote={upvote}, mention={mention}, searchQuery={searchQuery}")

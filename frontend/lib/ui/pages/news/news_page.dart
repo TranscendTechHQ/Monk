@@ -52,7 +52,7 @@ class NewsPage extends ConsumerWidget {
             unfollow: map['dismissed'],
             upvote: map['upvoted'],
             mention: map['mention'],
-            isFilterEnabled: true,
+            updateFilter: true,
           );
       final state = ref.read(newsFeedFilterProvider.notifier);
       await state.updateFilter(
@@ -70,7 +70,7 @@ class NewsPage extends ConsumerWidget {
     if (map != null) {
       ref.read(newsFeedProvider.notifier).getFilteredFeed(
             searchQuery: map['searchQuery'],
-            isSemanticFilterEnabled: true,
+            updateSemanticFilter: true,
           );
       final state = ref.read(newsFeedFilterProvider.notifier);
       await state.updateSemanticQuery(
@@ -199,7 +199,7 @@ class NewsPage extends ConsumerWidget {
                                 // ref.read(newsFeedProvider.future);
                                 await ref
                                     .read(newsFeedProvider.notifier)
-                                    .getFilteredFeed(isFilterEnabled: false);
+                                    .getFilteredFeed(updateFilter: false);
                                 showMessage(context, 'Displaying all threads');
                               } else {
                                 ref
@@ -280,7 +280,7 @@ class NewsPage extends ConsumerWidget {
                             // ref.read(newsFeedProvider.future);
                             await ref
                                 .read(newsFeedProvider.notifier)
-                                .getFilteredFeed(isFilterEnabled: false);
+                                .getFilteredFeed(updateFilter: false);
                             showMessage(context, 'Displaying all threads');
                           } else {
                             ref
@@ -333,7 +333,7 @@ class NewsPage extends ConsumerWidget {
                       // ref.read(newsFeedProvider.future);
                       ref
                           .read(newsFeedProvider.notifier)
-                          .getFilteredFeed(isFilterEnabled: false);
+                          .getFilteredFeed(updateFilter: false);
                     },
                   ),
                 if (context.isDesktop)

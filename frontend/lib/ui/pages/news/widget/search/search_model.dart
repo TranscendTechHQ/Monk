@@ -123,7 +123,7 @@ class _SearchModal2State extends ConsumerState<SearchModal2> {
           }
           // scrollController.animateTo(
           //   selectedIndex *tileHeight,
-          //   duration: Durations.long1,
+          //   duration: s.long1,
           //   curve: Curves.linear,
           // );
           // scrollController.jumpTo(scrollController.position.maxScrollExtent /

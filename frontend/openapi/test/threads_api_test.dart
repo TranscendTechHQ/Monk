@@ -51,7 +51,7 @@ void main() {
 
     // Filter
     //
-    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool unread, bool unfollow, bool upvote, bool mention, String searchQuery, bool isFilterEnabled, bool isSemanticFilterEnabled }) async
+    //Future<ThreadsMetaData> filterNewsfeedGet({ bool bookmark, bool unread, bool unfollow, bool upvote, bool mention, String searchQuery, bool updateFilter, bool updateSemanticFilter }) async
     test('test filterNewsfeedGet', () async {
       // TODO
     });

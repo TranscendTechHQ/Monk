@@ -38,9 +38,9 @@ class NewsFeed extends _$NewsFeed {
     bool? upvote = false,
     bool? mention = false,
     String? searchQuery,
-    bool isFilterEnabled = false,
+    bool updateFilter = false,
     bool isRefresh = true,
-    bool isSemanticFilterEnabled = false,
+    bool updateSemanticFilter = false,
   }) async {
     if (isRefresh) {
       state = const AsyncLoading();
@@ -53,18 +53,18 @@ class NewsFeed extends _$NewsFeed {
         upvote: upvote,
         mention: mention,
         searchQuery: searchQuery,
-        isFilterEnabled: isFilterEnabled,
-        isSemanticFilterEnabled: isSemanticFilterEnabled);
+        updateFilter: updateFilter,
+        updateSemanticFilter: updateSemanticFilter);
     if (response.statusCode != 200) {
       throw Exception("Failed to fetch titles");
     }
-    logger.d("is filter enabled: $isFilterEnabled");
-    logger.d("is semantic filter enabled: $isSemanticFilterEnabled");
+    logger.d("is filter enabled: $updateFilter");
+    logger.d("is semantic filter enabled: $updateSemanticFilter");
     state = AsyncData(response.data!.metadata);
   }
 
   Future<void> displayMentionedThreads() async {
-    //await getFilteredFeed(mention: true, isFilterEnabled: true);
+    //await getFilteredFeed(mention: true, updateFilter: true);
 
     final allThreads = state.value?.getAbsoluteOrNull;
     if (allThreads.isNotNullEmpty) {
