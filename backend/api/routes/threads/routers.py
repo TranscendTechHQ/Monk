@@ -128,11 +128,45 @@ async def ti(request: Request,
                         content=jsonable_encoder(ThreadsInfo(info=info)))
 
 
-async def get_unfiltered_newsfeed(tenant_id, user_id):
+async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
+    
+    user_flags = []
+    if bookmark:
+        user_flags.append({"bookmark": True})
+    if unread:
+        user_flags.append({"unread": True})
+    if unfollow:
+        user_flags.append({"unfollow": True})
+    if upvote:
+        user_flags.append({"upvote": True})
+    if mention:
+        user_flags.append({"mention": True})
+
+    match_user_flags = {
+            "$match": {
+                "tenant_id": tenant_id,
+                "user_id": user_id,
+                "$and": user_flags
+            }
+        }
+    # get all threads for this tenant by default
+    match_threads = {"$match": {"tenant_id": tenant_id}}
+    
+    if user_flags: #filter by user flags
+        pipeline = [
+            match_user_flags
+        ]
+        result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
+        if result is not None:
+            thread_ids = [doc["thread_id"] async for doc in result]
+            #print(f"🔍 Filtered thread ids: {thread_ids}")
+            match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
+    
     default_flags = {"user_id": user_id, "unread": None,
                      "bookmark": None, "upvote": None, "unfollow": None, "mention": None}
     
-    match_tenant_id = {"$match": {"tenant_id": tenant_id}}
+    #print(f'match theads: {match_threads}  ')
+    
     lookup_blocks_matching_thread_id = {
         '$lookup': {
             'from': 'blocks',
@@ -229,14 +263,14 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
                 'mention': '$user_thread_flags.mention',
                 'unfollow': '$user_thread_flags.unfollow'
             }
-        },
+        }
     sort_threads_by_last_modified = {
             '$sort': {
                 'last_modified': -1
             }
         }
     pipeline = [
-        match_tenant_id,
+        match_threads,
         lookup_blocks_matching_thread_id,
         sort_blocks_by_position,
         get_first_block,
@@ -249,118 +283,110 @@ async def get_unfiltered_newsfeed(tenant_id, user_id):
     ]
 
     result = asyncdb.threads_collection.aggregate(pipeline)
+    #async for doc in result:
+    #    print(doc)
     return result
 
-stage_lookup_blocks = {  # Get all blocks for the thread
+
+
+async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
+
+    stage_lookup_blocks = {  # Get all blocks for the thread
     '$lookup': {
         'from': 'blocks',
                 'localField': 'thread_id',
                 'foreignField': 'main_thread_id',
                 'as': 'blocks'
     }
-}
-stage_sort_blocks = {
-    '$set': {
-        'blocks': {
-            '$sortArray': {
-                'input': '$blocks',
-                'sortBy': {
-                    'position': 1
+    }
+    stage_sort_blocks = {
+        '$set': {
+            'blocks': {
+                '$sortArray': {
+                    'input': '$blocks',
+                    'sortBy': {
+                        'position': 1
+                    }
                 }
             }
         }
     }
-}
-stage_get_first_block = {  # Take the first block as this is the first block of the thread
-    '$addFields': {
-        'block': {
-            '$first': '$blocks'
+    stage_get_first_block = {  # Take the first block as this is the first block of the thread
+        '$addFields': {
+            'block': {
+                '$first': '$blocks'
+            }
         }
     }
-}
 
-stage_lookup_threads = {
-    '$lookup': {
-        'from': 'threads',
-                'localField': 'thread_id',
-                'foreignField': '_id',
-                'as': 'threads'
+    stage_lookup_threads = {
+        '$lookup': {
+            'from': 'threads',
+                    'localField': 'thread_id',
+                    'foreignField': '_id',
+                    'as': 'threads'
+        }
     }
-}
 
-stage_unwind_threads = {
-    '$unwind': '$threads'
-}
+    stage_unwind_threads = {
+        '$unwind': '$threads'
+    }
 
-stage_fetch_thread_creator = {
-    '$lookup': {
-        'from': 'users',
-                'localField': 'threads.creator_id',
-                'foreignField': '_id',
-                'as': 'threads.creator'
+    stage_fetch_thread_creator = {
+        '$lookup': {
+            'from': 'users',
+                    'localField': 'threads.creator_id',
+                    'foreignField': '_id',
+                    'as': 'threads.creator'
+        }
     }
-}
-stage_unwind_thread_creator = {
-    '$unwind': {
-        'path': '$threads.creator'
+    stage_unwind_thread_creator = {
+        '$unwind': {
+            'path': '$threads.creator'
+        }
     }
-}
-stage_add_filter_flags = {
-    '$addFields': {
-        'threads.bookmark': "$bookmark",
-        'threads.unread': "$unread",
-        'threads.upvote': "$upvote",
-        'threads.unfollow': "$unfollow",
-        'threads.mention': "$mention"
+    stage_add_filter_flags = {
+        '$addFields': {
+            'threads.bookmark': "$bookmark",
+            'threads.unread': "$unread",
+            'threads.upvote': "$upvote",
+            'threads.unfollow': "$unfollow",
+            'threads.mention': "$mention"
+        }
     }
-}
-stage_replace_thread_root = {
-    "$replaceRoot": {
-        "newRoot": "$threads"
+    stage_replace_thread_root = {
+        "$replaceRoot": {
+            "newRoot": "$threads"
+        }
     }
-}
-stage_project_thread = {
-    "$project": {
-        "_id": 1,
-        "topic": 1,
-        "type": 1,
-        "created_at": 1,
-        "headline": 1,
-        "block": 1,
-        "last_modified": 1,
-        "creator._id": 1,
-        "creator.name": 1,
-        "creator.picture": 1,
-        "creator.email": 1,
-        "creator.last_login": 1,
-        "bookmark": 1,
-        "unfollow": 1,
-        "unread": 1,
-        "upvote": 1,
-        "mention": 1
+    stage_project_thread = {
+        "$project": {
+            "_id": 1,
+            "topic": 1,
+            "type": 1,
+            "created_at": 1,
+            "headline": 1,
+            "block": 1,
+            "last_modified": 1,
+            "creator._id": 1,
+            "creator.name": 1,
+            "creator.picture": 1,
+            "creator.email": 1,
+            "creator.last_login": 1,
+            "bookmark": 1,
+            "unfollow": 1,
+            "unread": 1,
+            "upvote": 1,
+            "mention": 1
+        }
     }
-}
 
-stage_sort_threads = {
-    "$sort": {
-        "last_modified": -1
+    stage_sort_threads = {
+        "$sort": {
+            "last_modified": -1
+        }
     }
-}
 
-
-async def get_filtered_newsfeed(user_id, tenant_id, bookmark, unread, unfollow, upvote, mention, searchQuery: str = None,):
-
-    global stage_lookup_blocks, \
-        stage_sort_blocks, \
-        stage_get_first_block, \
-        stage_lookup_threads, \
-        stage_unwind_threads, \
-        stage_fetch_thread_creator, \
-        stage_unwind_thread_creator, \
-        stage_add_filter_flags, \
-        stage_replace_thread_root, \
-        stage_project_thread, \
-        stage_sort_threads
 
     print("🔍 Filtering newsfeed"
           f" bookmark: {bookmark}, unread: {unread}, unfollow: {unfollow}, upvote: {upvote}, mention {mention}, searchQuery: {searchQuery}")
@@ -485,24 +511,21 @@ async def filter(
                 mention = user_flags.mention
                 searchQuery = user_flags.searchQuery
 
-        if bookmark or unfollow or unread or upvote or mention or searchQuery:
-            aggregate = await get_filtered_newsfeed(
-                user_id=user_id,
-                tenant_id=tenant_id,
-                bookmark=bookmark,
-                unread=unread,
-                unfollow=unfollow,
-                upvote=upvote,
-                mention=mention,
-                searchQuery=searchQuery
+        
+        print(f"👉 Fetching newsfeed .. filter bookmark={bookmark}, unread={unread}, unfollow={unfollow}, upvote={upvote}, mention={mention}, searchQuery={searchQuery}")
+        aggregate = await get_newsfeed(
+            tenant_id=tenant_id, 
+            user_id=user_id,
+            bookmark=bookmark,
+            unread=unread,
+            unfollow=unfollow,
+            upvote=upvote,
+            mention=mention,
+            searchQuery=searchQuery
             )
 
-        else:
-            print(f"👉 Fetching unfiltered newsfeed")
-            aggregate = await get_unfiltered_newsfeed(tenant_id=tenant_id, user_id=user_id)
-
         aggregate = await aggregate.to_list(None)
-
+        print(f"🔍 Filtered newsfeed count: {len(aggregate)}")
         
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=jsonable_encoder(ThreadsMetaData(metadata=aggregate)))
