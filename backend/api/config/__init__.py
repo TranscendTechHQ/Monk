@@ -81,7 +81,8 @@ class ClientSettings(BaseSettings):
     BACKEND_CLIENT_SECRET: str = get_env_variable(var_name="BACKEND_CLIENT_SECRET", secret=True)
     SLACK_BOT_TOKEN: str = get_env_variable(var_name="SLACK_BOT_TOKEN", secret=True)
     SLACK_USER_TOKEN: str = get_env_variable(var_name="SLACK_USER_TOKEN", secret=True)
-
+    GOOGLE_DESKTOP_CLIENT_SECRET: str = get_env_variable(var_name="GOOGLE_DESKTOP_CLIENT_SECRET", secret=False)
+    GOOGLE_DESKTOP_CLIENT_ID: str = get_env_variable(var_name="GOOGLE_DESKTOP_CLIENT_ID", secret=False)
 
 class StorageSettings(BaseSettings):
     STORAGE_ACCESS_KEY_ID: str = get_env_variable(var_name="STORAGE_ACCESS_KEY_ID", secret=True)
@@ -299,9 +300,10 @@ init(
                         clients=[
                             ProviderClientConfig(
 
-                                client_id=FRONTEND_CLIENT_ID,
+                                client_id=settings.GOOGLE_DESKTOP_CLIENT_ID,
                                 # client_id=BACKEND_CLIENT_ID,
-                                # client_secret=BACKEND_CLIENT_SECRET,
+                                #client_secret=BACKEND_CLIENT_SECRET,
+                                client_secret=settings.GOOGLE_DESKTOP_CLIENT_SECRET,
                                 scope=["openid", "email", "profile"],
                             ),
                         ],
