@@ -4,10 +4,10 @@
  */
 
 import { Component } from 'solid-js';
-import { ThreadProps } from '../models/ThreadProps';
+import { ThreadMetaData } from '../api/models/ThreadMetaData';
 import { useNavigate } from '@solidjs/router';
 
-export const Thread: Component<ThreadProps> = (props) => {
+export const Thread: Component<ThreadMetaData> = (props) => {
   const navigate = useNavigate();
 
   const handleClick = () => {

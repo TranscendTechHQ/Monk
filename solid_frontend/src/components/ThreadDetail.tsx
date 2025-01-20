@@ -3,7 +3,7 @@ import { useParams } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 
 import { FullThreadInfo } from '../api/models/FullThreadInfo'; // Adjust based on your structure
-import { LocalThreadBlock } from '../models/LocalThreadBlock'; // Import your local interface
+
 import { BlockWithCreator } from '../api/models/BlockWithCreator'; // Adjust the path based on your structure
 
 const ThreadDetail: Component = () => {
@@ -11,7 +11,7 @@ const ThreadDetail: Component = () => {
   const [thread, setThread] = createSignal<FullThreadInfo | null>(null);
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
-  const [blocks, setBlocks] = createSignal<LocalThreadBlock[]>([]);
+  
 
   const fetchThreadDetails = async () => {
     try {
