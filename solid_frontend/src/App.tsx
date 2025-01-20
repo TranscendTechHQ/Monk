@@ -8,6 +8,10 @@ import { ApiClient, Thread as ThreadType } from './api/client';
 import { Thread } from './components/Thread';
 import { ThreadComposer } from './components/ThreadComposer';
 import styles from './App.module.css';
+import { ThreadsService } from './api/services/ThreadsService';
+import { OpenAPI } from './api/core/OpenAPI';
+OpenAPI.BASE = 'http://localhost:8001';
+
 
 const App: Component = () => {
   const [threads, setThreads] = createSignal<ThreadType[]>([]);
@@ -17,6 +21,8 @@ const App: Component = () => {
   const fetchThreads = async () => {
     try {
       setIsLoading(true);
+      const userInfo = await ThreadsService.allUsersUserGet();
+      console.log(userInfo);
       const fetchedThreads = await ApiClient.getThreads();
       setThreads(fetchedThreads);
       setError(null);
