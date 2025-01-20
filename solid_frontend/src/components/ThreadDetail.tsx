@@ -1,5 +1,5 @@
 import { Component, createSignal, onMount } from 'solid-js';
-import { useParams } from '@solidjs/router';
+import { useParams, useNavigate } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 
 import { FullThreadInfo } from '../api/models/FullThreadInfo'; // Adjust based on your structure
@@ -8,6 +8,7 @@ import { BlockWithCreator } from '../api/models/BlockWithCreator'; // Adjust the
 
 const ThreadDetail: Component = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [thread, setThread] = createSignal<FullThreadInfo | null>(null);
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
@@ -34,19 +35,25 @@ const ThreadDetail: Component = () => {
 
   return (
     <div class="min-h-screen bg-slate-900 p-6">
-      <h1 class="text-white text-3xl font-semibold mb-4">Thread Details</h1>
+      <button 
+        onClick={() => navigate('/')}
+        class="mb-4 bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200"
+      >
+        Back to Threads
+      </button>
+      <h1 class="text-white text-3xl text-center font-semibold mb-4">Thread Messages</h1>
       {isLoading() ? (
         <div class="text-slate-300">Loading thread details...</div>
       ) : error() ? (
         <div class="text-red-400">{error()}</div>
       ) : (
         <div class="space-y-4">
-          <h2 class="text-slate-100 text-2xl font-bold">{thread()?.topic || "No Topic"}</h2>
+          <h2 class="text-slate-100 text-2xl text-center font-bold">{thread()?.topic || "No Topic"}</h2>
           <div class="text-slate-300">
             {/*<p>{thread()?.headline || "No Headline"}</p>*/}
-            <p>Created by: {thread()?.creator.name || "Unknown"}</p>
+            <p class="text-slate-300 text-center">Created by: {thread()?.creator.name || "Unknown"}</p>
           </div>
-          <h3 class="text-slate-200 text-lg font-semibold">Blocks:</h3>
+          
           <div class="space-y-2">
             {thread()?.content?.map((block: BlockWithCreator) => (
               <div 
