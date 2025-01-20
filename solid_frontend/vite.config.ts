@@ -1,9 +1,19 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
   plugins: [solidPlugin()],
-  server: {
-    port: 3000,
+  css: {
+    postcss: {
+      plugins: [
+        tailwindcss,
+        autoprefixer,
+      ],
+    },
   },
-}); 
+  server: {
+    port: 3000, // Specify the port here
+  },
+});

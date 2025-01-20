@@ -6,8 +6,7 @@
 import { Component, createSignal, createEffect, For } from 'solid-js';
 
 import { Thread } from './components/Thread';
-import { ThreadComposer } from './components/ThreadComposer';
-import styles from './App.module.css';
+
 import { ThreadsService } from './api/services/ThreadsService';
 import { OpenAPI } from './api/core/OpenAPI';
 import { ThreadMetaData, ThreadsMetaData } from './api';
@@ -22,8 +21,6 @@ const App: Component = () => {
   const fetchThreads = async () => {
     try {
       setIsLoading(true);
-      const userInfo = await ThreadsService.allUsersUserGet();
-      console.log(userInfo);
       const fetchedThreads = await ThreadsService.filterNewsfeedGet();
       setThreads(fetchedThreads);
       setError(null);
@@ -41,32 +38,33 @@ const App: Component = () => {
   });
 
   return (
-    <div class={styles.App}>
-      <header class={styles.header}>
-        <h1>Thread Feed</h1>
+    <div class="min-h-screen bg-slate-900">
+      <header class="bg-slate-800 py-6 px-4 border-b border-slate-700">
+        <h1 class="text-white text-3xl font-semibold text-center">Thread Feed</h1>
       </header>
 
-      <main class={styles.main}>
-        
-
-        <section class={styles.feed}>
-          <h2>All Threads</h2>
+      <main class="py-12">
+        <div class="container mx-auto">
+          <h2 class="text-center text-xl font-medium text-white mb-6">All Threads</h2>
           
-          // TODO: Add threads to the feed
-          {isLoading() ? (
-            <div class={styles.loading}>Loading threads...</div>
-          ) : error() ? (
-            <div class={styles.error}>{error()}</div>
-          ) : (
-            <For each={threads()?.metadata}>
-              {(thread: ThreadMetaData) => (
-                <Thread 
-                  {...thread}
-                />
-              )}
-            </For>
-          )}
-        </section>
+          <div class="flex flex-col items-center gap-6">
+            {isLoading() ? (
+              <div class="text-center text-slate-300">Loading threads...</div>
+            ) : error() ? (
+              <div class="text-center text-red-400">{error()}</div>
+            ) : (
+              <For each={threads()?.metadata}>
+                {(thread: ThreadMetaData) => (
+                  <div style="width: 50vw" class="bg-slate-800 ring-1 ring-slate-400/20 rounded-xl p-4 hover:bg-slate-700 transition-all">
+                    <Thread 
+                      {...thread}
+                    />
+                  </div>
+                )}
+              </For>
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );

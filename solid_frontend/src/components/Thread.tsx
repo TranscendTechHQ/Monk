@@ -4,8 +4,7 @@
  */
 
 import { Component } from 'solid-js';
-import { ThreadMetaData, UserModel } from '../api';
-import styles from './Thread.module.css';
+import { ThreadMetaData } from '../api';
 
 interface ThreadProps extends ThreadMetaData {
   // Additional props if needed
@@ -13,10 +12,10 @@ interface ThreadProps extends ThreadMetaData {
 
 export const Thread: Component<ThreadProps> = (props) => {
   return (
-    <div class={styles.thread}>
-      <h3>{props.headline || props.topic}</h3>
-      <div class={styles.metadata}>
-        <span>By {props.creator.name} • {new Date(props.created_at).toLocaleDateString()}</span>
+    <div class="bg-slate-700 rounded-lg p-6 shadow-md">
+      <h3 class="text-slate-100 text-lg font-medium mb-2">{props.headline || "No Title"}</h3>
+      <div class="text-slate-300 text-sm">
+        <span>By {props.creator.name || "Unknown"} • {new Date(props.created_at).toLocaleDateString()}</span>
       </div>
     </div>
   );
