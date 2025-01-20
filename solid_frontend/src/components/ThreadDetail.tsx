@@ -6,6 +6,9 @@ import { FullThreadInfo } from '../api/models/FullThreadInfo'; // Adjust based o
 
 import { BlockWithCreator } from '../api/models/BlockWithCreator'; // Adjust the path based on your structure
 
+import { QuillEditor } from './MyQuillEditor';
+
+
 const ThreadDetail: Component = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -90,6 +93,11 @@ const ThreadDetail: Component = () => {
               placeholder="Type your message and press Enter..."
             />
           </div>
+          
+            <div class="container max-w-[50%] mx-auto">
+                <QuillEditor />
+            </div>
+    
         </div>
       )}
     </div>
