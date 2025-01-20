@@ -160,7 +160,7 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
                       "f8ff71be-cbc2-4d7f-80cf-750d7d50db84"
                       ]
         match_threads = { "$match": { "tenant_id": tenant_id, "_id": { "$in": thread_ids } } }
-    print(f"🔍 what is going on Filter by user flags: {user_flags}")
+    print(f"🔍 what is going on? Tenant id: {tenant_id} Filter by user flags: {user_flags}")
     if len(user_flags) != 0: #filter by user flags
         print(f"🔍 Filter by user flags: {user_flags}")
         pipeline = [

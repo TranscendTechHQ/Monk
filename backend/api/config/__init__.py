@@ -148,6 +148,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 # print(result.user.user_id)
                 # print(result.user.third_party_info.user_id) # this gives out output like oauth2|sign-in-with-slack|T048F0ANS1M-U066Q9JAU3B, google-oauth2|101162861063367124308
                 third_party_info = result.user.third_party_info.user_id
+                print(f"🔍 Third party info: {third_party_info}")
                 third_party_provider = ""
                 tenant_id = ""
                 if "slack" in third_party_info:
@@ -156,7 +157,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     third_party_provider = "google"
                 thirdparty_user_id = ""
                 thirdparty_team_id = ""
-                # print(third_party_provider)
+                print(f"🔍 Third party provider: {third_party_provider}")
                 if third_party_provider == "slack":
                     split_str = third_party_info.split('|')
                     ids = split_str[2].split('-')
@@ -179,8 +180,9 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                         return GeneralErrorResponse(
                             'Your Google email address is not whitelisted. Please contact support@transcendtech.io')
 
-                    tenant_id = whitelisted_user['tenant_id']
-
+                    #tenant_id = whitelisted_user['tenant_id']
+                    tenant_id = "T048F0ANS1M" # TODO: Remove this
+                    print(f"🔍 Tenant id: {tenant_id}")
                     tenant_name = "Tenant:" + tenant_id
                     tenants_collection = mongodb["tenants"]
                     old_tenant = await tenants_collection.find_one({"tenant_name": tenant_name})
