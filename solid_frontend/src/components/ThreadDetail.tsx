@@ -12,6 +12,7 @@ const ThreadDetail: Component = () => {
   const [thread, setThread] = createSignal<FullThreadInfo | null>(null);
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
+  const [newMessage, setNewMessage] = createSignal<string>(''); // State for the new message
   
 
   const fetchThreadDetails = async () => {
@@ -29,6 +30,19 @@ const ThreadDetail: Component = () => {
     }
   };
 
+  const handleNewMessageKeyDown = async (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && newMessage().trim() !== '') {
+      try {
+        const threadId = params.id; // Get the thread ID from the URL
+        await ThreadsService.createBlocksPost(thread()?.topic || "", { content: newMessage(), main_thread_id: threadId }); // Create a new block
+        setNewMessage(''); // Clear the input after submission
+        fetchThreadDetails(); // Refresh the thread details to show the new block
+      } catch (err) {
+        console.error('Error creating new block:', err);
+      }
+    }
+  };
+
   onMount(() => {
     fetchThreadDetails();
   });
@@ -41,14 +55,14 @@ const ThreadDetail: Component = () => {
       >
         Back to Threads
       </button>
-      <h1 class="text-white text-3xl text-center font-semibold mb-4">Thread Messages</h1>
+      
       {isLoading() ? (
         <div class="text-slate-300">Loading thread details...</div>
       ) : error() ? (
         <div class="text-red-400">{error()}</div>
       ) : (
         <div class="space-y-4">
-          <h2 class="text-slate-100 text-2xl text-center font-bold">{thread()?.topic || "No Topic"}</h2>
+          <h2 class="text-slate-100 text-2xl text-center font-bold">Thread: {thread()?.topic || "No Topic"}</h2>
           <div class="text-slate-300">
             {/*<p>{thread()?.headline || "No Headline"}</p>*/}
             <p class="text-slate-300 text-center">Created by: {thread()?.creator.name || "Unknown"}</p>
@@ -63,6 +77,18 @@ const ThreadDetail: Component = () => {
                 <p class="text-slate-100">{block.content}</p>
               </div>
             ))}
+          </div>
+
+          {/* Input box for new message */}
+          <div class="mt-4 flex justify-center">
+            <input 
+              type="text" 
+              value={newMessage()} 
+              onInput={(e) => setNewMessage(e.currentTarget.value)} 
+              onKeyDown={handleNewMessageKeyDown}
+              class="w-full max-w-[50%] p-2 rounded border border-slate-600 bg-slate-700 text-white focus:outline-none focus:ring focus:ring-slate-500 mx-auto"
+              placeholder="Type your message and press Enter..."
+            />
           </div>
         </div>
       )}
