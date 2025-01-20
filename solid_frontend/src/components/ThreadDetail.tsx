@@ -43,15 +43,20 @@ const ThreadDetail: Component = () => {
         <div class="space-y-4">
           <h2 class="text-slate-100 text-2xl font-bold">{thread()?.topic || "No Topic"}</h2>
           <div class="text-slate-300">
-            <p>{thread()?.headline || "No Headline"}</p>
+            {/*<p>{thread()?.headline || "No Headline"}</p>*/}
             <p>Created by: {thread()?.creator.name || "Unknown"}</p>
           </div>
           <h3 class="text-slate-200 text-lg font-semibold">Blocks:</h3>
-          {thread()?.content?.map((block: BlockWithCreator) => (
-            <div id={block._id} class="bg-slate-800 p-4 rounded-lg shadow-md">
-              <p class="text-slate-100">{block.content}</p>
-            </div>
-          ))}
+          <div class="space-y-2">
+            {thread()?.content?.map((block: BlockWithCreator) => (
+              <div 
+                id={block._id} 
+                class="bg-slate-800 p-4 rounded-lg shadow-md max-w-[50%] mx-auto"
+              >
+                <p class="text-slate-100">{block.content}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
