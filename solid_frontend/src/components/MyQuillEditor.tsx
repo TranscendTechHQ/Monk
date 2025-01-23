@@ -1,6 +1,7 @@
 import { Component, createSignal, onMount } from 'solid-js';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+//import quillEmoji from 'quill-emoji';
 
 export const QuillEditor: Component = () => {
   let editorRef: HTMLDivElement | undefined;
@@ -14,6 +15,7 @@ export const QuillEditor: Component = () => {
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
             ['blockquote', 'code-block'],
+            
             [{ 'header': 1 }, { 'header': 2 }],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             [{ 'script': 'sub' }, { 'script': 'super' }],
@@ -45,4 +47,6 @@ export const QuillEditor: Component = () => {
     </div>
   );
 };
+
+
 

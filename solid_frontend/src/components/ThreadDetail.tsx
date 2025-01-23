@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount } from 'solid-js';
+import { Component, createSignal, onMount, createMemo } from 'solid-js';
 import { useParams, useNavigate } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 
@@ -19,10 +19,10 @@ const ThreadDetail: Component = () => {
   
 
   const fetchThreadDetails = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const threadId = params.id; // Get the thread ID from the URL
-      const fetchedThread = await ThreadsService.getThreadIdThreadsIdGet(threadId); // Fetch thread details
+      const threadId = params.id;
+      const fetchedThread = await ThreadsService.getThreadIdThreadsIdGet(threadId);
       setThread(fetchedThread);
       setError(null);
     } catch (err) {
@@ -50,6 +50,8 @@ const ThreadDetail: Component = () => {
     fetchThreadDetails();
   });
 
+  const messageBlocks = createMemo(() => thread()?.content || []);
+
   return (
     <div class="min-h-screen bg-slate-900 p-6">
       <button 
@@ -72,12 +74,13 @@ const ThreadDetail: Component = () => {
           </div>
           
           <div class="space-y-2">
-            {thread()?.content?.map((block: BlockWithCreator) => (
+            {messageBlocks().map((block: BlockWithCreator) => (
               <div 
                 id={block._id} 
-                class="bg-slate-800 p-4 rounded-lg shadow-md max-w-[50%] mx-auto"
+                class="bg-slate-800 text-white p-4 rounded-lg shadow-md max-w-[50%] mx-auto my-2"
               >
                 <p class="text-slate-100">{block.content}</p>
+                <p class="text-slate-300 text-sm mt-1">— {block.creator.name || "Unknown"}</p>
               </div>
             ))}
           </div>
