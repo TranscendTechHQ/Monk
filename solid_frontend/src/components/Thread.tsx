@@ -7,23 +7,41 @@ import { Component } from 'solid-js';
 import { ThreadMetaData } from '../api/models/ThreadMetaData';
 import { useNavigate } from '@solidjs/router';
 
-export const Thread: Component<ThreadMetaData> = (props) => {
+interface ThreadProps {
+  thread: ThreadMetaData;
+}
+
+const Thread: Component<ThreadProps> = (props) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/thread/${props._id}`);
+    navigate(`/thread/${props.thread._id}`);
   };
 
   return (
     <div 
-      class="bg-slate-700 rounded-lg p-6 shadow-md cursor-pointer" 
+      class="bg-slate-800 ring-1 ring-slate-400/20 rounded-xl p-4 hover:bg-slate-700 transition-all cursor-pointer" 
       onClick={handleClick}
     >
-      <h2 class="text-slate-100 text-lg font-medium mb-2">{props.topic || "No Topic"}</h2>
-      <h3 class="text-slate-100 text-m font-medium mb-2">{props.headline || "No Title"}</h3>
+      <h3 class="text-white text-lg font-semibold">{props.thread.topic || "No Topic"}</h3>
+      <p class="text-slate-300">{props.thread.headline || "No Title"}</p>
       <div class="text-slate-300 text-sm">
-        <span>By {props.creator.name || "Unknown"} • {new Date(props.created_at).toLocaleDateString()}</span>
+        <span>By {props.thread.creator.name || "Unknown"} • {new Date(props.thread.created_at).toLocaleDateString()}</span>
       </div>
     </div>
   );
-}; 
+};
+
+export const ThreadList: Component<{ threads: ThreadMetaData[] }> = (props) => {
+  return (
+    <div class="overflow-y-auto max-h-[400px]">
+      <div class="space-y-4">
+        {props.threads.map((thread) => (
+          <Thread thread={thread} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Thread; 

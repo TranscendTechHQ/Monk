@@ -6,7 +6,7 @@
 import { Component, createSignal, createEffect, For } from 'solid-js';
 import UserInfo from './components/UserInfo';
 
-import { Thread } from './components/Thread';
+import { ThreadList } from './components/Thread';
 
 import { ThreadsService } from './api/services/ThreadsService';
 import { OpenAPI } from './api/core/OpenAPI';
@@ -55,15 +55,7 @@ const App: Component = () => {
               ) : error() ? (
                 <div class="text-center text-red-400">{error()}</div>
               ) : (
-                <For each={threads()?.metadata}>
-                  {(thread: ThreadMetaData) => (
-                    <div style="width: 50vw" class="bg-slate-800 ring-1 ring-slate-400/20 rounded-xl p-4 hover:bg-slate-700 transition-all">
-                      <Thread 
-                        {...thread}
-                      />
-                    </div>
-                  )}
-                </For>
+                <ThreadList threads={threads()?.metadata || []} />
               )}
             </div>
           </div>
