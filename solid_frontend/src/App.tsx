@@ -47,7 +47,6 @@ const App: Component = () => {
 
         <main class="py-12">
           <div class="container mx-auto">
-            <h2 class="text-center text-xl font-medium text-white mb-6">All Threads</h2>
             
             <div class="flex flex-col items-center gap-6">
               {isLoading() ? (

@@ -34,7 +34,7 @@ const Thread: Component<ThreadProps> = (props) => {
 
 export const ThreadList: Component<{ threads: ThreadMetaData[] }> = (props) => {
   return (
-    <div class="overflow-y-auto max-h-[400px]">
+    <div class="overflow-y-auto max-h-[400px] mx-auto w-1/2">
       <div class="space-y-4">
         {props.threads.map((thread) => (
           <Thread thread={thread} />
