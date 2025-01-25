@@ -14,3 +14,4 @@ slack-sdk
 boto3
 pandas
 beautifulsoup4==4.12.3
+redis[hiredis]
