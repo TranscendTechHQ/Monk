@@ -1,9 +1,7 @@
 import asyncio
 
-from pymongo import MongoClient
 
 from utils.db import asyncdb, shutdown_async_db_client, startup_async_db_client
-from config import settings
 
 
 

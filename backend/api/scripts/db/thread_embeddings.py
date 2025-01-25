@@ -2,10 +2,11 @@ import asyncio
 import pprint
 import threading
 
-from pymongo import MongoClient, UpdateOne
+from pymongo import MongoClient
 
 from config import settings
 from routes.threads.search import thread_semantic_search
+from utils.db import get_mongo_documents_async
 from utils.embedding import generate_embedding
 
 
@@ -68,12 +69,12 @@ def generate_single_thread_embedding(thread_doc):
                                      {'$set': embeddings}, upsert=True)
 
 
-def generate_all_threads_embedding():
+def generate_all_threads_embedding(tenant_id):
     thread_collection = app.mongodb["threads"]
     # Update the collection with the embeddings
     # requests = []
-
-    for thread_doc in thread_collection.find({'topic': {"$exists": True}}).limit(500):
+    threads = get_mongo_documents_async(collection=thread_collection, tenant_id=tenant_id, filter={'topic': {"$exists": True}})
+    for thread_doc in threads:
         # print(doc['content'])
         generate_single_thread_embedding(thread_doc)
 
@@ -82,25 +83,6 @@ def generate_all_threads_embedding():
     # collection.bulk_write(requests)
 
 
-def generate_all_threads_embedding_delayed(delay):
-    start_timer(delay, generate_all_threads_embedding)
-
-
-def move_thread_embedding():
-    collection = app.mongodb["threads"]
-    dest_collection = app.mongodb["thread_embeddings"]
-    embeddings = {}
-    requests = []
-    for doc in collection.find({'topic': {"$exists": True}}).limit(500):
-        topic = doc['topic']
-        if 'thread_embedding' in doc:
-            embeddings[topic] = doc["thread_embedding"]
-            # dest_collection.insert_one(embeddings)
-            collection.update_one({'_id': doc['_id']}, {'$unset': {'thread_embedding': 1}}, upsert=True)
-        # requests.append(UpdateOne({'_id': doc['_id']}, {'$set': {'thread_embedding': embeddings}}))
-        # requests.append(ReplaceOne({'_id': doc['_id']}, doc))
-
-    # collection.bulk_write(requests)
 
 
 async def main():

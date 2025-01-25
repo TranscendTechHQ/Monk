@@ -5,7 +5,7 @@ from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 # Define prompt
 from langchain_openai import ChatOpenAI
-from utils.db import  shutdown_sync_db_client, startup_sync_db_client, syncdb
+from utils.db import  get_mongo_documents_sync, shutdown_sync_db_client, startup_sync_db_client, syncdb
 
 
 from config import settings
@@ -58,7 +58,7 @@ def set_first_block_as_headline(thread_id, num_blocks, block_content):
                                       {'$set': {'headline': headline}}, upsert=True)
        
     
-def generate_single_thread_headline(thread_id, use_ai=False):
+def generate_single_thread_headline(thread_id, use_ai=False, tenant_id=None):
     #blocks = thread_doc['content']
     threads_collection = syncdb.threads_collection
     thread_doc =  threads_collection.find_one({'_id': thread_id})
@@ -87,8 +87,9 @@ def generate_single_thread_headline(thread_id, use_ai=False):
         else:
             blocks.append(default_block)
         
-    more_blocks =  list(blocks_collection.find(
-        {'main_thread_id': thread_id}).sort('position', 1))
+   
+    
+    more_blocks = get_mongo_documents_sync(collection=blocks_collection, tenant_id=tenant_id, filter={'main_thread_id': thread_id})
     blocks.extend(more_blocks)
         
     if use_ai:
@@ -109,7 +110,7 @@ def generate_single_thread_headline(thread_id, use_ai=False):
     update_single_headline_in_db(thread_doc, headline)
     
     
-def generate_all_thread_headlines(use_ai=False):
+def generate_all_thread_headlines(use_ai=False, tenant_id=None):
     thread_collection = syncdb.threads_collection
     threads = list(thread_collection.find({}))
     # headline_collection = app.mongodb["thread_headlines"]

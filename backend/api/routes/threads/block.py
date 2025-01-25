@@ -1,8 +1,7 @@
 
 import datetime as dt
-from typing import Any
 from routes.threads.user_flags import set_flags_true_other_users
-from utils.db import create_mongo_document, get_block_by_id, get_mongo_document, asyncdb, update_mongo_document_fields
+from utils.db import asyncdb, update_mongo_document_fields
 import logging
 
 logger = logging.getLogger(__name__)

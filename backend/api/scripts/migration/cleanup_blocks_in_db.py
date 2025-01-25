@@ -1,11 +1,9 @@
 import asyncio
 
 from fastapi.encoders import jsonable_encoder
-from pymongo import MongoClient
 
 from routes.threads.models import BlockModel
-from utils.db import asyncdb, create_mongo_document, shutdown_async_db_client, startup_async_db_client
-from config import settings
+from utils.db import asyncdb, create_mongo_document_async, shutdown_async_db_client, startup_async_db_client
 
 
 async def print_block_keys():
@@ -74,7 +72,7 @@ async def migrate_blocks_to_new_collection():
                 new_block.tenant_id = thread['tenant_id']
                 new_block.last_modified = thread['last_modified']
 
-                await create_mongo_document(
+                await create_mongo_document_async(
                     id=new_block.id,
                     document=jsonable_encoder(new_block), 
                     collection=blocks_collection)
@@ -102,7 +100,7 @@ async def add_num_blocks_to_threads():
     blocks_collection = asyncdb.blocks_collection
     threads = await threads_collection.find({}).to_list(length=None)
     for thread in threads:
-        if not 'num_blocks' in thread:
+        if 'num_blocks' not in thread:
             default_block = await blocks_collection.find_one({'child_thread_id': thread['_id']})
             blocks = await blocks_collection.find({"main_thread_id": thread['_id']}).to_list(length=None)
             num_blocks = len(blocks) + 1 if default_block else 0

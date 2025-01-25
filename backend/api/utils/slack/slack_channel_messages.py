@@ -1,13 +1,9 @@
 import datetime
-import pprint
-from pymongo import MongoClient
 import asyncio
-import json
 import uuid
 import pandas as pd
 
-from config import settings
-from routes.threads.models import CreateBlockModel, UpdateBlockModel
+from routes.threads.models import CreateBlockModel
 from routes.threads.child_thread import create_child_thread, create_new_thread
 from routes.threads.routers import create_new_block
 from routes.slack.models import ChannelModel, PublicChannelList
@@ -15,7 +11,7 @@ from routes.slack.models import ChannelModel, PublicChannelList
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from utils.db import startup_async_db_client, shutdown_async_db_client, asyncdb, update_block_child_id
+from utils.db import startup_async_db_client, shutdown_async_db_client, asyncdb
 
 overall_list = []
 

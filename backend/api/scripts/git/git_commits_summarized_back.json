@@ -613,7 +613,7 @@
     "commit_id": "bb371a9ea220ceb1f99c06e2d29f0c85c19cb1e4",
     "commit_timestamp": 1706742296,
     "code_diff": "",
-    "code_summary": "The code diff produces two changes in the specified files:\n- In `backend/api/routes/blocks/routers.py`, lines 24-26 replace the line `block = jsonable_encoder(block)` with code that passes `block` through a method called `model_dump()`, and then assigns the result to `block`. A second new line replaces `await create_mongo_document(block, ...)` with a similar method call on `jsonable_encoder`. The result is that the original `block` is manipulated and passed through `jsonable_encoder` twice before being used in the call to `create_mongo_document`.\n- In `backend/api/utils/db.py`, line 27 inserts a `print()` statement that outputs the value of a `query"
+    "code_summary": "The code diff produces two changes in the specified files:\n- In `backend/api/routes/blocks/routers.py`, lines 24-26 replace the line `block = jsonable_encoder(block)` with code that passes `block` through a method called `model_dump()`, and then assigns the result to `block`. A second new line replaces `await create_mongo_document_async(block, ...)` with a similar method call on `jsonable_encoder`. The result is that the original `block` is manipulated and passed through `jsonable_encoder` twice before being used in the call to `create_mongo_document`.\n- In `backend/api/utils/db.py`, line 27 inserts a `print()` statement that outputs the value of a `query"
   },
   {
     "commit_message": "fix issues with serialization. Why is blocks no longer\nable to get data? must be database issue\n",

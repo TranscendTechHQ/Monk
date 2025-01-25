@@ -1,7 +1,7 @@
 import datetime as dt
 import re
 import time
-from fastapi import FastAPI, HTTPException
+from fastapi import HTTPException
 import logging
 from typing import List
 
@@ -11,14 +11,12 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
-from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 
 from routes.threads.block import updateBlock
 from utils.scrapper import getLinkMeta
-from utils.db import create_mongo_doc_simple, create_mongo_document_sync, create_or_replace_mongo_doc, get_creator_block_by_id, get_mongo_document, get_mongo_document_sync, get_mongo_documents, get_tenant_id, get_tenant_id_sync, get_user_info, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb, \
-    create_mongo_document, delete_mongo_document, update_mongo_document_fields_sync
-from utils.db import get_mongo_documents_by_date, get_user_name, get_block_by_id
-from utils.headline import generate_single_thread_headline, set_first_block_as_headline
+from utils.db import create_or_replace_mongo_doc, get_creator_block_by_id, get_mongo_document_async, get_mongo_document_sync, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, get_tenant_id_sync, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb
+from utils.db import get_block_by_id
+from utils.headline import set_first_block_as_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
 from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
@@ -26,7 +24,7 @@ from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel,
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
-from routes.threads.user_flags import get_user_filter_preferences_from_db, save_user_filter_preferences, set_flags_true_other_users, set_unread_other_users, update_user_flags
+from routes.threads.user_flags import get_user_filter_preferences_from_db, set_flags_true_other_users, set_unread_other_users, update_user_flags
 from utils.ai.relevance import get_relevant_thread_ids
 
 router = APIRouter()
@@ -63,9 +61,8 @@ async def all_users(request: Request,
     # get all users
     final_user_map = {}
 
-    cursor = asyncdb.users_collection.find({"tenant_id": tenant_id})
-    user_list = await cursor.to_list(length=None)
-
+    
+    user_list = get_mongo_documents_async(asyncdb.users_collection, tenant_id=tenant_id)
     for user in user_list:
         final_user_map[user["_id"]] = UserModel(**user)
 
@@ -93,8 +90,8 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 
     filtered_threads = []
     for doc in result:
-        filtered_threads.append(await get_mongo_document({"topic": doc["topic"]},
-                                                         threads_collection,
+        filtered_threads.append(await get_mongo_document_async( filter={"topic": doc["topic"]},
+                                                         collection=threads_collection,
                                                          tenant_id=tenant_id))
     return_threads = jsonable_encoder(ThreadsModel(threads=filtered_threads))
     # print(return_threads)
@@ -116,8 +113,8 @@ async def ti(request: Request,
              session: SessionContainer = Depends(verify_session())):
     tenant_id = await get_tenant_id(session)
     # Get all thread titles from MongoDB
-    threads = await get_mongo_documents(
-        request.app.mongodb["threads"],
+    threads = await get_mongo_documents_async(
+        collection=request.app.mongodb["threads"],
         tenant_id=tenant_id)
 
     info: dict[str, ThreadType] = {}
@@ -153,7 +150,7 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
     match_threads = {"$match": {"tenant_id": tenant_id}}
     
     if searchQuery:
-        #thread_ids = await semantic_filter_threads(searchQuery)
+        #thread_ids = await semantic_filter_threads(searchQuery, tenant_id)
         #hard code for now as above function is too slow
         thread_ids = ["20627d60-61d9-4007-965e-e492c0617e14", 
                       "12262259-90fe-44bf-90e2-b17e2871a2df",
@@ -299,7 +296,7 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
 
 
 
-def semantic_filter_threads(user_id):
+def semantic_filter_threads(user_id, tenant_id):
     user_collection = syncdb.users_collection
     user = user_collection.find_one({"_id": user_id})
     if user is None:
@@ -315,8 +312,8 @@ def semantic_filter_threads(user_id):
     user_preference = user_filter["searchQuery"]
     print(f'\n 👉 User preference: {user_preference}')
     threads_collection = syncdb.threads_collection
-    cursor = threads_collection.find({}, projection={'_id': 1, '_id': '$_id'})
-    thread_ids_dict = list(cursor)
+    thread_ids_dict = get_mongo_documents_sync(collection=threads_collection, tenant_id=tenant_id, projection={'_id': 1, '_id': '$_id'})
+    
     thread_ids = [thread["_id"] for thread in thread_ids_dict]
     print(f'\n 👉 Thread ids: {thread_ids}')
 
@@ -349,7 +346,7 @@ async def filter(
                                                {"searchQuery": searchQuery},
                                                syncdb.user_news_feed_filter_collection)
             print(f"🔍 Semantic filter saved, update count {update_count}")
-            #relevant_thread_ids = semantic_filter_threads(user_id)
+            #relevant_thread_ids = semantic_filter_threads(user_id, tenant_id)
             print(f"🔍 Semantic filter applied")
         
         # Save user's filter preferences to db if filter is enabled
@@ -472,7 +469,7 @@ def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str =
 
         create_block_time = time.time()
         print(
-            f"profiling Time elapsed for create_mongo_document(new_block): {create_block_time - user_time:.6f} seconds")
+            f"profiling Time elapsed for create_mongo_document_async(new_block): {create_block_time - user_time:.6f} seconds")
         thread_last_modified = str(new_block.created_at)
         # now update the thread block count
         num_blocks = get_blocks_count(thread_id)
@@ -748,13 +745,13 @@ async def create(request: Request, thread_topic: str, block: CreateBlockModel = 
         print(
             f"profiling Time elapsed for tenant_id(): {tenant_time - start_time:.6f} seconds")
         thread = get_mongo_document_sync(
-            {"topic": thread_topic},
-            syncdb.threads_collection,
+            filter={"topic": thread_topic},
+            collection=syncdb.threads_collection,
             tenant_id=tenant_id
         )
         title_time = time.time()
         print(
-            f"profiling Time elapsed for get_mongo_document(title_time): {title_time - tenant_time:.6f} seconds")
+            f"profiling Time elapsed for get_mongo_document_async(title_time): {title_time - tenant_time:.6f} seconds")
         if not thread:
             return JSONResponse(status_code=404, content={"message": "Thread with ${thread_topic} not found"})
 
@@ -922,7 +919,7 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
         topic = user_info['name'].replace(
             " ", "_").lower() + "_" + assignedUserId[:4]
 
-        old_thread = await get_mongo_document({"topic": topic}, asyncdb.threads_collection, tenant_id)
+        old_thread = await get_mongo_document_async(filter={"topic": topic}, collection=asyncdb.threads_collection, tenant_id=tenant_id)
 
         if old_thread and (not 'assigned_thread_id' in old_thread.keys() or old_thread['assigned_thread_id'] != assignedUserId):
             print(
@@ -954,7 +951,7 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
             print(
                 '\n👉 Block is already assigned to some other user. Reassigning to new user')
             # Remove Fetch all the blocks from the block_to_update['assigned_thread_id'] and update the assigned_pos
-            blocks = await block_collection.find({"assigned_thread_id": block_to_update['assigned_thread_id']}).to_list(None)
+            blocks = get_mongo_documents_async(collection=block_collection, tenant_id=tenant_id, filter={"assigned_thread_id": block_to_update['assigned_thread_id']})
             if len(blocks) > 1:
                 print(
                     '\n👉 Removing the block from old position. Updated Blocks length:', len(blocks))
@@ -1205,7 +1202,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
 
         thread_collection = request.app.mongodb["threads"]
         print("\nFetching thread from the DB")
-        old_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
+        old_thread = await get_mongo_document_async(filter={"_id": id}, collection=thread_collection, tenant_id=tenant_id)
         if not old_thread:
             return JSONResponse(status_code=404, content={"message": "Thread not found"})
 
@@ -1219,7 +1216,7 @@ async def update_th(request: Request, id: str, thread_data: UpdateThreadTitleMod
         await thread_collection.update_one({'_id': id}, {"$set": {"topic": thread_topic, 'last_modified': str(dt.datetime.now())}})
 
         print('\n Thread topic is updated i DB')
-        updated_thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
+        updated_thread = await get_mongo_document_async(filter={"_id": id}, collection=thread_collection, tenant_id=tenant_id)
 
         print('\n Getting updated thread from DB', updated_thread)
 
@@ -1248,7 +1245,7 @@ async def create_tf(request: Request, thread_read_data: CreateUserThreadFlagMode
     mention = jsonable_encoder(thread_read_data).get("mention", None)
     upvote = jsonable_encoder(thread_read_data).get("upvote", None)
 
-    thread = await get_mongo_document({"_id": thread_id}, request.app.mongodb["threads"], tenant_id)
+    thread = await get_mongo_document_async(filter={"_id": thread_id}, collection=request.app.mongodb["threads"], tenant_id=tenant_id)
     if not thread:
         return JSONResponse(status_code=404, content={"message": "Thread not found"})
     if tenant_id != jsonable_encoder(thread)["tenant_id"]:
@@ -1274,7 +1271,7 @@ async def delete_thread(request: Request, id: str, session: SessionContainer = D
         block_collection = request.app.mongodb["blocks"]
 
         print('\n👉 Fetching thread from db using Id:', id)
-        thread = await get_mongo_document({"_id": id}, thread_collection, tenant_id)
+        thread = await get_mongo_document_async(filter={"_id": id}, collection=thread_collection, tenant_id=tenant_id)
         if not thread:
             return JSONResponse(status_code=404, content={"message": "Thread not found"})
 

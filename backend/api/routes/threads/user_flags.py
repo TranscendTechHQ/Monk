@@ -1,7 +1,7 @@
 import logging
 from fastapi.encoders import jsonable_encoder
 from routes.threads.models import UserFilterPreferenceModel, UserThreadFlagModel
-from utils.db import create_mongo_document, create_mongo_document_sync, create_or_replace_mongo_doc, get_mongo_document, syncdb, get_mongo_document_sync, update_mongo_document_fields, update_mongo_document_fields_sync, asyncdb
+from utils.db import  create_mongo_document_sync, create_or_replace_mongo_doc, get_mongo_documents_async, get_mongo_documents_sync, syncdb, get_mongo_document_sync, update_mongo_document_fields_sync, asyncdb
 
 logger = logging.getLogger(__name__)
 
@@ -12,8 +12,8 @@ def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, b
             print(
                 f"\n ❌ [ERROR]: thread_id:{thread_id}, user_id:{user_id} or tenant_id:{tenant_id} is None",)
             return None
-        user_thread_flag = get_mongo_document_sync({"thread_id": thread_id, "user_id": user_id},
-                                                   syncdb.user_thread_flags_collection, tenant_id=tenant_id)
+        user_thread_flag = get_mongo_document_sync(filter={"thread_id": thread_id, "user_id": user_id},
+                                                   collection=syncdb.user_thread_flags_collection, tenant_id=tenant_id)
 
         if not user_thread_flag:
             user_thread_flag_doc = UserThreadFlagModel(
@@ -70,7 +70,8 @@ def set_flags_true_other_users(thread_id, user_id, tenant_id, unread=None, upvot
                   thread_id, user_id, tenant_id)
 
             return None
-        users = list(syncdb.users_collection.find({"tenant_id": tenant_id}))
+
+        users = get_mongo_documents_sync(collection=syncdb.users_collection, tenant_id=tenant_id)
         for user in users:
             other_user_id = user["_id"]
             if other_user_id == user_id:
@@ -111,8 +112,8 @@ def save_user_filter_preferences(user_id, tenant_id, filter_preferences: UserFil
 
 async def get_user_filter_preferences_from_db(user_id, tenant_id):
     try:
-        user_filter_preferences = await get_mongo_document({"user_id": user_id},
-                                                           asyncdb.user_news_feed_filter_collection, tenant_id=tenant_id)
+        user_filter_preferences = await get_mongo_documents_async(filter={"user_id": user_id},
+                                                           collection=asyncdb.user_news_feed_filter_collection, tenant_id=tenant_id)
         if user_filter_preferences:
             return UserFilterPreferenceModel(**user_filter_preferences)
         else:

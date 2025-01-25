@@ -108,7 +108,7 @@ async def get_user_last_login(user_id, collection) -> dt.datetime:
 
 
 # first argument should be a dictionary to query the db
-async def get_mongo_document(query: dict, collection, tenant_id):
+async def get_mongo_document_async(query: dict, collection, tenant_id):
     query["tenant_id"] = tenant_id
     if (doc := await collection.find_one(query)) is not None:
         return doc
@@ -122,7 +122,7 @@ def get_mongo_document_sync(query: dict, collection, tenant_id):
     return None
 
 
-async def get_mongo_documents(collection, tenant_id, filter: dict = {}, projection: dict = {}):
+async def get_mongo_documents_async(collection, tenant_id, filter: dict = {}, projection: dict = {}):
 
     filter["tenant_id"] = tenant_id
     docs = []
@@ -133,6 +133,16 @@ async def get_mongo_documents(collection, tenant_id, filter: dict = {}, projecti
     #     docs.append(doc)
     return docs
 
+def get_mongo_documents_sync(collection, tenant_id, filter: dict = {}, projection: dict = {}):
+
+    filter["tenant_id"] = tenant_id
+    docs = []
+    cursor = collection.find(filter, projection=projection)
+    # Convert cursor to list of dictionaries
+    docs =  cursor.to_list(length=None)
+    # async for doc in collection.find(query):
+    #     docs.append(doc)
+    return docs
 
 async def get_mongo_documents_by_date(date: dt.datetime, collection, tenant_id):
     # async for doc in collection.find({"metadata.createdAt": date}):
@@ -199,7 +209,7 @@ def create_mongo_document_sync(id: str, document: dict, collection):
     return created_document
 
 
-async def create_mongo_document(id: str, document: dict, collection):
+async def create_mongo_document_async(id: str, document: dict, collection):
     # print(document)
     # print(collection)
 
