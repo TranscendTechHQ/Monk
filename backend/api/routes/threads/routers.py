@@ -1038,8 +1038,8 @@ async def update_block_position(request: Request, id: str, block_position: Updat
         }
         sort = list({'position': 1}.items()) if not sort_by_assigned_pos else list(
             {'assigned_pos': 1}.items())
-        blocks = await block_collection.find(filter=filter, sort=sort).to_list(None)
 
+        blocks = await get_mongo_documents_async(filter=filter, collection=block_collection, tenant_id=tenant_id, sort=sort)
         if not blocks:
             return JSONResponse(status_code=404, content={"message": f"Blocks with ${thread_id} id not found"})
 

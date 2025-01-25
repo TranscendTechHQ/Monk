@@ -122,22 +122,22 @@ def get_mongo_document_sync(filter: dict, collection, tenant_id):
     return None
 
 
-async def get_mongo_documents_async(collection, tenant_id, filter: dict = {}, projection: dict = {}):
+async def get_mongo_documents_async(collection, tenant_id, filter: dict = {}, projection: dict = {}, sort=None):
 
     filter["tenant_id"] = tenant_id
     docs = []
-    cursor = collection.find(filter, projection=projection)
+    cursor = collection.find(filter, projection=projection, sort=sort)
     # Convert cursor to list of dictionaries
     docs = await cursor.to_list(length=None)
     # async for doc in collection.find(query):
     #     docs.append(doc)
     return docs
 
-def get_mongo_documents_sync(collection, tenant_id, filter: dict = {}, projection: dict = {}):
+def get_mongo_documents_sync(collection, tenant_id, filter: dict = {}, projection: dict = {}, sort=None):
 
     filter["tenant_id"] = tenant_id
     docs = []
-    cursor = collection.find(filter, projection=projection)
+    cursor = collection.find(filter, projection=projection, sort=sort)
     # Convert cursor to list of dictionaries
     docs =  cursor.to_list(length=None)
     # async for doc in collection.find(query):
