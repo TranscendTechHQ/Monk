@@ -20,6 +20,7 @@ from supertokens_python.types import GeneralErrorResponse
 
 # from utils.db import create_mongo_document
 from utils.hashicorp_api import get_access_token, get_secret
+import redis
 
 load_dotenv()
 HCP_ACCESS_TOKEN = get_access_token()
@@ -55,6 +56,10 @@ class ServerSettings(BaseSettings):
 class DatabaseSettings(BaseSettings):
     DB_URL: str = get_env_variable(var_name='DB_URL', secret=True)
     DB_NAME: str = get_env_variable(var_name='DB_NAME', secret=True)
+    REDIS_HOST: str = get_env_variable(var_name='REDIS_HOST', secret=False)
+    REDIS_PORT: str = get_env_variable(var_name='REDIS_PORT', secret=False)
+    REDIS_USERNAME: str = get_env_variable(var_name='REDIS_USERNAME', secret=False)
+    REDIS_PASSWORD: str = get_env_variable(var_name='REDIS_PASSWORD', secret=False)
 
 
 class OpenAISettings(BaseSettings):
@@ -96,6 +101,14 @@ class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings,
 
 
 settings = Settings()
+
+cache = redis.Redis(
+    host=settings.REDIS_HOST,
+    port=settings.REDIS_PORT,
+    decode_responses=True,
+    username=settings.REDIS_USERNAME,
+    password=settings.REDIS_PASSWORD,
+)
 
 BACKEND_CLIENT_ID = settings.BACKEND_CLIENT_ID
 BACKEND_CLIENT_SECRET = settings.BACKEND_CLIENT_SECRET
