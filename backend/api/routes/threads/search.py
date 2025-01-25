@@ -1,6 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from config import settings
+from utils.db import get_aggregate_async
 from utils.embedding import generate_embedding
 
 
@@ -48,7 +49,7 @@ async def thread_semantic_search(query):
 
     ]
 
-    results = await search.embedding_collection.aggregate(pipeline).to_list(length=None)
+    results = await get_aggregate_async(pipeline=pipeline, collection=search.embedding_collection)
 
     # for doc in cursor:
     #    print(doc)

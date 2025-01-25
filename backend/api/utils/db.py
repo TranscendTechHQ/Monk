@@ -231,6 +231,8 @@ async def create_mongo_document_async(id: str, document: dict, collection):
 
     return created_document
 
+async def get_aggregate_async(pipeline, collection, length=None):
+    return await collection.aggregate(pipeline).to_list(length=length)
 
 async def get_block_by_id(block_id, thread_collection):
     try:
@@ -242,7 +244,7 @@ async def get_block_by_id(block_id, thread_collection):
             },
         ]
         print("pipeline: ", pipeline)
-        result = await thread_collection.aggregate(pipeline).to_list(length=None)
+        result = await get_aggregate_async(pipeline=pipeline, collection=thread_collection)
         # result = result.to_list(None)
         # Fetch the first element (assuming there's only one matching block)
         print(result.__len__() > 0)
@@ -293,7 +295,8 @@ async def get_creator_block_by_id(block_id, block_collection):
             }
         ]
         print("pipeline: ", pipeline)
-        result = await block_collection.aggregate(pipeline).to_list(length=None)
+
+        result = await get_aggregate_async(pipeline=pipeline, collection=block_collection)
         # result = result.to_list(None)
         # Fetch the first element (assuming there's only one matching block)
         print(result.__len__() > 0)

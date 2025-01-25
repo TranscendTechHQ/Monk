@@ -14,7 +14,7 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 
 from routes.threads.block import updateBlock
 from utils.scrapper import getLinkMeta
-from utils.db import create_or_replace_mongo_doc, get_creator_block_by_id, get_mongo_document_async, get_mongo_document_sync, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, get_tenant_id_sync, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb
+from utils.db import create_or_replace_mongo_doc, get_aggregate_async, get_creator_block_by_id, get_mongo_document_async, get_mongo_document_sync, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, get_tenant_id_sync, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb
 from utils.db import get_block_by_id
 from utils.headline import set_first_block_as_headline
 from .child_thread import create_child_thread
@@ -32,7 +32,8 @@ logger = logging.getLogger(__name__)
 
 
 async def keyword_search(query, collection):
-    threads = await collection.aggregate([
+    
+    pipeline = [
         {
             "$search": {
                 "index": "monkThreadIndex",
@@ -47,7 +48,8 @@ async def keyword_search(query, collection):
         {
             "$limit": 3
         }
-    ]).to_list(length=None)
+    ]
+    threads = await get_aggregate_async(pipeline=pipeline, collection=collection)
 
     return threads
 
@@ -163,7 +165,8 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
         pipeline = [
             match_user_flags
         ]
-        result = asyncdb.user_thread_flags_collection.aggregate(pipeline)
+
+        result = await get_aggregate_async(pipeline=pipeline, collection=asyncdb.user_thread_flags_collection)
         if result is not None:
             thread_ids = [doc["thread_id"] async for doc in result]
             #print(f"🔍 Filtered thread ids: {thread_ids}")
@@ -289,7 +292,9 @@ async def get_newsfeed(tenant_id, user_id, bookmark, unread, unfollow, upvote, m
         sort_threads_by_last_modified
     ]
 
-    result = asyncdb.threads_collection.aggregate(pipeline)
+ 
+    
+    result = await get_aggregate_async(pipeline=pipeline, collection=asyncdb.threads_collection)
     #async for doc in result:
     #    print(doc)
     return result
@@ -387,7 +392,7 @@ async def filter(
             searchQuery=searchQuery
             )
 
-        aggregate = await aggregate.to_list(None)
+        
         print(f"🔍 Filtered newsfeed count: {len(aggregate)}")
         
         return JSONResponse(status_code=status.HTTP_200_OK,
@@ -695,8 +700,9 @@ async def get_thread_from_db(thread_id, user_id, tenant_id):
                 }
             }
         ]
-        result = asyncdb.threads_collection.aggregate(pipeline)
-        thread = await result.to_list(None)
+        
+        thread = await get_aggregate_async(pipeline=pipeline, collection=asyncdb.threads_collection)
+        
         # print(thread[0]["content"][0])
 
         if len(thread) == 0:
