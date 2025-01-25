@@ -112,7 +112,7 @@ def generate_single_thread_headline(thread_id, use_ai=False, tenant_id=None):
     
 def generate_all_thread_headlines(use_ai=False, tenant_id=None):
     thread_collection = syncdb.threads_collection
-    threads = list(thread_collection.find({}))
+    threads = get_mongo_documents_sync(collection=thread_collection, tenant_id=tenant_id, filter={})
     # headline_collection = app.mongodb["thread_headlines"]
     for doc in threads:
         print(f"Generating headline for thread {doc['_id']}")
