@@ -25,7 +25,7 @@ from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
 from .search import thread_semantic_search
 from routes.threads.user_flags import get_user_filter_preferences_from_db, set_flags_true_other_users, set_unread_other_users, update_user_flags
-from utils.ai.relevance import get_relevant_thread_ids
+from utils.relevance import get_relevant_thread_ids
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -921,7 +921,7 @@ async def update_block_assigned_user(request: Request, id: str, assignedUserId: 
 
         old_thread = await get_mongo_document_async(filter={"topic": topic}, collection=asyncdb.threads_collection, tenant_id=tenant_id)
 
-        if old_thread and (not 'assigned_thread_id' in old_thread.keys() or old_thread['assigned_thread_id'] != assignedUserId):
+        if old_thread and ('assigned_thread_id' not in old_thread.keys() or old_thread['assigned_thread_id'] != assignedUserId):
             print(
                 f'\n👉 Thread is already assigned to some other user. Assigning to ${assignedUserId} ')
             await asyncdb.threads_collection.update_one(

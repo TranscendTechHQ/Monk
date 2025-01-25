@@ -1,4 +1,3 @@
-import datetime as dt
 import logging
 import re
 from fastapi import APIRouter, Body, Depends
@@ -8,15 +7,13 @@ from fastapi.responses import JSONResponse
 from slack_sdk import WebClient
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
-from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
 from routes.threads.block import updateBlock
-from routes.threads.user_flags import set_flags_true_other_users
 from routes.threads.child_thread import create_new_thread
 from routes.threads.models import CreateBlockModel
 from routes.threads.routers import create_new_block
-from routes.slack.models import ChannelModel, CompositeChannelList, PublicChannelList, SlackEventModel, SlackEventVerificationRequestModel, SubscribeChannelRequest, SubscribedChannelList
-from utils.db import asyncdb, get_block_by_id, update_mongo_document_fields
-from utils.slack.slack_channel_messages import convert_unix_timestamp_to_iso_string, get_channel_list, update_third_party_user_info
+from routes.slack.models import ChannelModel, CompositeChannelList, SlackEventModel, SlackEventVerificationRequestModel, SubscribeChannelRequest, SubscribedChannelList
+from utils.db import asyncdb, get_block_by_id
+from utils.slack_channel_messages import convert_unix_timestamp_to_iso_string, get_channel_list, update_third_party_user_info
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

@@ -108,16 +108,16 @@ async def get_user_last_login(user_id, collection) -> dt.datetime:
 
 
 # first argument should be a dictionary to query the db
-async def get_mongo_document_async(query: dict, collection, tenant_id):
-    query["tenant_id"] = tenant_id
-    if (doc := await collection.find_one(query)) is not None:
+async def get_mongo_document_async(filter: dict, collection, tenant_id):
+    filter["tenant_id"] = tenant_id
+    if (doc := await collection.find_one(filter)) is not None:
         return doc
     return None
 
 
-def get_mongo_document_sync(query: dict, collection, tenant_id):
-    query["tenant_id"] = tenant_id
-    if (doc := collection.find_one(query)) is not None:
+def get_mongo_document_sync(filter: dict, collection, tenant_id):
+    filter["tenant_id"] = tenant_id
+    if (doc := collection.find_one(filter)) is not None:
         return doc
     return None
 
