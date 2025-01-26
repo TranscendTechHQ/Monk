@@ -2,13 +2,13 @@
 """
 
 
-from config import cache
+from config import system_cache
 
 def set_cache(key, value):
-    cache.set(key, value)
+    system_cache.set(key, value)
 
 def get_cache(key):
-    return cache.get(key)
+    return system_cache.get(key)
 
 def main():
     set_cache('foo', 'bar')

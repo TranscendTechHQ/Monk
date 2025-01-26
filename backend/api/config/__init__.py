@@ -102,7 +102,7 @@ class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings,
 
 settings = Settings()
 
-cache = redis.Redis(
+system_cache = redis.Redis(
     host=settings.REDIS_HOST,
     port=settings.REDIS_PORT,
     decode_responses=True,

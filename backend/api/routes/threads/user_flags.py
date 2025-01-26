@@ -2,7 +2,7 @@ import logging
 from fastapi.encoders import jsonable_encoder
 from routes.threads.models import UserFilterPreferenceModel, UserThreadFlagModel
 from utils.db import  create_mongo_document_sync, create_or_replace_mongo_doc, get_mongo_documents_async, get_mongo_documents_sync, syncdb, get_mongo_document_sync, update_mongo_document_fields_sync, asyncdb
-
+from config import system_cache
 logger = logging.getLogger(__name__)
 
 
@@ -111,10 +111,15 @@ def save_user_filter_preferences(user_id, tenant_id, filter_preferences: UserFil
 
 
 async def get_user_filter_preferences_from_db(user_id, tenant_id):
+    cache_key = f"user_filter_preferences_{user_id}_{tenant_id}"
+    cached_data = system_cache.get(cache_key)
+    if cached_data:
+        return cached_data
     try:
         user_filter_preferences = await get_mongo_documents_async(filter={"user_id": user_id},
                                                            collection=asyncdb.user_news_feed_filter_collection, tenant_id=tenant_id)
         if user_filter_preferences:
+            system_cache.set(cache_key, user_filter_preferences)
             return UserFilterPreferenceModel(**user_filter_preferences)
         else:
             return None
