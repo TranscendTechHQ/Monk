@@ -8,6 +8,7 @@ from config import settings
 from routes.threads.semantic_search_mongo import thread_semantic_search_mongo
 from utils.db import get_mongo_document_async, get_mongo_document_sync, asyncdb,get_mongo_documents_async, get_mongo_documents_sync, shutdown_async_db_client, startup_async_db_client
 from utils.embedding import generate_embedding
+from utils.milvus_vector import create_thread_collection, milvus_semantic_search, store_milvus_thread_embedding
 
 
 
@@ -49,10 +50,11 @@ async def generate_single_thread_embedding(thread_id, tenant_id):
     for block in blocks:
         # print(block['content'])
         text += block['content'] + " "
-    print (text)
+    #print (text)
 
     embedding = generate_embedding(text)
-    print(embedding)
+    return embedding
+    #print(embedding)
     
 
 async def generate_all_threads_embedding(tenant_id):
@@ -62,10 +64,11 @@ async def generate_all_threads_embedding(tenant_id):
     threads = await get_mongo_documents_async(
         collection=threads_collection, 
         tenant_id=tenant_id, 
-        filter={'topic': {"$exists": True}})
+        filter={})
+    
     for thread_doc in threads:
         # print(doc['content'])
-        await generate_single_thread_embedding(thread_doc)
+        await generate_single_thread_embedding(thread_doc['_id'], tenant_id)
 
         # requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
@@ -87,10 +90,25 @@ async def main():
     #result = await thread_semantic_search_mongo(
     #    "thread about monk next steps")
     #pprint.pprint(result)
+    thread_id = "f8ff71be-cbc2-4d7f-80cf-750d7d50db84"
+    tenant_id = "T048F0ANS1M"
+    collection_name = f"threads_{tenant_id}"
     
-    await generate_single_thread_embedding(
-        thread_id="12262259-90fe-44bf-90e2-b17e2871a2df", 
-        tenant_id="T048F0ANS1M")
+    create_thread_collection(collection_name, dim=1536)
+    
+    thread_embedding = await generate_single_thread_embedding(
+        thread_id=thread_id, 
+        tenant_id=tenant_id)
+    #print(thread_embedding)
+    store_milvus_thread_embedding(
+        collection_name=collection_name,
+        thread_id=thread_id, 
+        tenant_id=tenant_id,
+        thread_embedding=thread_embedding)
+    
+    query = "Thread about Monk"
+    results = milvus_semantic_search(collection_name, query, limit=1)
+    print(results)
 
     await shutdown_async_db_client()
 

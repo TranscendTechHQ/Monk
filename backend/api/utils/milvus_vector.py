@@ -46,9 +46,8 @@ def create_thread_collection(collection_name, dim):
         print("Show collection details: %s" % collection_property)
     
 
-def gen_milvus_thread_embedding(collection_name,thread_id, tenant_id, thread_content):
+def store_milvus_thread_embedding(collection_name,thread_id, tenant_id, thread_embedding):
 
-    thread_embedding = generate_embedding(thread_content)
     
     # insert data with customized ids
     row = {
@@ -65,7 +64,7 @@ def gen_milvus_thread_embedding(collection_name,thread_id, tenant_id, thread_con
     end_flush = time.time()
     print(f"Succeed in {round(end_flush - start_flush, 4)} seconds!")
 
-def semantic_search(collection_name, query, limit=1):
+def milvus_semantic_search(collection_name, query, limit=1):
 
     query_embedding = generate_embedding(query)
     
@@ -90,21 +89,24 @@ def main():
     thread_id = "sahi-jawab-90fe-44bf-90e2-b17e2871a2df"
     tenant_id = "T048F0ANS1M"
     thread_content = "Hey are you there? I am here. What is your name? Anthony Gonsalves"
-    gen_milvus_thread_embedding(collection_name, thread_id, tenant_id, thread_content)
+    thread_embedding = generate_embedding(thread_content)
+    store_milvus_thread_embedding(collection_name, thread_id, tenant_id, thread_content)
 
 
     thread_id = "ghanta-90fe-44bf-90e2-b17e2871a2df"
     tenant_id = "T048F0ANS1M"
     thread_content = "Lets party tonight"
-    gen_milvus_thread_embedding(collection_name, thread_id, tenant_id, thread_content)
+    thread_embedding = generate_embedding(thread_content)
+    store_milvus_thread_embedding(collection_name, thread_id, tenant_id, thread_embedding)
 
     thread_id = "doing-90fe-44bf-90e2-b17e2871a2df"
     tenant_id = "T048F0ANS1M"
     thread_content = "I will eat idli for lunch"
-    gen_milvus_thread_embedding(collection_name, thread_id, tenant_id, thread_content)
+    thread_embedding = generate_embedding(thread_content)
+    store_milvus_thread_embedding(collection_name, thread_id, tenant_id, thread_content)
 
     query = "What is the last name of the person?"
-    results = semantic_search(collection_name, query, limit=1)
+    results = milvus_semantic_search(collection_name, query, limit=1)
     print(results)
     
     
