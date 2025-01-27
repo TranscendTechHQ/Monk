@@ -60,7 +60,8 @@ class DatabaseSettings(BaseSettings):
     REDIS_PORT: str = get_env_variable(var_name='REDIS_PORT', secret=False)
     REDIS_USERNAME: str = get_env_variable(var_name='REDIS_USERNAME', secret=False)
     REDIS_PASSWORD: str = get_env_variable(var_name='REDIS_PASSWORD', secret=False)
-
+    MILVUS_URI: str = get_env_variable(var_name='MILVUS_URI', secret=False)
+    MILVUS_TOKEN: str = get_env_variable(var_name='MILVUS_TOKEN', secret=False)
 
 class OpenAISettings(BaseSettings):
     AZURE_OPENAI_KEY: str = get_env_variable(var_name='AZURE_OPENAI_KEY', secret=True)

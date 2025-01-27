@@ -78,6 +78,8 @@ frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
+grpcio==1.67.1
+    # via pymilvus
 h11==0.14.0
     # via
     #   httpcore
@@ -138,6 +140,8 @@ marshmallow==3.21.2
     # via dataclasses-json
 mdurl==0.1.2
     # via markdown-it-py
+milvus-lite==2.4.11
+    # via pymilvus
 motor==3.4.0
     # via -r requirements.in
 multidict==6.0.5
@@ -165,13 +169,17 @@ packaging==23.2
     #   langchain-core
     #   marshmallow
 pandas==2.2.2
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   pymilvus
 phonenumbers==8.12.48
     # via supertokens-python
 pip-tools==7.4.1
     # via -r requirements.in
 pkce==1.0.3
     # via supertokens-python
+protobuf==5.29.3
+    # via pymilvus
 pycparser==2.22
     # via cffi
 pycryptodome==3.10.4
@@ -196,6 +204,8 @@ pyjwt[crypto]==2.8.0
     #   pyjwt
     #   supertokens-python
     #   twilio
+pymilvus==2.4.10
+    # via -r requirements.in
 pymongo==4.7.2
     # via motor
 pyproject-hooks==1.1.0
@@ -210,6 +220,7 @@ python-dotenv==1.0.1
     # via
     #   -r requirements.in
     #   pydantic-settings
+    #   pymilvus
     #   uvicorn
 python-multipart==0.0.9
     # via fastapi
@@ -273,7 +284,9 @@ tiktoken==0.7.0
 tldextract==3.1.0
     # via supertokens-python
 tqdm==4.66.4
-    # via openai
+    # via
+    #   milvus-lite
+    #   openai
 twilio==7.9.1
     # via supertokens-python
 typer==0.12.3
@@ -293,7 +306,9 @@ typing-inspect==0.9.0
 tzdata==2024.1
     # via pandas
 ujson==5.10.0
-    # via fastapi
+    # via
+    #   fastapi
+    #   pymilvus
 urllib3==2.2.1
     # via
     #   botocore
