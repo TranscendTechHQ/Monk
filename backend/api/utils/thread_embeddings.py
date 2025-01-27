@@ -57,7 +57,7 @@ async def generate_single_thread_embedding(thread_id, tenant_id):
     #print(embedding)
     
 
-async def generate_all_threads_embedding(tenant_id):
+async def generate_all_threads_embedding_and_store_to_milvus(tenant_id, collection_name):
     threads_collection = asyncdb.threads_collection
     # Update the collection with the embeddings
     # requests = []
@@ -66,15 +66,31 @@ async def generate_all_threads_embedding(tenant_id):
         tenant_id=tenant_id, 
         filter={})
     
+    create_thread_collection(collection_name, dim=1536)
     for thread_doc in threads:
         # print(doc['content'])
-        await generate_single_thread_embedding(thread_doc['_id'], tenant_id)
+        thread_embedding = await generate_single_thread_embedding(
+            thread_id=thread_doc['_id'], 
+            tenant_id=tenant_id)
+        store_milvus_thread_embedding(
+            collection_name=collection_name,
+            thread_id=thread_doc['_id'], 
+            tenant_id=tenant_id,
+            thread_embedding=thread_embedding)
 
         # requests.append(ReplaceOne({'_id': doc['_id']}, doc))
 
     # collection.bulk_write(requests)
 
-
+async def gen_and_store_test_thread_embedding_to_milvus(tenant_id, collection_name):
+    create_thread_collection(collection_name, dim=1536)
+    thread_id = "f8ff71be-cbc2-4d7f-80cf-750d7d50db84"
+    thread_embedding = await generate_single_thread_embedding(thread_id, tenant_id)
+    store_milvus_thread_embedding(
+        collection_name=collection_name,
+        thread_id=thread_id, 
+        tenant_id=tenant_id,
+        thread_embedding=thread_embedding)
 
 
 async def main():
@@ -90,24 +106,16 @@ async def main():
     #result = await thread_semantic_search_mongo(
     #    "thread about monk next steps")
     #pprint.pprint(result)
-    thread_id = "f8ff71be-cbc2-4d7f-80cf-750d7d50db84"
+    
     tenant_id = "T048F0ANS1M"
     collection_name = f"threads_{tenant_id}"
+    #await gen_and_store_test_thread_embedding_to_milvus(tenant_id, collection_name)
+    await generate_all_threads_embedding_and_store_to_milvus(
+        tenant_id=tenant_id, 
+        collection_name=collection_name)
     
-    create_thread_collection(collection_name, dim=1536)
-    
-    thread_embedding = await generate_single_thread_embedding(
-        thread_id=thread_id, 
-        tenant_id=tenant_id)
-    #print(thread_embedding)
-    store_milvus_thread_embedding(
-        collection_name=collection_name,
-        thread_id=thread_id, 
-        tenant_id=tenant_id,
-        thread_embedding=thread_embedding)
-    
-    query = "Thread about Monk"
-    results = milvus_semantic_search(collection_name, query, limit=1)
+    query = "Thread about Jira"
+    results = milvus_semantic_search(collection_name, query, limit=3)
     print(results)
 
     await shutdown_async_db_client()
