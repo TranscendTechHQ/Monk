@@ -139,7 +139,8 @@ def get_mongo_documents_sync(collection, tenant_id, filter: dict = {}, projectio
     docs = []
     cursor = collection.find(filter, projection=projection, sort=sort)
     # Convert cursor to list of dictionaries
-    docs =  cursor.to_list(length=None)
+    #docs =  cursor.to_list(length=None)
+    docs = list(cursor)
     # async for doc in collection.find(query):
     #     docs.append(doc)
     return docs
