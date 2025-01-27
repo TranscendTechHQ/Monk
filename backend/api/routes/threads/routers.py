@@ -23,7 +23,7 @@ from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel,
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
-from .search import thread_semantic_search
+from .semantic_search_mongo import thread_semantic_search_mongo
 from routes.threads.user_flags import get_user_filter_preferences_from_db, set_flags_true_other_users, set_unread_other_users, update_user_flags
 from utils.relevance import get_relevant_thread_ids
 
@@ -76,7 +76,7 @@ async def all_users(request: Request,
             response_description="Search threads by query and get topic")
 async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
         (list)[str]:
-    result = await thread_semantic_search(query)
+    result = await thread_semantic_search_mongo(query)
     titles = [doc["topic"] for doc in result]
     return JSONResponse(status_code=status.HTTP_200_OK, content=titles)
 
@@ -88,7 +88,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     threads_collection = request.app.mongodb["threads"]
     tenant_id = await get_tenant_id(session)
     # threads = await keyword_search(query, threads_collection)
-    result = await thread_semantic_search(query)
+    result = await thread_semantic_search_mongo(query)
 
     filtered_threads = []
     for doc in result:

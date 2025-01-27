@@ -23,7 +23,7 @@ def shutdown_db_client():
     search.mongoClient.close()
 
 
-async def thread_semantic_search(query):
+async def thread_semantic_search_mongo(query):
     startup_db_client()
     embedding = generate_embedding(query)
     pipeline = [
