@@ -257,7 +257,7 @@ export class ThreadsService {
      * @returns string Search threads by query and get topic
      * @throws ApiError
      */
-    public static searchTitlesSearchTitlesGet(
+    public static searchTitles(
         query: string,
     ): CancelablePromise<Array<string>> {
         return __request(OpenAPI, {

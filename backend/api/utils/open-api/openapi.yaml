@@ -1282,7 +1282,7 @@ paths:
       - threads
   /searchTitles:
     get:
-      operationId: search_titles_searchTitles_get
+      operationId: search_titles
       parameters:
       - in: query
         name: query
@@ -1297,7 +1297,7 @@ paths:
               schema:
                 items:
                   type: string
-                title: Response Search Titles Searchtitles Get
+                title: Response Search Titles
                 type: array
           description: Search threads by query and get topic
         '422':

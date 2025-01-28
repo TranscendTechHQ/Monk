@@ -73,7 +73,7 @@ async def all_users(request: Request,
                         content=jsonable_encoder(UserMap(users=final_user_map)))
 
 
-@router.get("/searchTitles", response_model=list[str],
+@router.get("/searchTitles", response_model=list[str], operation_id="search_titles",
             response_description="Search threads by query and get topic")
 async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
         (list)[str]:
