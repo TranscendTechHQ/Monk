@@ -30,7 +30,7 @@ def startup_sync_db_client():
     # syncdb.thread_reads_collection = syncdb.mongodb["thread_reads"]
     syncdb.user_thread_flags_collection = syncdb.mongodb["user_thread_flags"]
     syncdb.user_news_feed_filter_collection = syncdb.mongodb["user_news_feed_filter"]
-
+    syncdb.messages_collection = syncdb.mongodb["messages"]
 
 def shutdown_sync_db_client():
     syncdb.mongodb_client.close()
@@ -59,7 +59,7 @@ async def startup_async_db_client():
     # asyncdb.thread_reads_collection = asyncdb.mongodb["thread_reads"]
     asyncdb.user_thread_flags_collection = asyncdb.mongodb["user_thread_flags"]
     asyncdb.user_news_feed_filter_collection = asyncdb.mongodb["user_news_feed_filter"]
-
+    asyncdb.messages_collection = asyncdb.mongodb["messages"]
 
 async def shutdown_async_db_client():
     asyncdb.mongodb_client.close()
@@ -170,8 +170,12 @@ async def delete_mongo_document(query: dict, collection):
         return doc
 
 
-def create_mongo_doc_simple(document: dict, collection):
-    return collection.insert_one(document)
+def create_mongo_doc_sync(document: dict, collection):
+    insert_id =collection.insert_one(document)
+    if insert_id is not None:
+        inserted_doc = collection.find_one({"_id": insert_id.inserted_id})
+        return inserted_doc
+    return None
 
 
 def create_or_replace_mongo_doc(id: str, document: dict, collection):
@@ -187,7 +191,7 @@ def create_or_replace_mongo_doc(id: str, document: dict, collection):
     collection.replace_one({"_id": id}, document, upsert=True)
 
 
-def create_mongo_document_sync(id: str, document: dict, collection):
+def find_or_insert_mongo_doc_sync(id: str, document: dict, collection):
     # print(document)
     # print(collection)
 

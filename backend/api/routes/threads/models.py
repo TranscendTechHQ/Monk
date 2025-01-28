@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 from typing import Annotated, List, Optional, Union
 
+from bson import ObjectId
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.json_schema import SkipJsonSchema
 
@@ -50,6 +51,49 @@ class LinkMetaModel(BaseModel):
                               arbitrary_types_allowed=True,
                               )
 
+class ConfigModel(BaseModel):
+    #id: ObjectId = Field(default_factory=ObjectId, alias="_id")
+
+    class Config:
+        extra = 'ignore'
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
+
+class MessageDb(ConfigModel):
+    content: str = Field
+    image: Optional[str] = Field(default=None)
+    link_meta: Optional[LinkMetaModel] = Field(default=None)
+    created_at: datetime = Field(default_factory=datetime.now)
+    last_modified: datetime = Field(default_factory=datetime.now)
+    creator_id: str = Field
+    thread_id: str = Field
+    tenant_id: str = Field
+    
+    
+class MessageCreate(BaseModel):
+    content: str = Field
+    image: Optional[str] = Field(default=None)
+    thread_id: str = Field
+
+class MessageUpdate(BaseModel):
+    content: Optional[str] = Field(default=None)
+    image: Optional[str] = Field(default=None)
+    
+class MessageDelete(BaseModel):
+    id: str
+    
+class MessageResponse(BaseModel):
+    id: str
+    content: str
+    image: Optional[str] = Field(default=None)
+    link_meta: Optional[LinkMetaModel] = Field(default=None)
+    created_at: datetime
+    last_modified: datetime
+    creator_id: str
+    thread_id: str
+    
 
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")

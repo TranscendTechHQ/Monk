@@ -1,7 +1,7 @@
 import logging
 from fastapi.encoders import jsonable_encoder
 from routes.threads.models import UserFilterPreferenceModel, UserThreadFlagModel
-from utils.db import  create_mongo_document_sync, create_or_replace_mongo_doc, get_mongo_documents_async, get_mongo_documents_sync, syncdb, get_mongo_document_sync, update_mongo_document_fields_sync, asyncdb
+from utils.db import  find_or_insert_mongo_doc_sync, create_or_replace_mongo_doc, get_mongo_documents_async, get_mongo_documents_sync, syncdb, get_mongo_document_sync, update_mongo_document_fields_sync, asyncdb
 from config import system_cache
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ def update_user_flags(thread_id, user_id, tenant_id, unread=None, upvote=None, b
                 assigned=assigned if assigned else None
             )
             user_thread_flag_jsonable = jsonable_encoder(user_thread_flag_doc)
-            create_mongo_document_sync(
+            find_or_insert_mongo_doc_sync(
                 id=user_thread_flag_doc.id,
                 document=user_thread_flag_jsonable,
                 collection=syncdb.user_thread_flags_collection)
