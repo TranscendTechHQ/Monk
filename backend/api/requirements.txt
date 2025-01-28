@@ -32,8 +32,6 @@ botocore==1.34.104
     # via
     #   boto3
     #   s3transfer
-build==1.2.1
-    # via pip-tools
 certifi==2024.2.2
     # via
     #   httpcore
@@ -45,7 +43,6 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via
-    #   pip-tools
     #   typer
     #   uvicorn
 cryptography==42.0.7
@@ -165,7 +162,6 @@ orjson==3.10.3
     #   langsmith
 packaging==23.2
     # via
-    #   build
     #   langchain-core
     #   marshmallow
 pandas==2.2.2
@@ -174,8 +170,6 @@ pandas==2.2.2
     #   pymilvus
 phonenumbers==8.12.48
     # via supertokens-python
-pip-tools==7.4.1
-    # via -r requirements.in
 pkce==1.0.3
     # via supertokens-python
 protobuf==5.29.3
@@ -208,10 +202,6 @@ pymilvus==2.4.10
     # via -r requirements.in
 pymongo==4.7.2
     # via motor
-pyproject-hooks==1.1.0
-    # via
-    #   build
-    #   pip-tools
 python-dateutil==2.9.0.post0
     # via
     #   botocore
@@ -230,6 +220,7 @@ pytz==2024.1
     #   twilio
 pyyaml==6.0.1
     # via
+    #   -r requirements.in
     #   langchain
     #   langchain-community
     #   langchain-core
@@ -324,13 +315,10 @@ watchfiles==0.21.0
     # via uvicorn
 websockets==12.0
     # via uvicorn
-wheel==0.43.0
-    # via pip-tools
 wrapt==1.16.0
     # via deprecated
 yarl==1.9.4
     # via aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
 # setuptools
