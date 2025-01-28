@@ -45,6 +45,11 @@ const App: Component = () => {
     }
   };
 
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults(undefined);
+  };
+
   // Fetch threads on component mount
   createEffect(() => {
     fetchThreads();
@@ -68,7 +73,7 @@ const App: Component = () => {
                 <>
                   <ThreadList threads={threads()?.metadata || []} />
                   
-                  <div class="flex justify-center mb-6">
+                  <div class="flex justify-center mb-6 w-1/2">
                     <input
                       type="text"
                       value={searchQuery()}
@@ -78,9 +83,21 @@ const App: Component = () => {
                           searchThreads();
                         }
                       }}
-                      class="border border-slate-600 bg-slate-700 text-white p-2 rounded w-1/2"
+                      class="border border-slate-600 bg-slate-700 text-white p-2 rounded w-full"
                       placeholder="Search threads..."
                     />
+                    <button
+                      onClick={searchThreads}
+                      class="ml-2 bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200"
+                    >
+                      Submit
+                    </button>
+                    <button
+                      onClick={clearSearch}
+                      class="ml-2 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-500 transition duration-200"
+                    >
+                      Clear
+                    </button>
                   </div>
 
                   {(searchResults()?.threads ?? []).length > 0 && (
