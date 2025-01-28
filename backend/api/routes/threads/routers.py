@@ -13,6 +13,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 
 from routes.threads.block import updateBlock
+from utils.milvus_vector import milvus_semantic_search
 from utils.scrapper import getLinkMeta
 from utils.db import create_or_replace_mongo_doc, get_aggregate_async, get_creator_block_by_id, get_mongo_document_async, get_mongo_document_sync, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, get_tenant_id_sync, update_fields_mongo_simple, update_mongo_document_fields, asyncdb, syncdb
 from utils.db import get_block_by_id
@@ -88,11 +89,17 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     threads_collection = request.app.mongodb["threads"]
     tenant_id = await get_tenant_id(session)
     # threads = await keyword_search(query, threads_collection)
-    result = await thread_semantic_search_mongo(query)
+    #result = await thread_semantic_search_mongo(query)
+    collection_name = f"threads_{tenant_id}"
+    results = milvus_semantic_search(collection_name, query, limit=3)
+    
+    filtered_threads_ids = []
+    for result in results[0]:
+        filtered_threads_ids.append(result['id'])
 
     filtered_threads = []
-    for doc in result:
-        filtered_threads.append(await get_mongo_document_async( filter={"topic": doc["topic"]},
+    for id in filtered_threads_ids:
+        filtered_threads.append(await get_mongo_document_async( filter={"_id": id},
                                                          collection=threads_collection,
                                                          tenant_id=tenant_id))
     return_threads = jsonable_encoder(ThreadsModel(threads=filtered_threads))

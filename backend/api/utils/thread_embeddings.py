@@ -110,13 +110,15 @@ async def main():
     tenant_id = "T048F0ANS1M"
     collection_name = f"threads_{tenant_id}"
     #await gen_and_store_test_thread_embedding_to_milvus(tenant_id, collection_name)
-    await generate_all_threads_embedding_and_store_to_milvus(
-        tenant_id=tenant_id, 
-        collection_name=collection_name)
+    regenrate_thread_embeddings = False
+    if regenrate_thread_embeddings:
+        await generate_all_threads_embedding_and_store_to_milvus(
+            tenant_id=tenant_id, 
+            collection_name=collection_name)
     
     query = "Thread about Jira"
     results = milvus_semantic_search(collection_name, query, limit=3)
-    print(results)
+    print(results[0][0])
 
     await shutdown_async_db_client()
 

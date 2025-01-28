@@ -10,7 +10,7 @@ from pymilvus import DataType
 
 from config import settings
 from pymilvus import model
-from embedding import generate_embedding
+from utils.embedding import generate_embedding
 #ef = model.DefaultEmbeddingFunction()
 
 
