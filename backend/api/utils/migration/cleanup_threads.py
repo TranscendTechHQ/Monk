@@ -1,8 +1,11 @@
 import asyncio
 
+from fastapi.encoders import jsonable_encoder
 from pymongo import MongoClient
 
 from config import settings
+from routes.threads.models import Message, Thread, ThreadDb
+from utils.db import create_mongo_doc_sync
 
 
 class App:
@@ -128,6 +131,31 @@ def delete_threads_with_topic_pattern(pattern):
         if pattern in doc['topic']:
             #print(f"Thread {doc['topic']} has {num_blocks} blocks")
             delete_thread(thread_id)
+
+
+    
+def change_thread_model():
+    threads_collection = app.mongodb["threads"]
+    for doc in threads_collection.find():
+        #print(doc)
+        thread_db = ThreadDb(
+            content=Thread(
+                headline=Message(
+                    text=doc['headline']
+                ),
+                topic=doc['topic']
+            ),
+            tenant_id=doc['tenant_id'],
+            creator_id=doc['creator_id'],
+            created_at=doc['created_at'],
+            last_modified=doc['last_modified']
+        )
+        create_mongo_doc_sync(
+            document= jsonable_encoder(thread_db),
+            collection=threads_collection)
+        
+        thread_id = doc['_id']
+        delete_thread(thread_id)
             
 def delete_thread_with_id(id):
     threads_collection = app.mongodb["threads"]
@@ -144,10 +172,11 @@ async def main():
     #rename_created_date_to_created_at()
     #rename_thread_types()
     #delete_threads_with_less_than_n_blocks(5)
-    delete_thread_with_id("4510d5bf-ed75-477a-90b4-fea734d3c6ad")
+    #delete_thread_with_id("4510d5bf-ed75-477a-90b4-fea734d3c6ad")
     #delete_threads_with_type("slack")
     #delete_threads_with_type("todo")
     #delete_threads_with_topic_pattern("Reply")
+    change_thread_model()
     shutdown_db_client()
 
 
