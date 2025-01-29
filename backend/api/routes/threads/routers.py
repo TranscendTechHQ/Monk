@@ -20,7 +20,7 @@ from utils.db import get_block_by_id
 from utils.headline import set_first_block_as_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, MessageCreate, MessageDb, MessageResponse, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, MessageCreate, MessageDb, MessageResponse, ThreadCreate, ThreadDb, ThreadResponse, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -31,6 +31,102 @@ from utils.relevance import get_relevant_thread_ids
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+
+def extract_link_meta(content: str):
+    
+    linkMeta = None
+    lastUrlAvailableInContent = ''
+    
+    # if content is not None or empty.
+    # then check if there is valid url in the content text. If there are multiple url available then take the last one
+    
+    if content is not None:
+        urls = re.findall(
+            'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
+        if len(urls) > 0:
+            print(f'\n 👉 Link detected count: {len(urls)} ')
+            lastUrlAvailableInContent = urls[-1]
+        else:
+            print(f'\n 👉 No link detected in the content {content}')
+
+        
+        # if lastUrlAvailableInContent is not empty then get the meta data of the url
+        if lastUrlAvailableInContent != '':
+            print(f'\n 👉 Fetching link meta for: {lastUrlAvailableInContent} ')
+            # get the meta data of the url
+            rawMeta = getLinkMeta(lastUrlAvailableInContent)
+            if rawMeta is not None:
+                print(f'\n 👉 Link meta fetched: {rawMeta} ')
+                image = rawMeta.get('image', None)
+                if image is None:
+                    image = rawMeta.get('og:image', None)
+                linkMeta = LinkMetaModel(**rawMeta, image=image)
+                
+    return linkMeta
+
+@router.post("/message", 
+             response_model=MessageResponse, 
+             response_description="Create a new message",
+             operation_id="create_message")
+async def create_message(message: MessageCreate, session: SessionContainer = Depends(verify_session())):
+    try:
+        user_id = session.get_user_id()
+        tenant_id = await get_tenant_id(session)
+        message_db = MessageDb(content=message.content,  
+                            thread_id=message.thread_id, 
+                            tenant_id=tenant_id, 
+                            creator_id=user_id)
+        if message.content.link_meta is None:
+            # see if there are any links in the message text and extract links
+            linkMeta = extract_link_meta(message.content.text)
+            message_db.link_meta = linkMeta
+        inserted_doc = create_mongo_doc_sync(document=jsonable_encoder(message_db),
+                            collection=syncdb.messages_collection)
+        
+        # Convert the MongoDB document to a dictionary and modify the 'id' field
+        
+        inserted_doc['id'] = str(inserted_doc['_id'])  # Convert ObjectId to string
+
+        # Create the MessageResponse object with the modified dictionary
+        response = MessageResponse(**inserted_doc)
+        
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    return response
+
+#@router.get("/messages")
+
+@router.post("/thread", 
+             response_model=ThreadResponse,
+             response_description="Create a new thread",
+             operation_id="create_thread")
+async def create_thread(thread: ThreadCreate, 
+                        session: SessionContainer = Depends(verify_session())):
+    try:
+        user_id = session.get_user_id()
+        tenant_id = await get_tenant_id(session)
+        thread_db = ThreadDb(content=thread.content, 
+                            tenant_id=tenant_id, 
+                            creator_id=user_id)
+        inserted_doc = create_mongo_doc_sync(
+            document= jsonable_encoder(thread_db),
+            collection=syncdb.threads_collection)
+        
+        # Convert the MongoDB document to a dictionary and modify the 'id' field
+        
+        inserted_doc['id'] = str(inserted_doc['_id'])  # Convert ObjectId to string
+
+        response = ThreadResponse(**inserted_doc) 
+        
+        
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    return response
+
+#@router.get("/threads")
 
 async def keyword_search(query, collection):
     
@@ -408,67 +504,7 @@ async def filter(
         logger.error(e, exc_info=True)
         return JSONResponse(status_code=500, content={"message": "Something went wrong. Please try again later."})
 
-def extract_link_meta(content: str):
-    
-    linkMeta = None
-    lastUrlAvailableInContent = ''
-    
-    # if content is not None or empty.
-    # then check if there is valid url in the content text. If there are multiple url available then take the last one
-    
-    if content is not None:
-        urls = re.findall(
-            'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
-        if len(urls) > 0:
-            print(f'\n 👉 Link detected count: {len(urls)} ')
-            lastUrlAvailableInContent = urls[-1]
-        else:
-            print(f'\n 👉 No link detected in the content {content}')
 
-        
-        # if lastUrlAvailableInContent is not empty then get the meta data of the url
-        if lastUrlAvailableInContent != '':
-            print(f'\n 👉 Fetching link meta for: {lastUrlAvailableInContent} ')
-            # get the meta data of the url
-            rawMeta = getLinkMeta(lastUrlAvailableInContent)
-            if rawMeta is not None:
-                print(f'\n 👉 Link meta fetched: {rawMeta} ')
-                image = rawMeta.get('image', None)
-                if image is None:
-                    image = rawMeta.get('og:image', None)
-                linkMeta = LinkMetaModel(**rawMeta, image=image)
-                
-    return linkMeta
-
-@router.post("/message", 
-             response_model=MessageResponse, 
-             response_description="Create a new message",
-             operation_id="create_message")
-async def create_message(message: MessageCreate, session: SessionContainer = Depends(verify_session())):
-    try:
-        user_id = session.get_user_id()
-        tenant_id = await get_tenant_id(session)
-        message_db = MessageDb(content=message.content, 
-                            image=message.image, 
-                            thread_id=message.thread_id, 
-                            tenant_id=tenant_id, 
-                            creator_id=user_id)
-        linkMeta = extract_link_meta(message.content)
-        message_db.link_meta = linkMeta
-        inserted_doc = create_mongo_doc_sync(document=jsonable_encoder(message_db),
-                            collection=syncdb.messages_collection)
-        
-        # Convert the MongoDB document to a dictionary and modify the 'id' field
-        
-        inserted_doc['id'] = str(inserted_doc['_id'])  # Convert ObjectId to string
-
-        # Create the MessageResponse object with the modified dictionary
-        response = MessageResponse(**inserted_doc)
-        
-    except Exception as e:
-        logger.error(e, exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-    return response
 
 def create_new_block(block: CreateBlockModel, user_id, tenant_id: str, id: str = None, created_at: str = None):
     try:

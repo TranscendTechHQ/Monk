@@ -51,7 +51,7 @@ class LinkMetaModel(BaseModel):
                               arbitrary_types_allowed=True,
                               )
 
-class ConfigModel(BaseModel):
+class BaseModelConfig(BaseModel):
     #id: ObjectId = Field(default_factory=ObjectId, alias="_id")
 
     class Config:
@@ -60,40 +60,67 @@ class ConfigModel(BaseModel):
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
-
-class MessageDb(ConfigModel):
-    content: str = Field
+class Message(BaseModelConfig):
+    text: str = Field
     image: Optional[str] = Field(default=None)
     link_meta: Optional[LinkMetaModel] = Field(default=None)
+
+class MessageDb(BaseModelConfig):
+    content: Message
+    creator_id: str = Field
     created_at: datetime = Field(default_factory=datetime.now)
     last_modified: datetime = Field(default_factory=datetime.now)
-    creator_id: str = Field
     thread_id: str = Field
     tenant_id: str = Field
     
     
-class MessageCreate(BaseModel):
-    content: str = Field
-    image: Optional[str] = Field(default=None)
+class MessageCreate(BaseModelConfig):
+    content: Message
     thread_id: str = Field
 
-class MessageUpdate(BaseModel):
-    content: Optional[str] = Field(default=None)
-    image: Optional[str] = Field(default=None)
+class MessageUpdate(BaseModelConfig):
+    content: Message
     
-class MessageDelete(BaseModel):
+class MessageDelete(BaseModelConfig):
     id: str
     
-class MessageResponse(BaseModel):
+class MessageResponse(BaseModelConfig):
     id: str
-    content: str
-    image: Optional[str] = Field(default=None)
-    link_meta: Optional[LinkMetaModel] = Field(default=None)
+    content: Message
+    creator_id: str
     created_at: datetime
     last_modified: datetime
-    creator_id: str
     thread_id: str
+
+class Thread(BaseModelConfig):
+    topic: str
+    headline: Message
+
+class ThreadDb(BaseModelConfig):
+    content: Thread
+    tenant_id: str
+    creator_id: str
+    created_at: datetime = Field(default_factory=datetime.now)
+    last_modified: datetime = Field(default_factory=datetime.now)
     
+class ThreadCreate(BaseModelConfig):
+    content: Thread
+    
+class ThreadUpdate(BaseModelConfig):
+    content: Thread
+
+class ThreadResponse(BaseModelConfig):
+    id: str
+    content: Thread
+    creator_id: str
+    created_at: datetime
+    last_modified: datetime
+    
+
+    
+class ThreadDelete(BaseModelConfig):
+    id: str
+
 
 class BlockModel(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
