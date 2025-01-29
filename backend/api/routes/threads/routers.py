@@ -22,7 +22,7 @@ from utils.db import get_block_by_id
 from utils.headline import set_first_block_as_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, MessageCreate, MessageDb, MessageResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, MessageCreate, MessageDb, MessageResponse, MessagesResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -100,7 +100,26 @@ async def create_message(message: MessageCreate, session: SessionContainer = Dep
     
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(response))
 
-#@router.get("/messages")
+@router.get("/messages",
+            response_model=MessagesResponse,
+            response_description="List of messages in a thread",
+            operation_id="get_messages",
+            summary="Get all messages in a thread",
+            description="The api will return all messages in a thread")
+async def get_messages(thread_id: str, request: Request,
+                      session: SessionContainer = Depends(verify_session())):
+    tenant_id = await get_tenant_id(session)
+    messages_collection = asyncdb.messages_collection
+    messages = await get_mongo_documents_async(
+        collection=messages_collection, 
+        tenant_id=tenant_id,
+        filter={"thread_id": thread_id})
+    messages_response = []
+    for message in messages:
+        message['id'] = str(message['_id'])
+        messages_response.append(MessageResponse(**message))
+    
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(MessagesResponse(messages=messages_response)))
 
 @router.post("/thread", 
              response_model=ThreadResponse,

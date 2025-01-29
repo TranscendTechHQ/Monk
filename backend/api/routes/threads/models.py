@@ -92,6 +92,9 @@ class MessageResponse(BaseModelConfig):
     last_modified: datetime
     thread_id: str
 
+class MessagesResponse(BaseModelConfig):
+    messages: List[MessageResponse]
+
 class Thread(BaseModelConfig):
     topic: str
     headline: Message
