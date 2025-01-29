@@ -120,6 +120,10 @@ class ThreadResponse(BaseModelConfig):
     
 class ThreadDelete(BaseModelConfig):
     id: str
+    
+    
+class ThreadsResponse(BaseModelConfig):
+    threads: List[ThreadResponse]
 
 
 class BlockModel(BaseModel):

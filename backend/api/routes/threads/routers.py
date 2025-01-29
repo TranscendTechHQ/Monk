@@ -1,9 +1,11 @@
 import datetime as dt
+import json
 import re
 import time
 from fastapi import HTTPException
 import logging
 from typing import List
+from bson import json_util
 
 from fastapi import APIRouter, Body, Depends
 from fastapi import status, Request
@@ -20,7 +22,7 @@ from utils.db import get_block_by_id
 from utils.headline import set_first_block_as_headline
 from .child_thread import create_child_thread
 from .child_thread import create_new_thread
-from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, MessageCreate, MessageDb, MessageResponse, ThreadCreate, ThreadDb, ThreadResponse, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
+from .models import BlockModel, CreateBlockModel, FullThreadInfo, LinkMetaModel, MessageCreate, MessageDb, MessageResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UpdateBlockModel, UpdateBlockPositionModel, UserFilterPreferenceModel, UserMap, UserModel, UserThreadFlagModel, CreateUserThreadFlagModel, \
     UpdateThreadTitleModel, BlockWithCreator
 from .models import THREADTYPES, CreateChildThreadModel, ThreadType, \
     ThreadsInfo, ThreadsMetaData, CreateThreadModel, ThreadsModel
@@ -66,8 +68,10 @@ def extract_link_meta(content: str):
 
 @router.post("/message", 
              response_model=MessageResponse, 
-             response_description="Create a new message",
-             operation_id="create_message")
+             response_description="Newly created message",
+             operation_id="create_message",
+             summary="Create a new message in a thread",
+             description="The api will create a new message in a thread and return the newly created message")
 async def create_message(message: MessageCreate, session: SessionContainer = Depends(verify_session())):
     try:
         user_id = session.get_user_id()
@@ -93,14 +97,17 @@ async def create_message(message: MessageCreate, session: SessionContainer = Dep
     except Exception as e:
         logger.error(e, exc_info=True)
         raise HTTPException(status_code=500, detail="Internal Server Error")
-    return response
+    
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(response))
 
 #@router.get("/messages")
 
 @router.post("/thread", 
              response_model=ThreadResponse,
-             response_description="Create a new thread",
-             operation_id="create_thread")
+             response_description="Newly created thread",
+             operation_id="create_thread",
+             summary="Create a new thread",
+             description="The api will create a new thread and return the newly created thread")
 async def create_thread(thread: ThreadCreate, 
                         session: SessionContainer = Depends(verify_session())):
     try:
@@ -124,9 +131,29 @@ async def create_thread(thread: ThreadCreate,
         logger.error(e, exc_info=True)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
-    return response
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(response))
 
-#@router.get("/threads")
+@router.get("/threads",
+            response_model=ThreadsResponse,
+            response_description="List of threads",
+            operation_id="get_threads",
+            summary="Get all threads",
+            description="The api will return all threads")
+async def get_threads(request: Request,
+                      session: SessionContainer = Depends(verify_session())):
+    tenant_id = await get_tenant_id(session)
+    threads_collection = asyncdb.threads_collection
+    threads = await get_mongo_documents_async(
+        collection=threads_collection, 
+        tenant_id=tenant_id)
+    #threads_response = json_util.dumps(threads)
+    threads_response = []
+    for thread in threads:
+        thread['id'] = str(thread['_id'])
+        threads_response.append(ThreadResponse(**thread))
+    
+    return JSONResponse(status_code=status.HTTP_200_OK, 
+                        content=jsonable_encoder(ThreadsResponse(threads=threads_response)))
 
 async def keyword_search(query, collection):
     
