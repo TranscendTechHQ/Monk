@@ -2,10 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ChannelModel = {
+import type { Thread_Output } from './Thread_Output';
+export type ThreadResponse = {
+    content: Thread_Output;
     created_at: string;
-    creator: string;
+    creator_id: string;
     id: string;
-    name: string;
+    last_modified: string;
 };
 

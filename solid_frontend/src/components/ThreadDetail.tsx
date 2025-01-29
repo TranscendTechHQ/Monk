@@ -2,17 +2,15 @@ import { Component, createSignal, onMount, createMemo } from 'solid-js';
 import { useParams, useNavigate } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 
-import { FullThreadInfo } from '../api/models/FullThreadInfo'; // Adjust based on your structure
-
-import { BlockWithCreator } from '../api/models/BlockWithCreator'; // Adjust the path based on your structure
-
 import { QuillEditor } from './MyQuillEditor';
-
-
+import { MessagesResponse } from '../api/models/MessagesResponse';
+import { MessageCreate } from '../api/models/MessageCreate';
+import { Message } from '../api/models/Message';
+import { MessageResponse } from '../api/models/MessageResponse';
 const ThreadDetail: Component = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [thread, setThread] = createSignal<FullThreadInfo | null>(null);
+  const [thread, setThread] = createSignal<MessagesResponse | null>(null);
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
   const [newMessage, setNewMessage] = createSignal<string>(''); // State for the new message
@@ -22,7 +20,7 @@ const ThreadDetail: Component = () => {
     setIsLoading(true);
     try {
       const threadId = params.id;
-      const fetchedThread = await ThreadsService.getThreadIdThreadsIdGet(threadId);
+      const fetchedThread = await ThreadsService.getMessages(threadId);
       setThread(fetchedThread);
       setError(null);
     } catch (err) {
@@ -36,10 +34,16 @@ const ThreadDetail: Component = () => {
   const handleNewMessageKeyDown = async (event: KeyboardEvent) => {
     if (event.key === 'Enter' && newMessage().trim() !== '') {
       try {
-        const threadId = params.id; // Get the thread ID from the URL
-        await ThreadsService.createBlocksPost(thread()?.topic || "", { content: newMessage(), main_thread_id: threadId }); // Create a new block
+        const threadId = params.id;
+        const new_message: MessageCreate = {
+          content: {
+            text: newMessage(),
+          },
+          thread_id: threadId,   // Get the thread ID from the URL
+      };
+        await ThreadsService.createMessage(new_message); // Create a new message
         setNewMessage(''); // Clear the input after submission
-        fetchThreadDetails(); // Refresh the thread details to show the new block
+        fetchThreadDetails(); // Refresh the thread details to show the new message
       } catch (err) {
         console.error('Error creating new block:', err);
       }
@@ -50,7 +54,7 @@ const ThreadDetail: Component = () => {
     fetchThreadDetails();
   });
 
-  const messageBlocks = createMemo(() => thread()?.content || []);
+  const messages = createMemo(() => thread()?.messages || []);
 
   return (
     <div class="min-h-screen bg-slate-900 p-6">
@@ -67,20 +71,20 @@ const ThreadDetail: Component = () => {
         <div class="text-red-400">{error()}</div>
       ) : (
         <div class="space-y-4">
-          <h2 class="text-slate-100 text-2xl text-center font-bold">Thread: {thread()?.topic || "No Topic"}</h2>
+          <h2 class="text-slate-100 text-2xl text-center font-bold">Thread: </h2>
           <div class="text-slate-300">
             {/*<p>{thread()?.headline || "No Headline"}</p>*/}
-            <p class="text-slate-300 text-center">Created by: {thread()?.creator.name || "Unknown"}</p>
+            <p class="text-slate-300 text-center">Created by: { "Unknown"}</p>
           </div>
           
           <div class="space-y-2">
-            {messageBlocks().map((block: BlockWithCreator) => (
+            {messages().map((message: MessageResponse) => (
               <div 
-                id={block._id} 
+                id={message.id} 
                 class="bg-slate-800 text-white p-4 rounded-lg shadow-md max-w-[50%] mx-auto my-2"
               >
-                <p class="text-slate-100">{block.content}</p>
-                <p class="text-slate-300 text-sm mt-1">— {block.creator.name || "Unknown"}</p>
+                <p class="text-slate-100">{message.content.text}</p>
+                <p class="text-slate-300 text-sm mt-1">— {message.creator_id || "Unknown"}</p>
               </div>
             ))}
           </div>

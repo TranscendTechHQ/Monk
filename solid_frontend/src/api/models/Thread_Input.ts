@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BlockModel } from './BlockModel';
-export type CreateThreadModel = {
-    content?: Array<BlockModel>;
+import type { Message } from './Message';
+export type Thread_Input = {
+    headline: Message;
     topic: string;
-    type: string;
 };
 

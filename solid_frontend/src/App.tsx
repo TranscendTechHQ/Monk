@@ -8,20 +8,21 @@ import UserInfo from './components/UserInfo';
 import { ThreadList } from './components/Thread';
 import { ThreadsService } from './api/services/ThreadsService';
 import { OpenAPI } from './api/core/OpenAPI';
-import { ThreadMetaData, ThreadsMetaData, ThreadsModel } from './api';
+import { ThreadsResponse } from './api/models/ThreadsResponse';
+import { MessagesResponse } from './api/models/MessagesResponse';
 OpenAPI.BASE = 'http://localhost:8001';
 
 const App: Component = () => {
-  const [threads, setThreads] = createSignal<ThreadsMetaData>();
+  const [threads, setThreads] = createSignal<ThreadsResponse>();
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
   const [searchQuery, setSearchQuery] = createSignal<string>('');
-  const [searchResults, setSearchResults] = createSignal<ThreadsModel>();
+  const [searchResults, setSearchResults] = createSignal<ThreadsResponse>();
 
   const fetchThreads = async () => {
     try {
       setIsLoading(true);
-      const fetchedThreads = await ThreadsService.filterNewsfeedGet();
+      const fetchedThreads = await ThreadsService.getThreads();
       setThreads(fetchedThreads);
       setError(null);
     } catch (err) {
@@ -71,7 +72,8 @@ const App: Component = () => {
                 <div class="text-center text-red-400">{error()}</div>
               ) : (
                 <>
-                  <ThreadList threads={threads()?.metadata || []} />
+                  <ThreadList threads={{ threads: threads()?.threads || [] }} />
+
                   
                   <div class="flex justify-center mb-6 w-1/2">
                     <input
@@ -105,9 +107,10 @@ const App: Component = () => {
     <h2 class="text-white text-xl font-semibold">Search Results:</h2>
     <For each={searchResults()?.threads ?? []}>
       {(thread) => (
-        <div id={thread._id?.toString() ?? ''} class="bg-slate-800 p-4 rounded-lg shadow-md mt-4">
-          <h3 class="text-white text-lg font-semibold">{thread.topic}</h3>
-          <p class="text-slate-300 mt-2">{thread.headline || "No Title"}</p>
+        <div id={thread.id?.toString() ?? ''} class="bg-slate-800 p-4 rounded-lg shadow-md mt-4">
+          <h3 class="text-white text-lg font-semibold">{thread.content.topic}</h3>
+          <p class="text-slate-300 mt-2">{thread.content.headline?.toString() || "No Title"}</p>
+
         </div>
       )}
     </For>

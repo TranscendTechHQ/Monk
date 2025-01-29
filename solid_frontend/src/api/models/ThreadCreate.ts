@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UpdateBlockModel = {
-    content?: string;
-    position?: number;
+import type { Thread_Input } from './Thread_Input';
+export type ThreadCreate = {
+    content: Thread_Input;
 };
 

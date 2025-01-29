@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ThreadMetaData } from './ThreadMetaData';
-export type ThreadsMetaData = {
-    metadata: Array<ThreadMetaData>;
+import type { Message } from './Message';
+export type MessageCreate = {
+    content: Message;
+    thread_id?: string;
 };
 

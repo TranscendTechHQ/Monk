@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CreateBlockModel = {
-    content: string;
-    due_date?: (string | null);
+import type { LinkMetaModel } from './LinkMetaModel';
+export type Message = {
     image?: (string | null);
-    main_thread_id: string;
+    link_meta?: (LinkMetaModel | null);
+    text?: string;
 };
 

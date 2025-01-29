@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ThreadModel } from './ThreadModel';
-export type ThreadsModel = {
-    threads: Array<ThreadModel>;
+import type { Message } from './Message';
+export type Thread_Output = {
+    headline: Message;
+    topic: string;
 };
 

@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ThreadsInfo = {
-    info: Record<string, string>;
+import type { ThreadResponse } from './ThreadResponse';
+export type ThreadsResponse = {
+    threads: Array<ThreadResponse>;
 };
 

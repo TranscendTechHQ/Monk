@@ -1,164 +1,5 @@
 components:
   schemas:
-    BlockModel:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        assigned_pos:
-          default: 1
-          title: Assigned Pos
-          type: integer
-        assigned_thread_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assigned Thread Id
-        assigned_to:
-          anyOf:
-          - $ref: '#/components/schemas/UserModel'
-          - type: 'null'
-        assigned_to_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assigned To Id
-        child_thread_id:
-          default: ''
-          title: Child Thread Id
-          type: string
-        content:
-          title: Content
-          type: string
-        created_at:
-          format: date-time
-          title: Created At
-          type: string
-        creator_id:
-          default: unknown id
-          title: Creator Id
-          type: string
-        due_date:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Due Date
-        image:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Image
-        last_modified:
-          format: date-time
-          title: Last Modified
-          type: string
-        link_meta:
-          anyOf:
-          - $ref: '#/components/schemas/LinkMetaModel'
-          - type: 'null'
-        main_thread_id:
-          default: ''
-          title: Main Thread Id
-          type: string
-        position:
-          default: 0
-          title: Position
-          type: integer
-        task_status:
-          default: todo
-          pattern: ^(todo|inprogress|done)$
-          title: Task Status
-          type: string
-        tenant_id:
-          default: ''
-          title: Tenant Id
-          type: string
-      required:
-      - content
-      title: BlockModel
-      type: object
-    BlockWithCreator:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        assigned_pos:
-          default: 1
-          title: Assigned Pos
-          type: integer
-        assigned_thread_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assigned Thread Id
-        assigned_to:
-          anyOf:
-          - $ref: '#/components/schemas/UserModel'
-          - type: 'null'
-        assigned_to_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assigned To Id
-        child_thread_id:
-          default: ''
-          title: Child Thread Id
-          type: string
-        content:
-          title: Content
-          type: string
-        created_at:
-          format: date-time
-          title: Created At
-          type: string
-        creator:
-          $ref: '#/components/schemas/UserModel'
-        creator_id:
-          default: unknown id
-          title: Creator Id
-          type: string
-        due_date:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Due Date
-        image:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Image
-        last_modified:
-          format: date-time
-          title: Last Modified
-          type: string
-        link_meta:
-          anyOf:
-          - $ref: '#/components/schemas/LinkMetaModel'
-          - type: 'null'
-        main_thread_id:
-          default: ''
-          title: Main Thread Id
-          type: string
-        position:
-          default: 0
-          title: Position
-          type: integer
-        task_status:
-          default: todo
-          pattern: ^(todo|inprogress|done)$
-          title: Task Status
-          type: string
-        tenant_id:
-          default: ''
-          title: Tenant Id
-          type: string
-      required:
-      - content
-      - creator
-      title: BlockWithCreator
-      type: object
     Body_Upload_Files_uploadFiles__post:
       properties:
         files:
@@ -171,170 +12,6 @@ components:
       - files
       title: Body_Upload_Files_uploadFiles__post
       type: object
-    ChannelModel:
-      properties:
-        created_at:
-          title: Created At
-          type: string
-        creator:
-          title: Creator
-          type: string
-        id:
-          title: Id
-          type: string
-        name:
-          title: Name
-          type: string
-      required:
-      - id
-      - name
-      - creator
-      - created_at
-      title: ChannelModel
-      type: object
-    CompositeChannelList:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        public_channels:
-          items:
-            $ref: '#/components/schemas/ChannelModel'
-          title: Public Channels
-          type: array
-        subscribed_channels:
-          items:
-            $ref: '#/components/schemas/ChannelModel'
-          title: Subscribed Channels
-          type: array
-      required:
-      - _id
-      - subscribed_channels
-      - public_channels
-      title: CompositeChannelList
-      type: object
-    CreateBlockModel:
-      properties:
-        content:
-          title: Content
-          type: string
-        due_date:
-          anyOf:
-          - format: date-time
-            type: string
-          - type: 'null'
-          title: Due Date
-        image:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Image
-        main_thread_id:
-          title: Main Thread Id
-          type: string
-      required:
-      - content
-      - main_thread_id
-      title: CreateBlockModel
-      type: object
-    CreateChildThreadModel:
-      properties:
-        assignedId:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assignedid
-        content:
-          items:
-            $ref: '#/components/schemas/BlockModel'
-          title: Content
-          type: array
-        mainThreadId:
-          title: Mainthreadid
-          type: string
-        parentBlockId:
-          title: Parentblockid
-          type: string
-        topic:
-          maxLength: 60
-          minLength: 1
-          title: Topic
-          type: string
-        type:
-          title: Type
-          type: string
-      required:
-      - type
-      - topic
-      - parentBlockId
-      - mainThreadId
-      title: CreateChildThreadModel
-      type: object
-    CreateThreadModel:
-      properties:
-        content:
-          items:
-            $ref: '#/components/schemas/BlockModel'
-          title: Content
-          type: array
-        topic:
-          maxLength: 60
-          minLength: 1
-          title: Topic
-          type: string
-        type:
-          title: Type
-          type: string
-      required:
-      - type
-      - topic
-      title: CreateThreadModel
-      type: object
-    CreateUserThreadFlagModel:
-      properties:
-        assigned:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Assigned
-        bookmark:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Bookmark
-        mention:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Mention
-        thread_id:
-          title: Thread Id
-          type: string
-        unfollow:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unfollow
-        unread:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unread
-        upvote:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Upvote
-      required:
-      - thread_id
-      title: CreateUserThreadFlagModel
-      type: object
     FilesResponseModel:
       properties:
         urls:
@@ -343,99 +20,6 @@ components:
           title: Urls
           type: array
       title: FilesResponseModel
-      type: object
-    FullThreadInfo:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        assigned:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Assigned
-        assigned_to_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assigned To Id
-        block:
-          anyOf:
-          - $ref: '#/components/schemas/BlockModel'
-          - type: 'null'
-        bookmark:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Bookmark
-        content:
-          items:
-            $ref: '#/components/schemas/BlockWithCreator'
-          title: Content
-          type: array
-        created_at:
-          title: Created At
-          type: string
-        creator:
-          $ref: '#/components/schemas/UserModel'
-        default_block:
-          allOf:
-          - $ref: '#/components/schemas/BlockWithCreator'
-        headline:
-          title: Headline
-          type: string
-        last_modified:
-          format: date-time
-          title: Last Modified
-          type: string
-        mention:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Mention
-        num_blocks:
-          default: 0
-          title: Num Blocks
-          type: integer
-        parent_block_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Parent Block Id
-        topic:
-          title: Topic
-          type: string
-        type:
-          title: Type
-          type: string
-        unfollow:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unfollow
-        unread:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unread
-        upvote:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Upvote
-      required:
-      - _id
-      - topic
-      - type
-      - created_at
-      - creator
-      title: FullThreadInfo
       type: object
     HTTPValidationError:
       properties:
@@ -470,6 +54,74 @@ components:
       - url
       title: LinkMetaModel
       type: object
+    Message:
+      properties:
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
+        link_meta:
+          anyOf:
+          - $ref: '#/components/schemas/LinkMetaModel'
+          - type: 'null'
+        text:
+          title: Text
+          type: string
+      title: Message
+      type: object
+    MessageCreate:
+      properties:
+        content:
+          $ref: '#/components/schemas/Message'
+        thread_id:
+          title: Thread Id
+          type: string
+      required:
+      - content
+      title: MessageCreate
+      type: object
+    MessageResponse:
+      properties:
+        content:
+          $ref: '#/components/schemas/Message'
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          title: Creator Id
+          type: string
+        id:
+          title: Id
+          type: string
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        thread_id:
+          title: Thread Id
+          type: string
+      required:
+      - id
+      - content
+      - creator_id
+      - created_at
+      - last_modified
+      - thread_id
+      title: MessageResponse
+      type: object
+    MessagesResponse:
+      properties:
+        messages:
+          items:
+            $ref: '#/components/schemas/MessageResponse'
+          title: Messages
+          type: array
+      required:
+      - messages
+      title: MessagesResponse
+      type: object
     SessionInfo:
       properties:
         accessTokenPayload:
@@ -501,132 +153,42 @@ components:
       - accessTokenPayload
       title: SessionInfo
       type: object
-    SubscribeChannelRequest:
+    Thread-Input:
       properties:
-        channel_ids:
-          items:
-            type: string
-          title: Channel Ids
-          type: array
-      required:
-      - channel_ids
-      title: SubscribeChannelRequest
-      type: object
-    SubscribedChannelList:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        subscribed_channels:
-          items:
-            $ref: '#/components/schemas/ChannelModel'
-          title: Subscribed Channels
-          type: array
-      required:
-      - _id
-      - subscribed_channels
-      title: SubscribedChannelList
-      type: object
-    ThreadMetaData:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        assigned:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Assigned
-        assigned_to_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assigned To Id
-        block:
-          anyOf:
-          - $ref: '#/components/schemas/BlockModel'
-          - type: 'null'
-        bookmark:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Bookmark
-        created_at:
-          title: Created At
-          type: string
-        creator:
-          $ref: '#/components/schemas/UserModel'
         headline:
-          title: Headline
-          type: string
-        last_modified:
-          format: date-time
-          title: Last Modified
-          type: string
-        mention:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Mention
-        num_blocks:
-          default: 0
-          title: Num Blocks
-          type: integer
-        parent_block_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Parent Block Id
+          $ref: '#/components/schemas/Message'
         topic:
           title: Topic
           type: string
-        type:
-          title: Type
-          type: string
-        unfollow:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unfollow
-        unread:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unread
-        upvote:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Upvote
       required:
-      - _id
       - topic
-      - type
-      - created_at
-      - creator
-      title: ThreadMetaData
+      - headline
+      title: Thread
       type: object
-    ThreadModel:
+    Thread-Output:
       properties:
-        _id:
-          title: ' Id'
+        headline:
+          $ref: '#/components/schemas/Message'
+        topic:
+          title: Topic
           type: string
-        assigned_to_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Assigned To Id
+      required:
+      - topic
+      - headline
+      title: Thread
+      type: object
+    ThreadCreate:
+      properties:
         content:
-          items:
-            $ref: '#/components/schemas/BlockModel'
-          title: Content
-          type: array
+          $ref: '#/components/schemas/Thread-Input'
+      required:
+      - content
+      title: ThreadCreate
+      type: object
+    ThreadResponse:
+      properties:
+        content:
+          $ref: '#/components/schemas/Thread-Output'
         created_at:
           format: date-time
           title: Created At
@@ -634,160 +196,31 @@ components:
         creator_id:
           title: Creator Id
           type: string
-        headline:
-          title: Headline
+        id:
+          title: Id
           type: string
         last_modified:
+          format: date-time
           title: Last Modified
           type: string
-        num_blocks:
-          default: 0
-          title: Num Blocks
-          type: integer
-        parent_block_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          'null': true
-          title: Parent Block Id
-        slack_thread_ts:
-          anyOf:
-          - type: number
-          - type: 'null'
-          'null': true
-          title: Slack Thread Ts
-        tenant_id:
-          title: Tenant Id
-          type: string
-        topic:
-          maxLength: 60
-          minLength: 1
-          title: Topic
-          type: string
-        type:
-          title: Type
-          type: string
       required:
+      - id
+      - content
       - creator_id
+      - created_at
       - last_modified
-      - type
-      - topic
-      - tenant_id
-      title: ThreadModel
+      title: ThreadResponse
       type: object
-    ThreadsInfo:
-      properties:
-        info:
-          additionalProperties:
-            type: string
-          title: Info
-          type: object
-      required:
-      - info
-      title: ThreadsInfo
-      type: object
-    ThreadsMetaData:
-      properties:
-        metadata:
-          items:
-            $ref: '#/components/schemas/ThreadMetaData'
-          title: Metadata
-          type: array
-      required:
-      - metadata
-      title: ThreadsMetaData
-      type: object
-    ThreadsModel:
+    ThreadsResponse:
       properties:
         threads:
           items:
-            $ref: '#/components/schemas/ThreadModel'
+            $ref: '#/components/schemas/ThreadResponse'
           title: Threads
           type: array
       required:
       - threads
-      title: ThreadsModel
-      type: object
-    UpdateBlockModel:
-      properties:
-        content:
-          title: Content
-          type: string
-        position:
-          title: Position
-          type: integer
-      title: UpdateBlockModel
-      type: object
-    UpdateBlockPositionModel:
-      properties:
-        block_id:
-          default: ''
-          title: Block Id
-          type: string
-        new_position:
-          default: 0
-          title: New Position
-          type: integer
-        sort_by_assigned_pos:
-          default: false
-          title: Sort By Assigned Pos
-          type: boolean
-      title: UpdateBlockPositionModel
-      type: object
-    UpdateThreadTitleModel:
-      properties:
-        topic:
-          title: Topic
-          type: string
-      required:
-      - topic
-      title: UpdateThreadTitleModel
-      type: object
-    UserFilterPreferenceModel:
-      properties:
-        assigned:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Assigned
-        bookmark:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Bookmark
-        mention:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Mention
-        searchQuery:
-          anyOf:
-          - type: string
-          - type: 'null'
-          'null': true
-          title: Searchquery
-        unfollow:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unfollow
-        unread:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unread
-        upvote:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Upvote
-      title: UserFilterPreferenceModel
+      title: ThreadsResponse
       type: object
     UserMap:
       properties:
@@ -825,62 +258,6 @@ components:
       - _id
       title: UserModel
       type: object
-    UserThreadFlagModel:
-      properties:
-        _id:
-          title: ' Id'
-          type: string
-        assigned:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': false
-          title: Assigned
-        bookmark:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Bookmark
-        mention:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Mention
-        tenant_id:
-          title: Tenant Id
-          type: string
-        thread_id:
-          title: Thread Id
-          type: string
-        unfollow:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unfollow
-        unread:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Unread
-        upvote:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          'null': true
-          title: Upvote
-        user_id:
-          title: User Id
-          type: string
-      required:
-      - user_id
-      - thread_id
-      - tenant_id
-      title: UserThreadFlagModel
-      type: object
     ValidationError:
       properties:
         loc:
@@ -907,245 +284,6 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
-  /blocks:
-    post:
-      operationId: create_blocks_post
-      parameters:
-      - in: query
-        name: thread_topic
-        required: true
-        schema:
-          title: Thread Topic
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateBlockModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockWithCreator'
-          description: Create a new block
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Create
-      tags:
-      - threads
-  /blocks/child:
-    post:
-      operationId: child_thread_blocks_child_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateChildThreadModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FullThreadInfo'
-          description: Create a new child thread from a block
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Child Thread
-      tags:
-      - threads
-  /blocks/{id}:
-    put:
-      operationId: update_blocks__id__put
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
-      - in: query
-        name: thread_topic
-        required: true
-        schema:
-          title: Thread Topic
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateBlockModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockModel'
-          description: Update a block
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Update
-      tags:
-      - threads
-  /blocks/{id}/assign:
-    put:
-      operationId: update_block_assigned_user_blocks__id__assign_put
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              title: Assigneduserid
-              type: string
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockWithCreator'
-          description: Assign the todo block to user
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Update Block Assigned User
-      tags:
-      - threads
-  /blocks/{id}/dueDate:
-    put:
-      operationId: update_block_due_date_blocks__id__dueDate_put
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              title: Due Date
-              type: string
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockWithCreator'
-          description: Update a block due date
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Update Block Due Date
-      tags:
-      - threads
-  /blocks/{id}/position:
-    put:
-      operationId: update_block_position_blocks__id__position_put
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateBlockPositionModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateBlockPositionModel'
-          description: Update a block position
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Update Block Position
-      tags:
-      - threads
-  /blocks/{id}/taskStatus:
-    put:
-      operationId: update_block_task_status_blocks__id__taskStatus_put
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              title: Task Status
-              type: string
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BlockWithCreator'
-          description: Update a block task status
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Update Block Task Status
-      tags:
-      - threads
-  /channel_list:
-    get:
-      operationId: ch_channel_list_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CompositeChannelList'
-          description: Get a list of public and subscribed channels
-      summary: Ch
-      tags:
-      - slack
   /healthcheck:
     get:
       operationId: healthcheck_healthcheck_get
@@ -1179,79 +317,58 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Get Link Meta
-  /newsfeed:
-    get:
-      operationId: filter_newsfeed_get
-      parameters:
-      - in: query
-        name: bookmark
-        required: false
-        schema:
-          default: false
-          title: Bookmark
-          type: boolean
-      - in: query
-        name: unread
-        required: false
-        schema:
-          default: false
-          title: Unread
-          type: boolean
-      - in: query
-        name: unfollow
-        required: false
-        schema:
-          default: false
-          title: Unfollow
-          type: boolean
-      - in: query
-        name: upvote
-        required: false
-        schema:
-          default: false
-          title: Upvote
-          type: boolean
-      - in: query
-        name: mention
-        required: false
-        schema:
-          default: false
-          title: Mention
-          type: boolean
-      - in: query
-        name: searchQuery
-        required: false
-        schema:
-          title: Searchquery
-          type: string
-      - in: query
-        name: updateFilter
-        required: false
-        schema:
-          default: false
-          title: Updatefilter
-          type: boolean
-      - in: query
-        name: updateSemanticFilter
-        required: false
-        schema:
-          default: false
-          title: Updatesemanticfilter
-          type: boolean
+  /message:
+    post:
+      description: The api will create a new message in a thread and return the newly
+        created message
+      operationId: create_message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+        required: true
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadsMetaData'
-          description: Get news feed as  data for all threads
+                $ref: '#/components/schemas/MessageResponse'
+          description: Newly created message
         '422':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Filter
+      summary: Create a new message in a thread
+      tags:
+      - threads
+  /messages:
+    get:
+      description: The api will return all messages in a thread
+      operationId: get_messages
+      parameters:
+      - in: query
+        name: thread_id
+        required: true
+        schema:
+          title: Thread Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagesResponse'
+          description: List of messages in a thread
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get all messages in a thread
       tags:
       - threads
   /searchThreads:
@@ -1269,7 +386,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadsModel'
+                $ref: '#/components/schemas/ThreadsResponse'
           description: Search threads by query and get matching threads
         '422':
           content:
@@ -1345,191 +462,44 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Slack User Token
-  /subscribe_channel:
+  /thread:
     post:
-      operationId: subscribe_channel_subscribe_channel_post
+      description: The api will create a new thread and return the newly created thread
+      operationId: create_thread
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubscribeChannelRequest'
+              $ref: '#/components/schemas/ThreadCreate'
         required: true
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubscribedChannelList'
-          description: Successful Response
+                $ref: '#/components/schemas/ThreadResponse'
+          description: Newly created thread
         '422':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Subscribe Channel
-      tags:
-      - slack
-  /thread/flag:
-    post:
-      operationId: create_tf_thread_flag_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateUserThreadFlagModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserThreadFlagModel'
-          description: Create a new thread flag
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Create Tf
-      tags:
-      - threads
-  /threadTypes:
-    get:
-      operationId: tt_threadTypes_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  type: string
-                title: Response Tt Threadtypes Get
-                type: array
-          description: Get all thread types
-      summary: Tt
+      summary: Create a new thread
       tags:
       - threads
   /threads:
-    post:
-      operationId: create_th_threads_post
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateThreadModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FullThreadInfo'
-          description: Create a new thread
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Create Th
-      tags:
-      - threads
-  /threads/{id}:
-    delete:
-      operationId: delete_thread_threads__id__delete
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                title: Response Delete Thread Threads  Id  Delete
-                type: boolean
-          description: Delete a thread by id
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Delete Thread
-      tags:
-      - threads
     get:
-      operationId: get_thread_id_threads__id__get
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
+      description: The api will return all threads
+      operationId: get_threads
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FullThreadInfo'
-          description: Get a thread by id
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Get Thread Id
-      tags:
-      - threads
-    put:
-      operationId: update_th_threads__id__put
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          title: Id
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateThreadTitleModel'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FullThreadInfo'
-          description: Update a thread by id
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Update Th
-      tags:
-      - threads
-  /threadsInfo:
-    get:
-      operationId: ti_threadsInfo_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreadsInfo'
-          description: Get all thread titles and corresponding types
-      summary: Ti
+                $ref: '#/components/schemas/ThreadsResponse'
+          description: List of threads
+      summary: Get all threads
       tags:
       - threads
   /uploadFiles/:
@@ -1571,28 +541,3 @@ paths:
       summary: All Users
       tags:
       - threads
-  /user/news-filter:
-    get:
-      operationId: get_user_filter_preferences_user_news_filter_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserFilterPreferenceModel'
-          description: Get user filter preferences
-      summary: Get User Filter Preferences
-      tags:
-      - threads
-  /webhook_event:
-    post:
-      operationId: webhook_event_webhook_event_post
-      responses:
-        '200':
-          content:
-            application/json:
-              schema: {}
-          description: Successful Response
-      summary: Webhook Event
-      tags:
-      - slack
