@@ -112,14 +112,42 @@ def delete_threads_with_less_than_n_blocks(n):
         if num_blocks < n:
             #print(f"Thread {doc['topic']} has {num_blocks} blocks")
             delete_thread(thread_id)
-        
+
+def delete_threads_with_type(type):
+    threads_collection = app.mongodb["threads"]
+    for doc in threads_collection.find():
+        thread_id = doc['_id']
+        if doc['type'] == type:
+            #print(f"Thread {doc['topic']} has {num_blocks} blocks")
+            delete_thread(thread_id)
+
+def delete_threads_with_topic_pattern(pattern):
+    threads_collection = app.mongodb["threads"]
+    for doc in threads_collection.find():
+        thread_id = doc['_id']
+        if pattern in doc['topic']:
+            #print(f"Thread {doc['topic']} has {num_blocks} blocks")
+            delete_thread(thread_id)
+            
+def delete_thread_with_id(id):
+    threads_collection = app.mongodb["threads"]
+    doc = threads_collection.find_one({"_id": id})
+    if doc:
+        delete_thread(id)
+    else:
+        print(f"Thread {id} not found")
+                   
 async def main():
     startup_db_client()
     #remove_thread_content_data()
     #update_last_modified()
     #rename_created_date_to_created_at()
     #rename_thread_types()
-    delete_threads_with_less_than_n_blocks(4)
+    #delete_threads_with_less_than_n_blocks(5)
+    delete_thread_with_id("4510d5bf-ed75-477a-90b4-fea734d3c6ad")
+    #delete_threads_with_type("slack")
+    #delete_threads_with_type("todo")
+    #delete_threads_with_topic_pattern("Reply")
     shutdown_db_client()
 
 
