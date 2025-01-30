@@ -71,7 +71,7 @@ async def create_message(message: MessageCreate, session: SessionContainer = Dep
         if message.content.link_meta is None:
             # see if there are any links in the message text and extract links
             linkMeta = extract_link_meta(message.content.text)
-            message_db.link_meta = linkMeta
+            message_db.content.link_meta = linkMeta
         inserted_doc = create_mongo_doc_sync(document=jsonable_encoder(message_db),
                             collection=syncdb.messages_collection)
         
