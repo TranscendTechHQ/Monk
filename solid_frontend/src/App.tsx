@@ -8,6 +8,7 @@ import { Router, Route, Navigate } from '@solidjs/router';
 import NewsFeed from './components/NewsFeed';
 import ThreadMessages from './components/ThreadMessages';
 import { OpenAPI } from './api/core/OpenAPI';
+import Login from './Auth';
 
 // Keep API configuration
 OpenAPI.BASE = 'http://localhost:8001';
@@ -15,6 +16,7 @@ OpenAPI.BASE = 'http://localhost:8001';
 const App: Component = () => {
   return (
     <Router>
+      <Route path="/login" component={Login} />
       <Route path="/" component={() => <Navigate href="/newsfeed" />} />
       <Route path="/newsfeed" component={NewsFeed} />
       <Route path="/thread/:id" component={ThreadMessages} />
