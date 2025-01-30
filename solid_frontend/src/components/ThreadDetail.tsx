@@ -57,57 +57,71 @@ const ThreadDetail: Component = () => {
   const messages = createMemo(() => thread()?.messages || []);
 
   return (
-    <div class="min-h-screen bg-slate-900 p-6">
-      <button 
-        onClick={() => navigate('/')}
-        class="mb-4 bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200"
-      >
-        Back to Threads
-      </button>
-      
-      {isLoading() ? (
-        <div class="text-slate-300">Loading thread details...</div>
-      ) : error() ? (
-        <div class="text-red-400">{error()}</div>
-      ) : (
-        <div class="space-y-4">
-          <h2 class="text-slate-100 text-2xl text-center font-bold">Thread: </h2>
-          <div class="text-slate-300">
-            {/*<p>{thread()?.headline || "No Headline"}</p>*/}
-            <p class="text-slate-300 text-center">Created by: { "Unknown"}</p>
-          </div>
-          
-          <div class="space-y-2">
-            {messages().map((message: MessageResponse) => (
-              <div 
-                id={message.id} 
-                class="bg-slate-800 text-white p-4 rounded-lg shadow-md max-w-[50%] mx-auto my-2"
+    <main class="py-12">
+      <div class="container mx-auto h-[600px]">
+        <div class="bg-slate-800 rounded-xl p-8 shadow-xl max-w-4xl mx-auto h-full">
+          <div class="flex items-center justify-center mb-8 relative">
+            <button 
+              onClick={() => navigate('/')}
+              class="bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200 flex items-center absolute left-0"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                class="h-4 w-4 mr-2" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
               >
-                <p class="text-slate-100">{message.content.text}</p>
-                <p class="text-slate-300 text-sm mt-1">— {message.creator_id || "Unknown"}</p>
-              </div>
-            ))}
+                <path 
+                  stroke-linecap="round" 
+                  stroke-linejoin="round" 
+                  stroke-width="2" 
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18" 
+                />
+              </svg>
+              NewsFeed
+            </button>
+            <h2 class="text-white text-3xl font-bold text-center">Messages</h2>
           </div>
+          <div class="h-[calc(100%-96px)]">
+            {isLoading() ? (
+              <div class="text-slate-300">Loading thread details...</div>
+            ) : error() ? (
+              <div class="text-red-400">{error()}</div>
+            ) : (
+              <div class="space-y-4">
+                <div class="text-slate-300">
+                  <p class="text-slate-300 text-center">Created by: { "Unknown"}</p>
+                </div>
+                
+                <div class="space-y-2 overflow-y-auto max-h-[400px] mx-auto w-1/2">
+                  {messages().map((message: MessageResponse) => (
+                    <div 
+                      id={message.id} 
+                      class="bg-slate-800 text-white p-4 rounded-lg shadow-md my-2"
+                    >
+                      <p class="text-slate-100">{message.content.text}</p>
+                      <p class="text-slate-300 text-sm mt-1">— {message.creator_id || "Unknown"}</p>
+                    </div>
+                  ))}
+                </div>
 
-          {/* Input box for new message */}
-          <div class="mt-4 flex justify-center">
-            <input 
-              type="text" 
-              value={newMessage()} 
-              onInput={(e) => setNewMessage(e.currentTarget.value)} 
-              onKeyDown={handleNewMessageKeyDown}
-              class="w-full max-w-[50%] p-2 rounded border border-slate-600 bg-slate-700 text-white focus:outline-none focus:ring focus:ring-slate-500 mx-auto"
-              placeholder="Type your message and press Enter..."
-            />
+                <div class="mt-4 flex justify-center w-1/2 mx-auto">
+                  <input 
+                    type="text" 
+                    value={newMessage()} 
+                    onInput={(e) => setNewMessage(e.currentTarget.value)} 
+                    onKeyDown={handleNewMessageKeyDown}
+                    class="w-full border border-slate-600 bg-slate-700 text-white p-2 rounded focus:outline-none focus:ring focus:ring-slate-500"
+                    placeholder="Type your message and press Enter..."
+                  />
+                </div>
+              </div>
+            )}
           </div>
-          
-            <div class="container max-w-[50%] mx-auto">
-                <QuillEditor />
-            </div>
-    
         </div>
-      )}
-    </div>
+      </div>
+    </main>
   );
 };
 
