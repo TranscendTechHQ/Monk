@@ -5,7 +5,7 @@ import "./index.css";
 import App from "./App";
 import Login, { Auth } from "./Auth";
 import { initSuperTokensWebJS } from "./config";
-import ThreadDetail from './components/ThreadDetail';
+import ThreadMessages from './components/ThreadMessages';
 import { UserProvider } from './context/UserContext';
 
 initSuperTokensWebJS();
@@ -19,7 +19,7 @@ render(
                 <Route path="/auth/*" component={Auth} />
                 <Route path="/login/*" component={Login} />
                 <Route path="/" component={App} />
-                <Route path="/thread/:id" component={ThreadDetail} />
+                <Route path="/thread/:id" component={ThreadMessages} />
             </Router>
         </UserProvider>
     ),
