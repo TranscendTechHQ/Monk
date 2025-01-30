@@ -83,18 +83,11 @@ const ThreadDetail: Component = () => {
             </button>
             <h2 class="text-white text-3xl font-bold text-center">Messages</h2>
           </div>
-          <div class="h-[calc(100%-96px)]">
-            {isLoading() ? (
-              <div class="text-slate-300">Loading thread details...</div>
-            ) : error() ? (
-              <div class="text-red-400">{error()}</div>
-            ) : (
-              <div class="space-y-4">
-                <div class="text-slate-300">
-                  <p class="text-slate-300 text-center">Created by: { "Unknown"}</p>
-                </div>
-                
-                <div class="space-y-2 overflow-y-auto max-h-[400px] mx-auto w-1/2">
+          <div class="h-[calc(100%-96px)] flex flex-col">
+            <div class="space-y-4 overflow-y-auto max-h-[400px] flex-1">
+              <div class="w-full">
+                <h2 class="text-white text-xl font-semibold mb-4 text-center">Conversation</h2>
+                <div class="space-y-2">
                   {messages().map((message: MessageResponse) => (
                     <div 
                       id={message.id} 
@@ -105,19 +98,21 @@ const ThreadDetail: Component = () => {
                     </div>
                   ))}
                 </div>
-
-                <div class="mt-4 flex justify-center w-1/2 mx-auto">
-                  <input 
-                    type="text" 
-                    value={newMessage()} 
-                    onInput={(e) => setNewMessage(e.currentTarget.value)} 
-                    onKeyDown={handleNewMessageKeyDown}
-                    class="w-full border border-slate-600 bg-slate-700 text-white p-2 rounded focus:outline-none focus:ring focus:ring-slate-500"
-                    placeholder="Type your message and press Enter..."
-                  />
-                </div>
               </div>
-            )}
+            </div>
+
+            <div class="mt-auto pt-4">
+              <div class="flex justify-center w-1/2 mx-auto">
+                <input 
+                  type="text" 
+                  value={newMessage()} 
+                  onInput={(e) => setNewMessage(e.currentTarget.value)} 
+                  onKeyDown={handleNewMessageKeyDown}
+                  class="w-full border border-slate-600 bg-slate-700 text-white p-2 rounded focus:outline-none focus:ring focus:ring-slate-500"
+                  placeholder="Type your message and press Enter..."
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
