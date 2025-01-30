@@ -8,6 +8,10 @@ import { Router, Route } from '@solidjs/router';
 import UserInfo from './components/UserInfo';
 import NewsFeed from './components/NewsFeed';
 import ThreadMessages from './components/ThreadMessages';
+import { OpenAPI } from './api/core/OpenAPI';
+
+// Add this before the App component
+OpenAPI.BASE = 'http://localhost:8001';
 
 const App: Component = () => {
   return (
