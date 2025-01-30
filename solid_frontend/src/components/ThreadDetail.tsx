@@ -85,13 +85,12 @@ const ThreadDetail: Component = () => {
           </div>
           <div class="h-[calc(100%-96px)] flex flex-col">
             <div class="space-y-4 overflow-y-auto max-h-[400px] flex-1">
-              <div class="w-full">
-
-                <div class="space-y-2">
+              <div class="w-1/2 mx-auto">
+                <div class="space-y-4">
                   {messages().map((message: MessageResponse) => (
                     <div 
                       id={message.id} 
-                      class="bg-slate-800 text-white p-4 rounded-lg shadow-md my-2"
+                      class="bg-slate-700 text-white p-4 rounded-lg shadow-md w-full"
                     >
                       <p class="text-slate-100">{message.content.text}</p>
                       <p class="text-slate-300 text-sm mt-1">— {message.creator_id || "Unknown"}</p>

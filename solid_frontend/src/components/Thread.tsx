@@ -21,7 +21,7 @@ const Thread: Component<ThreadProps> = (props) => {
 
   return (
     <div 
-      class="bg-slate-800 ring-1 ring-slate-400/20 rounded-xl p-4 hover:bg-slate-700 transition-all cursor-pointer" 
+      class="bg-slate-700 ring-1 ring-slate-400/20 rounded-xl p-4 hover:bg-slate-600 transition-all cursor-pointer" 
       onClick={handleClick}
     >
       <h3 class="text-white text-lg font-semibold">{props.thread.content.topic || "No Topic"}</h3>

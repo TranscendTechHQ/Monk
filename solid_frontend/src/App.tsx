@@ -103,7 +103,7 @@ const App: Component = () => {
                     <div class="space-y-4 overflow-y-auto max-h-[300px]">
                       <For each={searchResults()?.threads ?? []}>
                         {(thread) => (
-                          <div id={thread.id?.toString() ?? ''} class="bg-slate-800 p-4 rounded-lg shadow-md mt-4">
+                          <div id={thread.id?.toString() ?? ''} class="bg-slate-700 p-4 rounded-lg shadow-md mt-4">
                             <h3 class="text-white text-lg font-semibold">{thread.content.topic}</h3>
                             <p class="text-slate-300 mt-2">{thread.content.headline?.toString() || "No Title"}</p>
                           </div>
