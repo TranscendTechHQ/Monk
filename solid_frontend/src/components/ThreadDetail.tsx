@@ -86,7 +86,7 @@ const ThreadDetail: Component = () => {
           <div class="h-[calc(100%-96px)] flex flex-col">
             <div class="space-y-4 overflow-y-auto max-h-[400px] flex-1">
               <div class="w-full">
-                <h2 class="text-white text-xl font-semibold mb-4 text-center">Conversation</h2>
+
                 <div class="space-y-2">
                   {messages().map((message: MessageResponse) => (
                     <div 
