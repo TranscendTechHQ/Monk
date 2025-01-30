@@ -1,11 +1,11 @@
-import datetime as dt
+from datetime import timezone
 import uuid
 from datetime import datetime
-from typing import Annotated, List, Optional, Union
+from typing import List, Optional
 
 from bson import ObjectId
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
-from pydantic.json_schema import SkipJsonSchema
+from pydantic import BaseModel, ConfigDict, Field
+
 
 
 
@@ -59,8 +59,8 @@ class Message(BaseModelConfig):
 class MessageDb(BaseModelConfig):
     content: Message
     creator_id: str = Field
-    created_at: datetime = Field(default_factory=datetime.now)
-    last_modified: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_modified: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     thread_id: str = Field
     tenant_id: str = Field
     
@@ -90,12 +90,13 @@ class Thread(BaseModelConfig):
     topic: str
     headline: Message
 
-class ThreadDb(BaseModelConfig):
+class ThreadDb(BaseModel):
     content: Thread
+    thread_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     tenant_id: str
     creator_id: str
-    created_at: datetime = Field(default_factory=datetime.now)
-    last_modified: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_modified: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
 class ThreadCreate(BaseModelConfig):
     content: Thread

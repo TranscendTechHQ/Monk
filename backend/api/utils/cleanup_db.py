@@ -7,7 +7,7 @@ from config import settings
 from routes.threads.models import Message, MessageDb, Thread, ThreadDb
 from utils.db import create_mongo_doc_sync
 
-from routes.threads.models import BlockModel
+
 from utils.db import asyncdb
 
 class App:
@@ -307,7 +307,27 @@ def change_thread_model():
         
         #thread_id = doc['_id']
         #delete_thread(thread_id)
-            
+
+def add_thread_id_to_threads():
+    threads_collection_old = app.mongodb["threads_old"]
+    threads_collection = app.mongodb["threads"]
+    for doc in threads_collection_old.find():
+        #print(doc)
+        topic = doc['topic']
+        thread = threads_collection.find_one({"content.topic": topic})
+        if thread:
+            thread_id = doc['_id']
+            new_thread_id = thread['_id']
+            threads_collection.update_one({"_id": new_thread_id}, {'$set': {
+                'thread_id': thread_id
+            }})
+            print(f"Added thread_id to thread {thread_id} named {topic}")
+        else:
+            print(f"Thread {topic} not found")
+        
+        #thread_id = doc['_id']
+        #delete_thread(thread_id)
+                   
 def delete_thread_with_id(id):
     threads_collection = app.mongodb["threads"]
     doc = threads_collection.find_one({"_id": id})
@@ -367,7 +387,8 @@ async def main():
     #delete_threads_with_type("todo")
     #delete_threads_with_topic_pattern("Reply")
     #change_thread_model()
-    migrate_blocks_to_messages()
+    #migrate_blocks_to_messages()
+    add_thread_id_to_threads()
     shutdown_db_client()
 
 

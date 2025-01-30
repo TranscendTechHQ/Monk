@@ -15,7 +15,6 @@ from utils.milvus_vector import milvus_semantic_search
 from utils.scrapper import getLinkMeta
 from utils.db import create_mongo_doc_sync, get_aggregate_async, get_mongo_document_async, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, asyncdb, syncdb
 
-from .semantic_search_mongo import thread_semantic_search_mongo
 from utils.relevance import get_relevant_thread_ids
 
 router = APIRouter()
@@ -203,17 +202,12 @@ async def all_users(request: Request,
                         content=jsonable_encoder(UserMap(users=final_user_map)))
 
 
-@router.get("/searchTitles", response_model=list[str], operation_id="search_titles",
-            response_description="Search threads by query and get topic")
-async def search_titles(request: Request, query: str, session: SessionContainer = Depends(verify_session())) -> \
-        (list)[str]:
-    result = await thread_semantic_search_mongo(query)
-    titles = [doc["topic"] for doc in result]
-    return JSONResponse(status_code=status.HTTP_200_OK, content=titles)
 
 
 @router.get("/searchThreads", response_model=ThreadsResponse,
-            response_description="Search threads by query and get matching threads")
+            operation_id="search_threads",
+            summary="Search threads in plain english and get top 3 matching threads",
+            description="The api will return top 3 threads matching the query")
 async def search_threads(request: Request, query: str, session: SessionContainer = Depends(verify_session())):
     # Search threads in MongoDB by query
     threads_collection = request.app.mongodb["threads"]
@@ -229,10 +223,12 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 
     filtered_threads = []
     for id in filtered_threads_ids:
-        filtered_threads.append(await get_mongo_document_async( filter={"_id": id},
+        thread = await get_mongo_document_async( filter={"thread_id": id},
                                                          collection=threads_collection,
-                                                         tenant_id=tenant_id))
-    return_threads = jsonable_encoder(ThreadDb(threads=filtered_threads))
+                                                         tenant_id=tenant_id)
+        thread['id'] = str(thread['_id'])
+        filtered_threads.append(ThreadResponse(**thread))
+    return_threads = jsonable_encoder(ThreadsResponse(threads=filtered_threads))
     # print(return_threads)
     return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)
 
