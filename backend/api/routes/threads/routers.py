@@ -226,8 +226,9 @@ async def search_threads(request: Request, query: str, session: SessionContainer
         thread = await get_mongo_document_async( filter={"thread_id": id},
                                                          collection=threads_collection,
                                                          tenant_id=tenant_id)
-        thread['id'] = str(thread['_id'])
-        filtered_threads.append(ThreadResponse(**thread))
+        if thread is not None:
+            thread['id'] = str(thread['_id'])   
+            filtered_threads.append(ThreadResponse(**thread))
     return_threads = jsonable_encoder(ThreadsResponse(threads=filtered_threads))
     # print(return_threads)
     return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)

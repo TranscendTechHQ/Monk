@@ -1,14 +1,10 @@
 import asyncio
-import pprint
-import threading
 
-from pymongo import MongoClient
 
-from config import settings
-from routes.threads.semantic_search_mongo import thread_semantic_search_mongo
-from utils.db import get_mongo_document_async, get_mongo_document_sync, asyncdb,get_mongo_documents_async, get_mongo_documents_sync, shutdown_async_db_client, startup_async_db_client
+
+from utils.db import get_mongo_document_async, asyncdb,get_mongo_documents_async, shutdown_async_db_client, startup_async_db_client
 from utils.embedding import generate_embedding
-from utils.milvus_vector import create_thread_collection, milvus_semantic_search, store_milvus_thread_embedding
+from utils.milvus_vector import clean_collection, create_thread_collection, milvus_semantic_search, store_milvus_thread_embedding
 
 
 
@@ -17,15 +13,13 @@ async def generate_single_thread_embedding(thread_id, tenant_id):
     
     thread_collection = asyncdb.threads_collection
     thread_doc = await get_mongo_document_async(
-        filter={'_id': thread_id}, 
+        filter={'thread_id': thread_id}, 
         collection=thread_collection, 
         tenant_id=tenant_id)
     user_collection = asyncdb.users_collection
 
-    topic = thread_doc['topic']
+    topic = thread_doc['content']['topic']
     text = "This is the content of the thread with topic " + topic + ". "
-    threadType = thread_doc['type']
-    text += "The type of the thread is " + threadType + ". "
     createdAt = thread_doc['created_at']
     text += "The thread was created on " + createdAt + ". "
     creator_id = thread_doc['creator_id']
@@ -39,17 +33,20 @@ async def generate_single_thread_embedding(thread_id, tenant_id):
     email = userDoc['email']
     text += "The email of the creator is " + email + ". "
     
-    blocks_collection = asyncdb.blocks_collection
-    blocks = await get_mongo_documents_async(
-        collection=blocks_collection, 
+    text += "The thread has the following messages: "
+    text += f"{thread_doc['content']['headline']['text']} "
+    
+    message_collection = asyncdb.messages_collection
+    messages = await get_mongo_documents_async(
+        collection=message_collection, 
         tenant_id=tenant_id, 
-        filter={'main_thread_id': thread_doc['_id']}, 
+        filter={'thread_id': str(thread_doc['_id'])}, 
         sort=[('created_at', 1)])
     
 
-    for block in blocks:
-        # print(block['content'])
-        text += block['content'] + " "
+    for message in messages:
+        
+        text += message['content']['text'] + " "
     #print (text)
 
     embedding = generate_embedding(text)
@@ -70,11 +67,11 @@ async def generate_all_threads_embedding_and_store_to_milvus(tenant_id, collecti
     for thread_doc in threads:
         # print(doc['content'])
         thread_embedding = await generate_single_thread_embedding(
-            thread_id=thread_doc['_id'], 
+            thread_id=thread_doc['thread_id'], 
             tenant_id=tenant_id)
         store_milvus_thread_embedding(
             collection_name=collection_name,
-            thread_id=thread_doc['_id'], 
+            thread_id=thread_doc['thread_id'], 
             tenant_id=tenant_id,
             thread_embedding=thread_embedding)
 
@@ -109,9 +106,11 @@ async def main():
     
     tenant_id = "T048F0ANS1M"
     collection_name = f"threads_{tenant_id}"
+    
     #await gen_and_store_test_thread_embedding_to_milvus(tenant_id, collection_name)
-    regenrate_thread_embeddings = False
+    regenrate_thread_embeddings = True
     if regenrate_thread_embeddings:
+        clean_collection(collection_name)
         await generate_all_threads_embedding_and_store_to_milvus(
             tenant_id=tenant_id, 
             collection_name=collection_name)

@@ -1,15 +1,11 @@
 
-import json
 import time
-import random
 
-import numpy as np
 
 from pymilvus import MilvusClient
 from pymilvus import DataType
 
 from config import settings
-from pymilvus import model
 from utils.embedding import generate_embedding
 #ef = model.DefaultEmbeddingFunction()
 
