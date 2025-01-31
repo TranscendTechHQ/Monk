@@ -1,8 +1,38 @@
-import { Component, createSignal, createEffect, For } from 'solid-js';
+import { Component, createSignal, createEffect, For, Show } from 'solid-js';
 import { ThreadList } from './Thread';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
 import UserInfo from './UserInfo';
+
+const SearchModal: Component<{ results: ThreadsResponse, onClose: () => void }> = (props) => {
+  return (
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div class="bg-slate-800 rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-white text-xl font-bold">Search Results</h3>
+          <button
+            onClick={props.onClose}
+            class="text-slate-400 hover:text-white transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <For each={props.results.threads}>
+            {(thread) => (
+              <div class="bg-slate-700 p-4 rounded-lg">
+                <h4 class="text-white font-medium">{thread.content.topic}</h4>
+                <p class="text-slate-300 mt-2">{thread.content.headline?.text}</p>
+              </div>
+            )}
+          </For>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const NewsFeed: Component = () => {
   const [threads, setThreads] = createSignal<ThreadsResponse>();
@@ -10,6 +40,7 @@ const NewsFeed: Component = () => {
   const [error, setError] = createSignal<string | null>(null);
   const [searchQuery, setSearchQuery] = createSignal<string>('');
   const [searchResults, setSearchResults] = createSignal<ThreadsResponse>();
+  const [showSearchModal, setShowSearchModal] = createSignal(false);
 
   const fetchThreads = async () => {
     try {
@@ -33,6 +64,7 @@ const NewsFeed: Component = () => {
     try {
       const results = await ThreadsService.searchThreadsSearchThreadsGet(searchQuery());
       setSearchResults(results);
+      setShowSearchModal(true);
     } catch (err) {
       console.error('Error searching threads:', err);
     }
@@ -70,7 +102,7 @@ const NewsFeed: Component = () => {
                     value={searchQuery()}
                     onInput={(e) => setSearchQuery(e.currentTarget.value)}
                     onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
-                    class="border border-slate-600 bg-slate-700 text-white p-2 rounded w-full"
+                    class="border border-slate-600 bg-slate-700 text-white p-2 rounded w-full focus:outline-none focus:ring focus:ring-slate-500"
                     placeholder="Search threads..."
                   />
                   <button
@@ -87,21 +119,12 @@ const NewsFeed: Component = () => {
                   </button>
                 </div>
 
-                {(searchResults()?.threads ?? []).length > 0 && (
-                  <div class="w-full mt-4">
-                    <h2 class="text-white text-xl font-semibold mb-4 text-center">Search Results</h2>
-                    <div class="space-y-4 overflow-y-auto max-h-[300px]">
-                      <For each={searchResults()?.threads ?? []}>
-                        {(thread) => (
-                          <div id={thread.id?.toString() ?? ''} class="bg-slate-700 p-4 rounded-lg shadow-md mt-4">
-                            <h3 class="text-white text-lg font-semibold">{thread.content.topic}</h3>
-                            <p class="text-slate-300 mt-2">{thread.content.headline?.toString() || "No Title"}</p>
-                          </div>
-                        )}
-                      </For>
-                    </div>
-                  </div>
-                )}
+                <Show when={showSearchModal() && searchResults()?.threads?.length}>
+                  <SearchModal 
+                    results={searchResults()!} 
+                    onClose={() => setShowSearchModal(false)}
+                  />
+                </Show>
               </div>
             )}
           </div>
