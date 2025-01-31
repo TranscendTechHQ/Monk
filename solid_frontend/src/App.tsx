@@ -9,7 +9,7 @@ import NewsFeed from './components/NewsFeed';
 import ThreadMessages from './components/ThreadMessages';
 import { OpenAPI } from './api/core/OpenAPI';
 import Login, { Auth } from './Auth';
-import { initUserCache } from './utils/userUtils';
+
 import { userService } from './services/userService';
 
 // Keep API configuration

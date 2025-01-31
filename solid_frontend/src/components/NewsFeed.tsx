@@ -3,7 +3,7 @@ import { ThreadList } from './Thread';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
 import UserInfo from './UserInfo';
-import { getUserName } from '../utils/userUtils';
+
 import { userService } from '../services/userService';
 import { useNavigate } from '@solidjs/router';
 

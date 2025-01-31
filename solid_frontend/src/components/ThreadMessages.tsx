@@ -6,7 +6,7 @@ import { MessageCreate } from '../api/models/MessageCreate';
 import { MessageResponse } from '../api/models/MessageResponse';
 import UserInfo from './UserInfo';
 import { UserMap } from '../api/models/UserMap';
-import { getUserName } from '../utils/userUtils';
+
 import { userService } from '../services/userService';
 
 const ThreadMessages: Component = () => {
@@ -59,14 +59,6 @@ const ThreadMessages: Component = () => {
   });
 
   const messages = createMemo(() => thread()?.messages || []);
-
-  // Add this effect to handle user cache updates
-  createEffect(() => {
-    if (thread()) {
-      // Ensure user cache is initialized
-      getUserName(thread()!.messages[0].creator_id);
-    }
-  });
 
   return (
     <div class="min-h-screen bg-slate-900">
