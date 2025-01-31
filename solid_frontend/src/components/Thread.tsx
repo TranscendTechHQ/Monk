@@ -3,14 +3,36 @@
  *   All rights reserved.
  */
 
-import { Component } from 'solid-js';
+import { Component, createEffect, createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { ThreadResponse } from '../api/models/ThreadResponse';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
+import { ThreadsService } from '../api/services/ThreadsService';
+import { UserMap } from '../api/models/UserMap';
+import { UserModel } from '../api/models/UserModel';
 
 interface ThreadProps {
   thread: ThreadResponse;
 }
+
+const [userCache, setUserCache] = createSignal<Record<string, string>>({});
+
+// Fetch all users and cache their names
+createEffect(async () => {
+  try {
+    const users = await ThreadsService.getUsers();
+    const cache = Object.entries(users.users).reduce((acc, [userId, user]) => ({
+      ...acc,
+      [userId]: user.name || user.email || "Anonymous"
+    }), {});
+    setUserCache(cache);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+  }
+});
+
+// Helper function to get user name
+const getUserName = (userId: string) => userCache()[userId] || "Unknown";
 
 const Thread: Component<ThreadProps> = (props) => {
   const navigate = useNavigate();
@@ -27,7 +49,7 @@ const Thread: Component<ThreadProps> = (props) => {
       <h3 class="text-white text-lg font-semibold">{props.thread.content.topic || "No Topic"}</h3>
       <p class="text-slate-300">{props.thread.content.headline?.toString() || "No Title"}</p>
       <div class="text-slate-300 text-sm">
-        <span>By {props.thread.creator_id || "Unknown"} • {new Date(props.thread.created_at).toLocaleDateString()}</span>
+        <span>By {getUserName(props.thread.creator_id) || "Unknown"} • {new Date(props.thread.created_at).toLocaleDateString()}</span>
       </div>
     </div>
   );

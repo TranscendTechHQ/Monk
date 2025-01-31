@@ -55,37 +55,18 @@ export class ThreadsService {
         });
     }
     /**
-     * Search Threads
+     * Search threads in plain english and get top 3 matching threads
+     * The api will return top 3 threads matching the query
      * @param query
-     * @returns ThreadsResponse Search threads by query and get matching threads
+     * @returns ThreadsResponse Successful Response
      * @throws ApiError
      */
-    public static searchThreadsSearchThreadsGet(
+    public static searchThreads(
         query: string,
     ): CancelablePromise<ThreadsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/searchThreads',
-            query: {
-                'query': query,
-            },
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
-    /**
-     * Search Titles
-     * @param query
-     * @returns string Search threads by query and get topic
-     * @throws ApiError
-     */
-    public static searchTitles(
-        query: string,
-    ): CancelablePromise<Array<string>> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/searchTitles',
             query: {
                 'query': query,
             },
@@ -127,14 +108,36 @@ export class ThreadsService {
         });
     }
     /**
-     * All Users
-     * @returns UserMap Get user information
+     * Get user information
+     * The api will return user information
+     * @param userId
+     * @returns UserMap Successful Response
      * @throws ApiError
      */
-    public static allUsersUserGet(): CancelablePromise<UserMap> {
+    public static getUser(
+        userId: string,
+    ): CancelablePromise<UserMap> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/user',
+            query: {
+                'user_id': userId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
+     * Get all users
+     * The api will return all users
+     * @returns UserMap Successful Response
+     * @throws ApiError
+     */
+    public static getUsers(): CancelablePromise<UserMap> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/users',
         });
     }
 }

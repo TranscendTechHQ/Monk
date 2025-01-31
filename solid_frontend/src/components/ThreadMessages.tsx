@@ -1,10 +1,12 @@
-import { Component, createSignal, onMount, createMemo } from 'solid-js';
+import { Component, createSignal, onMount, createMemo, createEffect } from 'solid-js';
 import { useParams, useNavigate } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { MessagesResponse } from '../api/models/MessagesResponse';
 import { MessageCreate } from '../api/models/MessageCreate';
 import { MessageResponse } from '../api/models/MessageResponse';
 import UserInfo from './UserInfo';
+import { UserMap } from '../api/models/UserMap';
+import { getUserName } from '../utils/userUtils';
 
 const ThreadMessages: Component = () => {
   const params = useParams();
@@ -13,6 +15,7 @@ const ThreadMessages: Component = () => {
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
   const [newMessage, setNewMessage] = createSignal<string>('');
+  const [userCache, setUserCache] = createSignal<Record<string, string>>({});
 
   const fetchThreadDetails = async () => {
     setIsLoading(true);
@@ -52,6 +55,14 @@ const ThreadMessages: Component = () => {
 
   const messages = createMemo(() => thread()?.messages || []);
 
+  // Add this effect to handle user cache updates
+  createEffect(() => {
+    if (thread()) {
+      // Ensure user cache is initialized
+      getUserName(thread()!.creator_id);
+    }
+  });
+
   return (
     <div class="min-h-screen bg-slate-900">
       <main class="py-12">
@@ -80,20 +91,16 @@ const ThreadMessages: Component = () => {
             ) : (
               <div class="h-[calc(100%-96px)] flex flex-col">
                 {/* Messages list */}
-                <div class="space-y-4 overflow-y-auto max-h-[400px] flex-1">
-                  <div class="w-1/2 mx-auto">
-                    <div class="space-y-4">
-                      {messages().map((message: MessageResponse) => (
-                        <div 
-                          id={message.id} 
-                          class="bg-slate-700 text-white p-4 rounded-lg shadow-md w-full"
-                        >
-                          <p class="text-slate-100">{message.content.text}</p>
-                          <p class="text-slate-300 text-sm mt-1">— {message.creator_id || "Unknown"}</p>
-                        </div>
-                      ))}
+                <div class="space-y-2 overflow-y-auto max-h-[400px] mx-auto w-1/2">
+                  {messages().map((message: MessageResponse) => (
+                    <div 
+                      id={message.id} 
+                      class="bg-slate-800 text-white p-4 rounded-lg shadow-md my-2"
+                    >
+                      <p class="text-slate-100">{message.content.text}</p>
+                      <p class="text-slate-300 text-sm mt-1">— {getUserName(message.creator_id)}</p>
                     </div>
-                  </div>
+                  ))}
                 </div>
 
                 {/* New message input */}

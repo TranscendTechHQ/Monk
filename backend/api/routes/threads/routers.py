@@ -184,8 +184,10 @@ async def keyword_search(query, collection):
     return threads
 
 
-@router.get("/user", response_model=UserMap,
-            response_description="Get user information")
+@router.get("/users", response_model=UserMap, 
+            operation_id="get_users",
+            summary="Get all users",
+            description="The api will return all users")
 async def all_users(request: Request,
                     session: SessionContainer = Depends(verify_session())
                     ):
@@ -202,7 +204,20 @@ async def all_users(request: Request,
                         content=jsonable_encoder(UserMap(users=final_user_map)))
 
 
-
+@router.get("/user", response_model=UserMap,
+            operation_id="get_user",
+            summary="Get user information",
+            description="The api will return user information")
+async def get_user(request: Request, user_id: str, session: SessionContainer = Depends(verify_session())):
+    tenant_id = await get_tenant_id(session)
+    user_collection = asyncdb.users_collection
+    user = await get_mongo_document_async(filter={"_id": user_id},
+                                         collection=user_collection,
+                                         tenant_id=tenant_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content=jsonable_encoder(UserModel(**user)))
 
 @router.get("/searchThreads", response_model=ThreadsResponse,
             operation_id="search_threads",

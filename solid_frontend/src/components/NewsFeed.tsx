@@ -3,6 +3,7 @@ import { ThreadList } from './Thread';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
 import UserInfo from './UserInfo';
+import { getUserName } from '../utils/userUtils';
 
 const SearchModal: Component<{ results: ThreadsResponse, onClose: () => void }> = (props) => {
   return (
@@ -23,8 +24,8 @@ const SearchModal: Component<{ results: ThreadsResponse, onClose: () => void }> 
           <For each={props.results.threads}>
             {(thread) => (
               <div class="bg-slate-700 p-4 rounded-lg">
-                <h4 class="text-white font-medium">{thread.content.topic}</h4>
-                <p class="text-slate-300 mt-2">{thread.content.headline?.text}</p>
+                <h3 class="text-white text-lg font-semibold">{thread.content.topic}</h3>
+                <p class="text-slate-300 mt-2">By {getUserName(thread.creator_id)}</p>
               </div>
             )}
           </For>
@@ -62,7 +63,7 @@ const NewsFeed: Component = () => {
       return;
     }
     try {
-      const results = await ThreadsService.searchThreadsSearchThreadsGet(searchQuery());
+      const results = await ThreadsService.searchThreads(searchQuery());
       setSearchResults(results);
       setShowSearchModal(true);
     } catch (err) {

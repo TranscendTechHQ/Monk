@@ -373,7 +373,8 @@ paths:
       - threads
   /searchThreads:
     get:
-      operationId: search_threads_searchThreads_get
+      description: The api will return top 3 threads matching the query
+      operationId: search_threads
       parameters:
       - in: query
         name: query
@@ -387,43 +388,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ThreadsResponse'
-          description: Search threads by query and get matching threads
+          description: Successful Response
         '422':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Search Threads
-      tags:
-      - threads
-  /searchTitles:
-    get:
-      operationId: search_titles
-      parameters:
-      - in: query
-        name: query
-        required: true
-        schema:
-          title: Query
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  type: string
-                title: Response Search Titles
-                type: array
-          description: Search threads by query and get topic
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Search Titles
+      summary: Search threads in plain english and get top 3 matching threads
       tags:
       - threads
   /sessioninfo:
@@ -530,14 +502,42 @@ paths:
       - storage
   /user:
     get:
-      operationId: all_users_user_get
+      description: The api will return user information
+      operationId: get_user
+      parameters:
+      - in: query
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: string
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserMap'
-          description: Get user information
-      summary: All Users
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get user information
+      tags:
+      - threads
+  /users:
+    get:
+      description: The api will return all users
+      operationId: get_users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMap'
+          description: Successful Response
+      summary: Get all users
       tags:
       - threads
