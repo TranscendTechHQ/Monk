@@ -4,6 +4,7 @@ import { ThreadsService } from '../api/services/ThreadsService';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
 import UserInfo from './UserInfo';
 import { getUserName } from '../utils/userUtils';
+import { userService } from '../services/userService';
 
 const SearchModal: Component<{ results: ThreadsResponse, onClose: () => void }> = (props) => {
   return (
@@ -42,6 +43,7 @@ const NewsFeed: Component = () => {
   const [searchQuery, setSearchQuery] = createSignal<string>('');
   const [searchResults, setSearchResults] = createSignal<ThreadsResponse>();
   const [showSearchModal, setShowSearchModal] = createSignal(false);
+  const [isUserCacheReady, setIsUserCacheReady] = createSignal(false);
 
   const fetchThreads = async () => {
     try {
@@ -76,62 +78,76 @@ const NewsFeed: Component = () => {
     setSearchResults(undefined);
   };
 
+  createEffect(async () => {
+    try {
+      await userService.initialize();
+      setIsUserCacheReady(true);
+    } catch (err) {
+      console.error('User cache initialization failed:', err);
+    }
+  });
+
   createEffect(() => {
     fetchThreads();
   });
 
   return (
     <div class="min-h-screen bg-slate-900">
-      <main class="py-12">
-        <div class="container mx-auto h-[600px]">
-          <div class="bg-slate-800 rounded-xl p-8 shadow-xl max-w-4xl mx-auto h-full">
-            <h2 class="text-white text-3xl font-bold mb-8 text-center">NewsFeed</h2>
-            {isLoading() ? (
-              <div class="text-center text-slate-300">Loading threads...</div>
-            ) : error() ? (
-              <div class="text-center text-red-400">{error()}</div>
-            ) : (
-              <div class="flex flex-col items-center gap-6 h-[calc(100%-96px)]">
-                <div class="w-full space-y-4 overflow-y-auto max-h-[400px]">
-                  <ThreadList threads={{ threads: threads()?.threads || [] }} />
-                </div>
-                
-                {/* Search components and results */}
-                <div class="flex justify-center mb-6 w-1/2">
-                  <input
-                    type="text"
-                    value={searchQuery()}
-                    onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
-                    class="border border-slate-600 bg-slate-700 text-white p-2 rounded w-full focus:outline-none focus:ring focus:ring-slate-500"
-                    placeholder="Search threads..."
-                  />
-                  <button
-                    onClick={searchThreads}
-                    class="ml-2 bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200"
-                  >
-                    Submit
-                  </button>
-                  <button
-                    onClick={clearSearch}
-                    class="ml-2 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-500 transition duration-200"
-                  >
-                    Clear
-                  </button>
-                </div>
+      <Show when={isUserCacheReady()}>
+        <main class="py-12">
+          <div class="container mx-auto h-[600px]">
+            <div class="bg-slate-800 rounded-xl p-8 shadow-xl max-w-4xl mx-auto h-full">
+              <h2 class="text-white text-3xl font-bold mb-8 text-center">NewsFeed</h2>
+              {isLoading() ? (
+                <div class="text-center text-slate-300">Loading threads...</div>
+              ) : error() ? (
+                <div class="text-center text-red-400">{error()}</div>
+              ) : (
+                <div class="flex flex-col items-center gap-6 h-[calc(100%-96px)]">
+                  <div class="w-full space-y-4 overflow-y-auto max-h-[400px]">
+                    <ThreadList threads={{ threads: threads()?.threads || [] }} />
+                  </div>
+                  
+                  {/* Search components and results */}
+                  <div class="flex justify-center mb-6 w-1/2">
+                    <input
+                      type="text"
+                      value={searchQuery()}
+                      onInput={(e) => setSearchQuery(e.currentTarget.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
+                      class="border border-slate-600 bg-slate-700 text-white p-2 rounded w-full focus:outline-none focus:ring focus:ring-slate-500"
+                      placeholder="Search threads..."
+                    />
+                    <button
+                      onClick={searchThreads}
+                      class="ml-2 bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200"
+                    >
+                      Submit
+                    </button>
+                    <button
+                      onClick={clearSearch}
+                      class="ml-2 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-500 transition duration-200"
+                    >
+                      Clear
+                    </button>
+                  </div>
 
-                <Show when={showSearchModal() && searchResults()?.threads?.length}>
-                  <SearchModal 
-                    results={searchResults()!} 
-                    onClose={() => setShowSearchModal(false)}
-                  />
-                </Show>
-              </div>
-            )}
+                  <Show when={showSearchModal() && searchResults()?.threads?.length}>
+                    <SearchModal 
+                      results={searchResults()!} 
+                      onClose={() => setShowSearchModal(false)}
+                    />
+                  </Show>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </main>
-      <UserInfo />
+        </main>
+        <UserInfo />
+      </Show>
+      <Show when={!isUserCacheReady()}>
+        <div class="text-center text-slate-300 p-8">Loading user data...</div>
+      </Show>
     </div>
   );
 };

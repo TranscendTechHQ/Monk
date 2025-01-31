@@ -7,6 +7,7 @@ import { MessageResponse } from '../api/models/MessageResponse';
 import UserInfo from './UserInfo';
 import { UserMap } from '../api/models/UserMap';
 import { getUserName } from '../utils/userUtils';
+import { userService } from '../services/userService';
 
 const ThreadMessages: Component = () => {
   const params = useParams();
@@ -98,7 +99,7 @@ const ThreadMessages: Component = () => {
                       class="bg-slate-800 text-white p-4 rounded-lg shadow-md my-2"
                     >
                       <p class="text-slate-100">{message.content.text}</p>
-                      <p class="text-slate-300 text-sm mt-1">— {getUserName(message.creator_id)}</p>
+                      <p class="text-slate-300 text-sm mt-1">— {userService.getUserName(message.creator_id)}</p>
                     </div>
                   ))}
                 </div>

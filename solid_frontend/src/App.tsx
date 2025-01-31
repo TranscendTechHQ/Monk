@@ -10,16 +10,20 @@ import ThreadMessages from './components/ThreadMessages';
 import { OpenAPI } from './api/core/OpenAPI';
 import Login, { Auth } from './Auth';
 import { initUserCache } from './utils/userUtils';
+import { userService } from './services/userService';
 
 // Keep API configuration
 OpenAPI.BASE = 'http://localhost:8001';
 
 const App: Component = () => {
-  onMount(() => {
-    console.log('Initializing user cache...');
-    initUserCache().catch(err => {
-      console.error('User cache initialization failed:', err);
-    });
+  onMount(async () => {
+    console.log('[App] Component mounted - starting initialization');
+    try {
+      await userService.initialize();
+      console.log('[App] User service initialized');
+    } catch (err) {
+      console.error('[App] Initialization failed:', err);
+    }
   });
 
   return (
