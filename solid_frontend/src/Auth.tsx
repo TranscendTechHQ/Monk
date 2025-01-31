@@ -10,6 +10,7 @@ import { initSuperTokensUI } from "./config";
 import { Component } from 'solid-js';
 import { createSignal, Show } from "solid-js";
 import * as Session from "supertokens-web-js/recipe/session";
+import { useHref, useNavigate } from "@solidjs/router";
 
 const loadScript = (src: string) => {
     const script = document.createElement("script");
@@ -64,6 +65,8 @@ function Login() {
         session: false,
     });
 
+    const navigate = useNavigate();
+
     onMount(async () => {
         const { userId, session } = await getUserInfo();
         setData({ userId, session });
@@ -75,13 +78,18 @@ function Login() {
                 <h1 class="text-white text-3xl font-bold text-center mb-4">Hello!</h1>
 
                 <Show when={data().session}>
-                    <div class="text-center">
+                    <div class="text-center space-y-4">
                         <span class="text-slate-300">UserId:</span>
                         <h3 class="text-white text-lg font-semibold">{data().userId}</h3>
-
+                        <button
+                            onClick={() => navigate('/newsfeed')}
+                            class="w-full bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200"
+                        >
+                            Go to NewsFeed
+                        </button>
                         <button 
-                            onclick={signOut} 
-                            class="mt-4 border border-slate-400 text-white bg-slate-800 hover:bg-slate-700 transition duration-200 py-2 px-4 rounded"
+                            onClick={signOut} 
+                            class="w-full border border-slate-400 text-white bg-slate-800 hover:bg-slate-700 transition duration-200 py-2 px-4 rounded"
                         >
                             Sign Out
                         </button>
@@ -93,7 +101,7 @@ function Login() {
                         Visit the <a href="https://supertokens.com" class="text-slate-400 hover:underline">SuperTokens tutorial</a> to learn how to build Auth under a day.
                     </p>
                     <button 
-                        onclick={redirectToSignIn} 
+                        onClick={redirectToSignIn} 
                         class="mt-4 border border-slate-400 text-white bg-slate-800 hover:bg-slate-700 transition duration-200 py-2 px-4 rounded"
                     >
                         Sign in
