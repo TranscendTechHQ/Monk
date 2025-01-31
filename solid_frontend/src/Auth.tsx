@@ -5,12 +5,13 @@
 
 
 
-import { onMount } from "solid-js";
+import { onMount, createEffect } from "solid-js";
 import { initSuperTokensUI } from "./config";
 import { Component } from 'solid-js';
 import { createSignal, Show } from "solid-js";
 import * as Session from "supertokens-web-js/recipe/session";
 import { useHref, useNavigate } from "@solidjs/router";
+import { userService } from './services/userService';
 
 const loadScript = (src: string) => {
     const script = document.createElement("script");
@@ -67,6 +68,12 @@ function Login() {
 
     const navigate = useNavigate();
 
+    createEffect(async () => {
+        if (data().session) {
+            await userService.initialize();
+        }
+    });
+
     onMount(async () => {
         const { userId, session } = await getUserInfo();
         setData({ userId, session });
@@ -79,8 +86,9 @@ function Login() {
 
                 <Show when={data().session}>
                     <div class="text-center space-y-4">
-                        <span class="text-slate-300">UserId:</span>
-                        <h3 class="text-white text-lg font-semibold">{data().userId}</h3>
+                        <h2 class="text-white text-xl font-medium">
+                            Welcome back, {userService.getUserName(data().userId!)}
+                        </h2>
                         <button
                             onClick={() => navigate('/newsfeed')}
                             class="w-full bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200"
