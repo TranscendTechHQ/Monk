@@ -5,8 +5,13 @@ import { ThreadsResponse } from '../api/models/ThreadsResponse';
 import UserInfo from './UserInfo';
 import { getUserName } from '../utils/userUtils';
 import { userService } from '../services/userService';
+import { useNavigate } from '@solidjs/router';
 
-const SearchModal: Component<{ results: ThreadsResponse, onClose: () => void }> = (props) => {
+const SearchModal: Component<{ 
+  results: ThreadsResponse, 
+  onClose: () => void,
+  navigate: (path: string) => void 
+}> = (props) => {
   return (
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div class="bg-slate-800 rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -24,7 +29,13 @@ const SearchModal: Component<{ results: ThreadsResponse, onClose: () => void }> 
         <div class="space-y-4">
           <For each={props.results.threads}>
             {(thread) => (
-              <div class="bg-slate-700 p-4 rounded-lg">
+              <div 
+                class="bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition-colors"
+                onClick={() => {
+                  props.navigate(`/thread/${thread.id}?thread_topic=${thread.content.topic}`);
+                  props.onClose();
+                }}
+              >
                 <h3 class="text-white text-lg font-semibold">{thread.content.topic}</h3>
                 <p class="text-slate-300 mt-2">By {getUserName(thread.creator_id)}</p>
               </div>
@@ -44,6 +55,7 @@ const NewsFeed: Component = () => {
   const [searchResults, setSearchResults] = createSignal<ThreadsResponse>();
   const [showSearchModal, setShowSearchModal] = createSignal(false);
   const [isUserCacheReady, setIsUserCacheReady] = createSignal(false);
+  const navigate = useNavigate();
 
   const fetchThreads = async () => {
     try {
@@ -136,6 +148,7 @@ const NewsFeed: Component = () => {
                     <SearchModal 
                       results={searchResults()!} 
                       onClose={() => setShowSearchModal(false)}
+                      navigate={navigate}
                     />
                   </Show>
                 </div>
