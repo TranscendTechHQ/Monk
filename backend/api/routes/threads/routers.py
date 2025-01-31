@@ -63,21 +63,20 @@ async def create_message(message: MessageCreate, session: SessionContainer = Dep
     try:
         user_id = session.get_user_id()
         tenant_id = await get_tenant_id(session)
-        message_db = MessageDb(content=message.content,  
+        message_db = MessageDb(text=message.text,
+                               link_meta=message.link_meta,
+                               image=message.image,  
                             thread_id=message.thread_id, 
                             tenant_id=tenant_id, 
                             creator_id=user_id)
-        if message.content.link_meta is None:
+        if message.link_meta is None:
             # see if there are any links in the message text and extract links
-            linkMeta = extract_link_meta(message.content.text)
-            message_db.content.link_meta = linkMeta
+            linkMeta = extract_link_meta(message.text)
+            message_db.link_meta = linkMeta
         inserted_doc = create_mongo_doc_sync(document=jsonable_encoder(message_db),
                             collection=syncdb.messages_collection)
         
-        # Convert the MongoDB document to a dictionary and modify the 'id' field
         
-        inserted_doc['id'] = str(inserted_doc['_id'])  # Convert ObjectId to string
-
         # Create the MessageResponse object with the modified dictionary
         response = MessageResponse(**inserted_doc)
         
@@ -101,12 +100,8 @@ async def get_messages(thread_id: str, request: Request,
         collection=messages_collection, 
         tenant_id=tenant_id,
         filter={"thread_id": thread_id})
-    messages_response = []
-    for message in messages:
-        message['id'] = str(message['_id'])
-        messages_response.append(MessageResponse(**message))
-    
-    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(MessagesResponse(messages=messages_response)))
+    #print(f"Thread id {thread_id} messages {messages}")
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(MessagesResponse(messages=messages)))
 
 @router.post("/thread", 
              response_model=ThreadResponse,
@@ -119,17 +114,16 @@ async def create_thread(thread: ThreadCreate,
     try:
         user_id = session.get_user_id()
         tenant_id = await get_tenant_id(session)
-        thread_db = ThreadDb(content=thread.content, 
+        thread_db = ThreadDb(text=thread.text,
+                             image=thread.image,
+                             link_meta=thread.link_meta,
+                             topic=thread.topic,
                             tenant_id=tenant_id, 
                             creator_id=user_id)
         inserted_doc = create_mongo_doc_sync(
             document= jsonable_encoder(thread_db),
             collection=syncdb.threads_collection)
         
-        # Convert the MongoDB document to a dictionary and modify the 'id' field
-        
-        inserted_doc['id'] = str(inserted_doc['_id'])  # Convert ObjectId to string
-
         response = ThreadResponse(**inserted_doc) 
         
         
@@ -153,35 +147,12 @@ async def get_threads(request: Request,
         collection=threads_collection, 
         tenant_id=tenant_id)
     #threads_response = json_util.dumps(threads)
-    threads_response = []
-    for thread in threads:
-        thread['id'] = str(thread['_id'])
-        threads_response.append(ThreadResponse(**thread))
+
     
     return JSONResponse(status_code=status.HTTP_200_OK, 
-                        content=jsonable_encoder(ThreadsResponse(threads=threads_response)))
+                        content=jsonable_encoder(ThreadsResponse(threads=threads)))
 
-async def keyword_search(query, collection):
-    
-    pipeline = [
-        {
-            "$search": {
-                "index": "monkThreadIndex",
-                "text": {
-                    "query": query,
-                    "path": {
-                        "wildcard": "*"
-                    }
-                }
-            }
-        },
-        {
-            "$limit": 3
-        }
-    ]
-    threads = await get_aggregate_async(pipeline=pipeline, collection=collection)
 
-    return threads
 
 
 @router.get("/users", response_model=UserMap, 
@@ -241,15 +212,11 @@ async def search_threads(request: Request, query: str, session: SessionContainer
         thread = await get_mongo_document_async( filter={"thread_id": id},
                                                          collection=threads_collection,
                                                          tenant_id=tenant_id)
-        if thread is not None:
-            thread['id'] = str(thread['_id'])   
+        if thread is not None:   
             filtered_threads.append(ThreadResponse(**thread))
     return_threads = jsonable_encoder(ThreadsResponse(threads=filtered_threads))
     # print(return_threads)
     return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)
-
-
-
 
 
 def semantic_filter_threads(user_id, tenant_id):

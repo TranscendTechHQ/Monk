@@ -2,12 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Thread_Output } from './Thread_Output';
+import type { LinkMetaModel } from './LinkMetaModel';
 export type ThreadResponse = {
-    content: Thread_Output;
-    created_at: string;
-    creator_id: string;
-    id: string;
-    last_modified: string;
+    _id?: string;
+    created_at?: string;
+    creator_id?: string;
+    image?: (string | null);
+    last_modified?: string;
+    link_meta?: (LinkMetaModel | null);
+    text?: string;
+    topic: string;
 };
 

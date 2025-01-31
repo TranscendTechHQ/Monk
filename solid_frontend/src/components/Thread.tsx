@@ -27,7 +27,7 @@ const Thread: Component<ThreadProps> = (props) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/thread/${props.thread.id}?thread_topic=${props.thread.content.topic}`);
+    navigate(`/thread/${props.thread._id}?thread_topic=${props.thread.topic}`);
   };
 
   return (
@@ -35,10 +35,10 @@ const Thread: Component<ThreadProps> = (props) => {
       class="bg-slate-700 ring-1 ring-slate-400/20 rounded-xl p-4 hover:bg-slate-600 transition-all cursor-pointer" 
       onClick={handleClick}
     >
-      <h3 class="text-white text-lg font-semibold">{props.thread.content.topic || "No Topic"}</h3>
-      <p class="text-slate-300">{props.thread.content.headline.text?.toString() || "No Title"}</p>
+      <h3 class="text-white text-lg font-semibold">{props.thread.topic || "No Topic"}</h3>
+      <p class="text-slate-300">{props.thread.text?.toString() || "No Title"}</p>
       <div class="text-slate-300 text-sm">
-        <span>By {userService.getUserName(props.thread.creator_id)} • {new Date(props.thread.created_at).toLocaleDateString()}</span>
+        <span>By {userService.getUserName(props.thread.creator_id??'Unknow')} • {new Date(props.thread.created_at??'Unknown date').toLocaleDateString()}</span>
       </div>
     </div>
   );

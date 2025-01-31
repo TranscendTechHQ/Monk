@@ -11,13 +11,10 @@ export type { Body_Upload_Files_uploadFiles__post } from './models/Body_Upload_F
 export type { FilesResponseModel } from './models/FilesResponseModel';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export type { LinkMetaModel } from './models/LinkMetaModel';
-export type { Message } from './models/Message';
 export type { MessageCreate } from './models/MessageCreate';
 export type { MessageResponse } from './models/MessageResponse';
 export type { MessagesResponse } from './models/MessagesResponse';
 export type { SessionInfo } from './models/SessionInfo';
-export type { Thread_Input } from './models/Thread_Input';
-export type { Thread_Output } from './models/Thread_Output';
 export type { ThreadCreate } from './models/ThreadCreate';
 export type { ThreadResponse } from './models/ThreadResponse';
 export type { ThreadsResponse } from './models/ThreadsResponse';

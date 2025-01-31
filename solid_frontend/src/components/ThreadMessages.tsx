@@ -42,7 +42,7 @@ const ThreadMessages: Component = () => {
       try {
         const threadId = params.id;
         const new_message: MessageCreate = {
-          content: { text: newMessage() },
+          text: newMessage(),
           thread_id: threadId
         };
         await ThreadsService.createMessage(new_message);
@@ -91,11 +91,11 @@ const ThreadMessages: Component = () => {
                 <div class="space-y-2 overflow-y-auto max-h-[400px] mx-auto w-1/2">
                   {messages().map((message: MessageResponse) => (
                     <div 
-                      id={message.id} 
+                      id={message._id} 
                       class="bg-slate-800 text-white p-4 rounded-lg shadow-md my-2"
                     >
-                      <p class="text-slate-100">{message.content.text}</p>
-                      <p class="text-slate-300 text-sm mt-1">— {userService.getUserName(message.creator_id)}</p>
+                      <p class="text-slate-100">{message.text}</p>
+                      <p class="text-slate-300 text-sm mt-1">— {userService.getUserName(message.creator_id??"Unknow id")}</p>
                     </div>
                   ))}
                 </div>

@@ -1,11 +1,12 @@
 import asyncio
 
+from bson import ObjectId
 from fastapi.encoders import jsonable_encoder
 from pymongo import MongoClient
 
 from config import settings
 from routes.threads.models import Message, MessageDb, Thread, ThreadDb
-from utils.db import create_mongo_doc_sync
+from utils.db import create_mongo_doc_sync, get_mongo_document_async, get_mongo_document_sync, get_mongo_documents_sync
 
 
 from utils.db import asyncdb
@@ -282,20 +283,58 @@ def delete_threads_with_topic_pattern(pattern):
             #print(f"Thread {doc['topic']} has {num_blocks} blocks")
             delete_thread(thread_id)
 
+def fix_messages_thread_id():
 
+    messages_collection = app.mongodb["messages"]
+    threads_old_collection = app.mongodb["threads_back"]
+    
+    for doc in messages_collection.find():
+        #print(doc)
+        old_thread_id = doc['thread_id']
+        thread = threads_old_collection.find_one({"_id": ObjectId(old_thread_id)})
+        if thread:
+            #print("hey")
+            correct_thread_id = thread["thread_id"]
+            #print(correct_thread_id)
+            messages_collection.update_one(
+                {"_id": doc["_id"]},
+                {"$set": {"thread_id": correct_thread_id}}
+            )
+      
+
+def change_messages_model():
+    messages_collection_old = app.mongodb["messages_old"]
+    messages_collection = app.mongodb["messages"]
+    for doc in messages_collection_old.find():
+        #print(doc)
+        message_db = MessageDb(
+            #id = doc['_id'],
+            text=doc['content']['text'],
+            image=doc['content']['image'],
+            link_meta=doc['content']['link_meta'],
+            #tenant_id=doc['tenant_id'],
+            tenant_id="T048F0ANS1M",
+            creator_id=doc['creator_id'],
+            created_at=doc['created_at'],
+            last_modified=doc['last_modified'],
+            thread_id=doc['thread_id']
+        )
+        create_mongo_doc_sync(
+            document= jsonable_encoder(message_db),
+            collection=messages_collection)
+        
     
 def change_thread_model():
-    threads_collection_old = app.mongodb["threads_old"]
+    threads_collection_old = app.mongodb["threads_bak"]
     threads_collection = app.mongodb["threads"]
     for doc in threads_collection_old.find():
         #print(doc)
         thread_db = ThreadDb(
-            content=Thread(
-                headline=Message(
-                    text=doc['headline']
-                ),
-                topic=doc['topic']
-            ),
+            id = doc['_id'],
+            text=doc['headline']['text'],
+            image=doc['headline']['image'],
+            link_meta=doc['headline']['link_meta'],
+            topic = doc['topic'],
             tenant_id=doc['tenant_id'],
             creator_id=doc['creator_id'],
             created_at=doc['created_at'],
@@ -374,7 +413,38 @@ def migrate_blocks_to_messages():
                     document=jsonable_encoder(msg),
                     collection=messages_collection,
                 )
+                
+def modify_thread_fields():
+    threads_collection = app.mongodb["threads_back"]
+    ## move the fields inside content object outside it
+    
+
         
+    for thread in threads_collection.find():
+            
+        thread_id = thread["_id"]
+        if 'content' in thread.keys():
+            topic = thread['content']['topic']
+            threads_collection.update_one(
+                    filter={"_id": ObjectId(thread_id)},
+                    update={"$set": {"topic": topic}},
+                )
+            headline = thread['content']['headline']
+            threads_collection.find_one_and_update(
+                    filter={"_id": ObjectId(thread_id)},
+                    update={"$set": {"headline": headline}},
+                )
+            threads_collection.find_one_and_update(
+                filter={"_id": ObjectId(thread_id)},
+                update = {"$unset": {"content":""}}
+            )
+            threads_collection.find_one_and_update(
+                    filter={"_id": ObjectId(thread_id)},
+                    update={"$set": {"tenant_id": "T048F0ANS1M"}},
+                )
+           
+
+     
 async def main():
     startup_db_client()
     #remove_thread_content_data()
@@ -387,8 +457,11 @@ async def main():
     #delete_threads_with_type("todo")
     #delete_threads_with_topic_pattern("Reply")
     #change_thread_model()
+    #change_messages_model()
     #migrate_blocks_to_messages()
-    add_thread_id_to_threads()
+    #add_thread_id_to_threads()
+    #modify_thread_fields()
+    fix_messages_thread_id()
     shutdown_db_client()
 
 

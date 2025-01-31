@@ -32,12 +32,12 @@ const SearchModal: Component<{
               <div 
                 class="bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition-colors"
                 onClick={() => {
-                  props.navigate(`/thread/${thread.id}?thread_topic=${thread.content.topic}`);
+                  props.navigate(`/thread/${thread._id}?thread_topic=${thread.topic}`);
                   props.onClose();
                 }}
               >
-                <h3 class="text-white text-lg font-semibold">{thread.content.topic}</h3>
-                <p class="text-slate-300 mt-2">By {userService.getUserName(thread.creator_id)}</p>
+                <h3 class="text-white text-lg font-semibold">{thread.topic}</h3>
+                <p class="text-slate-300 mt-2">By {userService.getUserName(thread.creator_id ?? 'unknown')}</p>
               </div>
             )}
           </For>

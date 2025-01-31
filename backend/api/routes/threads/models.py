@@ -51,72 +51,54 @@ class BaseModelConfig(BaseModel):
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
+class DBMeta(BaseModelConfig):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    creator_id: str = Field
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_modified: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 class Message(BaseModelConfig):
     text: str = Field
     image: Optional[str] = Field(default=None)
     link_meta: Optional[LinkMetaModel] = Field(default=None)
 
-class MessageDb(BaseModelConfig):
-    content: Message
-    creator_id: str = Field
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    last_modified: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+class MessageDb(Message, DBMeta):
     thread_id: str = Field
     tenant_id: str = Field
     
-    
-class MessageCreate(BaseModelConfig):
-    content: Message
+class MessageCreate(Message):
     thread_id: str = Field
 
-class MessageUpdate(BaseModelConfig):
-    content: Message
+class MessageUpdate(Message):
+    id: str
     
 class MessageDelete(BaseModelConfig):
     id: str
     
-class MessageResponse(BaseModelConfig):
-    id: str
-    content: Message
-    creator_id: str
-    created_at: datetime
-    last_modified: datetime
+class MessageResponse(Message, DBMeta):
     thread_id: str
 
 class MessagesResponse(BaseModelConfig):
     messages: List[MessageResponse]
 
-class Thread(BaseModelConfig):
+class Thread(Message):
     topic: str
-    headline: Message
 
-class ThreadDb(BaseModel):
-    content: Thread
-    thread_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    tenant_id: str
-    creator_id: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    last_modified: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+class ThreadDb(Thread, DBMeta):
+    tenant_id: str = Field
     
-class ThreadCreate(BaseModelConfig):
-    content: Thread
+class ThreadCreate(Thread):
+    pass
     
-class ThreadUpdate(BaseModelConfig):
-    content: Thread
-
-class ThreadResponse(BaseModelConfig):
+class ThreadUpdate(Thread):
     id: str
-    content: Thread
-    creator_id: str
-    created_at: datetime
-    last_modified: datetime
-    
 
-    
 class ThreadDelete(BaseModelConfig):
-    id: str
-    
-    
+    id: str   
+
+class ThreadResponse(Thread, DBMeta):
+    pass
+
 class ThreadsResponse(BaseModelConfig):
     threads: List[ThreadResponse]
 

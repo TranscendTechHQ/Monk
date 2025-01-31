@@ -2,8 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Thread_Input } from './Thread_Input';
+import type { LinkMetaModel } from './LinkMetaModel';
 export type ThreadCreate = {
-    content: Thread_Input;
+    image?: (string | null);
+    link_meta?: (LinkMetaModel | null);
+    text?: string;
+    topic: string;
 };
 

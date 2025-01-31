@@ -54,7 +54,7 @@ components:
       - url
       title: LinkMetaModel
       type: object
-    Message:
+    MessageCreate:
       properties:
         image:
           anyOf:
@@ -68,23 +68,16 @@ components:
         text:
           title: Text
           type: string
-      title: Message
-      type: object
-    MessageCreate:
-      properties:
-        content:
-          $ref: '#/components/schemas/Message'
         thread_id:
           title: Thread Id
           type: string
-      required:
-      - content
       title: MessageCreate
       type: object
     MessageResponse:
       properties:
-        content:
-          $ref: '#/components/schemas/Message'
+        _id:
+          title: ' Id'
+          type: string
         created_at:
           format: date-time
           title: Created At
@@ -92,22 +85,26 @@ components:
         creator_id:
           title: Creator Id
           type: string
-        id:
-          title: Id
-          type: string
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
         last_modified:
           format: date-time
           title: Last Modified
+          type: string
+        link_meta:
+          anyOf:
+          - $ref: '#/components/schemas/LinkMetaModel'
+          - type: 'null'
+        text:
+          title: Text
           type: string
         thread_id:
           title: Thread Id
           type: string
       required:
-      - id
-      - content
-      - creator_id
-      - created_at
-      - last_modified
       - thread_id
       title: MessageResponse
       type: object
@@ -153,42 +150,32 @@ components:
       - accessTokenPayload
       title: SessionInfo
       type: object
-    Thread-Input:
-      properties:
-        headline:
-          $ref: '#/components/schemas/Message'
-        topic:
-          title: Topic
-          type: string
-      required:
-      - topic
-      - headline
-      title: Thread
-      type: object
-    Thread-Output:
-      properties:
-        headline:
-          $ref: '#/components/schemas/Message'
-        topic:
-          title: Topic
-          type: string
-      required:
-      - topic
-      - headline
-      title: Thread
-      type: object
     ThreadCreate:
       properties:
-        content:
-          $ref: '#/components/schemas/Thread-Input'
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
+        link_meta:
+          anyOf:
+          - $ref: '#/components/schemas/LinkMetaModel'
+          - type: 'null'
+        text:
+          title: Text
+          type: string
+        topic:
+          title: Topic
+          type: string
       required:
-      - content
+      - topic
       title: ThreadCreate
       type: object
     ThreadResponse:
       properties:
-        content:
-          $ref: '#/components/schemas/Thread-Output'
+        _id:
+          title: ' Id'
+          type: string
         created_at:
           format: date-time
           title: Created At
@@ -196,19 +183,27 @@ components:
         creator_id:
           title: Creator Id
           type: string
-        id:
-          title: Id
-          type: string
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
         last_modified:
           format: date-time
           title: Last Modified
           type: string
+        link_meta:
+          anyOf:
+          - $ref: '#/components/schemas/LinkMetaModel'
+          - type: 'null'
+        text:
+          title: Text
+          type: string
+        topic:
+          title: Topic
+          type: string
       required:
-      - id
-      - content
-      - creator_id
-      - created_at
-      - last_modified
+      - topic
       title: ThreadResponse
       type: object
     ThreadsResponse:

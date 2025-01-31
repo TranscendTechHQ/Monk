@@ -2,9 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Message } from './Message';
+import type { LinkMetaModel } from './LinkMetaModel';
 export type MessageCreate = {
-    content: Message;
+    image?: (string | null);
+    link_meta?: (LinkMetaModel | null);
+    text?: string;
     thread_id?: string;
 };
 
