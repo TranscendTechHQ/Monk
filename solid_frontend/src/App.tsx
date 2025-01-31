@@ -3,7 +3,7 @@
  *   All rights reserved.
  */
 
-import { Component } from 'solid-js';
+import { Component, onMount } from 'solid-js';
 import { Router, Route, Navigate } from '@solidjs/router';
 import NewsFeed from './components/NewsFeed';
 import ThreadMessages from './components/ThreadMessages';
@@ -14,10 +14,14 @@ import { initUserCache } from './utils/userUtils';
 // Keep API configuration
 OpenAPI.BASE = 'http://localhost:8001';
 
-// Initialize user cache on app load
-initUserCache();
-
 const App: Component = () => {
+  onMount(() => {
+    console.log('Initializing user cache...');
+    initUserCache().catch(err => {
+      console.error('User cache initialization failed:', err);
+    });
+  });
+
   return (
     <Router>
       <Route path="/auth/*" component={Auth} />

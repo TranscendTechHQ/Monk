@@ -196,7 +196,7 @@ async def all_users(request: Request,
     final_user_map = {}
 
     
-    user_list = get_mongo_documents_async(asyncdb.users_collection, tenant_id=tenant_id)
+    user_list = await get_mongo_documents_async(asyncdb.users_collection, tenant_id=tenant_id)
     for user in user_list:
         final_user_map[user["_id"]] = UserModel(**user)
 

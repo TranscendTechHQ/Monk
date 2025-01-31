@@ -59,7 +59,7 @@ const ThreadMessages: Component = () => {
   createEffect(() => {
     if (thread()) {
       // Ensure user cache is initialized
-      getUserName(thread()!.creator_id);
+      getUserName(thread()!.messages[0].creator_id);
     }
   });
 

@@ -49,7 +49,7 @@ const Thread: Component<ThreadProps> = (props) => {
       <h3 class="text-white text-lg font-semibold">{props.thread.content.topic || "No Topic"}</h3>
       <p class="text-slate-300">{props.thread.content.headline?.toString() || "No Title"}</p>
       <div class="text-slate-300 text-sm">
-        <span>By {getUserName(props.thread.creator_id) || "Unknown"} • {new Date(props.thread.created_at).toLocaleDateString()}</span>
+        <span>By {getUserName(props.thread.creator_id)} • {new Date(props.thread.created_at).toLocaleDateString()}</span>
       </div>
     </div>
   );
