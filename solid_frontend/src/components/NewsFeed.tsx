@@ -37,7 +37,7 @@ const SearchModal: Component<{
                 }}
               >
                 <h3 class="text-white text-lg font-semibold">{thread.content.topic}</h3>
-                <p class="text-slate-300 mt-2">By {getUserName(thread.creator_id)}</p>
+                <p class="text-slate-300 mt-2">By {userService.getUserName(thread.creator_id)}</p>
               </div>
             )}
           </For>
