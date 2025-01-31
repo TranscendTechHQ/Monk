@@ -22,7 +22,8 @@ const [userCache, setUserCache] = createSignal<Record<string, string>>({});
 const getUserName = (userId: string) => userCache()[userId] || "Unknown";
 
 const Thread: Component<ThreadProps> = (props) => {
-  console.log('[Thread] Rendering thread ID:', props.thread.id, 'with creator:', props.thread.creator_id);
+  // Keep this commented for future debugging
+  // console.log('[Thread] Rendering thread ID:', props.thread.id, 'with creator:', props.thread.creator_id);
   const navigate = useNavigate();
 
   const handleClick = () => {

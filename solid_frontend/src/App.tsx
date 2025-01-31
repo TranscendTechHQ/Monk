@@ -17,10 +17,10 @@ OpenAPI.BASE = 'http://localhost:8001';
 
 const App: Component = () => {
   onMount(async () => {
-    console.log('[App] Component mounted - starting initialization');
+    console.log('[App] Initializing application...');
     try {
       await userService.initialize();
-      console.log('[App] User service initialized');
+      console.log('[App] Initialization complete');
     } catch (err) {
       console.error('[App] Initialization failed:', err);
     }
