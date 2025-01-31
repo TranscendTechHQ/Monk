@@ -68,7 +68,7 @@ const ThreadMessages: Component = () => {
             {/* Header and message list */}
             <div class="flex items-center justify-center mb-8 relative">
               <button 
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/newsfeed')}
                 class="bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200 flex items-center absolute left-0"
               >
                 {/* Back button SVG */}
