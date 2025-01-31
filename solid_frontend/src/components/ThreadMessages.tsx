@@ -1,5 +1,5 @@
 import { Component, createSignal, onMount, createMemo, createEffect } from 'solid-js';
-import { useParams, useNavigate } from '@solidjs/router';
+import { useParams, useNavigate, useLocation } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { MessagesResponse } from '../api/models/MessagesResponse';
 import { MessageCreate } from '../api/models/MessageCreate';
@@ -12,22 +12,26 @@ import { userService } from '../services/userService';
 const ThreadMessages: Component = () => {
   const params = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const threadTopic = new URLSearchParams(location.search).get('thread_topic');
+  console.log("thread topic = ", threadTopic);
   const [thread, setThread] = createSignal<MessagesResponse | null>(null);
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
   const [newMessage, setNewMessage] = createSignal<string>('');
   const [userCache, setUserCache] = createSignal<Record<string, string>>({});
 
-  const fetchThreadDetails = async () => {
+  const fetchThreadMessages = async () => {
     setIsLoading(true);
     try {
       const threadId = params.id;
+      
       const fetchedThread = await ThreadsService.getMessages(threadId);
       setThread(fetchedThread);
       setError(null);
     } catch (err) {
-      setError('Failed to load thread details. Please try again later.');
-      console.error('Error fetching thread details:', err);
+      setError('Failed to load thread messages. Please try again later.');
+      console.error('Error fetching thread messages:', err);
     } finally {
       setIsLoading(false);
     }
@@ -43,7 +47,7 @@ const ThreadMessages: Component = () => {
         };
         await ThreadsService.createMessage(new_message);
         setNewMessage('');
-        fetchThreadDetails();
+        fetchThreadMessages();
       } catch (err) {
         console.error('Error creating message:', err);
       }
@@ -51,7 +55,7 @@ const ThreadMessages: Component = () => {
   };
 
   onMount(() => {
-    fetchThreadDetails();
+    fetchThreadMessages();
   });
 
   const messages = createMemo(() => thread()?.messages || []);
@@ -81,12 +85,12 @@ const ThreadMessages: Component = () => {
                 </svg>
                 NewsFeed
               </button>
-              <h2 class="text-white text-3xl font-bold text-center">Messages</h2>
+              <h2 class="text-white text-3xl font-bold text-center">Messages: {threadTopic}</h2>
             </div>
 
             {/* Loading and error states */}
             {isLoading() ? (
-              <div class="text-slate-300">Loading thread details...</div>
+              <div class="text-slate-300">Loading thread messages...</div>
             ) : error() ? (
               <div class="text-red-400">{error()}</div>
             ) : (

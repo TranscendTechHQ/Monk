@@ -27,7 +27,7 @@ const Thread: Component<ThreadProps> = (props) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/thread/${props.thread.id}`);
+    navigate(`/thread/${props.thread.id}?thread_topic=${props.thread.content.topic}`);
   };
 
   return (
