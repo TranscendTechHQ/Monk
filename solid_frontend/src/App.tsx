@@ -30,7 +30,7 @@ const App: Component = () => {
     <Router>
       <Route path="/auth/*" component={Auth} />
       <Route path="/login/*" component={Login} />
-      <Route path="/" component={() => <Navigate href="/newsfeed" />} />
+      <Route path="/" component={() => <Navigate href="/login" />} />
       <Route path="/newsfeed" component={NewsFeed} />
       <Route path="/thread/:id" component={ThreadMessages} />
     </Router>

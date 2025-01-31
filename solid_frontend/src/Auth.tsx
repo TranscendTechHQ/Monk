@@ -11,7 +11,7 @@ import { Component } from 'solid-js';
 import { createSignal, Show } from "solid-js";
 import * as Session from "supertokens-web-js/recipe/session";
 import { useHref, useNavigate } from "@solidjs/router";
-import { userService } from './services/userService';
+import { useUser } from './context/UserContext';
 
 const loadScript = (src: string) => {
     const script = document.createElement("script");
@@ -67,12 +67,8 @@ function Login() {
     });
 
     const navigate = useNavigate();
-
-    createEffect(async () => {
-        if (data().session) {
-            await userService.initialize();
-        }
-    });
+    const userContext = useUser();
+    const user = () => userContext?.user?.() || null;
 
     onMount(async () => {
         const { userId, session } = await getUserInfo();
@@ -87,7 +83,7 @@ function Login() {
                 <Show when={data().session}>
                     <div class="text-center space-y-4">
                         <h2 class="text-white text-xl font-medium">
-                            Welcome back, {userService.getUserName(data().userId!)}
+                            Welcome back, {user()?.name || "User"}
                         </h2>
                         <button
                             onClick={() => navigate('/newsfeed')}
