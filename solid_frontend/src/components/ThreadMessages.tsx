@@ -71,16 +71,16 @@ const ThreadMessages: Component = () => {
   });
 
   return (
-    <div class="h-screen flex flex-col bg-monk-dark">
+    <div class="h-screen flex flex-col bg-monk-dark overflow-hidden">
       {/* Header */}
-      <div class="h-[120px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
-        <h2 class="text-monk-cream text-3xl font-bold text-center">
+      <div class="h-[100px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-4 px-8">
+        <h2 class="text-monk-cream text-2xl font-bold text-center">
           {threadTopic || "Untitled Thread"}
         </h2>
       </div>
 
       {/* Messages List */}
-      <div class="flex-1 overflow-y-auto pb-4">
+      <div class="flex-1 overflow-y-auto">
         <div class="max-w-4xl mx-auto px-8 pt-4 space-y-4">
           <For each={messages()}>
             {(message) => (
@@ -100,7 +100,7 @@ const ThreadMessages: Component = () => {
       </div>
 
       {/* Footer */}
-      <div class="h-[120px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
+      <div class="h-[140px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
         <div class="max-w-4xl mx-auto px-8 pt-4 flex items-center gap-4">
           <button 
             onClick={() => navigate(-1)}
