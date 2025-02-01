@@ -8,10 +8,10 @@ class UserService {
       console.log('[UserService] Initializing user cache...');
       const response = await ThreadsService.getUsers();
       
-      this.cache = Object.entries(response.users).reduce((acc, [userId, user]) => {
+      this.cache = response.users.reduce((acc, user) => {
         const displayName = user.name || user.email || "Anonymous";
         //console.log(displayName);
-        return { ...acc, [userId]: displayName };
+        return { ...acc, [user._id]: displayName };
       }, {});
       
       console.log('[UserService] Cache initialized with', Object.keys(this.cache).length, 'users');
