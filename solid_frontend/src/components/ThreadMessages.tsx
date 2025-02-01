@@ -64,7 +64,9 @@ const ThreadMessages: Component = () => {
     <div class="h-screen flex flex-col bg-monk-dark">
       {/* Header */}
       <div class="h-[120px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
-        <h2 class="text-monk-cream text-3xl font-bold text-center">{params.thread_topic}</h2>
+        <h2 class="text-monk-cream text-3xl font-bold text-center">
+          {threadTopic || "Untitled Thread"}
+        </h2>
       </div>
 
       {/* Messages List */}
