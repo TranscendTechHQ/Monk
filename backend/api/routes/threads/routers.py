@@ -13,7 +13,7 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 from routes.threads.models import LinkMetaModel, MessageCreate, MessageDb, MessageResponse, MessagesResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UserResponse, UsersResponse
 from utils.milvus_vector import milvus_semantic_search
 from utils.scrapper import getLinkMeta
-from utils.db import create_mongo_doc_sync, get_aggregate_async, get_mongo_document_async, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, asyncdb, syncdb
+from utils.db import create_mongo_doc_sync, get_aggregate_async, get_mongo_document_async, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, asyncdb, syncdb, update_fields_mongo_simple
 
 from utils.relevance import get_relevant_thread_ids
 
@@ -75,7 +75,9 @@ async def create_message(message: MessageCreate, session: SessionContainer = Dep
             message_db.link_meta = linkMeta
         inserted_doc = create_mongo_doc_sync(document=jsonable_encoder(message_db),
                             collection=syncdb.messages_collection)
-        
+        update_fields_mongo_simple(collection=syncdb.threads_collection,
+                                   query={"_id":message.thread_id},
+                                   fields={"last_modified":inserted_doc["created_at"]})
         
         # Create the MessageResponse object with the modified dictionary
         response = MessageResponse(**inserted_doc)
@@ -148,7 +150,7 @@ async def get_threads(request: Request,
     threads = await get_mongo_documents_async(
         collection=threads_collection, 
         tenant_id=tenant_id,
-        sort=[("created_at", 1)])
+        sort=[("last_modified", -1)])
     #threads_response = json_util.dumps(threads)
 
     

@@ -317,33 +317,6 @@ async def get_creator_block_by_id(block_id, block_collection):
 #
 
 
-async def update_block_child_id(blocks_collection,
-                                parent_block_id,
-                                thread_id,
-                                child_thread_id):
-    print("\n 5c.1 Updating block with child_thread_id: ", child_thread_id)
-    result = await blocks_collection.update_one(
-        {"_id": parent_block_id},
-        {"$set": {"child_thread_id": child_thread_id}}
-    )
-    # query = {'_id': thread_id}
-
-    # Fetch the document and find the block with "id" "3493"
-    # document = threads_collection.find_one(query)
-    # print(parent_block_id)
-
-    # update = {'$set': {'content.$[elem].child_thread_id': child_thread_id}}
-    # Find the document with the "_id" of "385029"
-
-    # result = await threads_collection.update_one(query, update,
-    #                                              array_filters=[{'elem._id': parent_block_id}],
-    #                                              upsert=True)
-
-    if result.modified_count > 0:
-        print("\n 5.c.2 Child thread id updated in block")
-    else:
-        print("could not update the block with block_id: ", parent_block_id)
-
 
 def update_fields_mongo_simple(query: dict, fields: dict, collection):
     collection.update_one(query, {"$set": fields}, upsert=True)
