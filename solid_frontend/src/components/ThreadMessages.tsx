@@ -21,6 +21,9 @@ const ThreadMessages: Component = () => {
   const [newMessage, setNewMessage] = createSignal<string>('');
   const [userCache, setUserCache] = createSignal<Record<string, string>>({});
 
+  // Add ref for messages container
+  let messagesEndRef: HTMLDivElement | undefined;
+
   const fetchThreadMessages = async () => {
     setIsLoading(true);
     try {
@@ -60,6 +63,13 @@ const ThreadMessages: Component = () => {
 
   const messages = createMemo(() => thread()?.messages || []);
 
+  // Auto-scroll effect
+  createEffect(() => {
+    if (messagesEndRef && messages().length > 0) {
+      messagesEndRef.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
   return (
     <div class="h-screen flex flex-col bg-monk-dark">
       {/* Header */}
@@ -85,6 +95,7 @@ const ThreadMessages: Component = () => {
               </div>
             )}
           </For>
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
