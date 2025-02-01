@@ -105,11 +105,12 @@ const ThreadMessages: Component = () => {
         <div class="max-w-4xl mx-auto px-8 pt-4 flex items-center gap-4">
           <button 
             onClick={() => navigate(-1)}
-            class="text-monk-gray hover:text-monk-gold transition-colors"
+            class="text-monk-gray hover:text-monk-gold transition-colors flex items-center gap-2"
           >
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
+            <span class="text-sm font-medium">Newsfeed</span>
           </button>
 
           <input
