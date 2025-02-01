@@ -13,12 +13,12 @@ async def generate_single_thread_embedding(thread_id, tenant_id):
     
     thread_collection = asyncdb.threads_collection
     thread_doc = await get_mongo_document_async(
-        filter={'thread_id': thread_id}, 
+        filter={'_id': thread_id}, 
         collection=thread_collection, 
         tenant_id=tenant_id)
     user_collection = asyncdb.users_collection
 
-    topic = thread_doc['content']['topic']
+    topic = thread_doc['topic']
     text = "This is the content of the thread with topic " + topic + ". "
     createdAt = thread_doc['created_at']
     text += "The thread was created on " + createdAt + ". "
@@ -28,25 +28,25 @@ async def generate_single_thread_embedding(thread_id, tenant_id):
         filter={'_id': creator_id}, 
         collection=user_collection, 
         tenant_id=tenant_id)
-    
-    text += "The creator of the thread is " + userDoc['name'] + ". "
-    email = userDoc['email']
-    text += "The email of the creator is " + email + ". "
+    if userDoc:
+        text += "The creator of the thread is " + userDoc['name'] + ". "
+        email = userDoc['email']
+        text += "The email of the creator is " + email + ". "
     
     text += "The thread has the following messages: "
-    text += f"{thread_doc['content']['headline']['text']} "
+    text += f"{thread_doc['text']} "
     
     message_collection = asyncdb.messages_collection
     messages = await get_mongo_documents_async(
         collection=message_collection, 
         tenant_id=tenant_id, 
-        filter={'thread_id': str(thread_doc['_id'])}, 
+        filter={'thread_id': thread_doc['_id']}, 
         sort=[('created_at', 1)])
     
 
     for message in messages:
         
-        text += message['content']['text'] + " "
+        text += message['text'] + " "
     #print (text)
 
     embedding = generate_embedding(text)
@@ -66,12 +66,13 @@ async def generate_all_threads_embedding_and_store_to_milvus(tenant_id, collecti
     create_thread_collection(collection_name, dim=1536)
     for thread_doc in threads:
         # print(doc['content'])
+        thread_id = thread_doc['_id']
         thread_embedding = await generate_single_thread_embedding(
-            thread_id=thread_doc['thread_id'], 
+            thread_id=thread_id,
             tenant_id=tenant_id)
         store_milvus_thread_embedding(
             collection_name=collection_name,
-            thread_id=thread_doc['thread_id'], 
+            thread_id=thread_id, 
             tenant_id=tenant_id,
             thread_embedding=thread_embedding)
 
