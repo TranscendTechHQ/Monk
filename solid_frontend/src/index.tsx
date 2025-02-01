@@ -2,7 +2,7 @@
 import { render } from "solid-js/web";
 import { Router, Route } from "@solidjs/router";
 import "./index.css";
-import { Root } from './App';
+
 import Login, { Auth } from "./Auth";
 import { initSuperTokensWebJS } from "./config";
 import ThreadMessages from './components/ThreadMessages';

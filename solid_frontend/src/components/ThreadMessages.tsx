@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount, createMemo, createEffect } from 'solid-js';
+import { Component, createSignal, onMount, createMemo, createEffect, For } from 'solid-js';
 import { useParams, useNavigate, useLocation } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { MessagesResponse } from '../api/models/MessagesResponse';
@@ -88,8 +88,8 @@ const ThreadMessages: Component = () => {
                          hover:border-monk-teal/60 transition-colors">
                 <p class="text-monk-cream">{message.text}</p>
                 <div class="mt-2 text-monk-gray text-sm">
-                  <span>By {userService.getUserName(message.creator_id)} • 
-                    {new Date(message.created_at).toLocaleString()}
+                  <span>By {userService.getUserName(message.creator_id??"unknown creator")} • 
+                    {new Date(message.created_at?? "unknown creation time").toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -101,6 +101,7 @@ const ThreadMessages: Component = () => {
 
       {/* Footer */}
       <div class="h-[140px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
+        {/* Input Container */}
         <div class="max-w-4xl mx-auto px-8 pt-4 flex items-center gap-4">
           <button 
             onClick={() => navigate(-1)}
@@ -128,7 +129,7 @@ const ThreadMessages: Component = () => {
                 try {
                   await ThreadsService.createMessage({
                     text: newMessage(),
-                    thread_id: params.id
+                    thread_id: params.id!
                   });
                   setNewMessage('');
                   await fetchThreadMessages();
@@ -143,9 +144,11 @@ const ThreadMessages: Component = () => {
           </button>
         </div>
 
-        <div class="max-w-4xl mx-auto px-8 pt-2 flex justify-start">
+        {/* UserInfo Container */}
+        <div class="w-full px-0 pt-2 flex justify-start">
           <UserInfo />
         </div>
+
       </div>
     </div>
   );
