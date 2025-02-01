@@ -216,7 +216,7 @@ async def search_threads(request: Request, query: str, session: SessionContainer
 
     filtered_threads = []
     for id in filtered_threads_ids:
-        thread = await get_mongo_document_async( filter={"thread_id": id},
+        thread = await get_mongo_document_async( filter={"_id": id},
                                                          collection=threads_collection,
                                                          tenant_id=tenant_id)
         if thread is not None:   
