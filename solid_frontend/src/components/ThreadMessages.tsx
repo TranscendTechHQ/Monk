@@ -61,64 +61,79 @@ const ThreadMessages: Component = () => {
   const messages = createMemo(() => thread()?.messages || []);
 
   return (
-    <div class="min-h-screen bg-slate-900">
-      <main class="py-12">
-        <div class="container mx-auto h-[600px]">
-          <div class="bg-slate-800 rounded-xl p-8 shadow-xl max-w-4xl mx-auto h-full">
-            {/* Header and message list */}
-            <div class="flex items-center justify-center mb-8 relative">
-              <button 
-                onClick={() => navigate('/newsfeed')}
-                class="bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200 flex items-center absolute left-0"
-              >
-                {/* Back button SVG */}
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                NewsFeed
-              </button>
-              <h2 class="text-white text-3xl font-bold text-center">Messages: {threadTopic}</h2>
-            </div>
+    <div class="h-screen flex flex-col bg-monk-dark">
+      {/* Header */}
+      <div class="h-[120px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
+        <h2 class="text-monk-cream text-3xl font-bold text-center">{params.thread_topic}</h2>
+      </div>
 
-            {/* Loading and error states */}
-            {isLoading() ? (
-              <div class="text-slate-300">Loading thread messages...</div>
-            ) : error() ? (
-              <div class="text-red-400">{error()}</div>
-            ) : (
-              <div class="h-[calc(100%-96px)] flex flex-col">
-                {/* Messages list */}
-                <div class="space-y-2 overflow-y-auto max-h-[400px] mx-auto w-1/2">
-                  {messages().map((message: MessageResponse) => (
-                    <div 
-                      id={message._id} 
-                      class="bg-monk-light text-monk-dark p-4 rounded-lg shadow-monk my-2"
-                    >
-                      <p class="text-slate-100">{message.text}</p>
-                      <p class="text-slate-300 text-sm mt-1">— {userService.getUserName(message.creator_id??"Unknow id")}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* New message input */}
-                <div class="mt-auto pt-4">
-                  <div class="flex justify-center w-1/2 mx-auto">
-                    <input 
-                      type="text" 
-                      value={newMessage()} 
-                      onInput={(e) => setNewMessage(e.currentTarget.value)} 
-                      onKeyDown={handleNewMessageKeyDown}
-                      class="w-full border border-slate-600 bg-slate-700 text-white p-2 rounded focus:outline-none focus:ring focus:ring-slate-500"
-                      placeholder="Type your message and press Enter..."
-                    />
-                  </div>
+      {/* Messages List */}
+      <div class="flex-1 overflow-y-auto pb-4">
+        <div class="max-w-4xl mx-auto px-8 pt-4 space-y-4">
+          <For each={messages()}>
+            {(message) => (
+              <div class="bg-monk-mid/70 backdrop-blur-sm p-4 rounded-xl border-2 border-monk-teal/40
+                         hover:border-monk-teal/60 transition-colors">
+                <p class="text-monk-cream">{message.text}</p>
+                <div class="mt-2 text-monk-gray text-sm">
+                  <span>By {userService.getUserName(message.creator_id)} • 
+                    {new Date(message.created_at).toLocaleString()}
+                  </span>
                 </div>
               </div>
             )}
-          </div>
+          </For>
         </div>
-      </main>
-      <UserInfo />
+      </div>
+
+      {/* Footer */}
+      <div class="h-[120px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
+        <div class="max-w-4xl mx-auto px-8 pt-4 flex items-center gap-4">
+          <button 
+            onClick={() => navigate(-1)}
+            class="text-monk-gray hover:text-monk-gold transition-colors"
+          >
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+          </button>
+
+          <input
+            type="text"
+            value={newMessage()}
+            onInput={(e) => setNewMessage(e.currentTarget.value)}
+            onKeyDown={handleNewMessageKeyDown}
+            class="flex-1 border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl
+                   focus:outline-none focus:ring-2 focus:ring-monk-gold focus:border-transparent
+                   placeholder-monk-gray"
+            placeholder="Type your message..."
+          />
+
+          <button 
+            onClick={async () => {
+              if (newMessage().trim()) {
+                try {
+                  await ThreadsService.createMessage({
+                    text: newMessage(),
+                    thread_id: params.id
+                  });
+                  setNewMessage('');
+                  await fetchThreadMessages();
+                } catch (err) {
+                  console.error('Error creating message:', err);
+                }
+              }
+            }}
+            class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors"
+          >
+            Send
+          </button>
+        </div>
+
+        <div class="max-w-4xl mx-auto px-8 pt-2 flex justify-start">
+          <UserInfo />
+        </div>
+      </div>
     </div>
   );
 };
