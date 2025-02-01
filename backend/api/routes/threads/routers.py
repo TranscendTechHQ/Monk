@@ -97,9 +97,11 @@ async def get_messages(thread_id: str, request: Request,
     tenant_id = await get_tenant_id(session)
     messages_collection = asyncdb.messages_collection
     messages = await get_mongo_documents_async(
-        collection=messages_collection, 
+        collection=messages_collection,
         tenant_id=tenant_id,
-        filter={"thread_id": thread_id})
+        filter={"thread_id": thread_id},
+        sort=[("created_at", 1)]
+    )
     #print(f"Thread id {thread_id} messages {messages}")
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(MessagesResponse(messages=messages)))
 
@@ -145,7 +147,8 @@ async def get_threads(request: Request,
     threads_collection = asyncdb.threads_collection
     threads = await get_mongo_documents_async(
         collection=threads_collection, 
-        tenant_id=tenant_id)
+        tenant_id=tenant_id,
+        sort=[("created_at", 1)])
     #threads_response = json_util.dumps(threads)
 
     
