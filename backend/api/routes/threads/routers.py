@@ -10,7 +10,7 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 
 
-from routes.threads.models import LinkMetaModel, MessageCreate, MessageDb, MessageResponse, MessagesResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UserMap, UserModel
+from routes.threads.models import LinkMetaModel, MessageCreate, MessageDb, MessageResponse, MessagesResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UserResponse, UsersResponse
 from utils.milvus_vector import milvus_semantic_search
 from utils.scrapper import getLinkMeta
 from utils.db import create_mongo_doc_sync, get_aggregate_async, get_mongo_document_async, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, asyncdb, syncdb
@@ -155,7 +155,7 @@ async def get_threads(request: Request,
 
 
 
-@router.get("/users", response_model=UserMap, 
+@router.get("/users", response_model=UsersResponse, 
             operation_id="get_users",
             summary="Get all users",
             description="The api will return all users")
@@ -163,19 +163,26 @@ async def all_users(request: Request,
                     session: SessionContainer = Depends(verify_session())
                     ):
     tenant_id = await get_tenant_id(session)
-    # get all users
-    final_user_map = {}
-
+    
     
     user_list = await get_mongo_documents_async(asyncdb.users_collection, tenant_id=tenant_id)
-    for user in user_list:
-        final_user_map[user["_id"]] = UserModel(**user)
+    
+    # final_user_list = []
+    # for user in user_list:
+    #     #print(f"keys {user.keys()}")
+    #     final_user_list.append(UserResponse(
+    #         id=user['_id'],
+    #         name=user['name'],
+    #         picture=user['picture'],
+    #         email=user['email'],
+    #         last_login=user['last_login']
+    #     ))
 
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(UserMap(users=final_user_map)))
+                        content=jsonable_encoder(UsersResponse(users=user_list)))
 
 
-@router.get("/user", response_model=UserMap,
+@router.get("/user", response_model=UserResponse,
             operation_id="get_user",
             summary="Get user information",
             description="The api will return user information")
@@ -188,7 +195,7 @@ async def get_user(request: Request, user_id: str, session: SessionContainer = D
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=jsonable_encoder(UserModel(**user)))
+                        content=jsonable_encoder(UserResponse(**user)))
 
 @router.get("/searchThreads", response_model=ThreadsResponse,
             operation_id="search_threads",

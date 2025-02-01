@@ -8,7 +8,8 @@ import type { MessagesResponse } from '../models/MessagesResponse';
 import type { ThreadCreate } from '../models/ThreadCreate';
 import type { ThreadResponse } from '../models/ThreadResponse';
 import type { ThreadsResponse } from '../models/ThreadsResponse';
-import type { UserMap } from '../models/UserMap';
+import type { UserResponse } from '../models/UserResponse';
+import type { UsersResponse } from '../models/UsersResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -111,12 +112,12 @@ export class ThreadsService {
      * Get user information
      * The api will return user information
      * @param userId
-     * @returns UserMap Successful Response
+     * @returns UserResponse Successful Response
      * @throws ApiError
      */
     public static getUser(
         userId: string,
-    ): CancelablePromise<UserMap> {
+    ): CancelablePromise<UserResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/user',
@@ -131,10 +132,10 @@ export class ThreadsService {
     /**
      * Get all users
      * The api will return all users
-     * @returns UserMap Successful Response
+     * @returns UsersResponse Successful Response
      * @throws ApiError
      */
-    public static getUsers(): CancelablePromise<UserMap> {
+    public static getUsers(): CancelablePromise<UsersResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/users',

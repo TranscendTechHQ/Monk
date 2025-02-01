@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type UserModel = {
+export type UserResponse = {
     _id: string;
     email?: string;
-    last_login?: string;
+    last_login: string;
     name?: string;
     picture?: string;
 };

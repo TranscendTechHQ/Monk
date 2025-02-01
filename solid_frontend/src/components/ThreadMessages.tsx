@@ -5,7 +5,7 @@ import { MessagesResponse } from '../api/models/MessagesResponse';
 import { MessageCreate } from '../api/models/MessageCreate';
 import { MessageResponse } from '../api/models/MessageResponse';
 import UserInfo from './UserInfo';
-import { UserMap } from '../api/models/UserMap';
+
 
 import { userService } from '../services/userService';
 

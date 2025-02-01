@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { UserModel } from './UserModel';
-export type UserMap = {
-    users: Record<string, UserModel>;
+import type { UserResponse } from './UserResponse';
+export type UsersResponse = {
+    users: Array<UserResponse>;
 };
 

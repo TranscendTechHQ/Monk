@@ -10,6 +10,7 @@ class UserService {
       
       this.cache = Object.entries(response.users).reduce((acc, [userId, user]) => {
         const displayName = user.name || user.email || "Anonymous";
+        //console.log(displayName);
         return { ...acc, [userId]: displayName };
       }, {});
       

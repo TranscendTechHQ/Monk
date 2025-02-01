@@ -7,9 +7,7 @@ import { Component, createEffect, createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { ThreadResponse } from '../api/models/ThreadResponse';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
-import { ThreadsService } from '../api/services/ThreadsService';
-import { UserMap } from '../api/models/UserMap';
-import { UserModel } from '../api/models/UserModel';
+
 import { userService } from '../services/userService';
 
 interface ThreadProps {

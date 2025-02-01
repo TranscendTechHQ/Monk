@@ -217,18 +217,7 @@ components:
       - threads
       title: ThreadsResponse
       type: object
-    UserMap:
-      properties:
-        users:
-          additionalProperties:
-            $ref: '#/components/schemas/UserModel'
-          title: Users
-          type: object
-      required:
-      - users
-      title: UserMap
-      type: object
-    UserModel:
+    UserResponse:
       properties:
         _id:
           title: ' Id'
@@ -238,7 +227,6 @@ components:
           title: Email
           type: string
         last_login:
-          default: unknown last login
           title: Last Login
           type: string
         name:
@@ -251,7 +239,19 @@ components:
           type: string
       required:
       - _id
-      title: UserModel
+      - last_login
+      title: UserResponse
+      type: object
+    UsersResponse:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/UserResponse'
+          title: Users
+          type: array
+      required:
+      - users
+      title: UsersResponse
       type: object
     ValidationError:
       properties:
@@ -511,7 +511,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserMap'
+                $ref: '#/components/schemas/UserResponse'
           description: Successful Response
         '422':
           content:
@@ -531,7 +531,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserMap'
+                $ref: '#/components/schemas/UsersResponse'
           description: Successful Response
       summary: Get all users
       tags:

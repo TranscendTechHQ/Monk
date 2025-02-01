@@ -18,8 +18,8 @@ export type { SessionInfo } from './models/SessionInfo';
 export type { ThreadCreate } from './models/ThreadCreate';
 export type { ThreadResponse } from './models/ThreadResponse';
 export type { ThreadsResponse } from './models/ThreadsResponse';
-export type { UserMap } from './models/UserMap';
-export type { UserModel } from './models/UserModel';
+export type { UserResponse } from './models/UserResponse';
+export type { UsersResponse } from './models/UsersResponse';
 export type { ValidationError } from './models/ValidationError';
 
 export { DefaultService } from './services/DefaultService';
