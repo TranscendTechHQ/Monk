@@ -114,26 +114,18 @@ const NewsFeed: Component = () => {
       <Show when={isUserCacheReady()}>
         <main class="py-12">
           <div class="container mx-auto h-[600px]">
-            <div class="bg-monk-dark/95 backdrop-blur-sm rounded-xl p-8 shadow-xl max-w-4xl mx-auto h-full">
-              <h2 class="text-monk-cream text-3xl font-bold mb-8 text-center">NewsFeed</h2>
-              {isLoading() ? (
-                <div class="text-center text-monk-gold">Loading threads...</div>
-              ) : error() ? (
-                <div class="text-center text-monk-red">{error()}</div>
-              ) : (
-                <div class="flex flex-col items-center gap-6 h-[calc(100%-96px)]">
-                  <div class="w-full space-y-4 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-monk-gold scrollbar-track-monk-dark">
-                    <ThreadList threads={{ threads: threads()?.threads || [] }} />
-                  </div>
-                  
-                  {/* Search components and results */}
-                  <div class="flex justify-center mb-6 w-1/2">
+            <div class="flex flex-col h-[calc(100vh-100px)]">
+              {/* Search Bar */}
+              <div class="sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
+                <div class="flex items-center gap-4 max-w-4xl mx-auto">
+                  <h2 class="text-monk-cream text-3xl font-bold">NewsFeed</h2>
+                  <div class="flex-1 flex gap-2">
                     <input
                       type="text"
                       value={searchQuery()}
                       onInput={(e) => setSearchQuery(e.currentTarget.value)}
                       onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
-                      class="border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl w-full
+                      class="flex-1 border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl
                              focus:outline-none focus:ring-2 focus:ring-monk-gold focus:border-transparent
                              placeholder-monk-gray"
                       placeholder="Search threads..."
@@ -141,37 +133,27 @@ const NewsFeed: Component = () => {
                     <button
                       onClick={searchThreads}
                       disabled={isSearching()}
-                      class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors ml-2
-                             font-semibold"
+                      class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors
+                             font-semibold min-w-[100px]"
                     >
-                      {isSearching() ? (
-                        <div class="flex items-center gap-2">
-                          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Searching...
-                        </div>
-                      ) : 'Submit'}
+                      {isSearching() ? '...' : 'Search'}
                     </button>
                     <button
                       onClick={clearSearch}
-                      class="ml-2 bg-monk-red text-white py-2 px-4 rounded-lg 
-                             hover:bg-red-700 transition-colors"
+                      class="bg-monk-red text-monk-cream px-4 py-3 rounded-lg hover:bg-monk-red/80 transition-colors"
                     >
                       Clear
                     </button>
                   </div>
-
-                  <Show when={showSearchModal() && searchResults()?.threads?.length}>
-                    <SearchModal 
-                      results={searchResults()!} 
-                      onClose={() => setShowSearchModal(false)}
-                      navigate={navigate}
-                    />
-                  </Show>
                 </div>
-              )}
+              </div>
+
+              {/* Scrollable Thread List */}
+              <div class="flex-1 overflow-y-auto px-8 pb-8">
+                <div class="max-w-4xl mx-auto">
+                  <ThreadList threads={{ threads: threads()?.threads || [] }} />
+                </div>
+              </div>
             </div>
           </div>
         </main>
