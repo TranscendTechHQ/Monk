@@ -148,8 +148,11 @@ const NewsFeed: Component = () => {
           </div>
           
           {/* Scrollable Thread List */}
-          <div class="h-[calc(100vh-200px)] overflow-y-auto">
-            <div class="max-w-4xl mx-auto p-8">
+          <div class="h-[calc(100vh-200px)] overflow-y-auto" >
+
+
+          <div class="max-w-4xl mx-auto">
+
               <Show when={!isLoading() && !error()}>
                 <ThreadList threads={{ threads: threads()?.threads || [] }} />
               </Show>

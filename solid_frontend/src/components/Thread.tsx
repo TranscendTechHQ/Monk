@@ -45,8 +45,8 @@ const Thread: Component<ThreadProps> = (props) => {
 
 export const ThreadList: Component<{ threads: ThreadsResponse }> = (props) => {
   return (
-    <div class="overflow-y-auto max-h-[400px] mx-auto w-1/2">
-      <div class="space-y-4">
+    <div class="h-full w-full flex justify-center">
+      <div class="w-[70%] max-w-4xl space-y-4">
         {props.threads.threads.map((thread) => (
           <Thread thread={thread} />
         ))}
@@ -54,5 +54,7 @@ export const ThreadList: Component<{ threads: ThreadsResponse }> = (props) => {
     </div>
   );
 };
+
+
 
 export default Thread; 
