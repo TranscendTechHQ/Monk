@@ -110,59 +110,68 @@ const NewsFeed: Component = () => {
   });
 
   return (
-    <div class="min-h-screen bg-gradient-to-br from-monk-dark via-monk-mid to-monk-light">
-      <Show when={isUserCacheReady()}>
-        <main class="py-12">
-          <div class="container mx-auto h-[600px]">
-            <div class="flex flex-col h-[calc(100vh-100px)]">
-              {/* Search Bar */}
-              <div class="sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
-                <div class="flex items-center gap-4 max-w-4xl mx-auto">
-                  <h2 class="text-monk-cream text-3xl font-bold">NewsFeed</h2>
-                  <div class="flex-1 flex gap-2">
-                    <input
-                      type="text"
-                      value={searchQuery()}
-                      onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
-                      class="flex-1 border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl
-                             focus:outline-none focus:ring-2 focus:ring-monk-gold focus:border-transparent
-                             placeholder-monk-gray"
-                      placeholder="Search threads..."
-                    />
-                    <button
-                      onClick={searchThreads}
-                      disabled={isSearching()}
-                      class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors
-                             font-semibold min-w-[100px]"
-                    >
-                      {isSearching() ? '...' : 'Search'}
-                    </button>
-                    <button
-                      onClick={clearSearch}
-                      class="bg-monk-red text-monk-cream px-4 py-3 rounded-lg hover:bg-monk-red/80 transition-colors"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Scrollable Thread List */}
-              <div class="flex-1 overflow-y-auto px-8 pb-8">
-                <div class="max-w-4xl mx-auto">
-                  <ThreadList threads={{ threads: threads()?.threads || [] }} />
-                </div>
+    <>
+      <div class="h-screen flex flex-col">
+        {/* Main Content Area */}
+        <div class="flex-1 overflow-hidden">
+          {/* Search Header */}
+          <div class="h-[120px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
+            <div class="flex items-center gap-4 max-w-4xl mx-auto">
+              <h2 class="text-monk-cream text-3xl font-bold">NewsFeed</h2>
+              <div class="flex-1 flex gap-2">
+                <input
+                  type="text"
+                  value={searchQuery()}
+                  onInput={(e) => setSearchQuery(e.currentTarget.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
+                  class="flex-1 border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl
+                         focus:outline-none focus:ring-2 focus:ring-monk-gold focus:border-transparent
+                         placeholder-monk-gray"
+                  placeholder="Search threads..."
+                />
+                <button
+                  onClick={searchThreads}
+                  disabled={isSearching()}
+                  class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors
+                         font-semibold min-w-[100px]"
+                >
+                  {isSearching() ? '...' : 'Search'}
+                </button>
+                <button
+                  onClick={clearSearch}
+                  class="bg-monk-red text-monk-cream px-4 py-3 rounded-lg hover:bg-monk-red/80 transition-colors"
+                >
+                  Clear
+                </button>
               </div>
             </div>
           </div>
-        </main>
-        <UserInfo />
+          
+          {/* Scrollable Thread List */}
+          <div class="h-[calc(100vh-200px)] overflow-y-auto">
+            <div class="max-w-4xl mx-auto p-8">
+              <Show when={!isLoading() && !error()}>
+                <ThreadList threads={{ threads: threads()?.threads || [] }} />
+              </Show>
+            </div>
+          </div>
+        </div>
+
+        {/* Fixed Footer */}
+        <div class="h-[80px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
+          <UserInfo />
+        </div>
+      </div>
+
+      {/* Search Modal */}
+      <Show when={showSearchModal() && searchResults()?.threads?.length}>
+        <SearchModal 
+          results={searchResults()!} 
+          onClose={() => setShowSearchModal(false)}
+          navigate={navigate}
+        />
       </Show>
-      <Show when={!isUserCacheReady()}>
-        <div class="text-center text-monk-gray p-8">Loading user data...</div>
-      </Show>
-    </div>
+    </>
   );
 };
 
