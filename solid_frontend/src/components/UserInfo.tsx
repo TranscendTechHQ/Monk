@@ -12,7 +12,7 @@ const UserInfo: Component = () => {
   const { user } = userContext;
 
   return (
-    <div class="absolute bottom-4 left-4 text-slate-300">
+    <div class="bg-monk-light p-4 rounded-lg shadow-monk">
       {user() ? ( // Check if user data is available
         <>
           <p>{user()?.name}</p>

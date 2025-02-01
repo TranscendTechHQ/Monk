@@ -92,7 +92,7 @@ const ThreadMessages: Component = () => {
                   {messages().map((message: MessageResponse) => (
                     <div 
                       id={message._id} 
-                      class="bg-slate-800 text-white p-4 rounded-lg shadow-md my-2"
+                      class="bg-monk-light text-monk-dark p-4 rounded-lg shadow-monk my-2"
                     >
                       <p class="text-slate-100">{message.text}</p>
                       <p class="text-slate-300 text-sm mt-1">— {userService.getUserName(message.creator_id??"Unknow id")}</p>

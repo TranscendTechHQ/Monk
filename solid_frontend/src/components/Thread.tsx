@@ -30,10 +30,11 @@ const Thread: Component<ThreadProps> = (props) => {
 
   return (
     <div 
-      class="bg-slate-700 ring-1 ring-slate-400/20 rounded-xl p-4 hover:bg-slate-600 transition-all cursor-pointer" 
+      class="bg-monk-light rounded-xl p-4 shadow-md border-2 border-monk-teal/20
+             hover:border-monk-orange/40 transition-colors cursor-pointer"
       onClick={handleClick}
     >
-      <h3 class="text-white text-lg font-semibold">{props.thread.topic || "No Topic"}</h3>
+      <h3 class="text-monk-cream text-lg font-bold">{props.thread.topic}</h3>
       <p class="text-slate-300">{props.thread.text?.toString() || "No Title"}</p>
       <div class="text-slate-300 text-sm">
         <span>By {userService.getUserName(props.thread.creator_id??'Unknow')} • {new Date(props.thread.created_at??'Unknown date').toLocaleDateString()}</span>

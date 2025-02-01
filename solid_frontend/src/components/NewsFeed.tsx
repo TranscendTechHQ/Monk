@@ -13,13 +13,13 @@ const SearchModal: Component<{
   navigate: (path: string) => void 
 }> = (props) => {
   return (
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div class="bg-slate-800 rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+    <div class="fixed inset-0 bg-monk-dark/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div class="bg-monk-blue/90 backdrop-blur-lg rounded-xl p-6 w-full max-w-2xl">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-white text-xl font-bold">Search Results</h3>
+          <h3 class="text-monk-cream text-xl font-bold">Search Results</h3>
           <button
             onClick={props.onClose}
-            class="text-slate-400 hover:text-white transition-colors"
+            class="text-monk-gray hover:text-monk-gold transition-colors"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -30,14 +30,16 @@ const SearchModal: Component<{
           <For each={props.results.threads}>
             {(thread) => (
               <div 
-                class="bg-slate-700 p-4 rounded-lg cursor-pointer hover:bg-slate-600 transition-colors"
+                class="bg-monk-mid/70 backdrop-blur-sm p-4 rounded-xl border-2 border-monk-red
+                       hover:border-monk-red/90 hover:bg-monk-mid/90 transition-all cursor-pointer
+                       shadow-lg hover:shadow-xl"
                 onClick={() => {
                   props.navigate(`/thread/${thread._id}?thread_topic=${thread.topic}`);
                   props.onClose();
                 }}
               >
-                <h3 class="text-white text-lg font-semibold">{thread.topic}</h3>
-                <p class="text-slate-300 mt-2">By {userService.getUserName(thread.creator_id ?? 'unknown')}</p>
+                <h3 class="text-monk-cream text-lg font-semibold">{thread.topic}</h3>
+                <p class="text-monk-gray mt-2">By {userService.getUserName(thread.creator_id ?? 'unknown')}</p>
               </div>
             )}
           </For>
@@ -108,19 +110,19 @@ const NewsFeed: Component = () => {
   });
 
   return (
-    <div class="min-h-screen bg-slate-900">
+    <div class="min-h-screen bg-gradient-to-br from-monk-dark via-monk-mid to-monk-light">
       <Show when={isUserCacheReady()}>
         <main class="py-12">
           <div class="container mx-auto h-[600px]">
-            <div class="bg-slate-800 rounded-xl p-8 shadow-xl max-w-4xl mx-auto h-full">
-              <h2 class="text-white text-3xl font-bold mb-8 text-center">NewsFeed</h2>
+            <div class="bg-monk-dark/95 backdrop-blur-sm rounded-xl p-8 shadow-xl max-w-4xl mx-auto h-full">
+              <h2 class="text-monk-cream text-3xl font-bold mb-8 text-center">NewsFeed</h2>
               {isLoading() ? (
-                <div class="text-center text-slate-300">Loading threads...</div>
+                <div class="text-center text-monk-gold">Loading threads...</div>
               ) : error() ? (
-                <div class="text-center text-red-400">{error()}</div>
+                <div class="text-center text-monk-red">{error()}</div>
               ) : (
                 <div class="flex flex-col items-center gap-6 h-[calc(100%-96px)]">
-                  <div class="w-full space-y-4 overflow-y-auto max-h-[400px]">
+                  <div class="w-full space-y-4 overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-monk-gold scrollbar-track-monk-dark">
                     <ThreadList threads={{ threads: threads()?.threads || [] }} />
                   </div>
                   
@@ -131,13 +133,16 @@ const NewsFeed: Component = () => {
                       value={searchQuery()}
                       onInput={(e) => setSearchQuery(e.currentTarget.value)}
                       onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
-                      class="border border-slate-600 bg-slate-700 text-white p-2 rounded w-full focus:outline-none focus:ring focus:ring-slate-500"
+                      class="border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl w-full
+                             focus:outline-none focus:ring-2 focus:ring-monk-gold focus:border-transparent
+                             placeholder-monk-gray"
                       placeholder="Search threads..."
                     />
                     <button
                       onClick={searchThreads}
                       disabled={isSearching()}
-                      class="ml-2 bg-slate-600 text-white py-2 px-4 rounded hover:bg-slate-500 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors ml-2
+                             font-semibold"
                     >
                       {isSearching() ? (
                         <div class="flex items-center gap-2">
@@ -151,7 +156,8 @@ const NewsFeed: Component = () => {
                     </button>
                     <button
                       onClick={clearSearch}
-                      class="ml-2 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-500 transition duration-200"
+                      class="ml-2 bg-monk-red text-white py-2 px-4 rounded-lg 
+                             hover:bg-red-700 transition-colors"
                     >
                       Clear
                     </button>
@@ -172,7 +178,7 @@ const NewsFeed: Component = () => {
         <UserInfo />
       </Show>
       <Show when={!isUserCacheReady()}>
-        <div class="text-center text-slate-300 p-8">Loading user data...</div>
+        <div class="text-center text-monk-gray p-8">Loading user data...</div>
       </Show>
     </div>
   );
