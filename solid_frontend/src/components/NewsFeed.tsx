@@ -121,6 +121,7 @@ const NewsFeed: Component = () => {
               <div class="flex-1 flex gap-2">
                 <input
                   type="text"
+                  name="search bar"
                   value={searchQuery()}
                   onInput={(e) => setSearchQuery(e.currentTarget.value)}
                   onKeyDown={(e) => e.key === 'Enter' && searchThreads()}

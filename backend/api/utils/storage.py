@@ -2,7 +2,7 @@ import boto3
 from fastapi import UploadFile
 from config import settings
 
-bucket_name = 'monk-assets'
+bucket_name = settings.STORAGE_BUCKET_NAME
 
 s3 = boto3.client(
     service_name="s3",
@@ -24,3 +24,18 @@ def upload_file(file: UploadFile, file_key: str):
 def delete_file(file_key: str):
     s3.delete_object(Bucket=bucket_name, Key=file_key)
     return f"{settings.STORAGE_DOMAIN}/{file_key}"
+
+def list_files():
+    return s3.list_objects_v2(Bucket=bucket_name)
+
+def download_file(file_key: str):
+    return s3.get_object(Bucket=bucket_name, Key=file_key)
+
+
+def main():
+    print(list_files())
+    print(download_file("BGMI BANNER.png"))
+
+
+if __name__ == "__main__":
+    main()

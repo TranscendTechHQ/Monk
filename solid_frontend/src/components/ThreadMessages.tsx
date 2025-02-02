@@ -1,4 +1,4 @@
-import { Component, createSignal, onMount, createMemo, createEffect, For } from 'solid-js';
+import { Component, createSignal, onMount, createMemo, createEffect, For, Show } from 'solid-js';
 import { useParams, useNavigate, useLocation } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { MessagesResponse } from '../api/models/MessagesResponse';
@@ -8,18 +8,20 @@ import UserInfo from './UserInfo';
 
 
 import { userService } from '../services/userService';
+import { fetchImage } from '../utils/imageUtils';
 
 const ThreadMessages: Component = () => {
   const params = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const threadTopic = new URLSearchParams(location.search).get('thread_topic');
+  const threadTopic = new URLSearchParams(location.search).get('thread_topic') ?? '';
   console.log("thread topic = ", threadTopic);
   const [thread, setThread] = createSignal<MessagesResponse | null>(null);
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
   const [newMessage, setNewMessage] = createSignal<string>('');
   const [userCache, setUserCache] = createSignal<Record<string, string>>({});
+  const [imageUrls, setImageUrls] = createSignal<Record<string, string>>({});
 
   // Add ref for messages container
   let messagesEndRef: HTMLDivElement | undefined;
@@ -70,6 +72,19 @@ const ThreadMessages: Component = () => {
     }
   });
 
+  // Add effect to fetch images
+  createEffect(async () => {
+    const newUrls: Record<string, string> = {};
+    for (const message of messages().filter(m => m.image)) {
+      try {
+        newUrls[message._id!] = await fetchImage(message.image!);
+      } catch (err) {
+        console.error('Error loading image:', err);
+      }
+    }
+    setImageUrls(prev => ({ ...prev, ...newUrls }));
+  });
+
   return (
     <div class="h-screen flex flex-col bg-monk-dark overflow-hidden">
       {/* Header */}
@@ -87,6 +102,19 @@ const ThreadMessages: Component = () => {
               <div class="bg-monk-mid/70 backdrop-blur-sm p-4 rounded-xl border-2 border-monk-teal/40
                          hover:border-monk-teal/60 transition-colors">
                 <p class="text-monk-cream">{message.text}</p>
+                <Show when={message.image}>
+                  <img 
+                    src={imageUrls()[message._id!]} 
+                    alt="Message attachment"
+                    class="mt-2 rounded-lg max-w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      console.error('Failed to load image:', message.image);
+                    }}
+                  />
+                </Show>
+
+
                 <div class="mt-2 text-monk-gray text-sm">
                   <span>By {userService.getUserName(message.creator_id??"unknown creator")} • 
                     {new Date(message.created_at?? "unknown creation time").toLocaleString()}

@@ -91,11 +91,11 @@ class ClientSettings(BaseSettings):
     GOOGLE_DESKTOP_CLIENT_ID: str = get_env_variable(var_name="GOOGLE_DESKTOP_CLIENT_ID", secret=False)
 
 class StorageSettings(BaseSettings):
-    STORAGE_ACCESS_KEY_ID: str = get_env_variable(var_name="STORAGE_ACCESS_KEY_ID", secret=True)
-    STORAGE_SECRET_ACCESS_KEY: str = get_env_variable(var_name="STORAGE_SECRET_ACCESS_KEY", secret=True)
+    STORAGE_ACCESS_KEY_ID: str = get_env_variable(var_name="STORAGE_ACCESS_KEY_ID", secret=False)
+    STORAGE_SECRET_ACCESS_KEY: str = get_env_variable(var_name="STORAGE_SECRET_ACCESS_KEY", secret=False)
     STORAGE_ENDPOINT: str = get_env_variable(var_name="STORAGE_ENDPOINT", secret=False)
     STORAGE_DOMAIN: str = get_env_variable(var_name="STORAGE_DOMAIN", secret=False)
-
+    STORAGE_BUCKET_NAME: str = get_env_variable(var_name="STORAGE_BUCKET_NAME", secret=False)
 
 class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings, StorageSettings):
     pass
