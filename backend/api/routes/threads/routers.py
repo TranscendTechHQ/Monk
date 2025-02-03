@@ -10,12 +10,13 @@ from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
 
 
-from routes.threads.models import LinkMetaModel, MessageCreate, MessageDb, MessageResponse, MessagesResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UserResponse, UsersResponse
+from routes.threads.models import LinkMetaModel, MessageDb, MessageResponse, MessagesResponse, ThreadCreate, ThreadDb, ThreadResponse, ThreadsResponse, UserResponse, UsersResponse
 from utils.milvus_vector import milvus_semantic_search
 from utils.scrapper import getLinkMeta
-from utils.db import create_mongo_doc_sync, get_aggregate_async, get_mongo_document_async, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, asyncdb, syncdb, update_fields_mongo_simple
+from utils.db import create_mongo_doc_sync, get_mongo_document_async, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, asyncdb, syncdb, update_fields_mongo_simple
 
 from utils.relevance import get_relevant_thread_ids
+from utils.storage import get_presigned_url
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -59,26 +60,37 @@ def extract_link_meta(content: str):
              operation_id="create_message",
              summary="Create a new message in a thread",
              description="The api will create a new message in a thread and return the newly created message")
-async def create_message(message: MessageCreate, session: SessionContainer = Depends(verify_session())):
+async def create_message(thread_id: str, 
+                         text: str, image: str = None,
+                         session: SessionContainer = Depends(verify_session())):
     try:
         user_id = session.get_user_id()
         tenant_id = await get_tenant_id(session)
-        message_db = MessageDb(text=message.text,
-                               link_meta=message.link_meta,
-                               image=message.image,  
-                            thread_id=message.thread_id, 
+
+        # see if there are any links in the message text and extract links
+   
+        linkMeta = extract_link_meta(text)
+        message_db = MessageDb(text=text,
+                               link_meta=linkMeta,
+                               image=image,  
+                            thread_id=thread_id, 
                             tenant_id=tenant_id, 
                             creator_id=user_id)
-        if message.link_meta is None:
-            # see if there are any links in the message text and extract links
-            linkMeta = extract_link_meta(message.text)
-            message_db.link_meta = linkMeta
+        
         inserted_doc = create_mongo_doc_sync(document=jsonable_encoder(message_db),
                             collection=syncdb.messages_collection)
         update_fields_mongo_simple(collection=syncdb.threads_collection,
-                                   query={"_id":message.thread_id},
+                                   query={"_id":thread_id},
                                    fields={"last_modified":inserted_doc["created_at"]})
         
+        if image is not None:
+            try:
+                #get the presigned url of the file
+                presigned_url = get_presigned_url(image, 
+                                                  client_method='put_object')
+                inserted_doc["presigned_url"] = presigned_url
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Error uploading file: {e}")
         # Create the MessageResponse object with the modified dictionary
         response = MessageResponse(**inserted_doc)
         
@@ -104,7 +116,13 @@ async def get_messages(thread_id: str, request: Request,
         filter={"thread_id": thread_id},
         sort=[("created_at", 1)]
     )
-    #print(f"Thread id {thread_id} messages {messages}")
+    for message in messages:
+        if message.get("image", None) is not None:
+            message["presigned_url"] = get_presigned_url(
+                message["image"],
+                client_method='get_object'
+            )
+    #print(f"Thread id {thread_id} messages {messages}")    
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(MessagesResponse(messages=messages)))
 
 @router.post("/thread", 
@@ -247,7 +265,7 @@ def semantic_filter_threads(user_id, tenant_id):
     user_preference = user_filter["searchQuery"]
     print(f'\n 👉 User preference: {user_preference}')
     threads_collection = syncdb.threads_collection
-    thread_ids_dict = get_mongo_documents_sync(collection=threads_collection, tenant_id=tenant_id, projection={'_id': 1, '_id': '$_id'})
+    thread_ids_dict = get_mongo_documents_sync(collection=threads_collection, tenant_id=tenant_id, projection={'_id': 1})
     
     thread_ids = [thread["_id"] for thread in thread_ids_dict]
     print(f'\n 👉 Thread ids: {thread_ids}')

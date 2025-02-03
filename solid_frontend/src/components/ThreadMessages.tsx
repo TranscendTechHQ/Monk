@@ -2,13 +2,17 @@ import { Component, createSignal, onMount, createMemo, createEffect, For, Show }
 import { useParams, useNavigate, useLocation } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { MessagesResponse } from '../api/models/MessagesResponse';
-import { MessageCreate } from '../api/models/MessageCreate';
 import { MessageResponse } from '../api/models/MessageResponse';
 import UserInfo from './UserInfo';
 
 
 import { userService } from '../services/userService';
-import { fetchImage } from '../utils/imageUtils';
+import { fetchImage, uploadImage } from '../utils/imageUtils';
+
+
+
+
+
 
 const ThreadMessages: Component = () => {
   const params = useParams();
@@ -22,6 +26,9 @@ const ThreadMessages: Component = () => {
   const [newMessage, setNewMessage] = createSignal<string>('');
   const [userCache, setUserCache] = createSignal<Record<string, string>>({});
   const [imageUrls, setImageUrls] = createSignal<Record<string, string>>({});
+  const [selectedImage, setSelectedImage] = createSignal<File | null>(null);
+  const [imagePreview, setImagePreview] = createSignal<string | null>(null);
+  const [isUploading, setIsUploading] = createSignal(false);
 
   // Add ref for messages container
   let messagesEndRef: HTMLDivElement | undefined;
@@ -46,16 +53,48 @@ const ThreadMessages: Component = () => {
     if (event.key === 'Enter' && newMessage().trim() !== '') {
       try {
         const threadId = params.id;
-        const new_message: MessageCreate = {
-          text: newMessage(),
-          thread_id: threadId
-        };
-        await ThreadsService.createMessage(new_message);
+        const messageText = newMessage();
+        const messageImage = undefined;
+        await ThreadsService.createMessage(
+          threadId, 
+          messageText,
+          messageImage);
         setNewMessage('');
         fetchThreadMessages();
       } catch (err) {
         console.error('Error creating message:', err);
       }
+    }
+  };
+
+  const handleSend = async () => {
+    if (!newMessage().trim() && !selectedImage()) return;
+
+    try {
+      setIsUploading(true);
+      let imageKey = null;
+      
+      if (selectedImage()) {
+        imageKey = selectedImage()!.name;
+      }
+
+      const messageResponse = await ThreadsService.createMessage(
+        params.id!,
+        newMessage().trim(),
+        imageKey || undefined
+      );
+      if (messageResponse.presigned_url) {
+        await uploadImage(selectedImage()!, messageResponse.presigned_url!);
+      }
+      // Reset state
+      setNewMessage('');
+      setSelectedImage(null);
+      setImagePreview(null);
+      await fetchThreadMessages();
+    } catch (err) {
+      console.error('Error creating message:', err);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -104,7 +143,7 @@ const ThreadMessages: Component = () => {
                 <p class="text-monk-cream">{message.text}</p>
                 <Show when={message.image}>
                   <img 
-                    src={imageUrls()[message._id!]} 
+                    src={message.presigned_url ?? ""} 
                     alt="Message attachment"
                     class="mt-2 rounded-lg max-w-full h-48 object-cover"
                     onError={(e) => {
@@ -153,24 +192,60 @@ const ThreadMessages: Component = () => {
           />
 
           <button 
-            onClick={async () => {
-              if (newMessage().trim()) {
-                try {
-                  await ThreadsService.createMessage({
-                    text: newMessage(),
-                    thread_id: params.id!
-                  });
-                  setNewMessage('');
-                  await fetchThreadMessages();
-                } catch (err) {
-                  console.error('Error creating message:', err);
-                }
-              }
-            }}
-            class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors"
+            onClick={handleSend}
+            disabled={isUploading()}
+            class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors disabled:opacity-50"
           >
-            Send
+            {isUploading() ? 'Sending...' : 'Send'}
           </button>
+        </div>
+
+        {/* File input section */}
+        <div class="flex items-center gap-2">
+          <label class="cursor-pointer text-monk-gray hover:text-monk-gold transition-colors">
+            <input
+              type="file"
+              accept="image/*"
+              class="hidden"
+              onChange={(e) => {
+                const file = e.currentTarget.files?.[0];
+                if (file) {
+                  setSelectedImage(file);
+                  setImagePreview(URL.createObjectURL(file));
+                }
+              }}
+            />
+            <svg 
+              class="w-6 h-6" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </label>
+
+          <Show when={imagePreview()}>
+            <div class="relative">
+              <img 
+                src={imagePreview()!} 
+                alt="Preview" 
+                class="w-12 h-12 rounded-lg object-cover"
+              />
+              <button
+                onClick={() => {
+                  setSelectedImage(null);
+                  setImagePreview(null);
+                }}
+                class="absolute -top-1 -right-1 bg-monk-red/80 text-white rounded-full p-0.5 hover:bg-monk-red"
+              >
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </Show>
         </div>
 
         {/* UserInfo Container */}

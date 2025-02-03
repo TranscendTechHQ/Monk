@@ -21,7 +21,7 @@ from supertokens_python.recipe.thirdparty.types import User
 from config import settings
 from routes.threads.routers import router as threads_router
 
-from routes.storage import routers as storage_router
+
 from utils.db import shutdown_sync_db_client, startup_async_db_client, shutdown_async_db_client, startup_sync_db_client
 from utils.scrapper import getLinkMeta
 
@@ -211,7 +211,7 @@ async def shutdown_db_client():
 
 app.include_router(threads_router, tags=["threads"])
 
-app.include_router(storage_router.router, tags=["storage"])
+
 
 if __name__ == "__main__":
     uvicorn.run(

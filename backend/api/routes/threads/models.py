@@ -72,6 +72,7 @@ class MessageDelete(BaseModelConfig):
     
 class MessageResponse(Message, DBMeta):
     thread_id: str
+    presigned_url: Optional[str] = Field(default=None)
 
 class MessagesResponse(BaseModelConfig):
     messages: List[MessageResponse]

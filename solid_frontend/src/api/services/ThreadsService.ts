@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { MessageCreate } from '../models/MessageCreate';
 import type { MessageResponse } from '../models/MessageResponse';
 import type { MessagesResponse } from '../models/MessagesResponse';
 import type { ThreadCreate } from '../models/ThreadCreate';
@@ -17,18 +16,25 @@ export class ThreadsService {
     /**
      * Create a new message in a thread
      * The api will create a new message in a thread and return the newly created message
-     * @param requestBody
+     * @param threadId
+     * @param text
+     * @param image
      * @returns MessageResponse Newly created message
      * @throws ApiError
      */
     public static createMessage(
-        requestBody: MessageCreate,
+        threadId: string,
+        text: string,
+        image?: string,
     ): CancelablePromise<MessageResponse> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/message',
-            body: requestBody,
-            mediaType: 'application/json',
+            query: {
+                'thread_id': threadId,
+                'text': text,
+                'image': image,
+            },
             errors: {
                 422: `Validation Error`,
             },

@@ -1,26 +1,5 @@
 components:
   schemas:
-    Body_Upload_Files_uploadFiles__post:
-      properties:
-        files:
-          items:
-            format: binary
-            type: string
-          title: Files
-          type: array
-      required:
-      - files
-      title: Body_Upload_Files_uploadFiles__post
-      type: object
-    FilesResponseModel:
-      properties:
-        urls:
-          items:
-            type: string
-          title: Urls
-          type: array
-      title: FilesResponseModel
-      type: object
     HTTPValidationError:
       properties:
         detail:
@@ -54,25 +33,6 @@ components:
       - url
       title: LinkMetaModel
       type: object
-    MessageCreate:
-      properties:
-        image:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Image
-        link_meta:
-          anyOf:
-          - $ref: '#/components/schemas/LinkMetaModel'
-          - type: 'null'
-        text:
-          title: Text
-          type: string
-        thread_id:
-          title: Thread Id
-          type: string
-      title: MessageCreate
-      type: object
     MessageResponse:
       properties:
         _id:
@@ -98,6 +58,11 @@ components:
           anyOf:
           - $ref: '#/components/schemas/LinkMetaModel'
           - type: 'null'
+        presigned_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Presigned Url
         text:
           title: Text
           type: string
@@ -317,12 +282,25 @@ paths:
       description: The api will create a new message in a thread and return the newly
         created message
       operationId: create_message
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MessageCreate'
+      parameters:
+      - in: query
+        name: thread_id
         required: true
+        schema:
+          title: Thread Id
+          type: string
+      - in: query
+        name: text
+        required: true
+        schema:
+          title: Text
+          type: string
+      - in: query
+        name: image
+        required: false
+        schema:
+          title: Image
+          type: string
       responses:
         '200':
           content:
@@ -469,32 +447,6 @@ paths:
       summary: Get all threads
       tags:
       - threads
-  /uploadFiles/:
-    post:
-      operationId: Upload_Files_uploadFiles__post
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Body_Upload_Files_uploadFiles__post'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilesResponseModel'
-          description: Returns the uploaded file url
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Upload Files
-      tags:
-      - storage
-      - storage
   /user:
     get:
       description: The api will return user information

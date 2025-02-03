@@ -17,13 +17,12 @@ s3 = boto3.client(
 
 def upload_file(file: UploadFile, file_key: str):
     s3.upload_fileobj(file.file, bucket_name, file_key)
-    return f"{settings.STORAGE_DOMAIN}/{file_key}"
 
 
 # Function to delete a single file and return the url
 def delete_file(file_key: str):
     s3.delete_object(Bucket=bucket_name, Key=file_key)
-    return f"{settings.STORAGE_DOMAIN}/{file_key}"
+
 
 def list_files():
     return s3.list_objects_v2(Bucket=bucket_name)
@@ -31,6 +30,14 @@ def list_files():
 def download_file(file_key: str):
     return s3.get_object(Bucket=bucket_name, Key=file_key)
 
+def get_presigned_url(file_key: str, 
+                      client_method: str, 
+                      expiration: int = 3600):
+    return s3.generate_presigned_url(
+        Params={"Bucket": bucket_name, "Key": file_key},
+        ExpiresIn=expiration,
+        ClientMethod=client_method
+    )
 
 def main():
     print(list_files())

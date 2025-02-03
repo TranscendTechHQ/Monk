@@ -10,6 +10,7 @@ export type MessageResponse = {
     image?: (string | null);
     last_modified?: string;
     link_meta?: (LinkMetaModel | null);
+    presigned_url?: (string | null);
     text?: string;
     thread_id: string;
 };
