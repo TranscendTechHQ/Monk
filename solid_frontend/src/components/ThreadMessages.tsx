@@ -49,21 +49,9 @@ const ThreadMessages: Component = () => {
     }
   };
 
-  const handleNewMessageKeyDown = async (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && newMessage().trim() !== '') {
-      try {
-        const threadId = params.id;
-        const messageText = newMessage();
-        const messageImage = undefined;
-        await ThreadsService.createMessage(
-          threadId, 
-          messageText,
-          messageImage);
-        setNewMessage('');
-        fetchThreadMessages();
-      } catch (err) {
-        console.error('Error creating message:', err);
-      }
+  const handleNewMessageKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && (newMessage().trim() || selectedImage())) {
+      handleSend();
     }
   };
 
@@ -83,9 +71,11 @@ const ThreadMessages: Component = () => {
         newMessage().trim(),
         imageKey || undefined
       );
+      
       if (messageResponse.presigned_url) {
         await uploadImage(selectedImage()!, messageResponse.presigned_url!);
       }
+
       // Reset state
       setNewMessage('');
       setSelectedImage(null);
