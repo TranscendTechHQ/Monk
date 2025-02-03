@@ -5,8 +5,8 @@ from fastapi.encoders import jsonable_encoder
 from pymongo import MongoClient
 
 from config import settings
-from routes.threads.models import Message, MessageDb, Thread, ThreadDb
-from utils.db import create_mongo_doc_sync, get_mongo_document_async, get_mongo_document_sync, get_mongo_documents_sync
+from routes.threads.models import Message, MessageDb, ThreadDb
+from utils.db import create_mongo_doc_sync
 
 
 from utils.db import asyncdb
@@ -443,8 +443,22 @@ def modify_thread_fields():
                     update={"$set": {"tenant_id": "T048F0ANS1M"}},
                 )
            
-
-     
+def cleanup_image_urls():
+    messages_collection = app.mongodb["messages"]
+    for doc in messages_collection.find():
+        message_id = doc['_id']
+        if 'image' in doc and doc['image'] is not None:
+            image = doc['image']
+            print(image)
+            ## if image is a string and contains https://assets.heymonk.app/, remove https://assets.heymonk.app/ and just keep the filename
+            if isinstance(image, str) and "https://assets.heymonk.app/" in image:
+                image = image.replace("https://assets.heymonk.app/", "")
+                print(f"modified image: {image}")
+                messages_collection.update_one(
+                    {"_id": message_id},
+                    {"$set": {"image": image}}
+                )
+            
 async def main():
     startup_db_client()
     #remove_thread_content_data()
@@ -461,7 +475,8 @@ async def main():
     #migrate_blocks_to_messages()
     #add_thread_id_to_threads()
     #modify_thread_fields()
-    fix_messages_thread_id()
+    #fix_messages_thread_id()
+    cleanup_image_urls()
     shutdown_db_client()
 
 
