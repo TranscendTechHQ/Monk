@@ -170,72 +170,75 @@ const ThreadMessages: Component = () => {
             <span class="text-sm font-medium">Newsfeed</span>
           </button>
 
-          <input
-            type="text"
-            value={newMessage()}
-            onInput={(e) => setNewMessage(e.currentTarget.value)}
-            onKeyDown={handleNewMessageKeyDown}
-            class="flex-1 border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl
-                   focus:outline-none focus:ring-2 focus:ring-monk-gold focus:border-transparent
-                   placeholder-monk-gray"
-            placeholder="Type your message..."
-          />
-
-          <button 
-            onClick={handleSend}
-            disabled={isUploading()}
-            class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors disabled:opacity-50"
-          >
-            {isUploading() ? 'Sending...' : 'Send'}
-          </button>
-        </div>
-
-        {/* File input section */}
-        <div class="flex items-center gap-2">
-          <label class="cursor-pointer text-monk-gray hover:text-monk-gold transition-colors">
-            <input
-              type="file"
-              accept="image/*"
-              class="hidden"
-              onChange={(e) => {
-                const file = e.currentTarget.files?.[0];
-                if (file) {
-                  setSelectedImage(file);
-                  setImagePreview(URL.createObjectURL(file));
-                }
-              }}
-            />
-            <svg 
-              class="w-6 h-6" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-          </label>
-
-          <Show when={imagePreview()}>
-            <div class="relative">
-              <img 
-                src={imagePreview()!} 
-                alt="Preview" 
-                class="w-12 h-12 rounded-lg object-cover"
-              />
-              <button
-                onClick={() => {
-                  setSelectedImage(null);
-                  setImagePreview(null);
+          {/* Combined input area */}
+          <div class="flex-1 flex items-center gap-2 border-2 border-monk-gold/30 bg-monk-dark rounded-xl p-1">
+            {/* File upload button */}
+            <label class="cursor-pointer text-monk-gray hover:text-monk-gold transition-colors pl-2">
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                onChange={(e) => {
+                  const file = e.currentTarget.files?.[0];
+                  if (file) {
+                    setSelectedImage(file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
                 }}
-                class="absolute -top-1 -right-1 bg-monk-red/80 text-white rounded-full p-0.5 hover:bg-monk-red"
+              />
+              <svg 
+                class="w-6 h-6" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
               >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </label>
+
+            {/* Text input */}
+            <input
+              type="text"
+              value={newMessage()}
+              onInput={(e) => setNewMessage(e.currentTarget.value)}
+              onKeyDown={handleNewMessageKeyDown}
+              class="flex-1 bg-transparent text-white p-2 focus:outline-none placeholder-monk-gray"
+              placeholder="Type your message..."
+            />
+
+            {/* Image preview and send button container */}
+            <div class="flex items-center gap-2">
+              <Show when={imagePreview()}>
+                <div class="relative">
+                  <img 
+                    src={imagePreview()!} 
+                    alt="Preview" 
+                    class="w-12 h-12 rounded-lg object-cover"
+                  />
+                  <button
+                    onClick={() => {
+                      setSelectedImage(null);
+                      setImagePreview(null);
+                    }}
+                    class="absolute -top-1 -right-1 bg-monk-red/80 text-white rounded-full p-0.5 hover:bg-monk-red"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              </Show>
+
+              <button 
+                onClick={handleSend}
+                disabled={isUploading()}
+                class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors disabled:opacity-50"
+              >
+                {isUploading() ? 'Sending...' : 'Send'}
               </button>
             </div>
-          </Show>
+          </div>
         </div>
 
         {/* UserInfo Container */}
