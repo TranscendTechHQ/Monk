@@ -7,6 +7,8 @@ import { Component, createEffect, createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { ThreadResponse } from '../api/models/ThreadResponse';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
+import { Show } from 'solid-js';
+import { ThreadsService } from '../api/services/ThreadsService';
 
 import { userService } from '../services/userService';
 
@@ -20,9 +22,20 @@ const [userCache, setUserCache] = createSignal<Record<string, string>>({});
 const getUserName = (userId: string) => userCache()[userId] || "Unknown";
 
 const Thread: Component<ThreadProps> = (props) => {
-  // Keep this commented for future debugging
-  // console.log('[Thread] Rendering thread ID:', props.thread.id, 'with creator:', props.thread.creator_id);
+  const [imageUrl, setImageUrl] = createSignal<string | null>(null);
   const navigate = useNavigate();
+
+  createEffect(async () => {
+    if (props.thread.image) {
+      try {
+        const url = await ThreadsService.getDownloadUrl(props.thread.image);
+        setImageUrl(url);
+      } catch (error) {
+        console.error('Error fetching image URL:', error);
+        setImageUrl(null);
+      }
+    }
+  });
 
   const handleClick = () => {
     navigate(`/thread/${props.thread._id}?thread_topic=${props.thread.topic}`);
@@ -39,6 +52,13 @@ const Thread: Component<ThreadProps> = (props) => {
       <div class="text-slate-300 text-sm">
         <span>By {userService.getUserName(props.thread.creator_id??'Unknow')} • {new Date(props.thread.created_at??'Unknown date').toLocaleDateString()}</span>
       </div>
+      <Show when={imageUrl()}>
+        <img 
+          src={imageUrl()!} 
+          alt="Thread Image" 
+          class="w-1/2 h-48 object-cover rounded-lg mt-2"
+        />
+      </Show>
     </div>
   );
 };
@@ -54,7 +74,5 @@ export const ThreadList: Component<{ threads: ThreadsResponse }> = (props) => {
     </div>
   );
 };
-
-
 
 export default Thread; 

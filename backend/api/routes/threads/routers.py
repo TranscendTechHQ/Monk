@@ -54,6 +54,26 @@ def extract_link_meta(content: str):
                 
     return linkMeta
 
+@router.get("/upload-url",
+            response_model=str,
+            response_description="Upload url",
+            operation_id="get_upload_url",
+            summary="Get upload url",
+            description="The api will return the upload url")
+async def get_upload_url(filename: str):
+    presigned_url = get_presigned_url(filename, client_method='put_object')
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(presigned_url))
+
+@router.get("/download-url",
+            response_model=str,
+            response_description="Download url",
+            operation_id="get_download_url",
+            summary="Get download url",
+            description="The api will return the download url")
+async def get_download_url(filename: str):
+    presigned_url = get_presigned_url(filename, client_method='get_object')
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(presigned_url))
+
 @router.post("/message", 
              response_model=MessageResponse, 
              response_description="Newly created message",

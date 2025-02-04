@@ -244,6 +244,34 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
+  /download-url:
+    get:
+      description: The api will return the download url
+      operationId: get_download_url
+      parameters:
+      - in: query
+        name: filename
+        required: true
+        schema:
+          title: Filename
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Get Download Url
+                type: string
+          description: Download url
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get download url
+      tags:
+      - threads
   /healthcheck:
     get:
       operationId: healthcheck_healthcheck_get
@@ -445,6 +473,34 @@ paths:
                 $ref: '#/components/schemas/ThreadsResponse'
           description: List of threads
       summary: Get all threads
+      tags:
+      - threads
+  /upload-url:
+    get:
+      description: The api will return the upload url
+      operationId: get_upload_url
+      parameters:
+      - in: query
+        name: filename
+        required: true
+        schema:
+          title: Filename
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Get Upload Url
+                type: string
+          description: Upload url
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get upload url
       tags:
       - threads
   /user:

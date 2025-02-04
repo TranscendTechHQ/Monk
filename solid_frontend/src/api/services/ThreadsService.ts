@@ -14,6 +14,27 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class ThreadsService {
     /**
+     * Get download url
+     * The api will return the download url
+     * @param filename
+     * @returns string Download url
+     * @throws ApiError
+     */
+    public static getDownloadUrl(
+        filename: string,
+    ): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/download-url',
+            query: {
+                'filename': filename,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
      * Create a new message in a thread
      * The api will create a new message in a thread and return the newly created message
      * @param threadId
@@ -112,6 +133,27 @@ export class ThreadsService {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/threads',
+        });
+    }
+    /**
+     * Get upload url
+     * The api will return the upload url
+     * @param filename
+     * @returns string Upload url
+     * @throws ApiError
+     */
+    public static getUploadUrl(
+        filename: string,
+    ): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/upload-url',
+            query: {
+                'filename': filename,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
     /**
