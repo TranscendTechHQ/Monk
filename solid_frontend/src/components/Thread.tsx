@@ -44,21 +44,32 @@ const Thread: Component<ThreadProps> = (props) => {
   return (
     <div 
       class="bg-monk-light rounded-xl p-4 shadow-md border-2 border-monk-teal/20
-             hover:border-monk-orange/40 transition-colors cursor-pointer"
+             hover:border-monk-orange/40 transition-colors cursor-pointer
+             flex flex-col items-center space-y-4"
       onClick={handleClick}
     >
-      <h3 class="text-monk-cream text-lg font-bold">{props.thread.topic}</h3>
-      <p class="text-slate-300">{props.thread.text?.toString() || "No Title"}</p>
-      <div class="text-slate-300 text-sm">
-        <span>By {userService.getUserName(props.thread.creator_id??'Unknow')} • {new Date(props.thread.created_at??'Unknown date').toLocaleDateString()}</span>
+      {/* Topic and Text - left aligned */}
+      <div class="w-full space-y-2 text-left">
+        <h3 class="text-monk-cream text-lg font-bold">{props.thread.topic}</h3>
+        <p class="text-slate-300 text-sm">{props.thread.text?.toString() || "No Title"}</p>
       </div>
+
+      {/* Image */}
       <Show when={imageUrl()}>
         <img 
           src={imageUrl()!} 
           alt="Thread Image" 
-          class="w-1/2 h-48 object-cover rounded-lg mt-2"
+          class="w-full max-w-md h-48 object-cover rounded-lg"
         />
       </Show>
+
+      {/* Creator Info - left aligned */}
+      <div class="text-slate-300 text-xs mt-2 self-start">
+        <span>
+          By {userService.getUserName(props.thread.creator_id??'Unknown')} • 
+          {new Date(props.thread.created_at??'Unknown date').toLocaleDateString()}
+        </span>
+      </div>
     </div>
   );
 };
