@@ -80,7 +80,7 @@ const NewsFeed: Component = () => {
           {/* Search Header */}
           <div class="h-[120px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
             <div class="flex items-center gap-4 max-w-4xl mx-auto">
-              <h2 class="text-monk-cream text-3xl font-bold">NewsFeed</h2>
+              
               <div class="flex-1 flex gap-4">
                 <button
                   onClick={() => setShowNewThreadModal(true)}
