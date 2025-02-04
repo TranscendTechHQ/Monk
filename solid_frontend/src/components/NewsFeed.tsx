@@ -82,7 +82,10 @@ const NewsFeed: Component = () => {
               <div class="flex-1 flex gap-4">
                 <button
                   onClick={() => setShowNewThreadModal(true)}
-                  class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors font-semibold"
+                  class="bg-monk-purple text-monk-cream px-6 py-3 rounded-full 
+                         hover:bg-monk-purple/80 transition-all font-bold
+                         border-2 border-monk-pink shadow-lg hover:shadow-monk-pink/50
+                         transform hover:scale-105"
                 >
                   New Thread
                 </button>
