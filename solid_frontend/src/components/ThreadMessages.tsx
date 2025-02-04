@@ -8,6 +8,7 @@ import { ThreadResponse } from '../api/models/ThreadResponse';
 
 import { userService } from '../services/userService';
 import { fetchImage, uploadImage } from '../utils/imageUtils';
+import Header from './Header';
 
 const ThreadMessages: Component = () => {
   const params = useParams();
@@ -149,6 +150,7 @@ const ThreadMessages: Component = () => {
 
   return (
     <div class="h-screen flex flex-col bg-monk-dark overflow-hidden">
+      <Header />
       {/* Header */}
       <div class="h-[100px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-4 px-8">
         <h2 class="text-monk-cream text-2xl font-bold text-center">

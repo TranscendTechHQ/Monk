@@ -8,6 +8,7 @@ import { userService } from '../services/userService';
 import { useNavigate } from '@solidjs/router';
 import SearchModal from './SearchModal';
 import NewThreadModal from './NewThreadModal';
+import Header from './Header';
 
 const NewsFeed: Component = () => {
   const [threads, setThreads] = createSignal<ThreadsResponse>();
@@ -73,6 +74,7 @@ const NewsFeed: Component = () => {
   return (
     <>
       <div class="h-screen flex flex-col">
+        <Header />
         {/* Main Content Area */}
         <div class="flex-1 overflow-hidden">
           {/* Search Header */}
