@@ -1,9 +1,15 @@
+
+
 module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
+      filter: { // Enable filter utilities
+        'monk-gold': 'invert(72%) sepia(65%) saturate(400%) hue-rotate(3deg) brightness(90%) contrast(90%)',
+        'monk-gold-hover': 'invert(60%) sepia(70%) saturate(500%) hue-rotate(3deg) brightness(100%) contrast(100%)'
+      },
       colors: {
         // Primary colors
         'monk-blue': '#0F172A',      // Dark navy
