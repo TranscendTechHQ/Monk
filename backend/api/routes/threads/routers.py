@@ -175,6 +175,26 @@ async def create_thread(thread: ThreadCreate,
 
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(response))
 
+
+@router.get("/threads/{thread_id}",
+            response_model=ThreadResponse,
+            response_description="The requested thread",
+            operation_id="get_thread",
+            summary="Get a thread by ID",
+            description="The api will return the requested thread")
+async def get_thread(thread_id: str, session: SessionContainer = Depends(verify_session())):
+    try:
+        tenant_id = await get_tenant_id(session)
+        thread = await get_mongo_document_async(
+            collection=asyncdb.threads_collection,
+            filter={"_id": thread_id},
+            tenant_id=tenant_id
+        )
+        return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(thread))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
 @router.get("/threads",
             response_model=ThreadsResponse,
             response_description="List of threads",
@@ -294,3 +314,4 @@ def semantic_filter_threads(user_id, tenant_id):
         user_name, user_preference, thread_ids)
 
     return relevant_thread_ids
+

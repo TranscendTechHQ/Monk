@@ -136,6 +136,27 @@ export class ThreadsService {
         });
     }
     /**
+     * Get a thread by ID
+     * The api will return the requested thread
+     * @param threadId
+     * @returns ThreadResponse The requested thread
+     * @throws ApiError
+     */
+    public static getThread(
+        threadId: string,
+    ): CancelablePromise<ThreadResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/threads/{thread_id}',
+            path: {
+                'thread_id': threadId,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
+        });
+    }
+    /**
      * Get upload url
      * The api will return the upload url
      * @param filename

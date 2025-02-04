@@ -4,15 +4,10 @@ import { ThreadsService } from '../api/services/ThreadsService';
 import { MessagesResponse } from '../api/models/MessagesResponse';
 import { MessageResponse } from '../api/models/MessageResponse';
 import UserInfo from './UserInfo';
-
+import { ThreadResponse } from '../api/models/ThreadResponse';
 
 import { userService } from '../services/userService';
 import { fetchImage, uploadImage } from '../utils/imageUtils';
-
-
-
-
-
 
 const ThreadMessages: Component = () => {
   const params = useParams();
@@ -20,7 +15,8 @@ const ThreadMessages: Component = () => {
   const location = useLocation();
   const threadTopic = new URLSearchParams(location.search).get('thread_topic') ?? '';
   console.log("thread topic = ", threadTopic);
-  const [thread, setThread] = createSignal<MessagesResponse | null>(null);
+  const [thread, setThread] = createSignal<ThreadResponse | null>(null);
+  const [messages, setMessages] = createSignal<MessageResponse[]>([]);
   const [isLoading, setIsLoading] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
   const [newMessage, setNewMessage] = createSignal<string>('');
@@ -29,6 +25,7 @@ const ThreadMessages: Component = () => {
   const [selectedImage, setSelectedImage] = createSignal<File | null>(null);
   const [imagePreview, setImagePreview] = createSignal<string | null>(null);
   const [isUploading, setIsUploading] = createSignal(false);
+  const [imageUrl, setImageUrl] = createSignal<string | null>(null);
 
   // Add ref for messages container
   let messagesEndRef: HTMLDivElement | undefined;
@@ -36,10 +33,12 @@ const ThreadMessages: Component = () => {
   const fetchThreadMessages = async () => {
     setIsLoading(true);
     try {
-      const threadId = params.id;
-      
-      const fetchedThread = await ThreadsService.getMessages(threadId);
-      setThread(fetchedThread);
+      const [threadData, messagesData] = await Promise.all([
+        ThreadsService.getThread(params.id),
+        ThreadsService.getMessages(params.id)
+      ]);
+      setThread(threadData);
+      setMessages(messagesData.messages || []);
       setError(null);
     } catch (err) {
       setError('Failed to load thread messages. Please try again later.');
@@ -92,11 +91,29 @@ const ThreadMessages: Component = () => {
     fetchThreadMessages();
   });
 
-  const messages = createMemo(() => thread()?.messages || []);
+  // Create a combined messages array with thread content as first message
+  const combinedMessages = createMemo(() => {
+    const threadData = thread();
+    const messagesList = messages();
+
+    if (!threadData) return messagesList;
+
+    const threadMessage: MessageResponse = {
+      _id: threadData._id!,
+      text: threadData.text || '',
+      image: threadData.image || undefined,
+      creator_id: threadData.creator_id!,
+      created_at: threadData.created_at!,
+      thread_id: threadData._id!,
+      presigned_url: imageUrl() || undefined
+    };
+
+    return [threadMessage, ...messagesList];
+  });
 
   // Auto-scroll effect
   createEffect(() => {
-    if (messagesEndRef && messages().length > 0) {
+    if (messagesEndRef && combinedMessages().length > 0) {
       messagesEndRef.scrollIntoView({ behavior: 'smooth' });
     }
   });
@@ -104,7 +121,7 @@ const ThreadMessages: Component = () => {
   // Add effect to fetch images
   createEffect(async () => {
     const newUrls: Record<string, string> = {};
-    for (const message of messages().filter(m => m.image)) {
+    for (const message of combinedMessages().filter(m => m.image)) {
       try {
         newUrls[message._id!] = await fetchImage(message.image!);
       } catch (err) {
@@ -112,6 +129,22 @@ const ThreadMessages: Component = () => {
       }
     }
     setImageUrls(prev => ({ ...prev, ...newUrls }));
+  });
+
+  // Fetch thread details
+  createEffect(async () => {
+    try {
+      const threadData = await ThreadsService.getThread(params.id);
+      //console.log("thread data = ", threadData);
+      setThread(threadData);
+      
+      if (threadData.image) {
+        const url = await ThreadsService.getDownloadUrl(threadData.image);
+        setImageUrl(url);
+      }
+    } catch (err) {
+      console.error('Error loading thread:', err);
+    }
   });
 
   return (
@@ -126,27 +159,34 @@ const ThreadMessages: Component = () => {
       {/* Messages List */}
       <div class="flex-1 overflow-y-auto">
         <div class="max-w-4xl mx-auto px-8 pt-4 space-y-4">
-          <For each={messages()}>
+          <For each={combinedMessages()}>
             {(message) => (
               <div class="bg-monk-mid/70 backdrop-blur-sm p-4 rounded-xl border-2 border-monk-teal/40
                          hover:border-monk-teal/60 transition-colors">
+                {/* Message Content */}
+                <Show when={message._id === thread()?._id}>
+                  <h2 class="text-monk-cream text-xl font-bold mb-2">
+                    {thread()?.topic}
+                  </h2>
+                </Show>
+                
                 <p class="text-monk-cream">{message.text}</p>
-                <Show when={message.image}>
+                
+                <Show when={message.presigned_url}>
                   <img 
-                    src={message.presigned_url ?? ""} 
-                    alt="Message attachment"
+                    src={message.presigned_url!} 
+                    alt="Content attachment" 
                     class="mt-2 rounded-lg max-w-full h-48 object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      console.error('Failed to load image:', message.image);
-                    }}
                   />
                 </Show>
 
-
+                {/* Author and Timestamp */}
                 <div class="mt-2 text-monk-gray text-sm">
-                  <span>By {userService.getUserName(message.creator_id??"unknown creator")} • 
-                    {new Date(message.created_at?? "unknown creation time").toLocaleString()}
+                  <span>
+                    By {userService.getUserName(message.creator_id??"unknown")} • 
+                    {message.created_at ? 
+                      new Date(message.created_at).toLocaleString() : 
+                      'Unknown time'}
                   </span>
                 </div>
               </div>
