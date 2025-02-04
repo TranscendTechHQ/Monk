@@ -17,11 +17,11 @@ const NewThreadModal: Component<NewThreadModalProps> = (props) => {
   const handleCreateThread = async () => {
     if (!topic().trim() && !text().trim() && !image()) return;
 
+    let imageKey: string | null = null;
+
     try {
       setIsCreating(true);
-      let imageKey = null;
-
-      // Handle image upload first
+      
       if (image()) {
         imageKey = image()!.name;
         const url = await ThreadsService.getUploadUrl(imageKey);
@@ -37,14 +37,12 @@ const NewThreadModal: Component<NewThreadModalProps> = (props) => {
         }
       }
 
-      // Create the thread
       await ThreadsService.createThread({
         topic: topic(),
         text: text(),
         image: imageKey || undefined
       });
 
-      // Reset and close
       setTopic('');
       setText('');
       setImage(null);
