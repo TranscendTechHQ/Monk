@@ -135,7 +135,9 @@ const NewsFeed: Component = () => {
 
         {/* Fixed Footer */}
         <div class="h-[80px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
-          <UserInfo />
+          <div class="w-full px-0 pt-2 flex justify-end">
+            <UserInfo />
+          </div>
         </div>
       </div>
 

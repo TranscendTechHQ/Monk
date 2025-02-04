@@ -274,7 +274,9 @@ const ThreadMessages: Component = () => {
                 </div>
               </div>
 
-              <UserInfo />
+              <div class="ml-4">
+                <UserInfo />
+              </div>
             </div>
           </div>
         </div>
