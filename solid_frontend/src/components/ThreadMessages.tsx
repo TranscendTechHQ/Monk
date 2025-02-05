@@ -172,11 +172,13 @@ const ThreadMessages: Component = () => {
                     <p class="text-monk-cream">{message.text}</p>
                     
                     <Show when={message.presigned_url}>
-                      <img 
-                        src={message.presigned_url!} 
-                        alt="Content attachment" 
-                        class="mt-2 rounded-lg max-w-full h-48 object-cover"
-                      />
+                      <div class="flex justify-center">
+                        <img 
+                          src={message.presigned_url!} 
+                          alt="Content attachment" 
+                          class="mt-2 rounded-lg max-w-full h-48 object-cover"
+                        />
+                      </div>
                     </Show>
 
                     {/* Author and Timestamp */}
