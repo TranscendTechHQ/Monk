@@ -5,6 +5,7 @@ import motor.motor_asyncio
 import pymongo
 
 from config import settings
+from utils.caching import get_cache, set_cache
 
 
 class SyncDbClient:
@@ -73,8 +74,12 @@ async def get_user_info(session):
 
 async def get_tenant_id(session):
     user_id = session.get_user_id()
-    user_info = await asyncdb.users_collection.find_one({"_id": user_id})
-    return user_info["tenant_id"]
+    tenant_id = get_cache(user_id)
+    if tenant_id is None:
+        user_info = await asyncdb.users_collection.find_one({"_id": user_id})
+        tenant_id = user_info["tenant_id"]
+        set_cache(user_id, tenant_id)
+    return tenant_id
 
 
 def get_tenant_id_sync(session):
