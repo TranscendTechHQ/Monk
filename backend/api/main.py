@@ -1,5 +1,6 @@
 import datetime
 from contextlib import asynccontextmanager
+import sys
 
 import uvicorn
 from fastapi import Depends
@@ -14,15 +15,14 @@ from supertokens_python import get_all_cors_headers
 from supertokens_python.framework.fastapi import get_middleware
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
-from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
-from supertokens_python.recipe.thirdparty.types import User
 
 
 from config import settings
 from routes.threads.routers import router as threads_router
 
+import logging
 
-from utils.db import shutdown_sync_db_client, startup_async_db_client, shutdown_async_db_client, startup_sync_db_client
+from utils.db import get_user_id, get_user_info, shutdown_sync_db_client, startup_async_db_client, shutdown_async_db_client, startup_sync_db_client
 from utils.scrapper import getLinkMeta
 
 # Set your Slack client ID and client secret
@@ -47,6 +47,8 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(get_middleware())
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
 
 class SessionInfo(BaseModel):
     sessionHandle: str
@@ -60,37 +62,41 @@ class SessionInfo(BaseModel):
 
 @app.get("/sessioninfo", response_model=SessionInfo, tags=["session"])
 async def secure_api(s: SessionContainer = Depends(verify_session())) -> SessionInfo:
-    userId = s.get_user_id()
-    userObj: User = await get_user_by_id(userId)
-    # email = userObj.email
+    
+    try:
+    
+        userId = get_user_id(s)
+        
+        #userObj: User = await get_user_by_id(userId)
+        # email = userObj.email
+        userDoc = await get_user_info(userId)
+        
+        fullName = "Unknown user"
+        picture = ""
+        email = ""
+        last_login = datetime.datetime.now().isoformat()
+        if userDoc is not None:
+            fullName = userDoc['name']
+            picture = userDoc['picture']
+            email = userDoc['email']
+            await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": last_login}}, upsert=True)
+            # await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
+            last_login_time = datetime.datetime.now()
+        # thirdpartyInfo = userObj.third_party_info
+        # print(email)
+        # print(thirdpartyInfo.user_id)
+        # print(thirdpartyInfo.id)
 
-    userDoc = await app.mongodb["users"].find_one({"_id": userId})
-    fullName = "Unknown user"
-    picture = ""
-    email = ""
-    last_login = datetime.datetime.now().isoformat()
-    if userDoc is not None:
-        fullName = userDoc['name']
-        picture = userDoc['picture']
-        email = userDoc['email']
-
-        # print(userDoc)
-        await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": last_login}}, upsert=True)
-        # await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
-
-    # thirdpartyInfo = userObj.third_party_info
-    # print(email)
-    # print(thirdpartyInfo.user_id)
-    # print(thirdpartyInfo.id)
-
-    # print("userId: ", userId)
-    sessionInfo: SessionInfo = SessionInfo(
-        sessionHandle=s.get_handle(),
-        userId=userId,
-        fullName=fullName,
-        email=email,
-        accessTokenPayload=s.get_access_token_payload()
-    )
+        # print("userId: ", userId)
+        sessionInfo: SessionInfo = SessionInfo(
+            sessionHandle=s.get_handle(),
+            userId=userId,
+            fullName=fullName,
+            email=email,
+            accessTokenPayload=s.get_access_token_payload()
+        )
+    except Exception as e:
+        logger.error(e, exc_info=True)    
     return sessionInfo
 
 
@@ -214,10 +220,16 @@ app.include_router(threads_router, tags=["threads"])
 
 
 if __name__ == "__main__":
-    uvicorn.run(
+    try:
+    # Your code that may raise an exception
+        uvicorn.run(
         "main:app",
-        host=settings.HOST,
-        reload=settings.DEBUG_MODE,
-        port=settings.PORT,
-        # proxy_headers=True,
-    )
+            host=settings.HOST,
+            reload=settings.DEBUG_MODE,
+            port=settings.PORT,
+            # proxy_headers=True,
+        )
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print(f"Laudoo Error on line {exc_traceback.tb_lineno}: {type(e).__name__} - {str(e)}")
+    
