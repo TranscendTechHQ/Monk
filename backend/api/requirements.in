@@ -11,4 +11,5 @@ beautifulsoup4==4.12.3
 redis[hiredis]
 pymilvus
 pyyaml
+openai
 
