@@ -6,13 +6,7 @@ pydantic-settings
 python-dotenv
 motor
 supertokens-python
-#pip_tools
-openai
-langchain
-langchain-openai
-slack-sdk
 boto3
-pandas
 beautifulsoup4==4.12.3
 redis[hiredis]
 pymilvus

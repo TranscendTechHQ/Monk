@@ -37,24 +37,4 @@ export class DefaultService {
             },
         });
     }
-    /**
-     * Slack User Token
-     * @param authcode
-     * @returns any Successful Response
-     * @throws ApiError
-     */
-    public static slackUserTokenSlackUserTokenPost(
-        authcode: string,
-    ): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/slack_user_token',
-            query: {
-                'authcode': authcode,
-            },
-            errors: {
-                422: `Validation Error`,
-            },
-        });
-    }
 }
