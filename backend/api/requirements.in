@@ -5,7 +5,7 @@ pydantic[email]
 pydantic-settings
 python-dotenv
 motor
-supertokens-python
+supertokens-python==0.23.1
 boto3
 beautifulsoup4==4.12.3
 redis[hiredis]

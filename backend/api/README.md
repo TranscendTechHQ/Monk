@@ -1,6 +1,8 @@
 # Setup the runtime environment
 ## create virtual env
-`python -m venv env`
+
+`uv venv`
+`source .venv/bin/activate`
 
 ## activate virtual env 
 `source env/bin/activate`
@@ -17,6 +19,18 @@ vi config/.env
 
 ## now run the main file
 `python main.py`
+
+# Docker
+## Delete all the docker images (careful)
+docker system prune -a 
+
+## Build backend docker image
+docker build -t monk_backend .
+
+## Run backend docker image
+docker run -e HCP_CLIENT_ID -e HCP_CLIENT_SECRET --name monk_backend_container -p 8001:8001 monk_backend
+
+
 
 ## Extract openapi.yaml from the FastAPI app
 One time install
