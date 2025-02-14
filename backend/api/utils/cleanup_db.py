@@ -227,15 +227,6 @@ def rename_created_date_to_created_at():
             'created_date': 'created_at'
         }})
         
-def rename_thread_types():
-    threads_collection = app.mongodb["threads"]
-    for doc in threads_collection.find():
-        thread_id = doc['_id']
-        if 'type' in doc:
-            if "slack_thread_ts" in doc:
-                #print('slack')
-                threads_collection.update_one({"_id": thread_id}, {'$set': {
-                    'type': 'slack'}})
             
 def delete_thread(thread_id):
     threads_collection = app.mongodb["threads"]

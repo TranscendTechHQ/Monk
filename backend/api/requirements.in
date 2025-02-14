@@ -5,16 +5,11 @@ pydantic[email]
 pydantic-settings
 python-dotenv
 motor
-supertokens-python
-#pip_tools
-openai
-langchain
-langchain-openai
-
+supertokens-python==0.23.1
 boto3
-pandas
 beautifulsoup4==4.12.3
 redis[hiredis]
-pymilvus==2.4.10
+pymilvus
 pyyaml
+openai
 

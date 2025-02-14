@@ -412,29 +412,6 @@ paths:
       summary: Secure Api
       tags:
       - session
-  /slack_user_token:
-    post:
-      operationId: slack_user_token_slack_user_token_post
-      parameters:
-      - in: query
-        name: authcode
-        required: true
-        schema:
-          title: Authcode
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema: {}
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Slack User Token
   /thread:
     post:
       description: The api will create a new thread and return the newly created thread

@@ -11,3 +11,8 @@ backend/api/messages.json
 backend/api/assistant_text.json
 .idea
 backend/api/utils/slack/messages.json
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+.terraform.lock.hcl
+.terraform/*

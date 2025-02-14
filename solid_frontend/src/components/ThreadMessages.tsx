@@ -15,7 +15,7 @@ const ThreadMessages: Component = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const threadTopic = new URLSearchParams(location.search).get('thread_topic') ?? '';
-  console.log("thread topic = ", threadTopic);
+  
   const [thread, setThread] = createSignal<ThreadResponse | null>(null);
   const [messages, setMessages] = createSignal<MessageResponse[]>([]);
   const [isLoading, setIsLoading] = createSignal(true);
