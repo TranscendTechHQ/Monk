@@ -12,4 +12,4 @@ redis[hiredis]
 pymilvus
 pyyaml
 openai
-
+pytest-playwright
