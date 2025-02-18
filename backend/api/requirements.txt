@@ -14,9 +14,9 @@ asgiref==3.8.1
     # via supertokens-python
 beautifulsoup4==4.12.3
     # via -r requirements.in
-boto3==1.36.21
+boto3==1.36.22
     # via -r requirements.in
-botocore==1.36.21
+botocore==1.36.22
     # via
     #   boto3
     #   s3transfer
@@ -128,8 +128,11 @@ pymongo==4.11.1
     # via motor
 pytest==8.3.4
     # via
+    #   pytest-asyncio
     #   pytest-base-url
     #   pytest-playwright
+pytest-asyncio==0.25.3
+    # via -r requirements.in
 pytest-base-url==2.1.0
     # via pytest-playwright
 pytest-playwright==0.7.0
