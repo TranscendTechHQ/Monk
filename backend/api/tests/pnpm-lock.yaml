@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@pnpm/types':
+        specifier: ^1000.1.1
+        version: 1000.1.1
     devDependencies:
       '@playwright/test':
         specifier: ^1.50.1
@@ -21,6 +25,10 @@ packages:
     resolution: {integrity: sha512-Jii3aBg+CEDpgnuDxEp/h7BimHcUTDlpEtce89xEumlJ5ef2hqepZ+PWp1DDpYC/VO9fmWVI1IlEaoI5fK9FXQ==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@pnpm/types@1000.1.1':
+    resolution: {integrity: sha512-5zrv7B+4mW/6iiYS/BrFZWbMqLHjKmaBrMcw+F8LcuMQ7p4SQX4ANoycpr1VIQpn4+xQ0ckyuadfxBttpzicbg==}
+    engines: {node: '>=18.12'}
 
   '@types/node@22.13.4':
     resolution: {integrity: sha512-ywP2X0DYtX3y08eFVx5fNIw7/uIv8hYUKgXoK8oayJlLnKcRfEYCxWMVE1XagUdVtCJlZT1AU4LXEABW+L1Peg==}
@@ -48,6 +56,8 @@ snapshots:
   '@playwright/test@1.50.1':
     dependencies:
       playwright: 1.50.1
+
+  '@pnpm/types@1000.1.1': {}
 
   '@types/node@22.13.4':
     dependencies:
