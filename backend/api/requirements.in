@@ -12,4 +12,5 @@ redis[hiredis]
 pymilvus
 pyyaml
 openai
-
+pytest-playwright
+pytest-asyncio
