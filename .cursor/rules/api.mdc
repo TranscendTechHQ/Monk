@@ -1,8 +1,8 @@
 ---
-description: Never modify the files inside solid_frontend/src/api folder. Those are generated files
+description: Never modify the files inside frontend/src/api folder. Those are generated files
 globs: 
 ---
 
 # Your rule content
 
-Never modify the files inside solid_frontend/src/api folder. Those are generated files
+Never modify the files inside frontend/src/api folder. Those are generated files
