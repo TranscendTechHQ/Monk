@@ -6,8 +6,24 @@
 **/.DS_Store
 **/git_commits.json
 **/git_commits_summarized.json
+**/node_modules
 backend/api/clustered_messages.txt
 backend/api/messages.json
 backend/api/assistant_text.json
 .idea
 backend/api/utils/slack/messages.json
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/terraform.tfvars
+**/terraform.tfvars.json
+.terraform.lock.hcl
+.terraform/*
+**/test-results/
+**/playwright-report/
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -1,0 +1,550 @@
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    LinkMetaModel:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+        url:
+          title: Url
+          type: string
+      required:
+      - url
+      title: LinkMetaModel
+      type: object
+    MessageResponse:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          title: Creator Id
+          type: string
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        link_meta:
+          anyOf:
+          - $ref: '#/components/schemas/LinkMetaModel'
+          - type: 'null'
+        presigned_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Presigned Url
+        text:
+          title: Text
+          type: string
+        thread_id:
+          title: Thread Id
+          type: string
+      required:
+      - thread_id
+      title: MessageResponse
+      type: object
+    MessagesResponse:
+      properties:
+        messages:
+          items:
+            $ref: '#/components/schemas/MessageResponse'
+          title: Messages
+          type: array
+      required:
+      - messages
+      title: MessagesResponse
+      type: object
+    SessionInfo:
+      properties:
+        accessTokenPayload:
+          title: Accesstokenpayload
+          type: object
+        email:
+          title: Email
+          type: string
+        fullName:
+          title: Fullname
+          type: string
+        last_login:
+          title: Last Login
+          type: string
+        picture:
+          title: Picture
+          type: string
+        sessionHandle:
+          title: Sessionhandle
+          type: string
+        userId:
+          title: Userid
+          type: string
+      required:
+      - sessionHandle
+      - userId
+      - fullName
+      - email
+      - accessTokenPayload
+      title: SessionInfo
+      type: object
+    ThreadCreate:
+      properties:
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
+        link_meta:
+          anyOf:
+          - $ref: '#/components/schemas/LinkMetaModel'
+          - type: 'null'
+        text:
+          title: Text
+          type: string
+        topic:
+          title: Topic
+          type: string
+      required:
+      - topic
+      title: ThreadCreate
+      type: object
+    ThreadResponse:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          title: Creator Id
+          type: string
+        image:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image
+        last_modified:
+          format: date-time
+          title: Last Modified
+          type: string
+        link_meta:
+          anyOf:
+          - $ref: '#/components/schemas/LinkMetaModel'
+          - type: 'null'
+        text:
+          title: Text
+          type: string
+        topic:
+          title: Topic
+          type: string
+      required:
+      - topic
+      title: ThreadResponse
+      type: object
+    ThreadsResponse:
+      properties:
+        threads:
+          items:
+            $ref: '#/components/schemas/ThreadResponse'
+          title: Threads
+          type: array
+      required:
+      - threads
+      title: ThreadsResponse
+      type: object
+    UserResponse:
+      properties:
+        _id:
+          title: ' Id'
+          type: string
+        email:
+          default: unknown email
+          title: Email
+          type: string
+        last_login:
+          title: Last Login
+          type: string
+        name:
+          default: unknown user
+          title: Name
+          type: string
+        picture:
+          default: unknown picture link
+          title: Picture
+          type: string
+      required:
+      - _id
+      - last_login
+      title: UserResponse
+      type: object
+    UsersResponse:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/UserResponse'
+          title: Users
+          type: array
+      required:
+      - users
+      title: UsersResponse
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  title: FastAPI
+  version: 0.1.0
+openapi: 3.1.0
+paths:
+  /download-url:
+    get:
+      description: The api will return the download url
+      operationId: get_download_url
+      parameters:
+      - in: query
+        name: filename
+        required: true
+        schema:
+          title: Filename
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Get Download Url
+                type: string
+          description: Download url
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get download url
+      tags:
+      - threads
+  /healthcheck:
+    get:
+      operationId: healthcheck_healthcheck_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Healthcheck
+  /linkmeta:
+    get:
+      operationId: get_link_meta_linkmeta_get
+      parameters:
+      - in: query
+        name: url
+        required: true
+        schema:
+          title: Url
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Link Meta
+  /message:
+    post:
+      description: The api will create a new message in a thread and return the newly
+        created message
+      operationId: create_message
+      parameters:
+      - in: query
+        name: thread_id
+        required: true
+        schema:
+          title: Thread Id
+          type: string
+      - in: query
+        name: text
+        required: true
+        schema:
+          title: Text
+          type: string
+      - in: query
+        name: image
+        required: false
+        schema:
+          title: Image
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: Newly created message
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create a new message in a thread
+      tags:
+      - threads
+  /messages:
+    get:
+      description: The api will return all messages in a thread
+      operationId: get_messages
+      parameters:
+      - in: query
+        name: thread_id
+        required: true
+        schema:
+          title: Thread Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagesResponse'
+          description: List of messages in a thread
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get all messages in a thread
+      tags:
+      - threads
+  /searchThreads:
+    get:
+      description: The api will return top 3 threads matching the query
+      operationId: search_threads
+      parameters:
+      - in: query
+        name: query
+        required: true
+        schema:
+          title: Query
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadsResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Search threads in plain english and get top 3 matching threads
+      tags:
+      - threads
+  /sessioninfo:
+    get:
+      operationId: secure_api_sessioninfo_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
+          description: Successful Response
+      summary: Secure Api
+      tags:
+      - session
+  /thread:
+    post:
+      description: The api will create a new thread and return the newly created thread
+      operationId: create_thread
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadCreate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadResponse'
+          description: Newly created thread
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create a new thread
+      tags:
+      - threads
+  /threads:
+    get:
+      description: The api will return all threads
+      operationId: get_threads
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadsResponse'
+          description: List of threads
+      summary: Get all threads
+      tags:
+      - threads
+  /threads/{thread_id}:
+    get:
+      description: The api will return the requested thread
+      operationId: get_thread
+      parameters:
+      - in: path
+        name: thread_id
+        required: true
+        schema:
+          title: Thread Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadResponse'
+          description: The requested thread
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get a thread by ID
+      tags:
+      - threads
+  /upload-url:
+    get:
+      description: The api will return the upload url
+      operationId: get_upload_url
+      parameters:
+      - in: query
+        name: filename
+        required: true
+        schema:
+          title: Filename
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Get Upload Url
+                type: string
+          description: Upload url
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get upload url
+      tags:
+      - threads
+  /user:
+    get:
+      description: The api will return user information
+      operationId: get_user
+      parameters:
+      - in: query
+        name: user_id
+        required: true
+        schema:
+          title: User Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get user information
+      tags:
+      - threads
+  /users:
+    get:
+      description: The api will return all users
+      operationId: get_users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+          description: Successful Response
+      summary: Get all users
+      tags:
+      - threads

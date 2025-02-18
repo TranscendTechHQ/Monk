@@ -1,4 +1,9 @@
 {
   "python.terminal.activateEnvInCurrentTerminal": true,
-  "cSpell.words": ["inprogress", "Reorderable"]
+  "cSpell.words": [
+    "inprogress",
+    "Reorderable"
+  ],
+  "copyrighter.license": "none",
+  "copyrighter.newFilesOnly": true
 }

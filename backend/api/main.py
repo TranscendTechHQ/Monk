@@ -1,30 +1,29 @@
 import datetime
 from contextlib import asynccontextmanager
+import sys
 
 import uvicorn
 from fastapi import Depends
 from fastapi import FastAPI
-from fastapi import status, Request
+from fastapi import status
 from fastapi.responses import JSONResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
-from slack_sdk.web import WebClient
+
 from starlette.middleware.cors import CORSMiddleware
 from supertokens_python import get_all_cors_headers
 from supertokens_python.framework.fastapi import get_middleware
 from supertokens_python.recipe.session import SessionContainer
 from supertokens_python.recipe.session.framework.fastapi import verify_session
-from supertokens_python.recipe.thirdparty.asyncio import get_user_by_id
-from supertokens_python.recipe.thirdparty.types import User
+
 
 from config import settings
 from routes.threads.routers import router as threads_router
-from routes.slack.routers import router as slack_router
-from utils.db import startup_async_db_client, shutdown_async_db_client
 
-# Set your Slack client ID and client secret
-SLACK_CLIENT_ID = settings.SLACK_CLIENT_ID
-SLACK_CLIENT_SECRET = settings.SLACK_CLIENT_SECRET
+import logging
+
+from utils.db import get_user_id, get_user_info, shutdown_sync_db_client, startup_async_db_client, shutdown_async_db_client, startup_sync_db_client
+from utils.scrapper import getLinkMeta
 
 
 @asynccontextmanager
@@ -32,16 +31,20 @@ async def lifespan(app: FastAPI):
     # Code to be executed before the application starts up
     await startup_db_client()
     await startup_async_db_client()
+    startup_sync_db_client()
     yield
     # Code to be executed after the application shuts down
     await shutdown_db_client()
     await shutdown_async_db_client()
+    shutdown_sync_db_client()
 
 
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(get_middleware())
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
 
 class SessionInfo(BaseModel):
     sessionHandle: str
@@ -55,37 +58,41 @@ class SessionInfo(BaseModel):
 
 @app.get("/sessioninfo", response_model=SessionInfo, tags=["session"])
 async def secure_api(s: SessionContainer = Depends(verify_session())) -> SessionInfo:
-    userId = s.get_user_id()
-    userObj: User = await get_user_by_id(userId)
-    # email = userObj.email
+    
+    try:
+    
+        userId = get_user_id(s)
+        
+        #userObj: User = await get_user_by_id(userId)
+        # email = userObj.email
+        userDoc = await get_user_info(userId)
+        
+        fullName = "Unknown user"
+        picture = ""
+        email = ""
+        last_login = datetime.datetime.now().isoformat()
+        if userDoc is not None:
+            fullName = userDoc['name']
+            picture = userDoc['picture']
+            email = userDoc['email']
+            await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": last_login}}, upsert=True)
+            # await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
+            last_login_time = datetime.datetime.now()
+        # thirdpartyInfo = userObj.third_party_info
+        # print(email)
+        # print(thirdpartyInfo.user_id)
+        # print(thirdpartyInfo.id)
 
-    userDoc = await app.mongodb["users"].find_one({"_id": userId})
-    fullName = "Unknown user"
-    picture = ""
-    email = ""
-    last_login = datetime.datetime.now().isoformat()
-    if userDoc is not None:
-        fullName = userDoc['name']
-        picture = userDoc['picture']
-        email = userDoc['email']
-
-        # print(userDoc)
-        await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"last_login": last_login}}, upsert=True)
-        # await app.mongodb["users"].update_one({"_id": userId}, {"$set": {"email": email}}, upsert=True)
-
-    # thirdpartyInfo = userObj.third_party_info
-    # print(email)
-    # print(thirdpartyInfo.user_id)
-    # print(thirdpartyInfo.id)
-
-    # print("userId: ", userId)
-    sessionInfo: SessionInfo = SessionInfo(
-        sessionHandle=s.get_handle(),
-        userId=userId,
-        fullName=fullName,
-        email=email,
-        accessTokenPayload=s.get_access_token_payload()
-    )
+        # print("userId: ", userId)
+        sessionInfo: SessionInfo = SessionInfo(
+            sessionHandle=s.get_handle(),
+            userId=userId,
+            fullName=fullName,
+            email=email,
+            accessTokenPayload=s.get_access_token_payload()
+        )
+    except Exception as e:
+        logger.error(e, exc_info=True)    
     return sessionInfo
 
 
@@ -103,24 +110,7 @@ app.add_middleware(
 )
 
 
-def get_slack_access_token(code):
-    """
-    Exchanges an OAuth authorization code for an access token.
-    
-    Args:
-        code (str): The authorization code received from the Slack OAuth flow.
-    
-    Returns:
-        dict: The response from the Slack `oauth.v2.access` API, containing the access token and other details.
-    """
-    client = WebClient()
-    response = client.oauth_v2_access(
-        client_id=SLACK_CLIENT_ID,
-        client_secret=SLACK_CLIENT_SECRET,
-        code=code
-    )
 
-    return response
 
 
 class TenantModel(BaseModel):
@@ -137,49 +127,19 @@ async def healthcheck():
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "API is running"})
 
 
-@app.post("/slack_user_token")
-async def slack_user_token(request: Request, authcode: str):
-    token_response = get_slack_access_token(authcode)
-    # print(token_response.__dict__)
+@app.get("/linkmeta")
+async def get_link_meta(url: str):
+    try:
+        if url is None:
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "URL is required"})
 
-    if "error" in token_response:
-        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Invalid auth code"})
+        meta = getLinkMeta(url)
+        print(meta)
+        return JSONResponse(status_code=status.HTTP_200_OK, content=meta)
+    except Exception as e:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": str(e)})
 
-    if token_response["ok"] == False:
-        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Invalid auth code"})
 
-    token_data = token_response.data
-    # print(token_data)
-
-    tenant = {}
-    tenant_id = token_data["team"]["id"]
-    tenant["tenant_id"] = tenant_id
-    tenant["tenant_name"] = token_data["team"]["name"]
-    tenant["user_id"] = token_data["authed_user"]["id"]
-    tenant["user_token"] = token_data["authed_user"]["access_token"]
-    tenant["bot_user_id"] = token_data["bot_user_id"]
-    tenant["bot_token"] = token_data["access_token"]
-    tenant["token_response"] = token_data
-
-    tenant_model = TenantModel(**tenant)
-
-    # print(token_response)
-    tenant_collection = request.app.mongodb["tenants"]
-
-    # Replace the document if it exists, otherwise insert it
-    result = await tenant_collection.replace_one(
-        filter={"tenant_id": tenant_id},
-        replacement=tenant,
-        upsert=True
-    )
-
-    # Check if a new document was inserted
-    if result.upserted_id is not None:
-        print(f"New document inserted with ID: {result.upserted_id}")
-    else:
-        print("Document replaced successfully")
-
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Monk added successfully"})
 
 
 async def startup_db_client():
@@ -192,13 +152,20 @@ async def shutdown_db_client():
 
 
 app.include_router(threads_router, tags=["threads"])
-app.include_router(slack_router, tags=["slack"])
+
+
 
 if __name__ == "__main__":
-    uvicorn.run(
+    try:
+    # Your code that may raise an exception
+        uvicorn.run(
         "main:app",
-        host=settings.HOST,
-        reload=settings.DEBUG_MODE,
-        port=settings.PORT,
-        # proxy_headers=True,
-    )
+            host=settings.HOST,
+            reload=settings.DEBUG_MODE,
+            port=settings.PORT,
+            # proxy_headers=True,
+        )
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print(f"Laudoo Error on line {exc_traceback.tb_lineno}: {type(e).__name__} - {str(e)}")
+    

@@ -28,13 +28,13 @@ def embed_text(
     model_name: str,
     task_type: str,
     text: str,
-    title: str = "",
+    topic: str = "",
     output_dimensionality=None,
 ) -> list:
     """Generates a text embedding with a Large Language Model."""
     model = TextEmbeddingModel.from_pretrained(model_name)
     text_embedding_input = TextEmbeddingInput(
-        task_type=task_type, title=title, text=text
+        task_type=task_type, topic=topic, text=text
     )
     kwargs = (
         dict(output_dimensionality=output_dimensionality)
@@ -69,7 +69,7 @@ def unsupervised_cluster(embeddings, n_clusters):
 
 def single_text_embedding(text:str):
     
-    # @title { run: "auto" }
+    # @topic { run: "auto" }
     MODEL = "text-embedding-preview-0409"  # @param ["text-embedding-preview-0409", "text-multilingual-embedding-preview-0409", "textembedding-gecko@003", "textembedding-gecko-multilingual@001"]
     TASK = "CLUSTERING"  # @param ["RETRIEVAL_QUERY", "RETRIEVAL_DOCUMENT", "SEMANTIC_SIMILARITY", "CLASSIFICATION", "CLUSTERING", "QUESTION_ANSWERING", "FACT_VERIFICATION"]
     TEXT = text
@@ -97,7 +97,7 @@ def single_text_embedding(text:str):
         model_name=MODEL,
         task_type=TASK,
         text=TEXT,
-        title=TITLE,
+        topic=TITLE,
         output_dimensionality=OUTPUT_DIMENSIONALITY,
     )
     #print(embedding)  # Expected value: {OUTPUT_DIMENSIONALITY}. 

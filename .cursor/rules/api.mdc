@@ -1,0 +1,8 @@
+---
+description: Never modify the files inside frontend/src/api folder. Those are generated files
+globs: 
+---
+
+# Your rule content
+
+Never modify the files inside frontend/src/api folder. Those are generated files
