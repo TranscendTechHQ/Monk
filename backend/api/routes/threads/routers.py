@@ -15,7 +15,7 @@ from utils.milvus_vector import milvus_semantic_search
 from utils.scrapper import getLinkMeta
 from utils.db import create_mongo_doc_sync, get_mongo_document_async, get_mongo_documents_async, get_mongo_documents_sync, get_tenant_id, asyncdb, syncdb, update_fields_mongo_simple
 
-from utils.relevance import get_relevant_thread_ids
+
 from utils.storage import get_presigned_url
 
 router = APIRouter()
@@ -60,7 +60,8 @@ def extract_link_meta(content: str):
             operation_id="get_upload_url",
             summary="Get upload url",
             description="The api will return the upload url")
-async def get_upload_url(filename: str):
+async def get_upload_url(filename: str, 
+                        session: SessionContainer = Depends(verify_session())):
     presigned_url = get_presigned_url(filename, client_method='put_object')
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(presigned_url))
 
@@ -70,7 +71,8 @@ async def get_upload_url(filename: str):
             operation_id="get_download_url",
             summary="Get download url",
             description="The api will return the download url")
-async def get_download_url(filename: str):
+async def get_download_url(filename: str,
+                            session: SessionContainer = Depends(verify_session())):
     presigned_url = get_presigned_url(filename, client_method='get_object')
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(presigned_url))
 
@@ -289,29 +291,5 @@ async def search_threads(request: Request, query: str, session: SessionContainer
     return JSONResponse(status_code=status.HTTP_200_OK, content=return_threads)
 
 
-def semantic_filter_threads(user_id, tenant_id):
-    user_collection = syncdb.users_collection
-    user = user_collection.find_one({"_id": user_id})
-    if user is None:
-        return None
-    user_name = user["name"]
-    print(f'\n 👉 User name: {user_name}')
-    news_feed_filter_collection = syncdb.user_news_feed_filter_collection
-    user_filter = news_feed_filter_collection.find_one({"user_id": user_id})
 
-    if user_filter is None:
-        return None
-
-    user_preference = user_filter["searchQuery"]
-    print(f'\n 👉 User preference: {user_preference}')
-    threads_collection = syncdb.threads_collection
-    thread_ids_dict = get_mongo_documents_sync(collection=threads_collection, tenant_id=tenant_id, projection={'_id': 1})
-    
-    thread_ids = [thread["_id"] for thread in thread_ids_dict]
-    print(f'\n 👉 Thread ids: {thread_ids}')
-
-    relevant_thread_ids = get_relevant_thread_ids(
-        user_name, user_preference, thread_ids)
-
-    return relevant_thread_ids
 
