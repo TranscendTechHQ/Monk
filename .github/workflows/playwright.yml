@@ -73,7 +73,7 @@ jobs:
         attempt=1
         while [ $attempt -le $max_attempts ]; do
           echo "Attempt $attempt of $max_attempts"
-          response=$(curl -s -w "\n%{http_code}" http://${{ env.API_DOMAIN }}:${{ env.API_PORT }}/docs)
+          response=$(curl -v -s -w "\n%{http_code}" http://127.0.0.1:${{ env.API_PORT }}/docs)
           status_code=$(echo "$response" | tail -n1)
           echo "Received status code: $status_code"
           if [ "$status_code" = "200" ]; then
