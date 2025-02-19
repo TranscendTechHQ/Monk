@@ -21,15 +21,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Python ${{ env.PYTHON_VERSION }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Install Python dependencies
-      run: |
-        pip install playwright==1.42.0
-        playwright install chromium
 
     - name: Build Docker image
       run: docker build -t monk_backend ./backend/api

@@ -12,8 +12,8 @@ dotenv.config({ path: path.resolve(__dirname, 'backend/api/config/.env') });
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testMatch: '**/*.spec.ts',
-  //testDir: './tests',
+  //testMatch: '**/*.spec.ts',
+  testDir: './backend/api/tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
