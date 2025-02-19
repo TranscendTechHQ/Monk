@@ -3,15 +3,11 @@ name: Playwright Test Suite
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
   pull_request:
     branches: [main]
 
-# Environment variables at workflow level (static values only)
 env:
-  API_PORT: '8001'  # Explicit string declaration
+  API_PORT: 8001
   CONTAINER_NAME: monk_backend_container
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
@@ -20,11 +16,6 @@ jobs:
   e2e-tests:
     runs-on: ubuntu-latest
     
-    # Job-level environment (derived values)
-    env:
-      API_DOMAIN: http://127.0.0.1:${{ vars.API_PORT }}  # Use vars context for workflow vars
-      PLAYWRIGHT_VERSION: '1.42.0'
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -36,7 +27,7 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pip install playwright==${{ env.PLAYWRIGHT_VERSION }}
+        pip install playwright==1.42.0
         playwright install chromium
 
     - name: Build Docker image
@@ -45,30 +36,42 @@ jobs:
     - name: Run Docker container
       run: |
         docker run -d \
-          -p ${API_PORT}:8001 \  # Direct environment variable access
-          -e API_DOMAIN=${API_DOMAIN} \
+          -p ${{ env.API_PORT }}:8001 \
+          -e API_DOMAIN=http://localhost:${{ env.API_PORT }} \
           -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
           -e HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }} \
           -e HCP_ORG_ID=${{ secrets.HCP_ORG_ID }} \
           -e HCP_PROJECT_ID=${{ secrets.HCP_PROJECT_ID }} \
           -e HCP_PROJECT_NAME=${{ secrets.HCP_PROJECT_NAME }} \
-          --name ${CONTAINER_NAME} \
+          --name ${{ env.CONTAINER_NAME }} \
           monk_backend
 
     - name: Validate container
       run: |
-        echo "Using API port: ${API_PORT}"
-        echo "Accessing domain: ${API_DOMAIN}"
-        docker ps --filter "name=${CONTAINER_NAME}"
+        echo "Using API port: ${{ env.API_PORT }}"
+        echo "Accessing domain: http://localhost:${{ env.API_PORT }}"
+        docker ps --filter "name=${{ env.CONTAINER_NAME }}"
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Install pnpm
+      run: npm install -g pnpm
+
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: pnpm install
 
     - name: Run Playwright tests
       working-directory: .
       env:
-        CI: true
+        API_DOMAIN: http://127.0.0.1:${{ env.API_PORT }}
       run: pnpm exec playwright test
 
     - name: Cleanup
       if: always()
       run: |
-        docker stop ${CONTAINER_NAME} || true
-        docker rm ${CONTAINER_NAME} || true
+        docker stop ${{ env.CONTAINER_NAME }} || true
+        docker rm ${{ env.CONTAINER_NAME }} || true
