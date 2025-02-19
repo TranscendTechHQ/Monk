@@ -1,50 +1,74 @@
-name: Playwright Tests
+name: Playwright Test Suite
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 env:
   API_PORT: 8001
   CONTAINER_NAME: monk_backend_container
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
 
 jobs:
-  playwright-tests:
+  e2e-tests:
+    name: End-to-End Test Suite
     runs-on: ubuntu-latest
     env:
-      API_DOMAIN: 'http://localhost:${{ env.API_PORT }}'  # Valid job-level reference
+      API_DOMAIN: http://localhost:${{ env.API_PORT }}
+      PLAYWRIGHT_VERSION: 1.42.0
+      TEST_TIMEOUT: 30000
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+        submodules: recursive
 
-    - name: Set up Python
+    - name: Setup Core Tools
+      run: |
+        sudo apt-get -yq update
+        sudo apt-get -yq install jq curl netcat
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
 
     - name: Cache Python dependencies
       uses: actions/cache@v3
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        path: |
+          ~/.cache/pip
+          ~/.local/lib/python${{ env.PYTHON_VERSION }}/site-packages
+        key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
 
     - name: Install Python dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest playwright
-        playwright install chromium
+        python -m pip install --upgrade pip wheel
+        pip install pytest playwright==${{ env.PLAYWRIGHT_VERSION }}
+        playwright install chromium --with-deps
 
     - name: Build Docker image
-      run: docker build -t monk_backend ./backend/api
+      run: |
+        docker build -t monk_backend ./backend/api \
+          --label commit=${{ github.sha }} \
+          --label branch=${{ github.ref }}
 
     - name: Run Docker container
       run: |
         docker run -d \
+          --health-cmd "curl -f ${{ env.API_DOMAIN }}/health || exit 1" \
+          --health-interval 5s \
+          --health-retries 3 \
           -p ${{ env.API_PORT }}:8001 \
           -e API_DOMAIN=${{ env.API_DOMAIN }} \
           -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
@@ -55,54 +79,81 @@ jobs:
           --name ${{ env.CONTAINER_NAME }} \
           monk_backend
 
-    - name: Wait for API to be ready
+    - name: Validate container health
       run: |
-        for i in {1..10}; do
-          if curl -s ${{ env.API_DOMAIN }}/health; then
-            echo "API is ready!"
-            exit 0
-          fi
-          echo "Attempt $i: API not ready, waiting..."
-          sleep 5
-        done
-        echo "API failed to start. Outputting container logs:"
-        docker logs ${{ env.CONTAINER_NAME }}
-        exit 1
+        echo "Waiting for API at ${{ env.API_DOMAIN }}"
+        docker inspect --format='{{.State.Health.Status}}' ${{ env.CONTAINER_NAME }}
+        timeout 60 bash -c 'while [[ "$(docker inspect --format='{{.State.Health.Status}}' ${{ env.CONTAINER_NAME }})" != "healthy" ]]; do sleep 5; done'
 
-    - name: Setup Node.js
+    - name: Setup Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: ${{ env.NODE_VERSION }}
         cache: 'pnpm'
+        cache-dependency-path: |
+          frontend/pnpm-lock.yaml
 
     - name: Install pnpm
-      run: npm install -g pnpm
+      run: npm install -g pnpm@8
+
+    - name: Cache frontend dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          frontend/node_modules
+          ~/.pnpm-store
+        key: ${{ runner.os }}-node-${{ hashFiles('frontend/pnpm-lock.yaml') }}
 
     - name: Install frontend dependencies
       working-directory: ./frontend
-      run: pnpm install
+      run: pnpm install --frozen-lockfile
 
     - name: Install Playwright browsers
       working-directory: ./frontend
-      run: pnpm exec playwright install --with-deps
+      run: pnpm exec playwright install --with-deps chromium
 
-    - name: Run Python Playwright tests
+    - name: Run Python API tests
+      timeout-minutes: 10
+      env:
+        PYTHONPATH: ${{ github.workspace }}/backend/api
+        TEST_RETRIES: 2
       run: |
-        PYTHONPATH=$PYTHONPATH:./backend/api \
-        API_DOMAIN=${{ env.API_DOMAIN }} \
-        pytest ./backend/api/tests/test_unauthorized_access.py -v
+        pytest ./backend/api/tests \
+          -v \
+          --cov=./backend/api \
+          --cov-report=xml:coverage.xml \
+          --junitxml=test-results.xml \
+          --reruns ${{ env.TEST_RETRIES }} \
+          --reruns-delay 1
 
-    - name: Run Node.js Playwright tests
+    - name: Run Playwright UI tests
       working-directory: ./frontend
-      run: API_DOMAIN=${{ env.API_DOMAIN }} pnpm exec playwright test
+      timeout-minutes: 15
+      env:
+        CI: true
+        TEST_TIMEOUT: ${{ env.TEST_TIMEOUT }}
+      run: |
+        pnpm exec playwright test \
+          --config=playwright.config.ts \
+          --workers=2 \
+          --retries=2 \
+          --timeout=${{ env.TEST_TIMEOUT }} \
+          --reporter=line,html
 
-    - name: Stop and remove container
+    - name: Upload test results
       if: always()
-      run: docker stop ${{ env.CONTAINER_NAME }} && docker rm ${{ env.CONTAINER_NAME }}
-
-    - uses: actions/upload-artifact@v3
-      if: always()
+      uses: actions/upload-artifact@v3
       with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+        name: test-artifacts-${{ github.run_number }}
+        path: |
+          test-results.xml
+          playwright-report/
+          coverage.xml
+        retention-days: 7
+
+    - name: Cleanup containers
+      if: always()
+      run: |
+        docker stop ${{ env.CONTAINER_NAME }} || true
+        docker rm -f ${{ env.CONTAINER_NAME }} || true
+        docker rmi -f monk_backend || true
