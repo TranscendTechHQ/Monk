@@ -42,9 +42,7 @@ class SuperTokensSettings(BaseSettings):
 class CommonSettings(BaseSettings):
     APP_NAME: str = "Monk"
     DEBUG_MODE: bool = get_env_variable(var_name="DEBUG_MODE", secret=False, default=True)
-    RELEVANCE_API_KEY: str = get_env_variable(var_name="RELEVANCE_API_KEY", secret=False)
-    RELEVANCE_URL: str = get_env_variable(var_name="RELEVANCE_URL", secret=False)
-
+    
 class ServerSettings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = get_env_variable(var_name="FASTAPI_PORT", secret=False, default=8001)
@@ -55,12 +53,12 @@ class ServerSettings(BaseSettings):
 
 class DatabaseSettings(BaseSettings):
     DB_URL: str = get_env_variable(var_name='DB_URL', secret=True)
-    DB_NAME: str = get_env_variable(var_name='DB_NAME', secret=False)
-    REDIS_HOST: str = get_env_variable(var_name='REDIS_HOST', secret=False)
-    REDIS_PORT: str = get_env_variable(var_name='REDIS_PORT', secret=False)
-    REDIS_USERNAME: str = get_env_variable(var_name='REDIS_USERNAME', secret=False)
+    DB_NAME: str = get_env_variable(var_name='DB_NAME', secret=True)
+    REDIS_HOST: str = get_env_variable(var_name='REDIS_HOST', secret=True)
+    REDIS_PORT: str = get_env_variable(var_name='REDIS_PORT', secret=True)
+    REDIS_USERNAME: str = get_env_variable(var_name='REDIS_USERNAME', secret=True)
     REDIS_PASSWORD: str = get_env_variable(var_name='REDIS_PASSWORD', secret=True)
-    MILVUS_URI: str = get_env_variable(var_name='MILVUS_URI', secret=False)
+    MILVUS_URI: str = get_env_variable(var_name='MILVUS_URI', secret=True)
     MILVUS_TOKEN: str = get_env_variable(var_name='MILVUS_TOKEN', secret=True)
 
 class OpenAISettings(BaseSettings):
@@ -78,9 +76,8 @@ class ClientSettings(BaseSettings):
 class StorageSettings(BaseSettings):
     STORAGE_ACCESS_KEY_ID: str = get_env_variable(var_name="STORAGE_ACCESS_KEY_ID", secret=True)
     STORAGE_SECRET_ACCESS_KEY: str = get_env_variable(var_name="STORAGE_SECRET_ACCESS_KEY", secret=True)
-    STORAGE_ENDPOINT: str = get_env_variable(var_name="STORAGE_ENDPOINT", secret=False)
-    STORAGE_DOMAIN: str = get_env_variable(var_name="STORAGE_DOMAIN", secret=False)
-    STORAGE_BUCKET_NAME: str = get_env_variable(var_name="STORAGE_BUCKET_NAME", secret=False)
+    STORAGE_ENDPOINT: str = get_env_variable(var_name="STORAGE_ENDPOINT", secret=True)
+    STORAGE_BUCKET_NAME: str = get_env_variable(var_name="STORAGE_BUCKET_NAME", secret=True)
 
 class Settings(CommonSettings, ServerSettings, DatabaseSettings, OpenAISettings, ClientSettings, SuperTokensSettings, StorageSettings):
     pass
