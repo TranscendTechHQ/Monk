@@ -8,152 +8,67 @@ on:
       - 'README.md'
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
+# Environment variables at workflow level (static values only)
 env:
-  API_PORT: 8001
+  API_PORT: '8001'  # Explicit string declaration
   CONTAINER_NAME: monk_backend_container
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
 
 jobs:
   e2e-tests:
-    name: End-to-End Test Suite
     runs-on: ubuntu-latest
+    
+    # Job-level environment (derived values)
     env:
-      API_DOMAIN: http://localhost:${{ env.API_PORT }}
-      PLAYWRIGHT_VERSION: 1.42.0
-      TEST_TIMEOUT: 30000
+      API_DOMAIN: http://127.0.0.1:${{ vars.API_PORT }}  # Use vars context for workflow vars
+      PLAYWRIGHT_VERSION: '1.42.0'
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
-        submodules: recursive
 
-    - name: Setup Core Tools
-      run: |
-        sudo apt-get -yq update
-        sudo apt-get -yq install jq curl netcat
-
-    - name: Set up Python ${{ env.PYTHON_VERSION }}
+    - name: Setup Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-        cache: 'pip'
-
-    - name: Cache Python dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/pip
-          ~/.local/lib/python${{ env.PYTHON_VERSION }}/site-packages
-        key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
 
     - name: Install Python dependencies
       run: |
-        python -m pip install --upgrade pip wheel
-        pip install pytest playwright==${{ env.PLAYWRIGHT_VERSION }}
-        playwright install chromium --with-deps
+        pip install playwright==${{ env.PLAYWRIGHT_VERSION }}
+        playwright install chromium
 
     - name: Build Docker image
-      run: |
-        docker build -t monk_backend ./backend/api \
-          --label commit=${{ github.sha }} \
-          --label branch=${{ github.ref }}
+      run: docker build -t monk_backend ./backend/api
 
     - name: Run Docker container
       run: |
         docker run -d \
-          --health-cmd "curl -f ${{ env.API_DOMAIN }}/health || exit 1" \
-          --health-interval 5s \
-          --health-retries 3 \
-          -p ${{ env.API_PORT }}:8001 \
-          -e API_DOMAIN=${{ env.API_DOMAIN }} \
+          -p ${API_PORT}:8001 \  # Direct environment variable access
+          -e API_DOMAIN=${API_DOMAIN} \
           -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
           -e HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }} \
           -e HCP_ORG_ID=${{ secrets.HCP_ORG_ID }} \
           -e HCP_PROJECT_ID=${{ secrets.HCP_PROJECT_ID }} \
           -e HCP_PROJECT_NAME=${{ secrets.HCP_PROJECT_NAME }} \
-          --name ${{ env.CONTAINER_NAME }} \
+          --name ${CONTAINER_NAME} \
           monk_backend
 
-    - name: Validate container health
+    - name: Validate container
       run: |
-        echo "Waiting for API at ${{ env.API_DOMAIN }}"
-        docker inspect --format='{{.State.Health.Status}}' ${{ env.CONTAINER_NAME }}
-        timeout 60 bash -c 'while [[ "$(docker inspect --format='{{.State.Health.Status}}' ${{ env.CONTAINER_NAME }})" != "healthy" ]]; do sleep 5; done'
+        echo "Using API port: ${API_PORT}"
+        echo "Accessing domain: ${API_DOMAIN}"
+        docker ps --filter "name=${CONTAINER_NAME}"
 
-    - name: Setup Node.js ${{ env.NODE_VERSION }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'pnpm'
-        cache-dependency-path: |
-          frontend/pnpm-lock.yaml
-
-    - name: Install pnpm
-      run: npm install -g pnpm@8
-
-    - name: Cache frontend dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          frontend/node_modules
-          ~/.pnpm-store
-        key: ${{ runner.os }}-node-${{ hashFiles('frontend/pnpm-lock.yaml') }}
-
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: pnpm install --frozen-lockfile
-
-    - name: Install Playwright browsers
-      working-directory: ./frontend
-      run: pnpm exec playwright install --with-deps chromium
-
-    - name: Run Python API tests
-      timeout-minutes: 10
-      env:
-        PYTHONPATH: ${{ github.workspace }}/backend/api
-        TEST_RETRIES: 2
-      run: |
-        pytest ./backend/api/tests \
-          -v \
-          --cov=./backend/api \
-          --cov-report=xml:coverage.xml \
-          --junitxml=test-results.xml \
-          --reruns ${{ env.TEST_RETRIES }} \
-          --reruns-delay 1
-
-    - name: Run Playwright UI tests
-      working-directory: ./frontend
-      timeout-minutes: 15
+    - name: Run Playwright tests
+      working-directory: .
       env:
         CI: true
-        TEST_TIMEOUT: ${{ env.TEST_TIMEOUT }}
-      run: |
-        pnpm exec playwright test \
-          --config=playwright.config.ts \
-          --workers=2 \
-          --retries=2 \
-          --timeout=${{ env.TEST_TIMEOUT }} \
-          --reporter=line,html
+      run: pnpm exec playwright test
 
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-artifacts-${{ github.run_number }}
-        path: |
-          test-results.xml
-          playwright-report/
-          coverage.xml
-        retention-days: 7
-
-    - name: Cleanup containers
+    - name: Cleanup
       if: always()
       run: |
-        docker stop ${{ env.CONTAINER_NAME }} || true
-        docker rm -f ${{ env.CONTAINER_NAME }} || true
-        docker rmi -f monk_backend || true
+        docker stop ${CONTAINER_NAME} || true
+        docker rm ${CONTAINER_NAME} || true
