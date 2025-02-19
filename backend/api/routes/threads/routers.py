@@ -60,7 +60,8 @@ def extract_link_meta(content: str):
             operation_id="get_upload_url",
             summary="Get upload url",
             description="The api will return the upload url")
-async def get_upload_url(filename: str):
+async def get_upload_url(filename: str, 
+                        session: SessionContainer = Depends(verify_session())):
     presigned_url = get_presigned_url(filename, client_method='put_object')
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(presigned_url))
 
@@ -70,7 +71,8 @@ async def get_upload_url(filename: str):
             operation_id="get_download_url",
             summary="Get download url",
             description="The api will return the download url")
-async def get_download_url(filename: str):
+async def get_download_url(filename: str,
+                            session: SessionContainer = Depends(verify_session())):
     presigned_url = get_presigned_url(filename, client_method='get_object')
     return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(presigned_url))
 
