@@ -57,16 +57,37 @@ jobs:
       working-directory: ./frontend
       run: pnpm install
 
-    - name: Install Playwright browsers
-      run: pnpm exec playwright install --with-deps
+    #- name: Install Playwright browsers
+    #  run: pnpm exec playwright install --with-deps
+
+    - name: Debug network
+      run: |
+        echo "Checking network status..."
+        docker logs ${{ env.CONTAINER_NAME }}
+        docker inspect ${{ env.CONTAINER_NAME }}
+        netstat -tulpn | grep ${{ env.API_PORT }}
 
     - name: check backend api is running using curl
       run: |
-        curl -s -o /dev/null -w "%{http_code}" http://${{ env.API_DOMAIN }}:${{ env.API_PORT }}/docs | grep -q "200"
-        if [ $? -ne 0 ]; then
-          echo "Backend API is not running"
-          exit 1
-        fi
+        max_attempts=5
+        attempt=1
+        while [ $attempt -le $max_attempts ]; do
+          echo "Attempt $attempt of $max_attempts"
+          response=$(curl -s -w "\n%{http_code}" http://${{ env.API_DOMAIN }}:${{ env.API_PORT }}/docs)
+          status_code=$(echo "$response" | tail -n1)
+          echo "Received status code: $status_code"
+          if [ "$status_code" = "200" ]; then
+            echo "Backend API is running successfully"
+            exit 0
+          fi
+          echo "Backend API check failed with status code: $status_code"
+          echo "Response body:"
+          echo "$response" | sed '$d'
+          sleep 5
+          attempt=$((attempt + 1))
+        done
+        echo "Backend API failed to respond after $max_attempts attempts"
+        exit 1
 
     - name: Run Playwright tests
       working-directory: .
