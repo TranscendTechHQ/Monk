@@ -60,6 +60,14 @@ jobs:
     - name: Install Playwright browsers
       run: pnpm exec playwright install --with-deps
 
+    - name: check backend api is running using curl
+      run: |
+        curl -s -o /dev/null -w "%{http_code}" http://${{ env.API_DOMAIN }}:${{ env.API_PORT }}/docs | grep -q "200"
+        if [ $? -ne 0 ]; then
+          echo "Backend API is not running"
+          exit 1
+        fi
+
     - name: Run Playwright tests
       working-directory: .
       env:
