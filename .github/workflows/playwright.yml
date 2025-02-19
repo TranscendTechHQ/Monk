@@ -8,7 +8,7 @@ on:
 
 env:
   API_PORT: 8001
-  API_DOMAIN: http://localhost:${{ env.API_PORT }}
+  API_DOMAIN: http://localhost:8001
 
 jobs:
   playwright-tests:
