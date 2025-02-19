@@ -8,12 +8,13 @@ on:
 
 env:
   API_PORT: 8001
-  API_DOMAIN: 'http://localhost:${{ env.API_PORT }}'
   CONTAINER_NAME: monk_backend_container
 
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
+    env:
+      API_DOMAIN: 'http://localhost:${{ env.API_PORT }}'  # Valid job-level reference
 
     steps:
     - name: Checkout code
