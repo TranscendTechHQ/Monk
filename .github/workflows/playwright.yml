@@ -62,11 +62,28 @@ jobs:
         pip install pytest playwright
         playwright install chromium
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+
+    - name: Install pnpm
+      run: npm install -g pnpm
+
+    - name: Install dependencies
+      run: pnpm install
+
+    - name: Install Playwright browsers
+      run: pnpm exec playwright install --with-deps
+
     - name: Run Playwright tests
       run: |
         PYTHONPATH=$PYTHONPATH:./backend/api \
         API_DOMAIN=${{ env.API_DOMAIN }} \
         pytest ./backend/api/tests/test_unauthorized_access.py -v
+        
+        API_DOMAIN=${{ env.API_DOMAIN }} pnpm exec playwright test
 
     - name: Stop container
       if: always()
