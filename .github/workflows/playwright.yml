@@ -8,6 +8,7 @@ on:
 
 env:
   API_PORT: 8001
+  API_DOMAIN: 0.0.0.0
   CONTAINER_NAME: monk_backend_container
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
@@ -37,7 +38,7 @@ jobs:
       run: |
         docker run -d \
           -p ${{ env.API_PORT }}:8001 \
-          -e API_DOMAIN=http://localhost:${{ env.API_PORT }} \
+          -e API_DOMAIN=http://${{ env.API_DOMAIN }}:${{ env.API_PORT }} \
           -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
           -e HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }} \
           -e HCP_ORG_ID=${{ secrets.HCP_ORG_ID }} \
@@ -49,7 +50,7 @@ jobs:
     - name: Validate container
       run: |
         echo "Using API port: ${{ env.API_PORT }}"
-        echo "Accessing domain: http://localhost:${{ env.API_PORT }}"
+        echo "Accessing domain: http://${{ env.API_DOMAIN }}:${{ env.API_PORT }}"
         docker ps --filter "name=${{ env.CONTAINER_NAME }}"
 
     - name: Setup Node.js
@@ -67,7 +68,7 @@ jobs:
     - name: Run Playwright tests
       working-directory: .
       env:
-        API_DOMAIN: http://127.0.0.1:${{ env.API_PORT }}
+        API_DOMAIN: http://${{ env.API_DOMAIN }}:${{ env.API_PORT }}
       run: pnpm exec playwright test
 
     - name: Cleanup
