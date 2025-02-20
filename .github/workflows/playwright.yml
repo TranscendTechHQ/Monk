@@ -95,13 +95,22 @@ jobs:
         echo "Backend API failed to respond after $max_attempts attempts"
         exit 1
 
-    - name: Run Playwright tests
+    - name: Do Auth Setup
       working-directory: .
-      
+      run: |
+        # this will store the credetials for other tests
+        TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }}
+        TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }}
+        pnpm run test:auth
+
+    - name: Run backend and frontend tests
+      working-directory: .
+
       run: |
         container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.CONTAINER_NAME }})
         echo "Container IP: $container_ip"
-        API_DOMAIN="http://${container_ip}:${{ env.API_PORT }}" pnpm exec playwright test
+        
+        API_DOMAIN="http://${container_ip}:${{ env.API_PORT }}" pnpm run test:all
 
     - name: Upload test results
       if: always()

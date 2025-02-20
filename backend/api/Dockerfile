@@ -5,9 +5,7 @@ WORKDIR /backend
 
 COPY . .
 
-RUN uv venv 
+RUN uv sync 
 ENV PATH="/backend/.venv/bin:$PATH"
-RUN uv pip install --no-cache-dir -r requirements.txt 
-RUN rm -rf /root/.cache
 
-CMD ["python3", "main.py"]
+CMD ["uv", "run", "main.py"]

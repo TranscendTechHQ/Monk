@@ -131,14 +131,14 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                 mongodb_users = mongodb["users"]
 
                 third_party_info = result.user.third_party_info.user_id
-                print(f"🔍 Third party info: {third_party_info}")
+                #print(f"🔍 Third party info: {third_party_info}")
                 third_party_provider = ""
                 tenant_id = ""
                 if "google" in third_party_info:
                     third_party_provider = "google"
                 thirdparty_user_id = ""
                 thirdparty_team_id = ""
-                print(f"🔍 Third party provider: {third_party_provider}")
+                #print(f"🔍 Third party provider: {third_party_provider}")
                 
                 if third_party_provider == "google":
                     split_str = third_party_info.split('|')

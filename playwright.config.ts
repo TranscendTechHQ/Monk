@@ -15,7 +15,7 @@ export default defineConfig({
   //testMatch: '**/*.spec.ts',
   //testDir: './backend/api/tests',
   //testMatch: '/.*\.setup\.ts',
-  testDir: './frontend/tests',
+  testDir: './',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -37,21 +37,39 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    // Setup project
-    { 
-      name: 'setup', 
-      testMatch: /.*\.setup\.ts/
-    },
 
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'], 
-        // Use prepared auth state.
-        storageState: 'playwright/.auth/user.json', 
+      {
+        name: 'auth',
+        testMatch: /auth\.setup\.ts/,
+      },
+      {
+        name: 'chromium',
+        use: { 
+          ...devices['Desktop Chrome'], 
+          storageState: 'playwright/.auth/user.json',
+        },
+        dependencies: ['auth'],
+      },
+      {
+        name: 'frontend',
+        testMatch: /frontend\/tests\/.*\.spec\.ts/,
+        use: { 
+          ...devices['Desktop Chrome'],
+          storageState: 'playwright/.auth/user.json',
+        },
+        dependencies: ['auth'],
+      },
+      {
+        name: 'backend',
+        testMatch: /backend\/tests\/.*\.spec\.ts/,
+        use: { 
+          ...devices['Desktop Chrome'],
+          storageState: 'playwright/.auth/user.json',
+        },
+        dependencies: ['auth'],
       },
 
-      dependencies: ['setup'],
-    },
+  
 /*
     {
       name: 'firefox',
