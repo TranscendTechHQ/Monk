@@ -120,11 +120,11 @@ function Login() {
 
                 <Show when={!data().session}>
                     <p class="text-slate-300 text-center mt-4">
-                        Visit the <a href="https://supertokens.com" class="text-slate-400 hover:underline">SuperTokens tutorial</a> to learn how to build Auth under a day.
+                        Please sign in to continue
                     </p>
                     <button 
                         onClick={redirectToSignIn} 
-                        class="mt-4 border border-slate-400 text-white bg-slate-800 hover:bg-slate-700 transition duration-200 py-2 px-4 rounded"
+                        class="w-full mt-4 border border-slate-400 text-white bg-slate-800 hover:bg-slate-700 transition duration-200 py-2 px-4 rounded"
                     >
                         Sign in
                     </button>
