@@ -62,12 +62,7 @@ class DatabaseSettings(BaseSettings):
     MILVUS_TOKEN: str = get_env_variable(var_name='MILVUS_TOKEN', secret=True)
 
 class OpenAISettings(BaseSettings):
-    AZURE_OPENAI_KEY: str = get_env_variable(var_name='AZURE_OPENAI_KEY', secret=True)
-    AZURE_OPENAI_ENDPOINT: str = get_env_variable(var_name='AZURE_OPENAI_ENDPOINT', secret=True)
-    AZURE_OPENAI_EMB_DEPLOYMENT: str = get_env_variable(var_name="AZURE_OPENAI_EMB_DEPLOYMENT", secret=False)
-    API_VERSION: str = get_env_variable(var_name="AZURE_OPENAPI_API_VERSION", secret=False)
-    AZURE_OPENAI_GPT_DEPLOYEMENT: str = get_env_variable(var_name="AZURE_OPENAI_GPT_DEPLOYEMENT", secret=False)
-    
+    pass
 
 class ClientSettings(BaseSettings):
     GOOGLE_DESKTOP_CLIENT_SECRET: str = get_env_variable(var_name="GOOGLE_DESKTOP_CLIENT_SECRET", secret=True)

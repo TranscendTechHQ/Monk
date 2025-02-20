@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Test Suite
 
 on:
   push:
@@ -8,25 +8,20 @@ on:
 
 env:
   API_PORT: 8001
-  API_DOMAIN: http://localhost:${{ env.API_PORT }}
+  API_BASE_URL: 0.0.0.0
+  CONTAINER_NAME: monk_backend_container
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
 
 jobs:
-  playwright-tests:
+  e2e-tests:
     runs-on: ubuntu-latest
-    #services:
-      # This redis service is just an example - remove if not needed
-      #redis:
-      #  image: redis
-      #  ports:
-      #    - 6379:6379
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
 
     - name: Build Docker image
       run: docker build -t monk_backend ./backend/api
@@ -34,57 +29,89 @@ jobs:
     - name: Run Docker container
       run: |
         docker run -d \
-          -p ${{ env.API_PORT }}:${{ env.API_PORT }} \
-          -e API_DOMAIN=${{ env.API_DOMAIN }} \
+          -p ${{ env.API_PORT }}:8001 \
+          -e API_DOMAIN=http://${{ env.API_BASE_URL }}:${{ env.API_PORT }} \
           -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
           -e HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }} \
           -e HCP_ORG_ID=${{ secrets.HCP_ORG_ID }} \
           -e HCP_PROJECT_ID=${{ secrets.HCP_PROJECT_ID }} \
           -e HCP_PROJECT_NAME=${{ secrets.HCP_PROJECT_NAME }} \
-          --name monk_backend_container \
+          --name ${{ env.CONTAINER_NAME }} \
           monk_backend
 
-    - name: Wait for API to be ready
-      run: |
-        for i in {1..10}; do
-          if curl -s ${{ env.API_DOMAIN }}/health; then
-            echo "API is ready!"
-            exit 0
-          fi
-          sleep 5
-        done
-        echo "API failed to start"
-        exit 1
+    - name: Add delay to ensure server is ready
+      run: sleep 10
 
-    - name: Install Playwright
+    - name: Validate container
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest playwright
-        playwright install chromium
+        echo "Using API port: ${{ env.API_PORT }}"
+        echo "Accessing domain: http://${{ env.API_BASE_URL }}:${{ env.API_PORT }}"
+        docker ps --filter "name=${{ env.CONTAINER_NAME }}"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'pnpm'
+        node-version: ${{ env.NODE_VERSION }}
 
     - name: Install pnpm
       run: npm install -g pnpm
 
-    - name: Install dependencies
+    - name: Install frontend dependencies
+      working-directory: ./frontend
       run: pnpm install
 
     - name: Install Playwright browsers
-      run: pnpm exec playwright install --with-deps
+      run: pnpm exec playwright install chromium
+
+    - name: Debug network
+      run: |
+        echo "Checking network status..."
+        docker logs ${{ env.CONTAINER_NAME }}
+        docker inspect ${{ env.CONTAINER_NAME }}
+        netstat -tulpn | grep ${{ env.API_PORT }}
+
+    - name: check backend api is running using curl
+      run: |
+        # Try accessing through docker network first
+        container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.CONTAINER_NAME }})
+        echo "Container IP: $container_ip"
+        max_attempts=5
+        attempt=1
+        while [ $attempt -le $max_attempts ]; do
+          echo "Attempt $attempt of $max_attempts"
+          response=$(curl -v -s -w "\n%{http_code}" http://${container_ip}:${{ env.API_PORT }}/docs)
+          status_code=$(echo "$response" | tail -n1)
+          echo "Received status code: $status_code"
+          if [ "$status_code" = "200" ]; then
+            echo "Backend API is running successfully"
+            exit 0
+          fi
+          echo "Backend API check failed with status code: $status_code"
+          echo "Response body:"
+          echo "$response" | sed '$d'
+          sleep 5
+          attempt=$((attempt + 1))
+        done
+        echo "Backend API failed to respond after $max_attempts attempts"
+        exit 1
 
     - name: Run Playwright tests
+      working-directory: .
+      
       run: |
-        PYTHONPATH=$PYTHONPATH:./backend/api \
-        API_DOMAIN=${{ env.API_DOMAIN }} \
-        pytest ./backend/api/tests/test_unauthorized_access.py -v
-        
-        API_DOMAIN=${{ env.API_DOMAIN }} pnpm exec playwright test
+        container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.CONTAINER_NAME }})
+        echo "Container IP: $container_ip"
+        API_DOMAIN="http://${container_ip}:${{ env.API_PORT }}" pnpm exec playwright test
 
-    - name: Stop container
+    - name: Upload test results
       if: always()
-      run: docker stop monk_backend && docker rm monk_backend
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results
+        path: playwright-report/
+
+    - name: Cleanup
+      if: always()
+      run: |
+        docker stop ${{ env.CONTAINER_NAME }} || true
+        docker rm ${{ env.CONTAINER_NAME }} || true
