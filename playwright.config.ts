@@ -14,8 +14,8 @@ dotenv.config({ path: path.resolve(__dirname, 'backend/api/config/.env') });
 export default defineConfig({
   //testMatch: '**/*.spec.ts',
   //testDir: './backend/api/tests',
-  testMatch: '/.*\.setup\.ts',
-  //testDir: './frontend/tests',
+  //testMatch: '/.*\.setup\.ts',
+  testDir: './frontend/tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
