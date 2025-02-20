@@ -13,7 +13,7 @@ from utils.embedding import generate_embedding
 milvus_uri = settings.MILVUS_URI
 token = settings.MILVUS_TOKEN
 milvus_client = MilvusClient(uri=milvus_uri, token=token)
-print(f"Connected to DB: {milvus_uri}")
+#print(f"Connected to DB: {milvus_uri}")
 
 
 
