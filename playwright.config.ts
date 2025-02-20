@@ -13,7 +13,9 @@ dotenv.config({ path: path.resolve(__dirname, 'backend/api/config/.env') });
  */
 export default defineConfig({
   //testMatch: '**/*.spec.ts',
-  testDir: './backend/api/tests',
+  //testDir: './backend/api/tests',
+  testMatch: '/.*\.setup\.ts',
+  //testDir: './frontend/tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -35,9 +37,20 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // Setup project
+    { 
+      name: 'setup', 
+      testMatch: /.*\.setup\.ts/
+    },
+
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], 
+        // Use prepared auth state.
+        storageState: 'playwright/.auth/user.json', 
+      },
+
+      dependencies: ['setup'],
     },
 /*
     {
