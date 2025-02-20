@@ -9,8 +9,8 @@ chromium.use(StealthPlugin());
 dotenv.config();
 const authFile = path.join(__dirname, '../playwright/.auth/user.json');
 
-const username = process.env.TEST_USERNAME;
-const password = process.env.TEST_PASSWORD;
+const username = process.env.TEST_GOOGLE_USERNAME;
+const password = process.env.TEST_GOOGLE_PASSWORD;
 
 setup('authenticate', async ({ page }) => {
   const browser = await chromium.launch({ headless: true });
