@@ -5,11 +5,17 @@
 import SuperTokens from "supertokens-web-js";
 import Session from "supertokens-web-js/recipe/session";
 
+
+const apiDomain = import.meta.env.VITE_API_DOMAIN;
+const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
+
 export function initSuperTokensUI() {
+    console.log("initSuperTokensUI");
+    
     (window as any).supertokensUIInit("supertokensui", {
         appInfo: {
-            websiteDomain: "http://localhost:3000",
-            apiDomain: "http://localhost:8001",
+            websiteDomain: String(websiteDomain),
+            apiDomain: String(apiDomain),
             appName: "SuperTokens Demo App",
         },
         recipeList: [
@@ -31,10 +37,12 @@ export function initSuperTokensUI() {
 }
 
 export function initSuperTokensWebJS() {
+    console.log("initSuperTokensWebJS");
+    
     SuperTokens.init({
         appInfo: {
             appName: "SuperTokens Demo App",
-            apiDomain: "http://localhost:8001",
+            apiDomain: String(apiDomain),
         },
         recipeList: [Session.init()],
     });

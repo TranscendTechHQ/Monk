@@ -23,6 +23,7 @@ from utils.hashicorp_api import get_access_token, get_secret
 import redis
 
 load_dotenv()
+
 HCP_ACCESS_TOKEN = get_access_token()
 while not HCP_ACCESS_TOKEN:
     sleep(0.2)
@@ -44,11 +45,11 @@ class CommonSettings(BaseSettings):
     DEBUG_MODE: bool = get_env_variable(var_name="DEBUG_MODE", secret=False, default=True)
     
 class ServerSettings(BaseSettings):
-    HOST: str = "0.0.0.0"
-    PORT: int = get_env_variable(var_name="FASTAPI_PORT", secret=False, default=8001)
-    API_DOMAIN: str = get_env_variable(var_name="API_DOMAIN", secret=False, default="http://localhost:8001")
-    WEBSITE_DOMAIN: str = get_env_variable(var_name="WEBSITE_DOMAIN", secret=False, default="http://localhost:3000")
-    INSTALL_DOMAIN: str = get_env_variable(var_name="INSTALL_DOMAIN", secret=False, default="http://localhost:3000")
+    HOST: str = get_env_variable(var_name="BASE_URL", secret=False)
+    PORT: int = get_env_variable(var_name="FASTAPI_PORT", secret=False)
+    API_DOMAIN: str = get_env_variable(var_name="API_DOMAIN", secret=False)
+    WEBSITE_DOMAIN: str = get_env_variable(var_name="WEBSITE_DOMAIN", secret=False)
+    INSTALL_DOMAIN: str = get_env_variable(var_name="INSTALL_DOMAIN", secret=False)
 
 
 class DatabaseSettings(BaseSettings):
@@ -228,7 +229,7 @@ init(
         website_base_path="/auth"
     ),
     supertokens_config=SupertokensConfig(
-        # connection_uri="http://localhost:3567/",
+        
         connection_uri=settings.SUPERTOKENS_CORE_CONNECTION_URI,
         api_key=settings.SUPERTOKENS_CORE_API_KEY
     ),

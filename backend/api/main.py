@@ -96,6 +96,7 @@ async def secure_api(s: SessionContainer = Depends(verify_session())) -> Session
     return sessionInfo
 
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-// Read the backend API URL from the API_DOMAIN environment variable, defaulting to localhost if not set
-const backendApiUrl = process.env.API_DOMAIN || 'http://localhost:8000';
+// Read the backend API URL from the API_DOMAIN environment variable, defaulting to  if not set
+const backendApiUrl = String(process.env.API_DOMAIN);
 
 test.describe('Unauthorized access', () => {
   // List of protected endpoints to test unauthorized access.

@@ -11,12 +11,12 @@ const authFile = path.join(__dirname, '../playwright/.auth/user.json');
 
 const username = process.env.TEST_GOOGLE_USERNAME;
 const password = process.env.TEST_GOOGLE_PASSWORD;
-
+const websiteDomain = String(process.env.WEBSITE_DOMAIN);
 setup('authenticate', async ({ page }) => {
   const browser = await chromium.launch({ headless: true });
   const stealthPage = await browser.newPage();
 
-  await stealthPage.goto('http://localhost:3000/login');
+  await stealthPage.goto(websiteDomain + '/login');
   await stealthPage.getByRole('button', { name: 'Sign in' }).click();
   await stealthPage.getByRole('button', { name: 'Continue with Google' }).click();
 

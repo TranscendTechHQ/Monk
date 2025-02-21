@@ -12,7 +12,8 @@ env:
   CONTAINER_NAME: monk_backend_container
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
-
+  WEBSITE_DOMAIN: 0.0.0.0:3000
+  
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
@@ -30,6 +31,9 @@ jobs:
       run: |
         docker run -d \
           -p ${{ env.API_PORT }}:8001 \
+          -e BASE_URL=${{ env.API_BASE_URL }} \
+          -e FASTAPI_PORT=${{ env.API_PORT }} \
+          -e WEBSITE_DOMAIN=${{ env.WEBSITE_DOMAIN }} \
           -e API_DOMAIN=http://${{ env.API_BASE_URL }}:${{ env.API_PORT }} \
           -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
           -e HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }} \

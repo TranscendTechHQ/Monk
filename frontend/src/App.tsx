@@ -13,8 +13,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import { userService } from './services/userService';
 
+
+const apiDomain = import.meta.env.VITE_API_DOMAIN;
+const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
+
 // Keep API configuration
-OpenAPI.BASE = 'http://localhost:8001';
+OpenAPI.BASE = String(apiDomain);
 
 const App: Component = () => {
   onMount(async () => {
