@@ -63,11 +63,11 @@ jobs:
     - name: Run Frontend Docker container
       working-directory: ./frontend
       run: docker run -d \
-        -e VITE_API_DOMAIN=${{ env.API_BASE_URL }}:${{ env.API_PORT }} \
-        -e VITE_WEBSITE_DOMAIN=${{ env.WEBSITE_DOMAIN }} \
-        -p ${{ env.FRONTEND_PORT }}:${{ env.FRONTEND_PORT }} \
-        --name ${{ env.FRONTEND_CONTAINER_NAME }} \
-        monk_frontend
+       -e VITE_API_DOMAIN=${{ env.API_BASE_URL }}:${{ env.API_PORT }} \
+       -e VITE_WEBSITE_DOMAIN=${{ env.WEBSITE_DOMAIN }} \
+       -p ${{ env.FRONTEND_PORT }}:${{ env.FRONTEND_PORT }} \
+       --name ${{ env.FRONTEND_CONTAINER_NAME }} \
+       monk_frontend
 
     - name: Add delay to ensure server is ready
       run: sleep 10
