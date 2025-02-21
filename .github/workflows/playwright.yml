@@ -136,7 +136,7 @@ jobs:
         # this will store the credetials for other tests
         TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }}
         TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }}
-        WEBSITE_DOMAIN=${{ env.WEBSITE_DOMAIN }}
+        WEBSITE_DOMAIN="127.0.0.1:3000"
         pnpm run test:auth
 
     - name: Run backend tests
