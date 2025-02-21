@@ -61,12 +61,12 @@ export default defineConfig({
       },
       {
         name: 'backend',
-        testMatch: /backend\/tests\/.*\.spec\.ts/,
+        testMatch: /backend\/api\/tests\/.*\.spec\.ts/,
         use: { 
           ...devices['Desktop Chrome'],
-          storageState: 'playwright/.auth/user.json',
+          //storageState: 'playwright/.auth/user.json',
         },
-        dependencies: ['auth'],
+        //dependencies: ['auth'],
       },
 
   
