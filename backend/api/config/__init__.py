@@ -87,6 +87,7 @@ system_cache = redis.Redis(
     decode_responses=True,
     username=settings.REDIS_USERNAME,
     password=settings.REDIS_PASSWORD,
+    ssl=True
 )
 
 
