@@ -38,7 +38,7 @@ export function initSuperTokensUI() {
 
 export function initSuperTokensWebJS() {
     console.log("initSuperTokensWebJS");
-    
+    //console.log("apiDomain", apiDomain);
     SuperTokens.init({
         appInfo: {
             appName: "SuperTokens Demo App",
