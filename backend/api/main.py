@@ -99,10 +99,8 @@ async def secure_api(s: SessionContainer = Depends(verify_session())) -> Session
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        settings.WEBSITE_DOMAIN,
-        settings.INSTALL_DOMAIN,
-    ],
+    ## permissive cors policy here because we are using nginx as a reverse proxy, and nginx handles the cors policy
+    allow_origins=["*"],
     allow_credentials=True,
     # allow_methods=["*"],
     # allow_headers=["*"],

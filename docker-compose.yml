@@ -9,7 +9,7 @@ services:
       - BASE_URL=${BASE_URL}
       - FASTAPI_PORT=${FASTAPI_PORT}
       - WEBSITE_DOMAIN=${WEBSITE_DOMAIN}
-      - API_DOMAIN=${API_DOMAIN}
+      - API_DOMAIN=http://backend:8001
       - INSTALL_DOMAIN=${INSTALL_DOMAIN}
       - HCP_CLIENT_ID=${HCP_CLIENT_ID}
       - HCP_CLIENT_SECRET=${HCP_CLIENT_SECRET}
@@ -26,13 +26,27 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./backend/api/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     networks:
       - monk-network
     depends_on:
       - backend
+      - frontend
     restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_DOMAIN=/api
+      - VITE_WEBSITE_DOMAIN=http://frontend:3000
+    depends_on:
+      - backend
+    networks:
+      - monk-network
 
 networks:
   monk-network:

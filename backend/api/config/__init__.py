@@ -108,6 +108,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         SignInUpPostNoEmailGivenByProviderResponse,
         GeneralErrorResponse,
     ]:
+        #print(f"api domain: {settings.API_DOMAIN} and website domain: {settings.WEBSITE_DOMAIN}")
         # call the default behaviour as show below
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
                                                            api_options, user_context)
@@ -227,7 +228,8 @@ init(
         api_domain=settings.API_DOMAIN,
         website_domain=settings.WEBSITE_DOMAIN,
         api_base_path="/auth",
-        website_base_path="/auth"
+        #api_gateway_path="/api",
+        #website_base_path="/auth"
     ),
     supertokens_config=SupertokensConfig(
         

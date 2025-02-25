@@ -5,9 +5,11 @@
 import SuperTokens from "supertokens-web-js";
 import Session from "supertokens-web-js/recipe/session";
 
-
-const apiDomain = import.meta.env.VITE_API_DOMAIN;
-const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
+const origin = window.location.origin;
+//const apiDomain = import.meta.env.VITE_API_DOMAIN;
+const apiDomain = origin + "/api";
+const websiteDomain = origin;
+//const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
 
 export function initSuperTokensUI() {
     console.log("initSuperTokensUI");
@@ -38,7 +40,7 @@ export function initSuperTokensUI() {
 
 export function initSuperTokensWebJS() {
     console.log("initSuperTokensWebJS");
-    //console.log("apiDomain", apiDomain);
+    console.log("apiDomain", apiDomain);
     SuperTokens.init({
         appInfo: {
             appName: "SuperTokens Demo App",

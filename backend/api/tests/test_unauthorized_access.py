@@ -1,6 +1,8 @@
 import pytest
 from playwright.async_api import async_playwright
-from config import settings
+import dotenv
+import os
+dotenv.load_dotenv()
 
 ENDPOINTS = [
     ("GET", "/upload-url?filename=test.txt"),
@@ -15,7 +17,7 @@ ENDPOINTS = [
 async def test_unauthorized_access():
     async with async_playwright() as p:
         request = await p.request.new_context()
-        base_url = settings.API_DOMAIN
+        base_url = os.getenv("API_DOMAIN")
         
         for method, path in ENDPOINTS:
             url = f"{base_url}{path}"
