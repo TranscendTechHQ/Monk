@@ -40,9 +40,9 @@ export const Auth: Component = () => {
 };
 
 async function getUserInfo() {
-    console.log("getUserInfo");
+    //console.log("getUserInfo");
     const session = await Session.doesSessionExist();
-    console.log("session", session);
+    //console.log("session", session);
     if (session) {
         const userId = await Session.getUserId();
         return { userId, session };
@@ -56,7 +56,7 @@ async function signOut() {
 }
 
 function redirectToSignIn() {
-    console.log("redirectToSignIn");
+    //console.log("redirectToSignIn");
     window.location.href = "/auth";
 }
 

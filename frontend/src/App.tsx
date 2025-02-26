@@ -16,9 +16,10 @@ import { userService } from './services/userService';
 
 const apiDomain = import.meta.env.VITE_API_DOMAIN;
 const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
-
+const apiBase = apiDomain + "/api";
 // Keep API configuration
-OpenAPI.BASE = String(apiDomain);
+OpenAPI.BASE = String(apiBase);
+OpenAPI.WITH_CREDENTIALS = true;  // Ensures cookies (e.g., SuperTokens session) are sent
 
 const App: Component = () => {
   onMount(async () => {

@@ -16,9 +16,9 @@ setup('authenticate', async ({ page }) => {
   const browser = await chromium.launch({ headless: true });
   const stealthPage = await browser.newPage();
 
-  console.log('websiteDomain', websiteDomain);
-  console.log('username', username);
-  console.log('password', password);
+  //console.log('websiteDomain', websiteDomain);
+  //console.log('username', username);
+  //console.log('password', password);
   await stealthPage.goto(websiteDomain + '/login');
   await stealthPage.getByRole('button', { name: 'Sign in' }).click();
   await stealthPage.getByRole('button', { name: 'Continue with Google' }).click();
