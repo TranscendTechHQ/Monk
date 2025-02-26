@@ -36,7 +36,7 @@ components:
     MessageResponse:
       properties:
         _id:
-          title: ' Id'
+          title: Id
           type: string
         created_at:
           format: date-time
@@ -139,7 +139,7 @@ components:
     ThreadResponse:
       properties:
         _id:
-          title: ' Id'
+          title: Id
           type: string
         created_at:
           format: date-time
@@ -185,7 +185,7 @@ components:
     UserResponse:
       properties:
         _id:
-          title: ' Id'
+          title: Id
           type: string
         email:
           default: unknown email
