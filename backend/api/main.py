@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
     shutdown_sync_db_client()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path="/api")
 
 app.add_middleware(get_middleware())
 

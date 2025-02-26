@@ -1,33 +1,27 @@
-/*
- *   Copyright (c) 2025 
- *   All rights reserved.
- */
 import SuperTokens from "supertokens-web-js";
 import Session from "supertokens-web-js/recipe/session";
 
-const origin = window.location.origin;
-//const apiDomain = import.meta.env.VITE_API_DOMAIN;
-const apiDomain = origin + "/api";
-const websiteDomain = origin;
-//const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
+const apiDomain = import.meta.env.VITE_API_DOMAIN;  // https://localhost from Dockerfile
+const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;  // https://localhost
+const apiBasePath = "/api/auth";
+const appName = "Monk";
 
 export function initSuperTokensUI() {
     console.log("initSuperTokensUI");
-    
     (window as any).supertokensUIInit("supertokensui", {
         appInfo: {
-            websiteDomain: String(websiteDomain),
-            apiDomain: String(apiDomain),
-            appName: "SuperTokens Demo App",
+            websiteDomain: String(websiteDomain),  // https://localhost
+            apiDomain: String(apiDomain),          // https://localhost
+            appName: appName,
+            apiBasePath: apiBasePath,              // /api/auth
+            websiteBasePath: "/auth"               // Added for UI routes
         },
         recipeList: [
             (window as any).supertokensUIThirdParty.init({
                 signInAndUpFeature: {
                     providers: [
-                        
                         (window as any).supertokensUIThirdParty.Google.init(),
-                        
-                        ],
+                    ],
                 },
             }),
             (window as any).supertokensUIPasswordless.init({
@@ -43,8 +37,9 @@ export function initSuperTokensWebJS() {
     console.log("apiDomain", apiDomain);
     SuperTokens.init({
         appInfo: {
-            appName: "SuperTokens Demo App",
-            apiDomain: String(apiDomain),
+            appName: appName,
+            apiDomain: String(apiDomain),  // https://localhost
+            apiBasePath: apiBasePath,      // /api/auth
         },
         recipeList: [Session.init()],
     });

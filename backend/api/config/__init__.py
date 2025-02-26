@@ -108,10 +108,12 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         SignInUpPostNoEmailGivenByProviderResponse,
         GeneralErrorResponse,
     ]:
-        #print(f"api domain: {settings.API_DOMAIN} and website domain: {settings.WEBSITE_DOMAIN}")
+        print(f"api domain: {settings.API_DOMAIN} and website domain: {settings.WEBSITE_DOMAIN}")
+        print("Here 1")
         # call the default behaviour as show below
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
                                                            api_options, user_context)
+        print("Here 2")
         # print(result.user.email)
         if isinstance(result, SignInUpPostOkResult):
             # print(result.user)
@@ -153,7 +155,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     if whitelisted_user is None:
                         return GeneralErrorResponse(
                             'Your Google email address is not whitelisted. Please contact support@transcendtech.io')
-
+                    print("Here 3")
                     #tenant_id = whitelisted_user['tenant_id']
                     tenant_id = "T048F0ANS1M" # TODO: Remove this
                     print(f"🔍 Tenant id: {tenant_id}")
