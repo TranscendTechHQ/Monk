@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   cert-gen:
@@ -26,6 +26,8 @@ services:
       - HCP_ORG_ID=${HCP_ORG_ID}
       - HCP_PROJECT_ID=${HCP_PROJECT_ID}
       - HCP_PROJECT_NAME=${HCP_PROJECT_NAME}
+      - VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
+
     networks:
       - monk-network
     expose:
@@ -52,8 +54,16 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_DOMAIN=${API_DOMAIN}
+        - VITE_WEBSITE_DOMAIN=${WEBSITE_DOMAIN}
+        - VITE_SUPERTOKENS_API_BASE_PATH=${VITE_SUPERTOKENS_API_BASE_PATH}
+        - VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
+        - VITE_SUPERTOKENS_APP_NAME=${VITE_SUPERTOKENS_APP_NAME}
+        - VITE_API_BASE=${VITE_API_BASE}
     ports:
       - "3000:3000"  # Exposed for debugging; Nginx handles production traffic
+    
     depends_on:
       - backend
     networks:

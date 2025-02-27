@@ -7,7 +7,7 @@ const ProtectedRoute = (props: { children: any }) => {
   
   createEffect(async () => {
     if (!await Session.doesSessionExist()) {
-      navigate("/auth", { replace: true });
+      navigate(import.meta.env.VITE_SUPERTOKENS_WEBSITE_BASE_PATH, { replace: true });
     }
   });
 

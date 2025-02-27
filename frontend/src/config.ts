@@ -1,20 +1,21 @@
 import SuperTokens from "supertokens-web-js";
 import Session from "supertokens-web-js/recipe/session";
 
-const apiDomain = import.meta.env.VITE_API_DOMAIN;  // https://localhost from Dockerfile
-const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;  // https://localhost
-const apiBasePath = "/api/auth";
-const appName = "Monk";
+const apiDomain = import.meta.env.VITE_API_DOMAIN;  
+const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;  
+const apiBasePath = import.meta.env.VITE_SUPERTOKENS_API_BASE_PATH;
+const appName = import.meta.env.VITE_SUPERTOKENS_APP_NAME;
+const websiteBasePath = import.meta.env.VITE_SUPERTOKENS_WEBSITE_BASE_PATH;
 
 export function initSuperTokensUI() {
-    console.log("initSuperTokensUI");
+    //console.log("initSuperTokensUI");
     (window as any).supertokensUIInit("supertokensui", {
         appInfo: {
-            websiteDomain: String(websiteDomain),  // https://localhost
-            apiDomain: String(apiDomain),          // https://localhost
+            websiteDomain: String(websiteDomain),  
+            apiDomain: String(apiDomain),          
             appName: appName,
-            apiBasePath: apiBasePath,              // /api/auth
-            websiteBasePath: "/auth"               // Added for UI routes
+            apiBasePath: apiBasePath,              
+            websiteBasePath: websiteBasePath               
         },
         recipeList: [
             (window as any).supertokensUIThirdParty.init({
@@ -38,8 +39,8 @@ export function initSuperTokensWebJS() {
     SuperTokens.init({
         appInfo: {
             appName: appName,
-            apiDomain: String(apiDomain),  // https://localhost
-            apiBasePath: apiBasePath,      // /api/auth
+            apiDomain: String(apiDomain),  
+            apiBasePath: apiBasePath,      
         },
         recipeList: [Session.init()],
     });

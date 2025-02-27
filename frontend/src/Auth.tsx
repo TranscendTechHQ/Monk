@@ -57,7 +57,7 @@ async function signOut() {
 
 function redirectToSignIn() {
     //console.log("redirectToSignIn");
-    window.location.href = "/auth";
+    window.location.href = import.meta.env.VITE_SUPERTOKENS_WEBSITE_BASE_PATH;
 }
 
 function Login() {

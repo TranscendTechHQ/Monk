@@ -50,6 +50,7 @@ class ServerSettings(BaseSettings):
     API_DOMAIN: str = get_env_variable(var_name="API_DOMAIN", secret=False)
     WEBSITE_DOMAIN: str = get_env_variable(var_name="WEBSITE_DOMAIN", secret=False)
     INSTALL_DOMAIN: str = get_env_variable(var_name="INSTALL_DOMAIN", secret=False)
+    VITE_SUPERTOKENS_WEBSITE_BASE_PATH: str = get_env_variable(var_name="VITE_SUPERTOKENS_WEBSITE_BASE_PATH", secret=False)
 
 
 class DatabaseSettings(BaseSettings):
@@ -108,12 +109,12 @@ def override_thirdparty_apis(original_implementation: APIInterface):
         SignInUpPostNoEmailGivenByProviderResponse,
         GeneralErrorResponse,
     ]:
-        print(f"api domain: {settings.API_DOMAIN} and website domain: {settings.WEBSITE_DOMAIN}")
-        print("Here 1")
+        #print(f"api domain: {settings.API_DOMAIN} and website domain: {settings.WEBSITE_DOMAIN}")
+        #print("Here 1")
         # call the default behaviour as show below
         result = await original_thirdparty_sign_in_up_post(provider, redirect_uri_info, oauth_tokens, tenant_id,
                                                            api_options, user_context)
-        print("Here 2")
+        #print("Here 2")
         # print(result.user.email)
         if isinstance(result, SignInUpPostOkResult):
             # print(result.user)
@@ -155,7 +156,7 @@ def override_thirdparty_apis(original_implementation: APIInterface):
                     if whitelisted_user is None:
                         return GeneralErrorResponse(
                             'Your Google email address is not whitelisted. Please contact support@transcendtech.io')
-                    print("Here 3")
+                    #print("Here 3")
                     #tenant_id = whitelisted_user['tenant_id']
                     tenant_id = "T048F0ANS1M" # TODO: Remove this
                     print(f"🔍 Tenant id: {tenant_id}")
@@ -229,7 +230,7 @@ init(
         app_name="Monk",
         api_domain=settings.API_DOMAIN,
         website_domain=settings.WEBSITE_DOMAIN,
-        api_base_path="/auth",
+        api_base_path=settings.VITE_SUPERTOKENS_WEBSITE_BASE_PATH,
         #api_gateway_path="/api",
         #website_base_path="/auth"
     ),

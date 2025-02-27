@@ -14,7 +14,7 @@ class UserService {
         return { ...acc, [user._id]: displayName };
       }, {});
       
-      console.log('[UserService] Cache initialized with', Object.keys(this.cache).length, 'users');
+      //console.log('[UserService] Cache initialized with', Object.keys(this.cache).length, 'users');
     } catch (error) {
       console.error('[UserService] Initialization error:', error);
     }
