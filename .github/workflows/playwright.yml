@@ -7,15 +7,8 @@ on:
     branches: [main]
 
 env:
-  API_PORT: 8001
-  API_BASE_URL: 0.0.0.0
-  BACKEND_CONTAINER_NAME: monk_backend_container
-  FRONTEND_CONTAINER_NAME: monk_frontend_container
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
-  WEBSITE_DOMAIN: 0.0.0.0:3000
-  INSTALL_DOMAIN: 0.0.0.0:3000
-  FRONTEND_PORT: 3000
   
 jobs:
   e2e-tests:
@@ -27,58 +20,39 @@ jobs:
     - name: Set up Docker
       uses: docker/setup-buildx-action@v3
 
-    - name: Build Backend Docker image
-      run: docker build -t monk_backend ./backend/api
-
-    - name: Run Backend Docker container
+    - name: Create .env file
       run: |
-        docker run -d \
-          -p ${{ env.API_PORT }}:8001 \
-          -e BASE_URL=${{ env.API_BASE_URL }} \
-          -e FASTAPI_PORT=${{ env.API_PORT }} \
-          -e WEBSITE_DOMAIN=${{ env.WEBSITE_DOMAIN }} \
-          -e API_DOMAIN=http://${{ env.API_BASE_URL }}:${{ env.API_PORT }} \
-          -e INSTALL_DOMAIN=${{ env.WEBSITE_DOMAIN }} \
-          -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
-          -e HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }} \
-          -e HCP_ORG_ID=${{ secrets.HCP_ORG_ID }} \
-          -e HCP_PROJECT_ID=${{ secrets.HCP_PROJECT_ID }} \
-          -e HCP_PROJECT_NAME=${{ secrets.HCP_PROJECT_NAME }} \
-          --name ${{ env.BACKEND_CONTAINER_NAME }} \
-          monk_backend
+        cat > .env << 'EOF'
+        HCP_ORG_ID=${{ secrets.HCP_ORG_ID }}
+        HCP_PROJECT_ID=${{ secrets.HCP_PROJECT_ID }}
+        HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }}
+        HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }}
+        HCP_PROJECT_NAME=${{ secrets.HCP_PROJECT_NAME }}
+        BASE_URL=0.0.0.0
+        FASTAPI_PORT=8001
+        WEBSITE_DOMAIN=https://localhost
+        INSTALL_DOMAIN=https://localhost
+        API_DOMAIN=https://localhost
+        
+        VITE_API_DOMAIN=https://localhost
+        VITE_WEBSITE_DOMAIN=https://localhost
+        VITE_SUPERTOKENS_API_BASE_PATH=/api/auth
+        VITE_SUPERTOKENS_WEBSITE_BASE_PATH=/auth
+        VITE_SUPERTOKENS_APP_NAME=Monk
+        VITE_API_BASE=/api
+        EOF
 
-    - name: Add delay to ensure server is ready
-      run: sleep 10
-
-    - name: Validate container
+    - name: Start services with docker-compose
       run: |
-        echo "Using API port: ${{ env.API_PORT }}"
-        echo "Accessing domain: http://${{ env.API_BASE_URL }}:${{ env.API_PORT }}"
-        docker ps --filter "name=${{ env.BACKEND_CONTAINER_NAME }}"
+        docker-compose up --build -d
+        echo "Waiting for services to start..."
+        sleep 30
 
-    - name: Build Frontend Docker image
-      working-directory: ./frontend
-      run: docker build -t monk_frontend .
-
-    - name: Run Frontend Docker container
-      working-directory: ./frontend
+    - name: Check services status
       run: |
-        docker run -d \
-        -e VITE_API_DOMAIN=${{ env.API_BASE_URL }}:${{ env.API_PORT }} \
-        -e VITE_WEBSITE_DOMAIN=${{ env.WEBSITE_DOMAIN }} \
-        -p ${{ env.FRONTEND_PORT }}:${{ env.FRONTEND_PORT }} \
-        --name ${{ env.FRONTEND_CONTAINER_NAME }} \
-        monk_frontend
-
-    - name: Add delay to ensure server is ready
-      run: sleep 10
-
-    - name: Validate container
-      working-directory: ./frontend
-      run: |
-        echo "Using API port: ${{ env.API_PORT }}"
-        echo "Accessing domain: http://${{ env.WEBSITE_DOMAIN }}:${{ env.FRONTEND_PORT }}"
-        docker ps --filter "name=${{ env.FRONTEND_CONTAINER_NAME }}"
+        docker-compose ps
+        echo "Checking Nginx..."
+        curl -k https://localhost/health || echo "Health check failed"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -89,66 +63,42 @@ jobs:
       run: npm install -g pnpm
 
     - name: Install frontend dependencies
-      working-directory: ./frontend
       run: pnpm install
 
     - name: Install Playwright browsers
       run: pnpm exec playwright install chromium
 
-    - name: Debug backend network
-      run: |
-        echo "Checking network status..."
-        docker logs ${{ env.BACKEND_CONTAINER_NAME }}
-        docker inspect ${{ env.BACKEND_CONTAINER_NAME }}
-        netstat -tulpn | grep ${{ env.API_PORT }}
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: check backend api is running using curl
+    - name: Install Python dependencies
       run: |
-        # Try accessing through docker network first
-        container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.BACKEND_CONTAINER_NAME }})
-        echo "Container IP: $container_ip"
-        max_attempts=5
-        attempt=1
-        while [ $attempt -le $max_attempts ]; do
-          echo "Attempt $attempt of $max_attempts"
-          response=$(curl -v -s -w "\n%{http_code}" http://${container_ip}:${{ env.API_PORT }}/docs)
-          status_code=$(echo "$response" | tail -n1)
-          echo "Received status code: $status_code"
-          if [ "$status_code" = "200" ]; then
-            echo "Backend API is running successfully"
-            exit 0
-          fi
-          echo "Backend API check failed with status code: $status_code"
-          echo "Response body:"
-          echo "$response" | sed '$d'
-          sleep 5
-          attempt=$((attempt + 1))
-        done
-        echo "Backend API failed to respond after $max_attempts attempts"
-        exit 1
+        python -m pip install --upgrade pip
+        pip install pytest playwright pytest-asyncio
+        playwright install
 
     - name: Do Auth Setup
-      working-directory: .
       run: |
-
-        TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }} TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }} WEBSITE_DOMAIN="127.0.0.1:3000" pnpm run test:auth
+        TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }} \
+        TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }} \
+        WEBSITE_DOMAIN="https://localhost" \
+        pnpm run test:auth
 
     - name: Run backend tests
-      working-directory: .
-
       run: |
-        container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.BACKEND_CONTAINER_NAME }})
-        echo "Container IP: $container_ip"
+        # TypeScript tests
+        API_DOMAIN="https://localhost/api" pnpm run test:backend
         
-        API_DOMAIN="http://${container_ip}:${{ env.API_PORT }}" pnpm run test:backend
+        # Python tests
+        API_DOMAIN="https://localhost/api" \
+        PYTHONPATH=$PYTHONPATH:./backend/api \
+        pytest ./backend/api/tests/test_unauthorized_access.py -v
 
     - name: Run frontend tests
-      working-directory: ./
       run: |
-        container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.FRONTEND_CONTAINER_NAME }})
-        echo "Container IP: $container_ip"
-        WEBSITE_DOMAIN=${container_ip}:${{ env.FRONTEND_PORT }}
-        pnpm run test:frontend
+        WEBSITE_DOMAIN="https://localhost" pnpm run test:frontend
 
     - name: Upload test results
       if: always()
@@ -160,7 +110,4 @@ jobs:
     - name: Cleanup
       if: always()
       run: |
-        docker stop ${{ env.BACKEND_CONTAINER_NAME }} || true
-        docker rm ${{ env.BACKEND_CONTAINER_NAME }} || true
-        docker stop ${{ env.FRONTEND_CONTAINER_NAME }} || true
-        docker rm ${{ env.FRONTEND_CONTAINER_NAME }} || true
+        docker-compose down -v
