@@ -1,26 +1,30 @@
-/*
- *   Copyright (c) 2025 
- *   All rights reserved.
- */
-
 import { Component, onMount } from 'solid-js';
 import { Router, Route, Navigate } from '@solidjs/router';
 import NewsFeed from './components/NewsFeed';
 import ThreadMessages from './components/ThreadMessages';
 import { OpenAPI } from './api/core/OpenAPI';
-import Login, { Auth } from './Auth';
+import { Auth } from './Auth';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import { initSuperTokens } from "./lib/supertokens";
+import Login from "./pages/Login";
 import { userService } from './services/userService';
 
+// Initialize SuperTokens immediately when this module loads
+console.log('[App] Initializing SuperTokens at module scope...');
+try {
+  initSuperTokens();
+  console.log('[App] SuperTokens initialized successfully at module scope');
+} catch (err) {
+  console.error('[App] SuperTokens initialization failed at module scope:', err);
+}
 
 const apiDomain = import.meta.env.VITE_API_DOMAIN;
 const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
 const apiBase = apiDomain + import.meta.env.VITE_API_BASE;
 const superTokensWebsiteBasePath = import.meta.env.VITE_SUPERTOKENS_WEBSITE_BASE_PATH + "/*";
-// Keep API configuration
+
 OpenAPI.BASE = String(apiBase);
-OpenAPI.WITH_CREDENTIALS = true;  // Ensures cookies (e.g., SuperTokens session) are sent
+OpenAPI.WITH_CREDENTIALS = true;
 
 const App: Component = () => {
   onMount(async () => {
@@ -35,8 +39,8 @@ const App: Component = () => {
 
   return (
     <Router>
+      <Route path="/login" component={Login} />
       <Route path={superTokensWebsiteBasePath} component={Auth} />
-      <Route path="/login/*" component={Login} />
       <Route path="/" component={() => <Navigate href="/login" />} />
       <Route path="/newsfeed" component={() => (
         <ProtectedRoute>
@@ -48,10 +52,8 @@ const App: Component = () => {
           <ThreadMessages />
         </ProtectedRoute>
       )} />
-    
     </Router>
   );
 };
 
 export default App;
- 

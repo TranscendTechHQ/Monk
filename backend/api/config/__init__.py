@@ -17,6 +17,7 @@ from supertokens_python.recipe.thirdparty.interfaces import APIInterface, APIOpt
 from supertokens_python.recipe.thirdparty.provider import Provider, RedirectUriInfo
 from supertokens_python.recipe.thirdparty.provider import ProviderInput, ProviderConfig, ProviderClientConfig
 from supertokens_python.types import GeneralErrorResponse
+from supertokens_python.recipe.emailpassword import InputSignUpFeature, InputFormField
 
 # from utils.db import create_mongo_document
 from utils.hashicorp_api import get_access_token, get_secret
@@ -36,8 +37,8 @@ def get_env_variable(var_name:str, secret:bool, default = None):
     return os.getenv(var_name, default=default)
 
 class SuperTokensSettings(BaseSettings):
-    SUPERTOKENS_CORE_CONNECTION_URI: str = get_env_variable(var_name="SUPERTOKENS_CORE_CONNECTION_URI", secret=True)
-    SUPERTOKENS_CORE_API_KEY: str = get_env_variable(var_name="SUPERTOKENS_CORE_API_KEY", secret=True)
+    SUPERTOKENS_CORE_CONNECTION_URI: str = get_env_variable(var_name="SUPERTOKENS_CORE_CONNECTION_URI", secret=True, default="http://supertokens:3567")
+    SUPERTOKENS_CORE_API_KEY: str = get_env_variable(var_name="SUPERTOKENS_CORE_API_KEY", secret=True, default="")
 
 
 class CommonSettings(BaseSettings):
@@ -224,7 +225,9 @@ def override_thirdparty_apis(original_implementation: APIInterface):
     original_implementation.sign_in_up_post = thirdparty_sign_in_up_post
     return original_implementation
 
-
+async def validate_password(value: str, tenant_id: str) -> Union[str, None]:
+    return None if len(value) >= 8 else "Password must be at least 8 characters"
+    
 init(
     app_info=InputAppInfo(
         app_name="Monk",
@@ -289,7 +292,25 @@ init(
                 ),
                 
                 
-        emailpassword.init(),
+
+
+        emailpassword.init(
+            sign_up_feature=InputSignUpFeature(
+                form_fields=[
+                    emailpassword.InputFormField(
+                        id="email"  # Default validation
+                    ),
+                    emailpassword.InputFormField(
+                        id="password",
+                        validate=validate_password  # Async function
+                    ),
+                    emailpassword.InputFormField(
+                        id="name",
+                        optional=True
+                    )
+                ]
+            )
+        ),
         dashboard.init(),
         usermetadata.init()
         # userroles.init(),
