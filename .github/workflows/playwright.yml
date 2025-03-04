@@ -84,12 +84,14 @@ jobs:
         TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }} \
         TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }} \
         WEBSITE_DOMAIN="https://localhost" \
-        pnpm exec playwright test --project=auth --ignore-https-errors
+        PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
+        pnpm exec playwright test --project=auth
 
     - name: Run backend tests
       run: |
         # TypeScript tests
-        API_DOMAIN="https://localhost/api" pnpm exec playwright test --project=backend --ignore-https-errors
+        PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
+        API_DOMAIN="https://localhost/api" pnpm exec playwright test --project=backend
         
         # Python tests
         API_DOMAIN="https://localhost/api" \
@@ -98,7 +100,8 @@ jobs:
 
     - name: Run frontend tests
       run: |
-        WEBSITE_DOMAIN="https://localhost" pnpm exec playwright test --project=frontend --ignore-https-errors
+        PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
+        WEBSITE_DOMAIN="https://localhost" pnpm exec playwright test --project=frontend
 
     - name: Upload test results
       if: always()
