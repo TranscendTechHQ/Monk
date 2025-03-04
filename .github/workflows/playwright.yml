@@ -40,6 +40,8 @@ jobs:
         VITE_SUPERTOKENS_WEBSITE_BASE_PATH=/auth
         VITE_SUPERTOKENS_APP_NAME=Monk
         VITE_API_BASE=/api
+        TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }}
+        TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }}
         EOF
 
     - name: Start services with docker-compose
@@ -81,9 +83,6 @@ jobs:
 
     - name: Do Auth Setup
       run: |
-        TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }} \
-        TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }} \
-        WEBSITE_DOMAIN="https://localhost" \
         PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
         pnpm exec playwright test --project=auth
 
