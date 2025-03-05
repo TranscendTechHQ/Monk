@@ -3,8 +3,6 @@
  *   All rights reserved.
  */
 
-
-
 import { onMount, createEffect } from "solid-js";
 import { initSuperTokensUI } from "./config";
 import { Component } from 'solid-js';
@@ -25,24 +23,102 @@ const loadScript = (src: string) => {
 };
 
 export const Auth: Component = () => {
-    onMount(() => {
-        loadScript("https://cdn.jsdelivr.net/gh/supertokens/prebuiltui@v0.48.0/build/static/js/main.81589a39.js");
+    const userContext = useUser();
+    const [sessionExists, setSessionExists] = createSignal(false);
+    const navigate = useNavigate();
+
+    // Check for authentication before loading the auth UI
+    onMount(async () => {
+        const exists = await Session.doesSessionExist();
+        setSessionExists(exists);
+        
+        if (exists) {
+            console.log("Session already exists, user should log out first");
+            // Refresh user data to ensure we have the latest info
+            if (userContext) {
+                await userContext.refreshUser();
+            }
+        } else {
+            loadScript("https://cdn.jsdelivr.net/gh/supertokens/prebuiltui@v0.48.0/build/static/js/main.81589a39.js");
+        }
     });
+
+    // Check for authentication changes
+    createEffect(async () => {
+        const exists = await Session.doesSessionExist();
+        setSessionExists(exists);
+        
+        if (exists && userContext) {
+            // If session exists but we don't have user data, refresh it
+            await userContext.refreshUser();
+        }
+    });
+
+    const handleSignOut = async () => {
+        try {
+            // Sign out from SuperTokens
+            await Session.signOut();
+            
+            // Clear the user context
+            if (userContext) {
+                userContext.setUser(null);
+            }
+            
+            // Update session state
+            setSessionExists(false);
+            
+            // Reload the page to reset everything
+            window.location.reload();
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    };
 
     return (
         <div class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-slate-800 p-8 rounded-lg shadow-lg w-96">
-                <h2 class="text-white text-2xl font-semibold text-center mb-6">Login</h2>
-                <div id="supertokensui" />
+                <Show 
+                    when={!sessionExists()} 
+                    fallback={
+                        <div class="text-center space-y-4">
+                            <h2 class="text-white text-2xl font-semibold text-center mb-6">
+                                You are already logged in
+                            </h2>
+                            <p class="text-slate-300 mb-4">
+                                You need to log out before creating a new account.
+                            </p>
+                            <Show when={userContext?.user()}>
+                                <div class="bg-slate-700 p-4 rounded-lg mb-4">
+                                    <p class="text-white">Currently logged in as:</p>
+                                    <p class="text-white font-bold">{userContext?.user()?.name}</p>
+                                    <p class="text-slate-300">{userContext?.user()?.email}</p>
+                                </div>
+                            </Show>
+                            <button 
+                                onClick={handleSignOut} 
+                                class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition duration-200"
+                            >
+                                Sign Out
+                            </button>
+                            <button
+                                onClick={() => navigate('/newsfeed')}
+                                class="w-full border border-slate-400 text-white bg-slate-800 hover:bg-slate-700 transition duration-200 py-2 px-4 rounded mt-2"
+                            >
+                                Back to NewsFeed
+                            </button>
+                        </div>
+                    }
+                >
+                    <h2 class="text-white text-2xl font-semibold text-center mb-6">Login</h2>
+                    <div id="supertokensui" />
+                </Show>
             </div>
         </div>
     );
 };
 
 async function getUserInfo() {
-    //console.log("getUserInfo");
     const session = await Session.doesSessionExist();
-    //console.log("session", session);
     if (session) {
         const userId = await Session.getUserId();
         return { userId, session };
@@ -51,12 +127,20 @@ async function getUserInfo() {
 }
 
 async function signOut() {
-    await Session.signOut();
-    window.location.reload();
+    try {
+        // Sign out from SuperTokens
+        await Session.signOut();
+        
+        // Force a complete page reload to clear all state
+        window.location.href = '/login';
+    } catch (error) {
+        console.error('Error signing out:', error);
+        // If there's an error, still try to reload the page
+        window.location.reload();
+    }
 }
 
 function redirectToSignIn() {
-    //console.log("redirectToSignIn");
     window.location.href = import.meta.env.VITE_SUPERTOKENS_WEBSITE_BASE_PATH;
 }
 
@@ -76,7 +160,32 @@ function Login() {
     onMount(async () => {
         const { userId, session } = await getUserInfo();
         setData({ userId, session });
+        
+        // If session exists, make sure user data is refreshed
+        if (session && userContext) {
+            await userContext.refreshUser();
+        }
     });
+
+    const handleSignOut = async () => {
+        try {
+            // Sign out from SuperTokens
+            await Session.signOut();
+            
+            // Clear the user context
+            if (userContext) {
+                userContext.setUser(null);
+            }
+            
+            // Update session state
+            setData({ userId: null, session: false });
+            
+            // Reload the page to reset everything
+            window.location.reload();
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    };
 
     return (
         <main class="flex flex-col items-center justify-center min-h-screen bg-slate-900">
@@ -86,7 +195,7 @@ function Login() {
                 <Show when={data().session}>
                     <div class="text-center space-y-4">
                         <Show 
-                            when={user()?.name} 
+                            when={user()} 
                             fallback={
                                 <div class="text-slate-300 flex items-center justify-center gap-2">
                                     <svg 
@@ -105,6 +214,9 @@ function Login() {
                             <h2 class="text-white text-xl font-medium">
                                 Welcome back, {user()!.name}
                             </h2>
+                            <p class="text-slate-300">
+                                {user()!.email}
+                            </p>
                         </Show>
                         <button
                             onClick={() => navigate('/newsfeed')}
@@ -113,7 +225,7 @@ function Login() {
                             Go to NewsFeed
                         </button>
                         <button 
-                            onClick={signOut} 
+                            onClick={handleSignOut} 
                             class="w-full border border-slate-400 text-white bg-slate-800 hover:bg-slate-700 transition duration-200 py-2 px-4 rounded"
                         >
                             Sign Out
