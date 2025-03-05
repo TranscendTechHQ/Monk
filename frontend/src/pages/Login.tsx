@@ -89,10 +89,36 @@ const Login: Component = () => {
       });
       
       if (response.status === "OK") {
-        // Switch to sign in mode with success message
-        setIsSignUp(false);
-        setError("Account created successfully! Please sign in.");
-        setPassword('');
+        // Auto sign-in after successful sign-up
+        try {
+          const signInResponse = await EmailPassword.signIn({
+            formFields: [
+              { id: "email", value: email() },
+              { id: "password", value: password() }
+            ]
+          });
+          
+          if (signInResponse.status === "OK") {
+            // Refresh user data
+            if (userContext) {
+              await userContext.refreshUser();
+            }
+            
+            // Update session state
+            setData({ userId: signInResponse.user.id, session: true });
+            
+            // Navigate to newsfeed
+            navigate('/newsfeed');
+          } else {
+            // This should not happen, but just in case
+            setError("Account created but couldn't sign in automatically. Please sign in manually.");
+            setIsSignUp(false);
+          }
+        } catch (signInErr: any) {
+          console.error("Auto sign-in error:", signInErr);
+          setError("Account created successfully! Please sign in with your credentials.");
+          setIsSignUp(false);
+        }
       } else if (response.status === "FIELD_ERROR") {
         // Handle field errors
         const fieldErrors = response.formFields.map(field => 
