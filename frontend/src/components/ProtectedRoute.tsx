@@ -12,7 +12,7 @@ const ProtectedRoute = (props: { children: any }) => {
     
     if (!sessionExists) {
       // Redirect to login if no session exists
-      navigate(import.meta.env.VITE_SUPERTOKENS_WEBSITE_BASE_PATH, { replace: true });
+      navigate('/login', { replace: true });
     } else if (userContext) {
       // If session exists but we don't have user data, refresh it
       if (!userContext.user()) {

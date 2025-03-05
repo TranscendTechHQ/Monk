@@ -3,12 +3,12 @@ import { Router, Route, Navigate } from '@solidjs/router';
 import NewsFeed from './components/NewsFeed';
 import ThreadMessages from './components/ThreadMessages';
 import { OpenAPI } from './api/core/OpenAPI';
-import { Auth } from './Auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import { initSuperTokens } from "./lib/supertokens";
 import Login from "./pages/Login";
 import { userService } from './services/userService';
 import Session from "supertokens-web-js/recipe/session";
+import ThirdPartyCallback from './components/auth/ThirdPartyCallback';
 
 // Initialize SuperTokens immediately when this module loads
 console.log('[App] Initializing SuperTokens at module scope...');
@@ -22,7 +22,6 @@ try {
 const apiDomain = import.meta.env.VITE_API_DOMAIN;
 const websiteDomain = import.meta.env.VITE_WEBSITE_DOMAIN;
 const apiBase = apiDomain + import.meta.env.VITE_API_BASE;
-const superTokensWebsiteBasePath = import.meta.env.VITE_SUPERTOKENS_WEBSITE_BASE_PATH + "/*";
 
 OpenAPI.BASE = String(apiBase);
 OpenAPI.WITH_CREDENTIALS = true;
@@ -44,7 +43,7 @@ const App: Component = () => {
   return (
     <Router>
       <Route path="/login" component={Login} />
-      <Route path={superTokensWebsiteBasePath} component={Auth} />
+      <Route path="/login/callback/:provider" component={ThirdPartyCallback} />
       <Route path="/" component={() => <Navigate href="/login" />} />
       <Route path="/newsfeed" component={() => (
         <ProtectedRoute>

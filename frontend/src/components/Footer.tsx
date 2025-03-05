@@ -8,9 +8,16 @@ const Footer: Component = () => {
   const navigate = useNavigate();
 
   const signOut = async () => {
-    await Session.signOut();
-    userContext?.setUser(null);
-    navigate('/auth');
+    try {
+      await Session.signOut();
+      if (userContext) {
+        userContext.setUser(null);
+      }
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      navigate('/login');
+    }
   };
 
   return (
