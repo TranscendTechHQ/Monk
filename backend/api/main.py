@@ -1,9 +1,10 @@
 import datetime
 from contextlib import asynccontextmanager
 import sys
+import traceback
 
 import uvicorn
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi import FastAPI
 from fastapi import status
 from fastapi.responses import JSONResponse
@@ -43,8 +44,33 @@ app = FastAPI(lifespan=lifespan, root_path="/api")
 
 app.add_middleware(get_middleware())
 
+@app.middleware("http")
+async def custom_exception_middleware(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except Exception as exc:
+        # Filter the stack trace
+        exc_type, exc_value, exc_traceback = type(exc), exc, exc.__traceback__
+        filtered_traceback = [
+            frame for frame in traceback.extract_tb(exc_traceback)
+            if "/backend/" in frame.filename and "/backend/.venv/" not in frame.filename
+        ]
+
+        # Print the filtered traceback
+        logger.error("Filtered Traceback (most recent call last):")
+        for frame in filtered_traceback:
+            logger.error(f'  File "{frame.filename}", line {frame.lineno}, in {frame.name}')
+            logger.error(f'    {frame.line}')
+        logger.error(f"{exc_type.__name__}: {exc_value}")
+
+        # Return a JSON response for unhandled exceptions
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "An internal server error occurred."},
+        )
+
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.ERROR, format='%(levelname)s: %(message)s')
+
 
 class SessionInfo(BaseModel):
     sessionHandle: str
