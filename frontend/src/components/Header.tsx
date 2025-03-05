@@ -16,10 +16,12 @@ const Header: Component<HeaderProps> = (props) => {
       <div class="container mx-auto flex justify-between items-center">
         <div class="flex items-center">
           <div class="flex items-center" onClick={() => navigate('/newsfeed')} style="cursor: pointer">
-            {/* Monk Logo and Text */}
-            <div class="w-8 h-8 mr-2 flex items-center justify-center bg-blue-600 rounded-full">
-              <span class="text-white font-bold text-lg">M</span>
-            </div>
+            {/* Monk Logo */}
+            <img 
+              src="/svg/logo.svg" 
+              alt="Monk Logo" 
+              class="w-8 h-8 mr-2"
+            />
             <h1 class="text-blue-500 font-bold text-xl" style="font-family: 'Montserrat', sans-serif; letter-spacing: 1px; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5)">
               MONK
             </h1>
