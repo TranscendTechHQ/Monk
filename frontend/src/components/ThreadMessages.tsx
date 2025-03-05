@@ -148,111 +148,123 @@ const ThreadMessages: Component = () => {
   });
 
   return (
-    <div class="min-h-screen bg-slate-900 text-white">
+    <div class="h-screen flex flex-col bg-slate-900 text-white">
       <Header />
-      <div class="container mx-auto p-4">
-        <div class="mb-4">
-          <button
-            onClick={() => navigate('/newsfeed')}
-            class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded transition-colors"
-          >
-            ← Back to Threads
-          </button>
+      
+      {/* Main content area with fixed header and scrollable content */}
+      <div class="flex-1 overflow-hidden flex flex-col">
+        {/* Fixed action bar */}
+        <div class="bg-slate-800 p-4 shadow-md">
+          <div class="container mx-auto flex items-center">
+            <button
+              onClick={() => navigate('/newsfeed')}
+              class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded transition-colors mr-4"
+            >
+              ← Back to Threads
+            </button>
+            <h1 class="text-2xl font-bold">{threadTopic || 'Thread'}</h1>
+          </div>
         </div>
         
-        <h1 class="text-2xl font-bold mb-6">{threadTopic || 'Thread'}</h1>
-        
-        <Show when={!isLoading()} fallback={<div class="text-center py-8">Loading messages...</div>}>
-          <Show when={!error()} fallback={<div class="text-red-500">{error()}</div>}>
-            <div class="bg-slate-800 rounded-lg p-4 mb-4">
-              <div class="space-y-4 mb-4">
-                <For each={messages()}>
-                  {(message) => (
-                    <div class="bg-slate-700 p-4 rounded-lg">
-                      <div class="flex justify-between mb-2">
-                        <span class="font-medium">{userService.getUserName(message.creator_id || "unknown")}</span>
-                        <span class="text-slate-400 text-sm">
-                          {message.created_at ? new Date(message.created_at).toLocaleString() : 'Unknown time'}
-                        </span>
-                      </div>
-                      <p class="text-slate-200">{message.text}</p>
-                      <Show when={message.image}>
-                        <img 
-                          src={imageUrls()[message.image!] || ''} 
-                          alt="Message attachment" 
-                          class="mt-2 max-w-full h-auto rounded-lg max-h-96"
-                          onError={(e) => {
-                            if (!imageUrls()[message.image!]) {
-                              fetchImage(message.image!).then(url => {
-                                setImageUrls(prev => ({...prev, [message.image!]: url}));
-                              });
-                            }
-                          }}
-                        />
-                      </Show>
-                    </div>
-                  )}
-                </For>
-              </div>
-              
-              <div class="mt-4">
-                <div class="flex items-center gap-2 border border-slate-600 rounded-lg p-2">
-                  <label class="cursor-pointer text-slate-400 hover:text-white transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      class="hidden"
-                      onChange={(e) => {
-                        const file = e.currentTarget.files?.[0];
-                        if (file) {
-                          setSelectedImage(file);
-                          setImagePreview(URL.createObjectURL(file));
-                        }
-                      }}
-                    />
-                    📎
-                  </label>
-                  
-                  <textarea
-                    value={newMessage()}
-                    onInput={(e) => setNewMessage(e.currentTarget.value)}
-                    onKeyDown={handleNewMessageKeyDown}
-                    placeholder="Type your message..."
-                    class="flex-1 bg-transparent text-white p-2 focus:outline-none resize-none"
-                    rows="2"
-                  />
-                  
-                  <button
-                    onClick={handleSend}
-                    disabled={isUploading() || (!newMessage().trim() && !selectedImage())}
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isUploading() ? 'Sending...' : 'Send'}
-                  </button>
-                </div>
-                
-                <Show when={imagePreview()}>
-                  <div class="relative mt-2">
-                    <img 
-                      src={imagePreview()!} 
-                      alt="Preview" 
-                      class="max-h-48 w-auto rounded-lg"
-                    />
-                    <button
-                      onClick={() => {
-                        setSelectedImage(null);
-                        setImagePreview(null);
-                      }}
-                      class="absolute top-1 right-1 bg-red-600/80 text-white rounded-full p-1 hover:bg-red-600"
-                    >
-                      ✕
-                    </button>
+        {/* Scrollable content area */}
+        <div class="flex-1 overflow-y-auto p-4">
+          <div class="container mx-auto">
+            <Show when={!isLoading()} fallback={<div class="text-center py-8">Loading messages...</div>}>
+              <Show when={!error()} fallback={<div class="text-red-500">{error()}</div>}>
+                <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                  <div class="space-y-4 mb-4">
+                    <For each={messages()}>
+                      {(message) => (
+                        <div class="bg-slate-700 p-4 rounded-lg">
+                          <div class="flex justify-between mb-2">
+                            <span class="font-medium">{userService.getUserName(message.creator_id || "unknown")}</span>
+                            <span class="text-slate-400 text-sm">
+                              {message.created_at ? new Date(message.created_at).toLocaleString() : 'Unknown time'}
+                            </span>
+                          </div>
+                          <p class="text-slate-200">{message.text}</p>
+                          <Show when={message.image}>
+                            <img 
+                              src={imageUrls()[message.image!] || ''} 
+                              alt="Message attachment" 
+                              class="mt-2 max-w-full h-auto rounded-lg max-h-96"
+                              onError={(e) => {
+                                if (!imageUrls()[message.image!]) {
+                                  fetchImage(message.image!).then(url => {
+                                    setImageUrls(prev => ({...prev, [message.image!]: url}));
+                                  });
+                                }
+                              }}
+                            />
+                          </Show>
+                        </div>
+                      )}
+                    </For>
                   </div>
-                </Show>
-              </div>
+                </div>
+              </Show>
+            </Show>
+          </div>
+        </div>
+        
+        {/* Fixed message input area */}
+        <div class="bg-slate-800 p-4 border-t border-slate-700">
+          <div class="container mx-auto">
+            <div class="flex items-center gap-2 border border-slate-600 rounded-lg p-2 bg-slate-700">
+              <label class="cursor-pointer text-slate-400 hover:text-white transition-colors">
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  onChange={(e) => {
+                    const file = e.currentTarget.files?.[0];
+                    if (file) {
+                      setSelectedImage(file);
+                      setImagePreview(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+                📎
+              </label>
+              
+              <textarea
+                value={newMessage()}
+                onInput={(e) => setNewMessage(e.currentTarget.value)}
+                onKeyDown={handleNewMessageKeyDown}
+                placeholder="Type your message..."
+                class="flex-1 bg-transparent text-white p-2 focus:outline-none resize-none"
+                rows="2"
+              />
+              
+              <button
+                onClick={handleSend}
+                disabled={isUploading() || (!newMessage().trim() && !selectedImage())}
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUploading() ? 'Sending...' : 'Send'}
+              </button>
             </div>
-          </Show>
-        </Show>
+            
+            <Show when={imagePreview()}>
+              <div class="relative mt-2">
+                <img 
+                  src={imagePreview()!} 
+                  alt="Preview" 
+                  class="max-h-48 w-auto rounded-lg"
+                />
+                <button
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setImagePreview(null);
+                  }}
+                  class="absolute top-1 right-1 bg-red-600/80 text-white rounded-full p-1 hover:bg-red-600"
+                >
+                  ✕
+                </button>
+              </div>
+            </Show>
+          </div>
+        </div>
       </div>
     </div>
   );
