@@ -124,7 +124,10 @@ const ThreadMessages: Component = () => {
     const newUrls: Record<string, string> = {};
     for (const message of combinedMessages().filter(m => m.image)) {
       try {
-        newUrls[message._id!] = await fetchImage(message.image!);
+        if (message.image) {
+          const url = await ThreadsService.getDownloadUrl(message.image);
+          newUrls[message.image] = url;
+        }
       } catch (err) {
         console.error('Error loading image:', err);
       }
@@ -136,7 +139,6 @@ const ThreadMessages: Component = () => {
   createEffect(async () => {
     try {
       const threadData = await ThreadsService.getThread(params.id);
-      //console.log("thread data = ", threadData);
       setThread(threadData);
       
       if (threadData.image) {
@@ -184,13 +186,13 @@ const ThreadMessages: Component = () => {
                       <p class="text-slate-200">{message.text}</p>
                       <Show when={message.image}>
                         <img 
-                          src={imageUrls()[message._id!] || ''} 
+                          src={message.image ? imageUrls()[message.image] : ''} 
                           alt="Message attachment" 
-                          class="mt-2 max-w-full h-auto rounded-lg max-h-96"
+                          class="mt-2 max-w-full h-auto rounded-lg max-h-96 object-contain"
                           onError={(e) => {
-                            if (!imageUrls()[message._id!] && message.image) {
-                              fetchImage(message.image).then(url => {
-                                setImageUrls(prev => ({...prev, [message._id!]: url}));
+                            if (message.image && !imageUrls()[message.image]) {
+                              ThreadsService.getDownloadUrl(message.image).then(url => {
+                                setImageUrls(prev => ({...prev, [message.image!]: url}));
                               });
                             }
                           }}
