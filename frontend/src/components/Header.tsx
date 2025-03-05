@@ -1,63 +1,55 @@
-import { Component, Show } from 'solid-js';
+import { Component, Show, JSX } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import Session from 'supertokens-web-js/recipe/session';
-import { useUser } from '../context/UserContext';
 
-const Header: Component = () => {
+interface HeaderProps {
+  onSearch?: () => void;
+  onNewThread?: () => void;
+  showActions?: boolean;
+  children?: JSX.Element;
+}
+
+const Header: Component<HeaderProps> = (props) => {
   const navigate = useNavigate();
-  const userContext = useUser();
-  const user = () => userContext?.user?.() || null;
-
-  const handleSignOut = async () => {
-    try {
-      // Sign out from SuperTokens
-      await Session.signOut();
-      
-      // Clear the user context
-      if (userContext) {
-        userContext.setUser(null);
-      }
-      
-      // Force a complete page reload to clear all state
-      window.location.href = '/login';
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
-
+  
   return (
-    <header class="bg-slate-800 text-white p-4 shadow-md">
+    <header class="bg-slate-900 border-b border-slate-700 py-2 px-4">
       <div class="container mx-auto flex justify-between items-center">
         <div class="flex items-center">
-          <h1 class="text-xl font-bold">Monk</h1>
-          <nav class="ml-8">
-            <ul class="flex space-x-4">
-              <li>
-                <a 
-                  href="/newsfeed" 
-                  class="hover:text-slate-300 transition-colors"
-                >
-                  NewsFeed
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-        
-        <div class="flex items-center">
-          <Show when={user()}>
-            <div class="mr-4 text-sm">
-              <span class="font-medium">{user()?.name}</span>
-              <span class="text-slate-400 ml-2">({user()?.email})</span>
+          <div class="flex items-center" onClick={() => navigate('/newsfeed')} style="cursor: pointer">
+            {/* Monk Logo and Text */}
+            <div class="w-8 h-8 mr-2 flex items-center justify-center bg-blue-600 rounded-full">
+              <span class="text-white font-bold text-lg">M</span>
             </div>
-            <button 
-              onClick={handleSignOut}
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm transition-colors"
-            >
-              Sign Out
-            </button>
+            <h1 class="text-blue-500 font-bold text-xl" style="font-family: 'Montserrat', sans-serif; letter-spacing: 1px; text-shadow: 0 0 10px rgba(59, 130, 246, 0.5)">
+              MONK
+            </h1>
+          </div>
+          
+          {/* Custom content */}
+          <Show when={props.children}>
+            <div class="ml-6">
+              {props.children}
+            </div>
           </Show>
         </div>
+        
+        {/* Action Buttons */}
+        <Show when={props.showActions}>
+          <div class="flex space-x-2">
+            <button
+              onClick={props.onSearch}
+              class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded text-sm transition-colors border border-slate-700"
+            >
+              Search
+            </button>
+            <button
+              onClick={props.onNewThread}
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors"
+            >
+              New Thread
+            </button>
+          </div>
+        </Show>
       </div>
     </header>
   );
