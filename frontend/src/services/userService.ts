@@ -1,11 +1,21 @@
 import { ThreadsService } from "../api/services/ThreadsService";
+import Session from "supertokens-web-js/recipe/session";
 
 class UserService {
   private cache: Record<string, string> = {};
 
   async initialize() {
     try {
-      console.log('[UserService] Initializing user cache...');
+      console.log('[UserService] Checking session before initializing user cache...');
+      
+      // Check if user is authenticated before making the API call
+      const sessionExists = await Session.doesSessionExist();
+      if (!sessionExists) {
+        console.log('[UserService] No active session found, skipping initialization');
+        return;
+      }
+      
+      console.log('[UserService] Session exists, initializing user cache...');
       const response = await ThreadsService.getUsers();
       
       this.cache = response.users.reduce((acc, user) => {

@@ -60,7 +60,9 @@ const NewsFeed: Component = () => {
 
   createEffect(async () => {
     try {
-      await userService.initialize();
+      // The userService.initialize() is already called in App.tsx
+      // and now checks for authentication internally
+      // We'll just set the cache as ready since it will be initialized if the user is authenticated
       setIsUserCacheReady(true);
     } catch (err) {
       console.error('User cache initialization failed:', err);

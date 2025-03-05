@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { initSuperTokens } from "./lib/supertokens";
 import Login from "./pages/Login";
 import { userService } from './services/userService';
+import Session from "supertokens-web-js/recipe/session";
 
 // Initialize SuperTokens immediately when this module loads
 console.log('[App] Initializing SuperTokens at module scope...');
@@ -30,10 +31,13 @@ const App: Component = () => {
   onMount(async () => {
     console.log('[App] Initializing application...');
     try {
+      // The userService.initialize() method now checks for session internally
+      // so we don't need to check here, but we'll handle any errors gracefully
       await userService.initialize();
       console.log('[App] Initialization complete');
     } catch (err) {
       console.error('[App] Initialization failed:', err);
+      // We don't need to redirect here as ProtectedRoute will handle that
     }
   });
 
