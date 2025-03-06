@@ -20,6 +20,7 @@ from supertokens_python.recipe.session.framework.fastapi import verify_session
 
 from config import settings
 from routes.threads.routers import router as threads_router
+from routes.admin.routers import router as admin_router
 
 import logging
 
@@ -176,7 +177,8 @@ async def shutdown_db_client():
     app.mongodb_client.close()
 
 
-app.include_router(threads_router, tags=["threads"])
+app.include_router(threads_router, prefix="/threads", tags=["threads"])
+app.include_router(admin_router, prefix="/admin", tags=["admin"])
 
 
 

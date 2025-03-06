@@ -83,6 +83,8 @@ async def get_user_info(user_id):
     except Exception as e:
         logger.error(e, exc_info=True)
 
+async def list_tenants():
+    return await asyncdb.tenants_collection.find().to_list(length=None)
 
 async def get_tenant_id(session):
     try:

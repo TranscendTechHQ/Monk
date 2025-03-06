@@ -6,6 +6,7 @@ import { OpenAPI } from './api/core/OpenAPI';
 import ProtectedRoute from './components/ProtectedRoute';
 import { initSuperTokens } from "./lib/supertokens";
 import Login from "./pages/Login";
+import AdminDashboard from "./pages/AdminDashboard";
 import { userService } from './services/userService';
 import Session from "supertokens-web-js/recipe/session";
 import ThirdPartyCallback from './components/auth/ThirdPartyCallback';
@@ -45,6 +46,11 @@ const App: Component = () => {
       <Route path="/login" component={Login} />
       <Route path="/login/callback/:provider" component={ThirdPartyCallback} />
       <Route path="/" component={() => <Navigate href="/login" />} />
+      <Route path="/admin" component={() => (
+        <ProtectedRoute>
+          <AdminDashboard />
+        </ProtectedRoute>
+      )} />
       <Route path="/newsfeed" component={() => (
         <ProtectedRoute>
           <NewsFeed />

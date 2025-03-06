@@ -1,5 +1,6 @@
 import { Component, Show, JSX } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
+import { useUser } from '../context/UserContext';
 
 interface HeaderProps {
   onSearch?: () => void;
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 const Header: Component<HeaderProps> = (props) => {
   const navigate = useNavigate();
+  const userContext = useUser();
   
   return (
     <header class="bg-slate-900 border-b border-slate-700 py-2 px-4">
@@ -26,6 +28,24 @@ const Header: Component<HeaderProps> = (props) => {
               MONK
             </h1>
           </div>
+          
+          {/* Navigation Links */}
+          <Show when={userContext?.user()}>
+            <nav class="ml-6 flex space-x-4">
+              <a 
+                href="/newsfeed" 
+                class="text-slate-300 hover:text-white transition-colors text-sm"
+              >
+                News Feed
+              </a>
+              <a 
+                href="/admin" 
+                class="text-slate-300 hover:text-white transition-colors text-sm"
+              >
+                Admin
+              </a>
+            </nav>
+          </Show>
           
           {/* Custom content */}
           <Show when={props.children}>
