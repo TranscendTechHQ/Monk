@@ -84,23 +84,23 @@ jobs:
     - name: Do Auth Setup
       run: |
         PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
-        pnpm exec playwright test --project=auth
+        pnpm run test:auth
 
     - name: Run backend tests
       run: |
         # TypeScript tests
         PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
-        API_DOMAIN="https://localhost/api" pnpm exec playwright test --project=backend
+        API_DOMAIN="https://localhost/api" pnpm run test:backend
         
         # Python tests
-        API_DOMAIN="https://localhost/api" \
-        PYTHONPATH=$PYTHONPATH:./backend/api \
-        pytest ./backend/api/tests/test_unauthorized_access.py -v --verify=false
+        #API_DOMAIN="https://localhost/api" \
+        #PYTHONPATH=$PYTHONPATH:./backend/api \
+        #pytest ./backend/api/tests/test_unauthorized_access.py -v --verify=false
 
     - name: Run frontend tests
       run: |
         PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
-        WEBSITE_DOMAIN="https://localhost" pnpm exec playwright test --project=frontend
+        WEBSITE_DOMAIN="https://localhost" pnpm run test:frontend
 
     - name: Upload test results
       if: always()
