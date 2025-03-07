@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   cert-gen:
@@ -113,13 +112,7 @@ services:
     restart: no  # Fixed
     profiles:
       - test
-    depends_on:  # Added explicit health dependency
-      backend:
-        condition: service_healthy
-      nginx:
-        condition: service_healthy
-      frontend:
-        condition: service_healthy
+
 
 networks:
   monk-network:
