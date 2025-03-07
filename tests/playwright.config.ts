@@ -46,7 +46,7 @@ export default defineConfig({
         name: 'chromium',
         use: { 
           ...devices['Desktop Chrome'], 
-          storageState: 'tests/.auth/user.json',
+          storageState: '.auth/user.json',
         },
         dependencies: ['auth'],
       },
@@ -55,7 +55,7 @@ export default defineConfig({
         testMatch: /frontend\/.*\.spec\.ts/,
         use: { 
           ...devices['Desktop Chrome'],
-          storageState: 'tests/.auth/user.json',
+          storageState: '.auth/user.json',
         },
         dependencies: ['auth'],
       },

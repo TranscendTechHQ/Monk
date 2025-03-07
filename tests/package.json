@@ -1,0 +1,22 @@
+{
+    "name": "monk-tests",
+    "version": "1.0.0",
+    "description": "Playwright tests for Monk",
+    "scripts": {
+      "test:frontend": "pnpm exec playwright test --project=frontend",
+      "test:backend": "pnpm exec playwright test --project=backend",
+      "test:all": "pnpm exec playwright test --project=frontend --project=backend",
+      "test:auth": "pnpm exec playwright test --project=auth",
+      "test:chrome": "pnpm exec playwright test --project=chromium"
+    },
+    "devDependencies": {
+      "@playwright/test": "^1.50.1",
+      "@types/node": "^20.11.24",
+      "playwright": "^1.50.1",
+      "playwright-extra": "^4.3.6",
+      "puppeteer-extra-plugin-stealth": "^2.11.2"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.7"
+      }
+  }
