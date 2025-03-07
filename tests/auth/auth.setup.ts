@@ -6,7 +6,7 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 chromium.use(StealthPlugin());
 dotenv.config();
-const authFile = path.join(__dirname, '../playwright/.auth/user.json');
+const authFile = path.join(__dirname, '../.auth/user.json');
 
 // Use environment variables for credentials
 const testEmail = process.env.TEST_GOOGLE_USERNAME || '';

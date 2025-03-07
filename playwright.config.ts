@@ -40,28 +40,28 @@ export default defineConfig({
 
       {
         name: 'auth',
-        testMatch: /auth\.setup\.ts/,
+        testMatch: /auth\/auth\.setup\.ts/,
       },
       {
         name: 'chromium',
         use: { 
           ...devices['Desktop Chrome'], 
-          storageState: 'playwright/.auth/user.json',
+          storageState: 'tests/.auth/user.json',
         },
         dependencies: ['auth'],
       },
       {
         name: 'frontend',
-        testMatch: /frontend\/tests\/.*\.spec\.ts/,
+        testMatch: /frontend\/.*\.spec\.ts/,
         use: { 
           ...devices['Desktop Chrome'],
-          storageState: 'playwright/.auth/user.json',
+          storageState: 'tests/.auth/user.json',
         },
         dependencies: ['auth'],
       },
       {
         name: 'backend',
-        testMatch: /backend\/api\/tests\/.*\.spec\.ts/,
+        testMatch: /backend\/.*\.spec\.ts/,
         use: { 
           ...devices['Desktop Chrome'],
           //storageState: 'playwright/.auth/user.json',
