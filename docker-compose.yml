@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   cert-gen:
     image: alpine:3.18
@@ -8,6 +10,13 @@ services:
     volumes:
       - certs:/certs
     restart: "no"
+    profiles:
+      - app
+    healthcheck:  # Added
+      test: ["CMD", "test -f /certs/cert.pem"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -25,12 +34,18 @@ services:
       - HCP_PROJECT_ID=${HCP_PROJECT_ID}
       - HCP_PROJECT_NAME=${HCP_PROJECT_NAME}
       - VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
-
     networks:
       - monk-network
     expose:
       - "8001"
     restart: unless-stopped
+    profiles:
+      - app
+    healthcheck:  # Added
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   nginx:
     image: nginx:alpine
@@ -47,6 +62,13 @@ services:
       - backend
       - frontend
     restart: unless-stopped
+    profiles:
+      - app
+    healthcheck:  # Added
+      test: ["CMD", "curl", "-f", "https://localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   frontend:
     build:
@@ -59,14 +81,20 @@ services:
         - VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
         - VITE_SUPERTOKENS_APP_NAME=${VITE_SUPERTOKENS_APP_NAME}
         - VITE_API_BASE=${VITE_API_BASE}
-    ports:
-      - "3000:3000"  # Exposed for debugging; Nginx handles production traffic
-    
+    expose:  # Changed from ports
+      - "3000"
     depends_on:
       - backend
     networks:
       - monk-network
     restart: unless-stopped
+    profiles:
+      - app
+    healthcheck:  # Added
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   tests:
     build:
@@ -77,9 +105,21 @@ services:
       - API_DOMAIN=https://nginx/api
       - TEST_GOOGLE_USERNAME=${TEST_GOOGLE_USERNAME}
       - TEST_GOOGLE_PASSWORD=${TEST_GOOGLE_PASSWORD}
+      - NODE_EXTRA_CA_CERTS=/certs/cert.pem  # Added for browser SSL
+    volumes:
+      - certs:/certs  # Added for cert trust
     networks:
       - monk-network
-    restart: unless-stopped
+    restart: no  # Fixed
+    profiles:
+      - test
+    depends_on:  # Added explicit health dependency
+      backend:
+        condition: service_healthy
+      nginx:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
 
 networks:
   monk-network:
