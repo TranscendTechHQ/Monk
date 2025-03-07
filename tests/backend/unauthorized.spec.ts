@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-// Read the backend API URL from the API_DOMAIN environment variable, defaulting to  if not set
+// Read the backend API URL from the API_DOMAIN environment variable
 const backendApiUrl = String(process.env.API_DOMAIN);
 
 test.describe('Unauthorized access', () => {

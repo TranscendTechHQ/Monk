@@ -84,13 +84,14 @@ jobs:
     - name: Do Auth Setup
       run: |
         PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
+        WEBSITE_DOMAIN="https://nginx" \
         pnpm run test:auth
 
     - name: Run backend tests
       run: |
         # TypeScript tests
         PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
-        API_DOMAIN="https://localhost/api" pnpm run test:backend
+        API_DOMAIN="https://nginx/api" pnpm run test:backend
         
         # Python tests
         #API_DOMAIN="https://localhost/api" \
