@@ -90,13 +90,9 @@ setup('authenticate', async () => {
     // Click sign in and wait for either navigation or error
     console.log('Clicking Sign In button...');
     
-    // Use Promise.all to ensure we wait for navigation before proceeding
-    await Promise.all([
-      // This will wait for the next navigation to complete
-      page.waitForNavigation({ timeout: navigationTimeout, waitUntil: 'networkidle' }),
-      // This triggers the navigation
-      page.getByText('Sign In', { exact: true }).click()
-    ]);
+    // Use the newer pattern instead of the deprecated waitForNavigation
+    await page.getByText('Sign In', { exact: true }).click();
+    await page.waitForLoadState('networkidle', { timeout: navigationTimeout });
     
     // Check if we're on the newsfeed page or still on login
     const afterLoginUrl = page.url();
@@ -121,10 +117,8 @@ setup('authenticate', async () => {
       
       // Submit sign up form and wait for navigation
       console.log('Submitting sign up form...');
-      await Promise.all([
-        page.waitForNavigation({ timeout: navigationTimeout, waitUntil: 'networkidle' }),
-        page.getByRole('button', { name: 'Sign Up' }).click()
-      ]);
+      await page.getByRole('button', { name: 'Sign Up' }).click();
+      await page.waitForLoadState('networkidle', { timeout: navigationTimeout });
     }
     
     // Final check to ensure we're on the newsfeed page
