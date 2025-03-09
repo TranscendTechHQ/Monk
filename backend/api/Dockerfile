@@ -6,6 +6,8 @@ WORKDIR /backend
 COPY . .
 
 RUN uv sync 
+RUN apt-get update && apt-get install -y curl
+
 ENV PATH="/backend/.venv/bin:$PATH"
 
 CMD ["uv", "run", "main.py"]
