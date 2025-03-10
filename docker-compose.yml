@@ -111,8 +111,9 @@ services:
       - backend
       - frontend
       - nginx
-    command: >
-      sh -c "echo '$(getent hosts nginx | awk \"{print \$1}\") localhost' >> /etc/hosts && npx playwright test"
+
+    #command: >
+    #  sh -c "echo 'Starting tests' && echo \"\$$(getent hosts nginx | awk '{print \$1}') localhost\" >> /etc/hosts && cat /etc/hosts && pnpm exec playwright test"
 
 networks:
   monk-network:

@@ -1,6 +1,6 @@
 import path from 'path';
 import dotenv from 'dotenv';
-import { test as setup, expect } from '@playwright/test';
+import { test as setup } from '@playwright/test';
 import { chromium } from 'playwright-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
@@ -8,135 +8,193 @@ chromium.use(StealthPlugin());
 dotenv.config();
 const authFile = path.join(__dirname, '../.auth/user.json');
 
-// Use environment variables for credentials
 const testEmail = process.env.TEST_GOOGLE_USERNAME || '';
 const testPassword = process.env.TEST_GOOGLE_PASSWORD || '';
-const websiteDomain = String(process.env.WEBSITE_DOMAIN);
+const websiteDomain = process.env.WEBSITE_DOMAIN ;
 
-// Increase timeouts for CI environments
-const navigationTimeout = 30000; // 30 seconds
 
-// Validate that credentials are provided
+const navigationTimeout = 60000; // Bump to 60s for debugging
+
 if (!testEmail || !testPassword) {
-  console.error('ERROR: TEST_GOOGLE_USERNAME and TEST_GOOGLE_PASSWORD environment variables must be set');
+  console.error('ERROR: TEST_GOOGLE_USERNAME and TEST_GOOGLE_PASSWORD must be set');
   process.exit(1);
 }
 
+
+
+
 setup('authenticate', async () => {
-  console.log(`Starting authentication process with email: ${testEmail.substring(0, 3)}***`);
+  console.log(`Starting authentication with email: ${testEmail.substring(0, 3)}***`);
   console.log(`Website domain: ${websiteDomain}`);
-  
-  // Launch browser with stealth and ignore SSL errors
-  const browser = await chromium.launch({ 
+
+  const browser = await chromium.launch({
     headless: true,
     args: [
-      '--disable-dev-shm-usage', // Overcome limited resource problems in CI
-      '--no-sandbox',            // Required for running in CI
+      '--disable-dev-shm-usage',
+      '--no-sandbox',
       '--disable-setuid-sandbox',
-      '--disable-gpu',           // Reduce resource usage
-    ]
+      '--disable-gpu',
+      '--ignore-certificate-errors', // Extra SSL bypass
+    ],
   });
-  
   const context = await browser.newContext({
-    ignoreHTTPSErrors: true,  // Bypass SSL certificate errors
+    ignoreHTTPSErrors: true,
     viewport: { width: 1280, height: 720 },
+    extraHTTPHeaders: { 'Accept': '*/*' }, // Avoid content negotiation issues
   });
-  
   const page = await context.newPage();
 
+
+  await page.route('https://localhost/**', async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    const method = req.method();
+    const postData = req.postData();
+  
+    // Log request details
+    console.log(`Intercepting ${method} request to ${url.toString()}`);
+    if (postData) {
+      console.log(`Request data: ${postData.substring(0, 100)}...`);
+    }
+  
+    // Rewrite the URL to point to nginx
+    url.host = 'nginx';
+    console.log(`Redirecting request to ${url.toString()}`);
+
+    // Fetch the response from the backend
+    let response;
+    try {
+      response = await route.fetch({
+        url: url.toString(),
+        method: req.method(),
+        headers: req.headers(),
+        postData: req.postData(),
+      });
+  
+      // Log response details
+      console.log(`Response for ${url.toString()}:`);
+      console.log(`Status: ${response.status()}`);
+      console.log('Headers:', JSON.stringify(response.headers(), null, 2));
+  
+      // Attempt to log the response body (truncated)
+      try {
+        const responseBody = await response.text();
+        console.log(`Response body (truncated): ${responseBody.substring(0, 200)}...`);
+      } catch (error) {
+        console.error('Failed to read response body:', error);
+      }
+    } catch (error) {
+      console.error(`Error fetching response for ${url.toString()}:`, error);
+      throw error;
+    }
+  
+    // Continue with the rewritten URL and original request
+    route.continue({
+      url: url.toString(),
+      method: req.method(),
+      headers: req.headers(),
+      postData: req.postData(),
+    });
+  
+    // Log that the request was forwarded
+    console.log(`Request forwarded to ${url.toString()}`);
+  });
+  
+  
+
+
   try {
-    console.log(`Navigating to login page: ${websiteDomain}/login`);
-    // Navigate to login page with longer timeout
-    await page.goto(websiteDomain + '/login', { timeout: navigationTimeout });
-    
-    // Check if we're already redirected to newsfeed (already logged in)
-    const currentUrl = page.url();
-    console.log(`Current URL after navigation: ${currentUrl}`);
-    
-    if (currentUrl.includes('/newsfeed')) {
-      console.log('Already logged in, saving auth state');
+    console.log(`Navigating to: ${websiteDomain}/login`);
+    await page.goto(`${websiteDomain}/login`, { timeout: navigationTimeout });
+    console.log(`Current URL: ${page.url()}`);
+
+    if (page.url().includes('/newsfeed')) {
+      console.log('Already logged in, saving state');
       await page.context().storageState({ path: authFile });
       return;
     }
-    
-    // Check if we're already logged in (session exists)
-    const goToNewsFeedButton = page.getByText('Go to NewsFeed');
-    const isButtonVisible = await goToNewsFeedButton.isVisible();
-    console.log(`"Go to NewsFeed" button visible: ${isButtonVisible}`);
-    
-    if (isButtonVisible) {
-      console.log('Already logged in, clicking Go to NewsFeed button');
-      await goToNewsFeedButton.click();
-      await page.waitForURL(/\/newsfeed/, { timeout: navigationTimeout });
-      await page.context().storageState({ path: authFile });
-      return;
-    }
-    
-    // Check if login form is visible
+
     const emailInput = page.locator('input[type="email"]');
-    const isEmailInputVisible = await emailInput.isVisible();
+    const isEmailInputVisible = await emailInput.isVisible({ timeout: 5000 });
     console.log(`Email input visible: ${isEmailInputVisible}`);
-    
+
     if (!isEmailInputVisible) {
-      console.error('Login form not found.');
+      console.error('Login form not found');
       throw new Error('Login form not found');
     }
-    
-    // Try to sign in
+
     console.log('Filling login form...');
     await emailInput.fill(testEmail);
     await page.locator('input[type="password"]').fill(testPassword);
+
+    // print the list of all buttons on the page and form text input field in the page to console
+    // in the log, also print button text and text befote input field value
+    const buttons = await page.locator('button').all();
+    // make sure all the values are resolved and not promises
+    console.log('Buttons:', await Promise.all(
+      buttons.map(async (button) => ({
+        text: await button.textContent(),
+        value: await button.getAttribute('value'),
+      }))
+    ));
+    const textInputs = await page.locator('input').all();
+    console.log(' Inputs:', await Promise.all(
+      textInputs.map(async (input) => ({ 
+        value: await input.getAttribute('value') 
+      }))
+    ));
+/*
+    page.on('request', (request) => {
+      console.log(`Request: ${request.method()} ${request.url()}`);
+      console.log('Headers:', JSON.stringify(request.headers(), null, 2));
+    });
     
-    // Click sign in and wait for either navigation or error
-    console.log('Clicking Sign In button...');
+    page.on('response', async (response) => {
+      console.log(`Response: ${response.status()} ${response.url()}`);
+      const body = await response.text();
+      console.log(`Response Body: ${body}`);
+    });
+
+    page.on('console', (msg) => console.log(`[Browser Console] ${msg.type()}: ${msg.text()}`));
+    page.on('pageerror', (err) => console.error(`[Browser Error] ${err.message}`));
+*/
     
-    // Use the newer pattern instead of the deprecated waitForNavigation
-    await page.getByText('Sign In', { exact: true }).click();
-    await page.waitForLoadState('networkidle', { timeout: navigationTimeout });
-    
-    // Check if we're on the newsfeed page or still on login
-    const afterLoginUrl = page.url();
-    console.log(`URL after login attempt: ${afterLoginUrl}`);
-    
-    // Check for error message indicating invalid credentials
-    const errorVisible = await page.getByText(/Invalid email or password|Something went wrong/).isVisible();
-    console.log(`Error message visible: ${errorVisible}`);
-    
-    // If we see an error, try to sign up
-    if (errorVisible) {
-      console.log('Login failed, attempting to sign up');
-      
-      // Switch to sign up mode
-      await page.getByText('Create Account', { exact: true }).click();
-      
-      // Fill sign up form
-      console.log('Filling sign up form...');
-      await emailInput.fill(testEmail);
-      await page.locator('input[type="password"]').fill(testPassword);
-      await page.locator('input[type="text"]').fill('Test User');
-      
-      // Submit sign up form and wait for navigation
-      console.log('Submitting sign up form...');
-      await page.getByRole('button', { name: 'Sign Up' }).click();
-      await page.waitForLoadState('networkidle', { timeout: navigationTimeout });
+    // press the Sign In button. Find the button by text
+    console.log('Submitting form...');
+    // press the Sign In button. Find the button by text
+    await page.locator('button', { hasText: 'Sign In' }).click();
+
+    // after the form is submitted, print the URL of the page
+    console.log('Current URL after submission:', page.url());
+
+    // Wait for navigation or timeout
+    try {
+      await page.waitForURL(`${websiteDomain}/newsfeed`, { timeout: navigationTimeout });
+      console.log(`URL after login: ${page.url()}`);
+    } catch (e) {
+      console.log(`Navigation failed, current URL: ${page.url()}`);
+      const errorMessage = await page.locator('text=/Invalid|Something went wrong/i').textContent();
+      console.log(`Error on page: ${errorMessage || 'None visible'}`);
+      throw e;
     }
-    
-    // Final check to ensure we're on the newsfeed page
-    const finalUrl = page.url();
-    console.log(`Final URL: ${finalUrl}`);
-    
-    if (!finalUrl.includes('/newsfeed')) {
-      console.log('Not on newsfeed page, manually navigating there...');
-      await page.goto(websiteDomain + '/newsfeed', { timeout: navigationTimeout });
+
+    const cookies = await context.cookies();
+    console.log('Cookies after login:', JSON.stringify(cookies, null, 2));
+    if (cookies.length === 0) {
+      console.error('No cookies set after login');
+      throw new Error('No cookies set');
     }
-    
-    console.log('Successfully authenticated, saving auth state');
-    
-    // Save authentication state
+
+    console.log('Saving auth state');
     await page.context().storageState({ path: authFile });
-    console.log('Authentication state saved to:', authFile);
+    console.log('State saved to:', authFile);
+    await page.waitForLoadState('networkidle', { timeout: 30000 });
+    console.log('Network idle, continuing...');
+
   } catch (error) {
     console.error('Authentication error:', error);
+    await page.screenshot({ path: 'error.png' });
+    console.log('Page content:', await page.content());
     throw error;
   } finally {
     await browser.close();
