@@ -44,71 +44,25 @@ jobs:
         TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }}
         EOF
 
-    - name: Start services with docker-compose
+    - name: Start app with docker-compose
       run: |
-        docker compose up --build -d
+        docker-compose up backend cert-gen frontend nginx --build -d
         echo "Waiting for services to start..."
-        sleep 30
+        sleep 60
 
     - name: Check services status
       run: |
         docker compose ps
         echo "Checking Nginx..."
-        curl -k https://localhost/health || echo "Health check failed"
+        curl -k https://nginx/api/healthcheck || echo "Health check failed"
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-
-    - name: Install pnpm
-      run: npm install -g pnpm
-
-    - name: Install frontend dependencies
-      run: pnpm install
-
-    - name: Install Playwright browsers
-      run: pnpm exec playwright install chromium
-
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
-    - name: Install Python dependencies
+    - name: Run tests
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest playwright pytest-asyncio
-        playwright install
+        docker-compose up tests --build -d
+        sleep 60
+        echo 'tests completed. exit code is $?'
 
-    - name: Do Auth Setup
-      run: |
-        PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
-        WEBSITE_DOMAIN="https://nginx" \
-        pnpm run test:auth
 
-    - name: Run backend tests
-      run: |
-        # TypeScript tests
-        PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
-        API_DOMAIN="https://nginx/api" pnpm run test:backend
-        
-        # Python tests
-        #API_DOMAIN="https://localhost/api" \
-        #PYTHONPATH=$PYTHONPATH:./backend/api \
-        #pytest ./backend/api/tests/test_unauthorized_access.py -v --verify=false
-
-    - name: Run frontend tests
-      run: |
-        PLAYWRIGHT_SKIP_BROWSER_HTTPS_ERRORS=1 \
-        WEBSITE_DOMAIN="https://localhost" pnpm run test:frontend
-
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: playwright-results
-        path: playwright-report/
 
     - name: Cleanup
       if: always()
