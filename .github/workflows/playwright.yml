@@ -46,7 +46,7 @@ jobs:
 
     - name: Start app with docker-compose
       run: |
-        docker-compose up backend cert-gen frontend nginx --build -d
+        docker compose up backend cert-gen frontend nginx --build -d
         echo "Waiting for services to start..."
         sleep 60
 
@@ -58,7 +58,7 @@ jobs:
 
     - name: Run tests
       run: |
-        docker-compose up tests --build -d
+        docker compose up tests --build -d
         sleep 60
         echo 'tests completed. exit code is $?'
 
