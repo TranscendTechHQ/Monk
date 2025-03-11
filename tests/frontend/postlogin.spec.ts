@@ -9,10 +9,10 @@ const websiteDomain = String(process.env.WEBSITE_DOMAIN);
 test.use({ ignoreHTTPSErrors: true });
 const navigationTimeout = 30000; // 30 seconds
 
-test('test', async ({ page, context }) => {
+test('postlogin test', async ({ page, context }) => {
   // Print cookies to check if auth is loaded
   const cookies = await context.cookies();
-  console.log(`Cookies loaded: ${cookies.length}`);
+  //console.log(`Cookies loaded: ${cookies.length}`);
   
   await page.goto(websiteDomain + '/login');
   console.log('Current URL:', page.url());

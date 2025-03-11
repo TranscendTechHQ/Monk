@@ -25,7 +25,7 @@ if (!testEmail || !testPassword) {
 
 setup('authenticate', async () => {
   console.log(`Starting authentication with email: ${testEmail.substring(0, 3)}***`);
-  console.log(`Website domain: ${websiteDomain}`);
+  //console.log(`Website domain: ${websiteDomain}`);
 
   const browser = await chromium.launch({
     headless: true,
@@ -72,14 +72,14 @@ setup('authenticate', async () => {
       });
   
       // Log response details
-      console.log(`Response for ${url.toString()}:`);
-      console.log(`Status: ${response.status()}`);
-      console.log('Headers:', JSON.stringify(response.headers(), null, 2));
+     // console.log(`Response for ${url.toString()}:`);
+      //console.log(`Status: ${response.status()}`);
+      //console.log('Headers:', JSON.stringify(response.headers(), null, 2));
   
       // Attempt to log the response body (truncated)
       try {
         const responseBody = await response.text();
-        console.log(`Response body (truncated): ${responseBody.substring(0, 200)}...`);
+        //console.log(`Response body (truncated): ${responseBody.substring(0, 200)}...`);
       } catch (error) {
         console.error('Failed to read response body:', error);
       }
@@ -179,7 +179,7 @@ setup('authenticate', async () => {
     }
 
     const cookies = await context.cookies();
-    console.log('Cookies after login:', JSON.stringify(cookies, null, 2));
+    //console.log('Cookies after login:', JSON.stringify(cookies, null, 2));
     if (cookies.length === 0) {
       console.error('No cookies set after login');
       throw new Error('No cookies set');
@@ -193,7 +193,7 @@ setup('authenticate', async () => {
 
   } catch (error) {
     console.error('Authentication error:', error);
-    await page.screenshot({ path: 'error.png' });
+    //await page.screenshot({ path: 'error.png' });
     console.log('Page content:', await page.content());
     throw error;
   } finally {
