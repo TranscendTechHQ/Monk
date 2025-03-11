@@ -1,7 +1,7 @@
 FROM node:20-alpine AS builder
 RUN npm install -g pnpm
 WORKDIR /app
-COPY . .
+COPY package.json ./
 RUN pnpm install
 
 
@@ -20,6 +20,7 @@ ENV VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
 ENV VITE_SUPERTOKENS_APP_NAME=${VITE_SUPERTOKENS_APP_NAME}
 ENV VITE_API_BASE=${VITE_API_BASE}
 
+COPY . .
 RUN pnpm run build
 
 FROM node:20-alpine
