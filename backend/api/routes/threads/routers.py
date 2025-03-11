@@ -34,19 +34,19 @@ def extract_link_meta(content: str):
         urls = re.findall(
             'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
         if len(urls) > 0:
-            print(f'\n 👉 Link detected count: {len(urls)} ')
+            logger.info(f'\n 👉 Link detected count: {len(urls)} ')
             lastUrlAvailableInContent = urls[-1]
         else:
-            print(f'\n 👉 No link detected in the content {content}')
+            logger.info(f'\n 👉 No link detected in the content {content}')
 
         
         # if lastUrlAvailableInContent is not empty then get the meta data of the url
         if lastUrlAvailableInContent != '':
-            print(f'\n 👉 Fetching link meta for: {lastUrlAvailableInContent} ')
+            logger.info(f'\n 👉 Fetching link meta for: {lastUrlAvailableInContent} ')
             # get the meta data of the url
             rawMeta = getLinkMeta(lastUrlAvailableInContent)
             if rawMeta is not None:
-                print(f'\n 👉 Link meta fetched: {rawMeta} ')
+                logger.info(f'\n 👉 Link meta fetched: {rawMeta} ')
                 image = rawMeta.get('image', None)
                 if image is None:
                     image = rawMeta.get('og:image', None)

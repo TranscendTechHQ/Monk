@@ -3,10 +3,12 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /backend
 
-COPY . .
+RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml uv.lock ./
 
-RUN uv sync 
-RUN apt-get update && apt-get install -y curl
+RUN uv sync --frozen
+
+COPY . .
 
 ENV PATH="/backend/.venv/bin:$PATH"
 
