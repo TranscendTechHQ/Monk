@@ -92,6 +92,7 @@ services:
       retries: 10
 
   tests:
+    image: ${TESTS_IMAGE:-monk-tests:latest}
     build:
       context: ./tests
       dockerfile: Dockerfile

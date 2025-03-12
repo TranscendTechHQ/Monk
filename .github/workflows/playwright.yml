@@ -65,6 +65,17 @@ jobs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
+    - name: Build tests image with cache
+      uses: docker/build-push-action@v5
+      with:
+        context: ./tests
+        file: ./tests/Dockerfile
+        push: false
+        load: true
+        tags: monk-tests:latest
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
     # Move cache to prevent it from growing indefinitely
     - name: Move cache
       run: |
@@ -85,8 +96,10 @@ jobs:
         curl -k https://nginx/api/healthcheck || echo "Health check failed"
 
     - name: Run tests
+      env:
+        TESTS_IMAGE: monk-tests:latest
       run: |
-        docker compose up tests --build -d
+        docker compose up tests -d
         sleep 60
         echo 'tests completed. exit code is $?'
 
