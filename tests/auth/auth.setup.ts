@@ -68,6 +68,7 @@ setup('authenticate', async () => {
         method: req.method(),
         headers: req.headers(),
         postData: req.postData(),
+        timeout: navigationTimeout
       });
   
       // Log response details
@@ -189,6 +190,7 @@ setup('authenticate', async () => {
     console.log('State saved to:', authFile);
     await page.waitForLoadState('networkidle', { timeout: 30000 });
     console.log('Network idle, continuing...');
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
 
   } catch (error) {
     console.error('Authentication error:', error);
