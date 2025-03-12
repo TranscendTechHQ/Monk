@@ -15,7 +15,7 @@ test('postlogin test', async ({ page, context }) => {
   //console.log(`Cookies loaded: ${cookies.length}`);
   
   await page.goto(websiteDomain + '/login');
-  console.log('Current URL:', page.url());
+  console.log('Current frontendURL:', page.url());
 
   // Check if we're already logged in (session exists)
   const goToNewsFeedButton = page.getByText('Go to NewsFeed');
