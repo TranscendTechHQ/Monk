@@ -14,7 +14,8 @@
       "@types/node": "^20.11.24",
       "playwright": "^1.50.1",
       "playwright-extra": "^4.3.6",
-      "puppeteer-extra-plugin-stealth": "^2.11.2"
+      "puppeteer-extra-plugin-stealth": "^2.11.2",
+      "dotenv": "^16.4.7"
     },
     "dependencies": {
         "dotenv": "^16.4.7"

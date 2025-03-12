@@ -24,7 +24,7 @@ test.describe('Unauthorized access', () => {
   // Note that the backend API is mounted at /api in the backend container.
   // This is set in the docker-compose.yml file.
 
-  console.log('running backend unauthorized tests:', backendApiUrl);
+  console.log('running backend unauthorized access tests:', backendApiUrl);
 
   const endpoints = [
     { method: 'get', path: '/threads/upload-url?filename=test.txt' },
