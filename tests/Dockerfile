@@ -1,10 +1,10 @@
-FROM mcr.microsoft.com/playwright:latest
-
+FROM mcr.microsoft.com/playwright:v1.51.0
 WORKDIR /tests
 
+RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml* ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
-
+RUN pnpm install --frozen-lockfile
 COPY . .
 
+#CMD ["npx", "playwright", "test"]
 CMD ["pnpm", "exec", "playwright", "test"]

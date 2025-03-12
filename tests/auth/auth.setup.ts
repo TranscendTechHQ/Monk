@@ -1,10 +1,9 @@
 import path from 'path';
 import dotenv from 'dotenv';
 import { test as setup } from '@playwright/test';
-import { chromium } from 'playwright-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { chromium } from 'playwright';
 
-chromium.use(StealthPlugin());
+
 dotenv.config();
 const authFile = path.join(__dirname, '../.auth/user.json');
 
