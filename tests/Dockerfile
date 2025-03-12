@@ -1,23 +1,32 @@
-#FROM mcr.microsoft.com/playwright:v1.41.0-jammy
-FROM node:20-bookworm
+# Stage 1: Dependency installation and build
+FROM mcr.microsoft.com/playwright:v1.41.0-jammy AS builder
+
 WORKDIR /tests
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm using corepack (comes with Node.js 20+)
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy only dependency files first
-COPY package.json pnpm-lock.yaml ./
+# Copy package files first for optimal caching
+COPY package.json pnpm-lock.yaml* ./
 
-# Install Node.js dependencies
-RUN pnpm install
+# Install production dependencies only
+RUN pnpm install --prod --frozen-lockfile
 
-# Install Playwright browsers and dependencies - this is the expensive step we want to cache
-RUN pnpm exec playwright install --with-deps
-
-# Copy test configuration
-COPY playwright.config.ts ./
-
-# Copy the rest of the test files
+# Copy remaining files
 COPY . .
+
+# Stage 2: Minimal runtime image
+FROM mcr.microsoft.com/playwright:v1.41.0-jammy-slim
+
+WORKDIR /tests
+
+# Copy installed dependencies from builder
+COPY --from=builder /tests/node_modules ./node_modules
+COPY --from=builder /tests/package.json .
+COPY --from=builder /tests/playwright.config.ts .
+COPY --from=builder /tests/tests ./tests
+
+# Verify browsers are available (already included in base image)
+RUN npx playwright install --dry-run
 
 CMD ["pnpm", "exec", "playwright", "test"]
