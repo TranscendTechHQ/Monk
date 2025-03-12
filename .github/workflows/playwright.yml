@@ -91,7 +91,7 @@ jobs:
       env:
         PLAYWRIGHT_VERSION: 1.42.0
       run: |
-        docker compose run --rm tests npm test
+        docker compose run --rm tests pnpm test
         echo "Test exit code: $?"
 
     - name: Cleanup resources

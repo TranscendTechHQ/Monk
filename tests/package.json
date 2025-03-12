@@ -3,9 +3,10 @@
     "version": "1.0.0",
     "description": "Playwright tests for Monk",
     "scripts": {
+      "test": "pnpm run test:all",
       "test:frontend": "pnpm exec playwright test --project=frontend",
       "test:backend": "pnpm exec playwright test --project=backend",
-      "test:all": "pnpm exec playwright test --project=frontend --project=backend",
+      "test:all": "pnpm exec playwright test --project=backend --project=auth--project=frontend",
       "test:auth": "pnpm exec playwright test --project=auth",
       "test:chrome": "pnpm exec playwright test --project=chromium"
     },
