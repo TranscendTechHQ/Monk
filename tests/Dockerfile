@@ -1,5 +1,5 @@
 # Stage 1: Dependency installation and build
-FROM mcr.microsoft.com/playwright:v1.41.0-jammy AS builder
+FROM mcr.microsoft.com/playwright:latest AS builder
 
 WORKDIR /tests
 
@@ -16,7 +16,7 @@ RUN pnpm install --prod --frozen-lockfile
 COPY . .
 
 # Stage 2: Minimal runtime image
-FROM mcr.microsoft.com/playwright:v1.41.0-jammy-slim
+FROM mcr.microsoft.com/playwright:latest
 
 WORKDIR /tests
 
