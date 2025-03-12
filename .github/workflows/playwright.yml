@@ -9,6 +9,7 @@ on:
 env:
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
+  DOCKER_CACHE_DIR: /tmp/.buildx-cache
   
 jobs:
   e2e-tests:
@@ -25,8 +26,8 @@ jobs:
     - name: Cache Docker layers
       uses: actions/cache@v3
       with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        path: ${{ env.DOCKER_CACHE_DIR }}
+        key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/package.json') }}
         restore-keys: |
           ${{ runner.os }}-buildx-
 
@@ -54,56 +55,47 @@ jobs:
         TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }}
         EOF
 
-    - name: Build backend image with cache
+    - name: Build backend image
       uses: docker/build-push-action@v5
       with:
         context: ./backend/api
         file: ./backend/api/Dockerfile
-        push: false
-        load: true
         tags: monk-backend:latest
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        load: true
+        cache-from: type=local,src=${{ env.DOCKER_CACHE_DIR }}
+        cache-to: type=local,dest=${{ env.DOCKER_CACHE_DIR }},mode=max
 
-    - name: Build tests image with cache
+    - name: Build tests image
       uses: docker/build-push-action@v5
       with:
         context: ./tests
         file: ./tests/Dockerfile
-        push: false
-        load: true
         tags: monk-tests:latest
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        load: true
+        cache-from: type=local,src=${{ env.DOCKER_CACHE_DIR }}
+        cache-to: type=local,dest=${{ env.DOCKER_CACHE_DIR }},mode=max
 
-    # Move cache to prevent it from growing indefinitely
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-    - name: Start app with docker-compose
+    - name: Start core services
       run: |
         docker compose up cert-gen frontend nginx --build -d
         docker compose up backend -d
-        echo "Waiting for services to start..."
-        sleep 60
+        echo "Waiting for services to initialize..."
+        sleep 15  # Reduced from 60s due to healthcheck
 
-    - name: Check services status
+    - name: Verify service health
       run: |
+        timeout 180 bash -c 'until docker compose exec backend curl -sSf http://localhost:8001/healthcheck; do sleep 2; done'
         docker compose ps
-        echo "Checking Nginx..."
-        curl -k https://nginx/api/healthcheck || echo "Health check failed"
 
-    - name: Run tests
+    - name: Execute Playwright tests
       env:
-        TESTS_IMAGE: monk-tests:latest
+        PLAYWRIGHT_VERSION: 1.42.0
       run: |
-        docker compose up tests -d
-        sleep 60
-        echo 'tests completed. exit code is $?'
+        docker compose run --rm tests npm test
+        echo "Test exit code: $?"
 
-    - name: Cleanup
+    - name: Cleanup resources
       if: always()
       run: |
         docker compose down -v
+        docker system prune -af
