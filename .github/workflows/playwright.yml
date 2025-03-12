@@ -89,7 +89,7 @@ jobs:
 
     - name: Execute Playwright tests
       env:
-        PLAYWRIGHT_VERSION: 1.42.0
+        PLAYWRIGHT_VERSION: 1.51.0
       run: |
         docker compose run --rm tests pnpm test
         echo "Test exit code: $?"
