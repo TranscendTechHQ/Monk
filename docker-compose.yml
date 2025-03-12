@@ -17,6 +17,7 @@ services:
       - monk-network
 
   backend:
+    image: ${BACKEND_IMAGE:-monk-backend:latest}
     build:
       context: ./backend/api
       dockerfile: Dockerfile
