@@ -27,13 +27,14 @@ test.describe('Unauthorized access', () => {
   console.log('running backend unauthorized access tests:', backendApiUrl);
 
   const endpoints = [
-    { method: 'get', path: '/threads/upload-url?filename=test.txt' },
-    { method: 'get', path: '/threads/download-url?filename=test.txt' },
+
+    { method: 'get', path: '/threads/upload-url?filename=test.txt', testName: 'upload-url' },
+    { method: 'get', path: '/threads/download-url?filename=test.txt', testName: 'download-url' },
     // The create message endpoint, note that query parameters are used here for simplicity.
-    { method: 'post', path: '/threads/message?thread_id=test_thread&text=Hello', body: {} },
-    { method: 'get', path: '/threads/threads' },
-    { method: 'get', path: '/threads/users' },
-    { method: 'get', path: '/threads/searchThreads?query=testing' }
+    { method: 'post', path: '/threads/message?thread_id=test_thread&text=Hello', body: {}, testName: 'message' },
+    { method: 'get', path: '/threads/threads', testName: 'threads' },
+    { method: 'get', path: '/threads/users', testName: 'users' },
+    { method: 'get', path: '/threads/searchThreads?query=testing', testName: 'searchThreads' }
   ];
 
   for (const endpoint of endpoints) {
@@ -46,6 +47,7 @@ test.describe('Unauthorized access', () => {
       }
       // Ensure the response status is 401 Unauthorized
       expect(response).toBeDefined();
+      console.log(`${endpoint.testName} response: expected 401, got ${response!.status()}`);
       expect(response!.status()).toBe(401);
     });
   }
