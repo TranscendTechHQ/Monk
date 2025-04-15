@@ -13,7 +13,7 @@ env:
   
 jobs:
   e2e-tests:
-    runs-on: ubuntu-latest
+    runs-on: [mini]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
