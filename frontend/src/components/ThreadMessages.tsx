@@ -3,12 +3,12 @@ import { useParams, useNavigate, useLocation } from '@solidjs/router';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { MessagesResponse } from '../api/models/MessagesResponse';
 import { MessageResponse } from '../api/models/MessageResponse';
-import UserInfo from './UserInfo';
 import { ThreadResponse } from '../api/models/ThreadResponse';
 
 import { userService } from '../services/userService';
 import { fetchImage, uploadImage } from '../utils/imageUtils';
 import Header from './Header';
+import Footer from './Footer';
 
 const ThreadMessages: Component = () => {
   const params = useParams();
@@ -124,7 +124,10 @@ const ThreadMessages: Component = () => {
     const newUrls: Record<string, string> = {};
     for (const message of combinedMessages().filter(m => m.image)) {
       try {
-        newUrls[message._id!] = await fetchImage(message.image!);
+        if (message.image) {
+          const url = await ThreadsService.getDownloadUrl(message.image);
+          newUrls[message.image] = url;
+        }
       } catch (err) {
         console.error('Error loading image:', err);
       }
@@ -136,7 +139,6 @@ const ThreadMessages: Component = () => {
   createEffect(async () => {
     try {
       const threadData = await ThreadsService.getThread(params.id);
-      //console.log("thread data = ", threadData);
       setThread(threadData);
       
       if (threadData.image) {
@@ -148,141 +150,124 @@ const ThreadMessages: Component = () => {
     }
   });
 
+  const ThreadHeader = () => (
+    <div class="flex items-center">
+      <button
+        onClick={() => navigate('/newsfeed')}
+        class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded text-sm transition-colors border border-slate-700 mr-3"
+      >
+        ← Back
+      </button>
+      <h2 class="text-white font-medium truncate">{threadTopic || 'Thread'}</h2>
+    </div>
+  );
+
   return (
-    <div class="h-screen flex flex-col bg-monk-dark">
-      <Header />
+    <div class="h-screen flex flex-col bg-slate-900 text-white">
+      <Header>
+        <ThreadHeader />
+      </Header>
       
-      {/* Content matches NewsFeed structure */}
-      <div class="flex-1 overflow-hidden">
-        <div class="h-full flex flex-col">
-          {/* Messages List */}
-          <div class="flex-1 overflow-y-auto px-8 pt-4">
-            <div class="max-w-4xl mx-auto space-y-4">
-              <For each={combinedMessages()}>
-                {(message) => (
-                  <div class="bg-monk-mid/70 backdrop-blur-sm p-4 rounded-xl border-2 border-monk-teal/40
-                             hover:border-monk-teal/60 transition-colors">
-                    {/* Message Content */}
-                    <Show when={message._id === thread()?._id}>
-                      <h2 class="text-monk-cream text-xl font-bold mb-2">
-                        {thread()?.topic}
-                      </h2>
-                    </Show>
-                    
-                    <p class="text-monk-cream">{message.text}</p>
-                    
-                    <Show when={message.presigned_url}>
-                      <div class="flex justify-center">
-                        <img 
-                          src={message.presigned_url!} 
-                          alt="Content attachment" 
-                          class="mt-2 rounded-lg max-w-full h-48 object-cover"
-                        />
+      {/* Scrollable content area */}
+      <div class="flex-1 overflow-y-auto p-4">
+        <div class="container mx-auto">
+          <Show when={!isLoading()} fallback={<div class="text-center py-8">Loading messages...</div>}>
+            <Show when={!error()} fallback={<div class="text-red-500">{error()}</div>}>
+              <div class="space-y-4 mb-4">
+                <For each={combinedMessages()}>
+                  {(message) => (
+                    <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                      <div class="flex justify-between mb-2">
+                        <span class="font-medium">{userService.getUserName(message.creator_id || "unknown")}</span>
+                        <span class="text-slate-400 text-sm">
+                          {message.created_at ? new Date(message.created_at).toLocaleString() : 'Unknown time'}
+                        </span>
                       </div>
-                    </Show>
-
-                    {/* Author and Timestamp */}
-                    <div class="mt-2 text-monk-gray text-sm">
-                      <span>
-                        By {userService.getUserName(message.creator_id??"unknown")} • 
-                        {message.created_at ? 
-                          new Date(message.created_at).toLocaleString() : 
-                          'Unknown time'}
-                      </span>
+                      <p class="text-slate-200">{message.text}</p>
+                      <Show when={message.image}>
+                        <img 
+                          src={message.image ? imageUrls()[message.image] : ''} 
+                          alt="Message attachment" 
+                          class="mt-2 max-w-full h-auto rounded-lg max-h-96 object-contain"
+                          onError={(e) => {
+                            if (message.image && !imageUrls()[message.image]) {
+                              ThreadsService.getDownloadUrl(message.image).then(url => {
+                                setImageUrls(prev => ({...prev, [message.image!]: url}));
+                              });
+                            }
+                          }}
+                        />
+                      </Show>
                     </div>
-                  </div>
-                )}
-              </For>
-              <div ref={messagesEndRef} />
-            </div>
-          </div>
-
-          {/* Footer matches NewsFeed styling */}
-          <div class="h-[80px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
-            <div class="max-w-4xl mx-auto px-8 h-full flex items-center justify-between gap-4">
-              {/* Back button */}
-              <button 
-                onClick={() => navigate(-1)}
-                class="text-monk-gray hover:text-monk-gold transition-colors flex items-center gap-2"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                <span class="text-sm font-medium">Newsfeed</span>
-              </button>
-
-              {/* Message input area */}
-              <div class="flex-1 flex items-center gap-2 border-2 border-monk-gold/30 bg-monk-dark rounded-xl p-1 h-[60px]">
-                {/* File upload button */}
-                <label class="cursor-pointer text-monk-gray hover:text-monk-gold transition-colors pl-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    class="hidden"
-                    onChange={(e) => {
-                      const file = e.currentTarget.files?.[0];
-                      if (file) {
-                        setSelectedImage(file);
-                        setImagePreview(URL.createObjectURL(file));
-                      }
-                    }}
-                  />
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                  </svg>
-                </label>
-
-                {/* Text input */}
-                <input
-                  type="text"
-                  value={newMessage()}
-                  onInput={(e) => setNewMessage(e.currentTarget.value)}
-                  onKeyDown={handleNewMessageKeyDown}
-                  class="flex-1 bg-transparent text-white p-2 focus:outline-none placeholder-monk-gray"
-                  placeholder="Type your message..."
-                />
-
-                {/* Image preview and send button */}
-                <div class="flex items-center gap-2">
-                  <Show when={imagePreview()}>
-                    <div class="relative">
-                      <img 
-                        src={imagePreview()!} 
-                        alt="Preview" 
-                        class="w-12 h-12 rounded-lg object-cover"
-                      />
-                      <button
-                        onClick={() => {
-                          setSelectedImage(null);
-                          setImagePreview(null);
-                        }}
-                        class="absolute -top-1 -right-1 bg-monk-red/80 text-white rounded-full p-0.5 hover:bg-monk-red"
-                      >
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </Show>
-
-                  <button 
-                    onClick={handleSend}
-                    disabled={isUploading()}
-                    class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors disabled:opacity-50"
-                  >
-                    {isUploading() ? 'Sending...' : 'Send'}
-                  </button>
-                </div>
+                  )}
+                </For>
+                <div ref={messagesEndRef}></div>
               </div>
-
-              <div class="ml-4">
-                <UserInfo />
-              </div>
-            </div>
-          </div>
+            </Show>
+          </Show>
         </div>
       </div>
+      
+      {/* Fixed message input area */}
+      <div class="bg-slate-900 p-4 border-t border-slate-700">
+        <div class="container mx-auto">
+          <div class="flex items-center gap-2 border border-slate-700 rounded-lg p-2 bg-slate-800">
+            <label class="cursor-pointer text-slate-400 hover:text-white transition-colors">
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                onChange={(e) => {
+                  const file = e.currentTarget.files?.[0];
+                  if (file) {
+                    setSelectedImage(file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }}
+              />
+              📎
+            </label>
+            
+            <textarea
+              value={newMessage()}
+              onInput={(e) => setNewMessage(e.currentTarget.value)}
+              onKeyDown={handleNewMessageKeyDown}
+              placeholder="Type your message..."
+              class="flex-1 bg-transparent text-white p-2 focus:outline-none resize-none"
+              rows="2"
+            />
+            
+            <button
+              onClick={handleSend}
+              disabled={isUploading() || (!newMessage().trim() && !selectedImage())}
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isUploading() ? 'Sending...' : 'Send'}
+            </button>
+          </div>
+          
+          <Show when={imagePreview()}>
+            <div class="relative mt-2">
+              <img 
+                src={imagePreview()!} 
+                alt="Preview" 
+                class="h-24 rounded-lg object-cover"
+              />
+              <button
+                onClick={() => {
+                  setSelectedImage(null);
+                  setImagePreview(null);
+                }}
+                class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+              >
+                ×
+              </button>
+            </div>
+          </Show>
+        </div>
+      </div>
+      
+      <Footer />
     </div>
   );
 };

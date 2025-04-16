@@ -1,5 +1,6 @@
 #!/bin/bash
 
-python extract-openapi.py main:app
+uv sync
+uv run extract-openapi.py main:app
 
 

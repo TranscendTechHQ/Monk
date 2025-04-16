@@ -2,13 +2,12 @@ import { Component, createSignal, createEffect, For, Show } from 'solid-js';
 import { ThreadList } from './Thread';
 import { ThreadsService } from '../api/services/ThreadsService';
 import { ThreadsResponse } from '../api/models/ThreadsResponse';
-import UserInfo from './UserInfo';
-
 import { userService } from '../services/userService';
 import { useNavigate } from '@solidjs/router';
 import SearchModal from './SearchModal';
 import NewThreadModal from './NewThreadModal';
 import Header from './Header';
+import Footer from './Footer';
 
 const NewsFeed: Component = () => {
   const [threads, setThreads] = createSignal<ThreadsResponse>();
@@ -29,18 +28,16 @@ const NewsFeed: Component = () => {
       setThreads(fetchedThreads);
       setError(null);
     } catch (err) {
-      setError('Failed to load threads. Please try again later.');
       console.error('Error fetching threads:', err);
+      setError('Failed to load threads. Please try again later.');
     } finally {
       setIsLoading(false);
     }
   };
 
   const searchThreads = async () => {
-    if (searchQuery().trim() === '') {
-      setSearchResults(undefined);
-      return;
-    }
+    if (!searchQuery().trim()) return;
+    
     try {
       setIsSearching(true);
       const results = await ThreadsService.searchThreads(searchQuery());
@@ -60,7 +57,9 @@ const NewsFeed: Component = () => {
 
   createEffect(async () => {
     try {
-      await userService.initialize();
+      // The userService.initialize() is already called in App.tsx
+      // and now checks for authentication internally
+      // We'll just set the cache as ready since it will be initialized if the user is authenticated
       setIsUserCacheReady(true);
     } catch (err) {
       console.error('User cache initialization failed:', err);
@@ -72,90 +71,49 @@ const NewsFeed: Component = () => {
   });
 
   return (
-    <>
-      <div class="h-screen flex flex-col">
-        <Header />
-        {/* Main Content Area */}
-        <div class="flex-1 overflow-hidden">
-          {/* Search Header */}
-          <div class="h-[120px] sticky top-0 bg-monk-dark/95 backdrop-blur-sm z-10 pt-4 pb-6 px-8">
-            <div class="flex items-center gap-4 max-w-4xl mx-auto">
-              
-              <div class="flex-1 flex gap-4">
-                <button
-                  onClick={() => setShowNewThreadModal(true)}
-                  class="bg-monk-purple text-monk-cream px-6 py-3 rounded-full 
-                         hover:bg-monk-purple/80 transition-all font-bold
-                         border-2 border-monk-pink shadow-lg hover:shadow-monk-pink/50
-                         transform hover:scale-105"
-                >
-                  New Thread
-                </button>
-                <input
-                  type="text"
-                  name="search bar"
-                  value={searchQuery()}
-                  onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && searchThreads()}
-                  class="flex-1 border-2 border-monk-gold/30 bg-monk-dark text-white p-3 rounded-xl
-                         focus:outline-none focus:ring-2 focus:ring-monk-gold focus:border-transparent
-                         placeholder-monk-gray"
-                  placeholder="Search threads..."
+    <div class="h-screen flex flex-col bg-slate-900 text-white">
+      <Header 
+        showActions={true}
+        onSearch={() => setShowSearchModal(true)}
+        onNewThread={() => setShowNewThreadModal(true)}
+      />
+      
+      {/* Scrollable content area */}
+      <div class="flex-1 overflow-y-auto p-4">
+        <div class="container mx-auto">
+          <Show when={!isLoading()} fallback={<div class="text-center py-8">Loading threads...</div>}>
+            <Show when={!error()} fallback={<div class="text-red-500">{error()}</div>}>
+              <Show
+                when={searchResults() || threads()}
+                fallback={<div class="text-center py-8">No threads found</div>}
+              >
+                <ThreadList 
+                  threads={searchResults() || threads() || { threads: [] }} 
                 />
-                <button
-                  onClick={searchThreads}
-                  disabled={isSearching()}
-                  class="bg-monk-gold text-monk-blue px-6 py-3 rounded-lg hover:bg-monk-orange transition-colors
-                         font-semibold min-w-[100px]"
-                >
-                  {isSearching() ? '...' : 'Search'}
-                </button>
-                <button
-                  onClick={clearSearch}
-                  class="bg-monk-red text-monk-cream px-4 py-3 rounded-lg hover:bg-monk-red/80 transition-colors"
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Scrollable Thread List */}
-          <div class="h-[calc(100vh-200px)] overflow-y-auto" >
-
-
-          <div class="max-w-4xl mx-auto">
-
-              <Show when={!isLoading() && !error()}>
-                <ThreadList threads={{ threads: threads()?.threads || [] }} />
               </Show>
-            </div>
-          </div>
-        </div>
-
-        {/* Fixed Footer */}
-        <div class="h-[80px] border-t border-monk-teal/20 bg-monk-dark/95 backdrop-blur-sm">
-          <div class="w-full px-0 pt-2 flex justify-end">
-            <UserInfo />
-          </div>
+            </Show>
+          </Show>
         </div>
       </div>
 
-      {/* Search Modal */}
-      <Show when={showSearchModal() && searchResults()?.threads?.length}>
-        <SearchModal 
-          results={searchResults()!} 
+      <Footer />
+
+      <Show when={showSearchModal() && searchResults()}>
+        <SearchModal
+          results={searchResults()!}
           onClose={() => setShowSearchModal(false)}
           navigate={navigate}
         />
       </Show>
 
-      <NewThreadModal 
-        show={showNewThreadModal()}
-        onClose={() => setShowNewThreadModal(false)}
-        onSuccess={fetchThreads}
-      />
-    </>
+      <Show when={showNewThreadModal()}>
+        <NewThreadModal
+          show={showNewThreadModal()}
+          onClose={() => setShowNewThreadModal(false)}
+          onSuccess={fetchThreads}
+        />
+      </Show>
+    </div>
   );
 };
 

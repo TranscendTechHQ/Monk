@@ -4,11 +4,11 @@
 /* eslint-disable */
 import type { MessageResponse } from '../models/MessageResponse';
 import type { MessagesResponse } from '../models/MessagesResponse';
+import type { routes__threads__models__UsersResponse } from '../models/routes__threads__models__UsersResponse';
 import type { ThreadCreate } from '../models/ThreadCreate';
 import type { ThreadResponse } from '../models/ThreadResponse';
 import type { ThreadsResponse } from '../models/ThreadsResponse';
 import type { UserResponse } from '../models/UserResponse';
-import type { UsersResponse } from '../models/UsersResponse';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -25,7 +25,7 @@ export class ThreadsService {
     ): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/download-url',
+            url: '/threads/download-url',
             query: {
                 'filename': filename,
             },
@@ -50,7 +50,7 @@ export class ThreadsService {
     ): CancelablePromise<MessageResponse> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/message',
+            url: '/threads/message',
             query: {
                 'thread_id': threadId,
                 'text': text,
@@ -73,7 +73,7 @@ export class ThreadsService {
     ): CancelablePromise<MessagesResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/messages',
+            url: '/threads/messages',
             query: {
                 'thread_id': threadId,
             },
@@ -94,7 +94,7 @@ export class ThreadsService {
     ): CancelablePromise<ThreadsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/searchThreads',
+            url: '/threads/searchThreads',
             query: {
                 'query': query,
             },
@@ -115,7 +115,7 @@ export class ThreadsService {
     ): CancelablePromise<ThreadResponse> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/thread',
+            url: '/threads/thread',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -132,7 +132,7 @@ export class ThreadsService {
     public static getThreads(): CancelablePromise<ThreadsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/threads',
+            url: '/threads/threads',
         });
     }
     /**
@@ -147,7 +147,7 @@ export class ThreadsService {
     ): CancelablePromise<ThreadResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/threads/{thread_id}',
+            url: '/threads/threads/{thread_id}',
             path: {
                 'thread_id': threadId,
             },
@@ -168,7 +168,7 @@ export class ThreadsService {
     ): CancelablePromise<string> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/upload-url',
+            url: '/threads/upload-url',
             query: {
                 'filename': filename,
             },
@@ -189,7 +189,7 @@ export class ThreadsService {
     ): CancelablePromise<UserResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/user',
+            url: '/threads/user',
             query: {
                 'user_id': userId,
             },
@@ -201,13 +201,13 @@ export class ThreadsService {
     /**
      * Get all users
      * The api will return all users
-     * @returns UsersResponse Successful Response
+     * @returns routes__threads__models__UsersResponse Successful Response
      * @throws ApiError
      */
-    public static getUsers(): CancelablePromise<UsersResponse> {
+    public static getUsers(): CancelablePromise<routes__threads__models__UsersResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/users',
+            url: '/threads/users',
         });
     }
 }

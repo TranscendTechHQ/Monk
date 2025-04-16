@@ -6,7 +6,7 @@ import motor.motor_asyncio
 
 import pymongo
 
-from config import settings
+from config import custom_exception_handler, settings
 from utils.caching import get_cache, set_cache
 
 logger = logging.getLogger(__name__)
@@ -83,12 +83,22 @@ async def get_user_info(user_id):
     except Exception as e:
         logger.error(e, exc_info=True)
 
+async def list_tenants():
+    return await asyncdb.tenants_collection.find().to_list(length=None)
 
 async def get_tenant_id(session):
-    user_id = session.get_user_id()
-    user_info = await get_user_info(user_id)
-    tenant_id = user_info["tenant_id"]
-    return tenant_id
+    try:
+        user_id = session.get_user_id()
+        user_info = await get_user_info(user_id)
+        assert user_info is not None
+        assert user_info["tenant_id"] is not None
+        tenant_id = user_info["tenant_id"]
+        return tenant_id
+    except Exception as e:
+        custom_exception_handler(type(e), e, e.__traceback__)
+        
+        logger.error(f"User info not found for user {user_id}")
+        return None
 
 
 def get_tenant_id_sync(session):

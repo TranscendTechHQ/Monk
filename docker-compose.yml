@@ -1,0 +1,125 @@
+services:
+  cert-gen:
+    image: alpine:3.18
+    command: >
+      sh -c "apk add openssl &&
+             openssl req -x509 -newkey rsa:4096 -keyout /certs/key.pem -out /certs/cert.pem -days 365 -nodes -subj '/CN=localhost' &&
+             chmod 644 /certs/*"
+    volumes:
+      - certs:/certs
+    restart: "no"
+    healthcheck:
+      test: ["CMD", "test -f /certs/cert.pem"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - monk-network
+
+  backend:
+    image: ${BACKEND_IMAGE:-monk-backend:latest}
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile
+    environment:
+      - BASE_URL=${BASE_URL}
+      - FASTAPI_PORT=${FASTAPI_PORT}
+      - WEBSITE_DOMAIN=${WEBSITE_DOMAIN}
+      - API_DOMAIN=${API_DOMAIN}
+      - INSTALL_DOMAIN=${INSTALL_DOMAIN}
+      - HCP_CLIENT_ID=${HCP_CLIENT_ID}
+      - HCP_CLIENT_SECRET=${HCP_CLIENT_SECRET}
+      - HCP_ORG_ID=${HCP_ORG_ID}
+      - HCP_PROJECT_ID=${HCP_PROJECT_ID}
+      - HCP_PROJECT_NAME=${HCP_PROJECT_NAME}
+      - VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
+    networks:
+      - monk-network
+    expose:
+      - "8001"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_DOMAIN=${API_DOMAIN}
+        - VITE_WEBSITE_DOMAIN=${WEBSITE_DOMAIN}
+        - VITE_SUPERTOKENS_API_BASE_PATH=${VITE_SUPERTOKENS_API_BASE_PATH}
+        - VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
+        - VITE_SUPERTOKENS_APP_NAME=${VITE_SUPERTOKENS_APP_NAME}
+        - VITE_API_BASE=${VITE_API_BASE}
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - monk-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - certs:/etc/nginx/certs
+    networks:
+      - monk-network
+    depends_on:
+      - cert-gen
+      - backend
+      - frontend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  tests:
+    image: ${TESTS_IMAGE:-monk-tests:latest}
+    build:
+      context: ./tests
+      dockerfile: Dockerfile
+    environment:
+      - WEBSITE_DOMAIN=https://nginx
+      - API_DOMAIN=https://nginx/api
+      - TEST_GOOGLE_USERNAME=${TEST_GOOGLE_USERNAME}
+      - TEST_GOOGLE_PASSWORD=${TEST_GOOGLE_PASSWORD}
+      - NODE_EXTRA_CA_CERTS=/certs/cert.pem
+    volumes:
+      - ./tests:/app/tests
+      - certs:/certs
+    networks:
+      - monk-network
+    restart: no
+    depends_on:
+      - cert-gen
+      - backend
+      - frontend
+      - nginx
+
+    #command: >
+    #  sh -c "echo 'Starting tests' && echo \"\$$(getent hosts nginx | awk '{print \$1}') localhost\" >> /etc/hosts && cat /etc/hosts && pnpm exec playwright test"
+
+networks:
+  monk-network:
+    driver: bridge
+
+volumes:
+  certs:

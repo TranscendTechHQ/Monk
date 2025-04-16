@@ -1,19 +1,31 @@
-FROM node:20-alpine
-
-# Install pnpm
+FROM node:20-alpine AS builder
 RUN npm install -g pnpm
-
 WORKDIR /app
-
-COPY . .
-# Copy pnpm-lock.yaml in addition to package.json
-#COPY package.json pnpm-lock.yaml ./
-
-# Use pnpm to install dependencies
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
 
+ARG VITE_API_DOMAIN
+ARG VITE_WEBSITE_DOMAIN
+ARG VITE_SUPERTOKENS_API_BASE_PATH
+ARG VITE_SUPERTOKENS_WEBSITE_BASE_PATH
+ARG VITE_SUPERTOKENS_APP_NAME
+ARG VITE_API_BASE
 
+
+ENV VITE_API_DOMAIN=${VITE_API_DOMAIN}
+ENV VITE_WEBSITE_DOMAIN=${VITE_WEBSITE_DOMAIN}
+ENV VITE_SUPERTOKENS_API_BASE_PATH=${VITE_SUPERTOKENS_API_BASE_PATH}
+ENV VITE_SUPERTOKENS_WEBSITE_BASE_PATH=${VITE_SUPERTOKENS_WEBSITE_BASE_PATH}
+ENV VITE_SUPERTOKENS_APP_NAME=${VITE_SUPERTOKENS_APP_NAME}
+ENV VITE_API_BASE=${VITE_API_BASE}
+
+COPY . .
+RUN pnpm run build
+
+FROM node:20-alpine
+RUN npm install -g serve
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
 EXPOSE 3000
-
-CMD ["pnpm", "run", "dev"]
+CMD ["serve", "-s", "dist", "-l", "3000"]

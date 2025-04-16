@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { UserResponse } from './UserResponse';
-export type UsersResponse = {
-    users: Array<UserResponse>;
+import type { UserInfo } from './UserInfo';
+export type routes__admin__routers__UsersResponse = {
+    users: Array<UserInfo>;
 };
 

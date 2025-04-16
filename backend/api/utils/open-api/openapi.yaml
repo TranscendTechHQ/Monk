@@ -36,7 +36,7 @@ components:
     MessageResponse:
       properties:
         _id:
-          title: ' Id'
+          title: Id
           type: string
         created_at:
           format: date-time
@@ -115,6 +115,40 @@ components:
       - accessTokenPayload
       title: SessionInfo
       type: object
+    TenantInfo:
+      properties:
+        createdAt:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Createdat
+        name:
+          title: Name
+          type: string
+        tenantId:
+          title: Tenantid
+          type: string
+        userCount:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Usercount
+      required:
+      - tenantId
+      - name
+      title: TenantInfo
+      type: object
+    TenantsResponse:
+      properties:
+        tenants:
+          items:
+            $ref: '#/components/schemas/TenantInfo'
+          title: Tenants
+          type: array
+      required:
+      - tenants
+      title: TenantsResponse
+      type: object
     ThreadCreate:
       properties:
         image:
@@ -139,7 +173,7 @@ components:
     ThreadResponse:
       properties:
         _id:
-          title: ' Id'
+          title: Id
           type: string
         created_at:
           format: date-time
@@ -182,10 +216,51 @@ components:
       - threads
       title: ThreadsResponse
       type: object
+    UserInfo:
+      properties:
+        email:
+          title: Email
+          type: string
+        id:
+          title: Id
+          type: string
+        loginMethods:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Loginmethods
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+        tenantIds:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tenantids
+        timeJoined:
+          title: Timejoined
+          type: integer
+        verified:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Verified
+      required:
+      - id
+      - email
+      - timeJoined
+      title: UserInfo
+      type: object
     UserResponse:
       properties:
         _id:
-          title: ' Id'
+          title: Id
           type: string
         email:
           default: unknown email
@@ -206,17 +281,6 @@ components:
       - _id
       - last_login
       title: UserResponse
-      type: object
-    UsersResponse:
-      properties:
-        users:
-          items:
-            $ref: '#/components/schemas/UserResponse'
-          title: Users
-          type: array
-      required:
-      - users
-      title: UsersResponse
       type: object
     ValidationError:
       properties:
@@ -239,39 +303,61 @@ components:
       - type
       title: ValidationError
       type: object
+    routes__admin__routers__UsersResponse:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/UserInfo'
+          title: Users
+          type: array
+      required:
+      - users
+      title: UsersResponse
+      type: object
+    routes__threads__models__UsersResponse:
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/UserResponse'
+          title: Users
+          type: array
+      required:
+      - users
+      title: UsersResponse
+      type: object
 info:
   title: FastAPI
   version: 0.1.0
 openapi: 3.1.0
 paths:
-  /download-url:
+  /admin/tenants:
     get:
-      description: The api will return the download url
-      operationId: get_download_url
-      parameters:
-      - in: query
-        name: filename
-        required: true
-        schema:
-          title: Filename
-          type: string
+      description: The API will return all tenants from SuperTokens
+      operationId: get_all_tenants
       responses:
         '200':
           content:
             application/json:
               schema:
-                title: Response Get Download Url
-                type: string
-          description: Download url
-        '422':
+                $ref: '#/components/schemas/TenantsResponse'
+          description: List of all tenants
+      summary: Get all tenants
+      tags:
+      - admin
+  /admin/users:
+    get:
+      description: The API will return all users from SuperTokens
+      operationId: get_all_users
+      responses:
+        '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      summary: Get download url
+                $ref: '#/components/schemas/routes__admin__routers__UsersResponse'
+          description: List of all users
+      summary: Get all users
       tags:
-      - threads
+      - admin
   /healthcheck:
     get:
       operationId: healthcheck_healthcheck_get
@@ -305,7 +391,48 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Get Link Meta
-  /message:
+  /sessioninfo:
+    get:
+      operationId: secure_api_sessioninfo_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
+          description: Successful Response
+      summary: Secure Api
+      tags:
+      - session
+  /threads/download-url:
+    get:
+      description: The api will return the download url
+      operationId: get_download_url
+      parameters:
+      - in: query
+        name: filename
+        required: true
+        schema:
+          title: Filename
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Get Download Url
+                type: string
+          description: Download url
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get download url
+      tags:
+      - threads
+  /threads/message:
     post:
       description: The api will create a new message in a thread and return the newly
         created message
@@ -345,7 +472,7 @@ paths:
       summary: Create a new message in a thread
       tags:
       - threads
-  /messages:
+  /threads/messages:
     get:
       description: The api will return all messages in a thread
       operationId: get_messages
@@ -372,7 +499,7 @@ paths:
       summary: Get all messages in a thread
       tags:
       - threads
-  /searchThreads:
+  /threads/searchThreads:
     get:
       description: The api will return top 3 threads matching the query
       operationId: search_threads
@@ -399,20 +526,7 @@ paths:
       summary: Search threads in plain english and get top 3 matching threads
       tags:
       - threads
-  /sessioninfo:
-    get:
-      operationId: secure_api_sessioninfo_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionInfo'
-          description: Successful Response
-      summary: Secure Api
-      tags:
-      - session
-  /thread:
+  /threads/thread:
     post:
       description: The api will create a new thread and return the newly created thread
       operationId: create_thread
@@ -438,7 +552,7 @@ paths:
       summary: Create a new thread
       tags:
       - threads
-  /threads:
+  /threads/threads:
     get:
       description: The api will return all threads
       operationId: get_threads
@@ -452,7 +566,7 @@ paths:
       summary: Get all threads
       tags:
       - threads
-  /threads/{thread_id}:
+  /threads/threads/{thread_id}:
     get:
       description: The api will return the requested thread
       operationId: get_thread
@@ -479,7 +593,7 @@ paths:
       summary: Get a thread by ID
       tags:
       - threads
-  /upload-url:
+  /threads/upload-url:
     get:
       description: The api will return the upload url
       operationId: get_upload_url
@@ -507,7 +621,7 @@ paths:
       summary: Get upload url
       tags:
       - threads
-  /user:
+  /threads/user:
     get:
       description: The api will return user information
       operationId: get_user
@@ -534,7 +648,7 @@ paths:
       summary: Get user information
       tags:
       - threads
-  /users:
+  /threads/users:
     get:
       description: The api will return all users
       operationId: get_users
@@ -543,7 +657,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsersResponse'
+                $ref: '#/components/schemas/routes__threads__models__UsersResponse'
           description: Successful Response
       summary: Get all users
       tags:

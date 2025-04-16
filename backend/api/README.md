@@ -13,7 +13,7 @@
 vi config/.env 
 
 ## now run the main file
-`uv run main.py`
+`UV_ENV_FILE=../../.env uv run main.py`
 
 # Docker
 ## Delete all the docker images (careful)

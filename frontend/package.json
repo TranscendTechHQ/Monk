@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts",
+    "dev:env": "dotenv -e ../.env -- vite --config vite.config.ts",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "dotenv-cli": "^8.0.0",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
     "vite-plugin-solid": "^2.10.1"

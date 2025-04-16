@@ -7,120 +7,95 @@ on:
     branches: [main]
 
 env:
-  API_PORT: 8001
-  API_BASE_URL: 0.0.0.0
-  CONTAINER_NAME: monk_backend_container
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
-
+  DOCKER_CACHE_DIR: /tmp/.buildx-cache
+  
 jobs:
   e2e-tests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Docker
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-
-    - name: Build Docker image
-      run: docker build -t monk_backend ./backend/api
-
-    - name: Run Docker container
-      run: |
-        docker run -d \
-          -p ${{ env.API_PORT }}:8001 \
-          -e API_DOMAIN=http://${{ env.API_BASE_URL }}:${{ env.API_PORT }} \
-          -e HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }} \
-          -e HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }} \
-          -e HCP_ORG_ID=${{ secrets.HCP_ORG_ID }} \
-          -e HCP_PROJECT_ID=${{ secrets.HCP_PROJECT_ID }} \
-          -e HCP_PROJECT_NAME=${{ secrets.HCP_PROJECT_NAME }} \
-          --name ${{ env.CONTAINER_NAME }} \
-          monk_backend
-
-    - name: Add delay to ensure server is ready
-      run: sleep 10
-
-    - name: Validate container
-      run: |
-        echo "Using API port: ${{ env.API_PORT }}"
-        echo "Accessing domain: http://${{ env.API_BASE_URL }}:${{ env.API_PORT }}"
-        docker ps --filter "name=${{ env.CONTAINER_NAME }}"
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        install: true
+        
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.DOCKER_CACHE_DIR }}
+        key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
 
-    - name: Install pnpm
-      run: npm install -g pnpm
-
-    - name: Install frontend dependencies
-      working-directory: ./frontend
-      run: pnpm install
-
-    - name: Install Playwright browsers
-      run: pnpm exec playwright install chromium
-
-    - name: Debug network
+    - name: Create .env file
       run: |
-        echo "Checking network status..."
-        docker logs ${{ env.CONTAINER_NAME }}
-        docker inspect ${{ env.CONTAINER_NAME }}
-        netstat -tulpn | grep ${{ env.API_PORT }}
-
-    - name: check backend api is running using curl
-      run: |
-        # Try accessing through docker network first
-        container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.CONTAINER_NAME }})
-        echo "Container IP: $container_ip"
-        max_attempts=5
-        attempt=1
-        while [ $attempt -le $max_attempts ]; do
-          echo "Attempt $attempt of $max_attempts"
-          response=$(curl -v -s -w "\n%{http_code}" http://${container_ip}:${{ env.API_PORT }}/docs)
-          status_code=$(echo "$response" | tail -n1)
-          echo "Received status code: $status_code"
-          if [ "$status_code" = "200" ]; then
-            echo "Backend API is running successfully"
-            exit 0
-          fi
-          echo "Backend API check failed with status code: $status_code"
-          echo "Response body:"
-          echo "$response" | sed '$d'
-          sleep 5
-          attempt=$((attempt + 1))
-        done
-        echo "Backend API failed to respond after $max_attempts attempts"
-        exit 1
-
-    - name: Do Auth Setup
-      working-directory: .
-      run: |
-        # this will store the credetials for other tests
+        cat > .env << 'EOF'
+        HCP_ORG_ID=${{ secrets.HCP_ORG_ID }}
+        HCP_PROJECT_ID=${{ secrets.HCP_PROJECT_ID }}
+        HCP_CLIENT_ID=${{ secrets.HCP_CLIENT_ID }}
+        HCP_CLIENT_SECRET=${{ secrets.HCP_CLIENT_SECRET }}
+        HCP_PROJECT_NAME=${{ secrets.HCP_PROJECT_NAME }}
+        BASE_URL=0.0.0.0
+        FASTAPI_PORT=8001
+        WEBSITE_DOMAIN=https://localhost
+        INSTALL_DOMAIN=https://localhost
+        API_DOMAIN=https://localhost
+        
+        VITE_API_DOMAIN=https://localhost
+        VITE_WEBSITE_DOMAIN=https://localhost
+        VITE_SUPERTOKENS_API_BASE_PATH=/api/auth
+        VITE_SUPERTOKENS_WEBSITE_BASE_PATH=/auth
+        VITE_SUPERTOKENS_APP_NAME=Monk
+        VITE_API_BASE=/api
         TEST_GOOGLE_USERNAME=${{ secrets.TEST_GOOGLE_USERNAME }}
         TEST_GOOGLE_PASSWORD=${{ secrets.TEST_GOOGLE_PASSWORD }}
-        pnpm run test:auth
+        EOF
 
-    - name: Run backend and frontend tests
-      working-directory: .
-
-      run: |
-        container_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.CONTAINER_NAME }})
-        echo "Container IP: $container_ip"
-        
-        API_DOMAIN="http://${container_ip}:${{ env.API_PORT }}" pnpm run test:all
-
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
+    - name: Build backend image
+      uses: docker/build-push-action@v5
       with:
-        name: playwright-results
-        path: playwright-report/
+        context: ./backend/api
+        file: ./backend/api/Dockerfile
+        tags: monk-backend:latest
+        load: true
+        cache-from: type=local,src=${{ env.DOCKER_CACHE_DIR }}
+        cache-to: type=local,dest=${{ env.DOCKER_CACHE_DIR }},mode=max
 
-    - name: Cleanup
+    - name: Build tests image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./tests
+        file: ./tests/Dockerfile
+        tags: monk-tests:latest
+        load: true
+        cache-from: type=local,src=${{ env.DOCKER_CACHE_DIR }}
+        cache-to: type=local,dest=${{ env.DOCKER_CACHE_DIR }},mode=max
+
+    - name: Start core services
+      run: |
+        docker compose up cert-gen frontend nginx --build -d
+        docker compose up backend -d
+        echo "Waiting for services to initialize..."
+        sleep 15  # Reduced from 60s due to healthcheck
+
+    - name: Verify service health
+      run: |
+        timeout 180 bash -c 'until docker compose exec backend curl -sSf http://localhost:8001/healthcheck; do sleep 2; done'
+        docker compose ps
+
+    - name: Execute Playwright tests
+      env:
+        PLAYWRIGHT_VERSION: 1.51.0
+      run: |
+        docker compose run --rm tests pnpm test
+        echo "Test exit code: $?"
+
+    - name: Cleanup resources
       if: always()
       run: |
-        docker stop ${{ env.CONTAINER_NAME }} || true
-        docker rm ${{ env.CONTAINER_NAME }} || true
+        docker compose down -v
+        docker system prune -af
